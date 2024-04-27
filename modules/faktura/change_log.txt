@@ -1,0 +1,5 @@
+ALTER TABLE `client` DROP `set_birth`;
+
+ALTER TABLE `client`
+  DROP `membership`,
+  DROP `sections`;

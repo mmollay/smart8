@@ -1,0 +1,40 @@
+body {
+    background-color: white;
+    /* Ein sehr helles Grau als Hintergrund */
+}
+
+.pusher {
+    flex: 1;
+    padding-top: 5em;
+}
+
+.ui.container {
+    padding: 1em 0.5em;
+}
+
+.ui.menu {
+    background-color: #f5f4f4;
+}
+
+.dashboard_sidebar {
+    position: fixed;
+    top: 40px;
+    z-index: 100;
+}
+
+.ui.green.top.massive.fixed.menu {
+    background-color: #e4e4e4;
+    /* Ein kräftigeres Grau */
+}
+
+
+/* Ändert die Farbe des Menü-Icons */
+#toggleMenu .sidebar.icon {
+    color: #9e9e9e;
+    /* Passend zum restlichen Design */
+}
+
+h1 {
+    color: #d97d7d6b;
+    /* Dunkelgrau für den Text */
+}

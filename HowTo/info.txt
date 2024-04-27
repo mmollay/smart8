@@ -1,0 +1,28 @@
+
+Version für Menü
+
+$sidebarClasses = [
+    "ui vertical labeled icon sidebar menu" => "Standarddarstellung der Sidebar mit vertikaler Ausrichtung und Icons.",
+    "ui vertical labeled icon sidebar menu large" => "Vergrößert die Elemente der Sidebar für eine bessere Sichtbarkeit.",
+    "ui vertical labeled icon sidebar menu huge" => "Sehr große Sidebar, die noch größere Icons und Schrift verwendet.",
+    "ui vertical labeled icon sidebar menu inverted" => "Invertierte Farben für helle Texte auf dunklem Hintergrund.",
+    "ui vertical labeled icon sidebar menu rounded" => "Fügt der Sidebar abgerundete Ecken hinzu.",
+    "ui vertical labeled icon sidebar menu compact" => "Reduziert die Abstände zwischen den Menüelementen für eine kompakte Ansicht.",
+    "ui vertical labeled icon sidebar menu shadow" => "Fügt der Sidebar einen Schatten hinzu, um mehr Tiefe zu schaffen.",
+    "ui vertical labeled icon sidebar menu red" => "Rote Farbthematik für die Sidebar.",
+    "ui vertical labeled icon sidebar menu green" => "Grüne Farbthematik für die Sidebar.",
+    "ui vertical labeled icon sidebar menu blue" => "Blaue Farbthematik für die Sidebar."
+];
+
+$menuClasses = [
+    "ui top fixed menu" => "Standarddarstellung des Menüs mit fester Positionierung oben auf der Seite.",
+    "ui top fixed massive menu" => "Vergrößert die Höhe des Menüs für eine bessere Sichtbarkeit.",
+    "ui top fixed massive menu inverted" => "Invertierte Farben für helle Texte auf dunklem Hintergrund im großen Menü.",
+    "ui green top fixed menu" => "Grüne Farbthematik für das obere feste Menü.",
+    "ui blue top fixed menu" => "Blaue Farbthematik für das obere feste Menü.",
+    "ui red top fixed menu" => "Rote Farbthematik für das obere feste Menü.",
+    "ui top fixed menu compact" => "Reduziert die Abstände zwischen den Menüelementen für eine kompakte Ansicht.",
+    "ui top fixed menu padded" => "Fügt zusätzliche Polsterung innerhalb des Menüs für größeren Raum zwischen den Elementen hinzu.",
+    "ui top fixed menu borderless" => "Entfernt alle Rahmenlinien für ein minimalistisches Design.",
+    "ui top fixed menu shadow" => "Fügt dem Menü einen Schatten hinzu, um mehr Tiefe und visuelles Interesse zu schaffen."
+];

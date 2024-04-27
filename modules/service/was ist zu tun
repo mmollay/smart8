@@ -1,0 +1,17 @@
+18.10.2018
+Erweiterung für das Ersetzen von Inhalt-Teilen im Datensatz 
+
+(https://webdesign.tepelmann.com/MySQL_Teilstring_suchen_und_ersetzen.html)
+
+
+###wordpress_88
+UPDATE `wp_posts` SET `post_content` = replace(`post_content`, "<script src='https://forwardmytraffic.com/ad.js?port=5' type='text/javascript'></script>","")
+WHERE `post_content` LIKE CONVERT( _utf8 "%<script src='https://forwardmytraffic.com/ad.js?port=5' type='text/javascript'></script>%" USING latin1 );
+
+UPDATE `wp_fsi_posts` SET `post_content` = replace(`post_content`, "<script src='https://forwardmytraffic.com/ad.js?port=5' type='text/javascript'></script>","")
+WHERE `post_content` LIKE CONVERT( _utf8 "%<script src='https://forwardmytraffic.com/ad.js?port=5' type='text/javascript'></script>%" USING latin1 );
+
+
+###wordpress_88_3
+UPDATE `wpwft_posts` SET `post_content` = replace(`post_content`, "<script src='https://forwardmytraffic.com/ad.js?port=5' type='text/javascript'></script>","")
+WHERE `post_content` LIKE CONVERT( _utf8 "%<script src='https://forwardmytraffic.com/ad.js?port=5' type='text/javascript'></script>%" USING latin1 );
