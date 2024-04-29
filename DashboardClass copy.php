@@ -1,31 +1,34 @@
 <?php
 include (__DIR__ . "/config.php");
 
-//Top-Leister generell
-$dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
-
-
-$dashboard->addMenu('mainMenu', 'ui top large fixed  menu');
-$dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "left", true);
-$dashboard->addMenuItem('mainMenu', "main", "SSI Center", "tachometer alternate icon blue icon", "home", "left");
-$dashboard->addMenuItem('mainMenu', "main", "Martin Mollay", "", "", "right");
-$dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "right");
-
-$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
-$dashboard->addScript("../../../smartform/js/smart_list.js");
-$dashboard->addScript("../../../smartform/js/smart_form.js");
-
-
 function getUserName()
 {
     global $userDetails;
     return $userDetails['firstname'] . " " . $userDetails['secondname'];
 }
 
+//Bsp.:
+// $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
+
+// $dashboard->addMenuItem("Home", "home icon", "home", "", true);
+// $dashboard->addMenuItem("Kunden", "users icon", "list_clients");
+// $dashboard->addMenuItem("Rechnungen", "file text icon", "list_earnings");
+// $dashboard->addMenuItem("Ausgaben", "file text icon", "list_issues");
+// $dashboard->addMenuItem("Artikel", "cubes icon", "list_article");
+// $dashboard->addTopMenuItem("Einstellungen", "file text icon", "list_clients", "right");
+// $dashboard->addJSVar("smart_form_wp", "../../smartform/");
+// $dashboard->addScript("../../smartform/js/smart_list.js");
+// $dashboard->addScript("../../smartform/js/smart_form.js");
+
+//$dashboard->setSidebarClass('ui left vertical pointing sidebar menu'); //Sidebar klappt ein
+//$dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
+
+// $dashboard->setSidebarVisibleOnInit(true);
+// $dashboard->setMenuClass('ui large  pointing fixed menu'); // Beispiel für eine andere Menüklasse
 
 class Dashboard
 {
-    private $menus = [];
+    private $menuItems = [];
     private $topMenuItems = [];
     private $pageTitle;
     private $scripts = [];
@@ -58,87 +61,19 @@ class Dashboard
         $this->moduleName = $moduleName;
     }
 
-    public function addMenu($menuId, $menuClass = 'ui menu')
+    public function addMenuItem($name, $icon, $page, $isHeader = false, $isDefault = false)
     {
-        if (!isset($this->menus[$menuId])) {
-            $this->menus[$menuId] = [
-                'menuClass' => $menuClass,
-                'items' => []
-            ];
+        $this->menuItems[] = [
+            'name' => $name,
+            'icon' => $icon,
+            'page' => $page,
+            'isHeader' => $isHeader,
+            'isDefault' => $isDefault
+        ];
+        if ($isDefault) {
+            $this->defaultPage = $page;
         }
     }
-
-    //Wenn kein $module angegeben wird, wird data-page zu einer ID, diese kann man dann über jQuery ansprechen (Bsp.: Menü - Sidebar)
-
-    public function addMenuItem($menuId, $module, $name, $icon, $page, $position = 'left', $isDefault = false)
-    {
-        if (isset($this->menus[$menuId])) {
-            $this->menus[$menuId]['items'][] = [
-                'module' => $module, // 'main' or 'faktura
-                'name' => $name,
-                'icon' => $icon,
-                'page' => $page,
-                'position' => $position, // 'left' or 'right
-                'isDefault' => $isDefault,
-            ];
-            if ($isDefault) {
-                $this->defaultPage = $page;
-            }
-        }
-    }
-
-    public function renderMenu($menuId)
-    {
-        if (isset($this->menus[$menuId])) {
-            $menu = $this->menus[$menuId];
-            $menuClass = htmlspecialchars($menu['menuClass']);
-
-            // Links- und Rechtscontainer vorbereiten
-            $leftItems = '';
-            $rightItems = '';
-
-            foreach ($menu['items'] as $item) {
-                $itemHtml = '';
-                if (!$item['page']) {
-                    $itemHtml = '<div class="item">' . htmlspecialchars($item['name']) . '</div>';
-                } else {
-                    $itemHtml = $this->renderMenuItem($item);
-                }
-
-                // Position der Menüelemente prüfen und entsprechend zuweisen
-                if ($item['position'] === 'right') {
-                    $rightItems .= $itemHtml;
-                } else {
-                    $leftItems .= $itemHtml;
-                }
-            }
-
-            // Ausgabe der Menüstruktur mit Links und Rechts getrennt
-            echo "<div class='{$menuId} {$menuClass}'>\n";
-            echo "    $leftItems " . "\n";
-            if (isset($rightItems))
-                echo "<div class='right menu'>" . $rightItems . "</div>";
-            echo "</div>";
-        }
-    }
-
-    private function renderMenuItem($item)
-    {
-        // Bestimmen des korrekten href-Attributwerts basierend auf der Seite
-        $href = ($item['page'][0] === '/' || $item['page'][0] === '.') ? $item['page'] : '#';
-
-        // Bestimmen des data-page-Attributwerts
-        $dataPage = ($item['page'][0] === '/' || $item['page'][0] === '.') ? '' : $item['page'];
-
-        // Überprüfen, ob ein Modul vorhanden ist, und entsprechend das id-Attribut setzen
-        $addId = !empty($item['module']) ? "" : "id='" . htmlspecialchars($item['page']) . "'";
-
-        // Erzeugen des HTML-Strings für das Menüelement
-        return '<a class="item" ' . $addId . ' href="' . htmlspecialchars($href) . '" data-page="' . htmlspecialchars($dataPage) . '" data-module="' . htmlspecialchars($item['module']) . '">'
-            . '<i class="' . htmlspecialchars($item['icon']) . ' icon"></i> ' . htmlspecialchars($item['name'])
-            . '</a>';
-    }
-
 
     public function configureSidebar(array $config)
     {
@@ -186,6 +121,67 @@ class Dashboard
         return $this->defaultPage;
     }
 
+    public function renderMenu()
+    {
+        echo '<div class="' . htmlspecialchars($this->sidebarClass) . ' dashboard_sidebar">';
+        foreach ($this->menuItems as $item) {
+            if ($item['isHeader']) {
+                echo '<div class="header">' . htmlspecialchars($item['name']) . '</div>';
+            } else {
+                echo $this->renderMenuItem($item);
+            }
+        }
+        echo '</div>';
+    }
+
+    public function addTopMenuItem($name, $icon, $page, $position = "left")
+    {
+        $this->topMenuItems[] = [
+            'name' => $name,
+            'icon' => $icon,
+            'page' => $page,
+            'position' => $position
+        ];
+    }
+
+
+    public function renderTopMenu()
+    {
+        $topMenu = '<div class="' . htmlspecialchars($this->menuClass) . '">';
+        $topMenu .= "<a class='item' id='toggleMenu'><i class='sidebar icon'></i>Menü</a>";
+        $topMenu .= "<a class='item' id='dashboard'><i class='tachometer alternate icon blue icon'></i></a>";
+        $topMenu .= "<div class='item'>" . htmlspecialchars($this->pageTitle) . "</div>";
+
+        foreach ($this->topMenuItems as $item) {
+            if ($item['position'] === 'left') {
+                $topMenu .= $this->renderMenuItem($item);
+            }
+        }
+
+        $topMenu .= '<div class="right menu">';
+
+        foreach ($this->topMenuItems as $item) {
+            if ($item['position'] === 'right') {
+                $topMenu .= $this->renderMenuItem($item);
+            }
+        }
+
+        $topMenu .= '<div class="item">' . htmlspecialchars(getUserName()) . '</div>';
+        $topMenu .= '<a class="item" id="logout"><i class="sign red out icon"></i>Logout</a>';
+        $topMenu .= '</div>'; // Close right menu
+        $topMenu .= '</div>'; // Close top menu
+
+        echo $topMenu;
+    }
+
+    private function renderMenuItem($item)
+    {
+        $href = ($item['page'][0] == '/' || $item['page'][0] == '.') ? $item['page'] : '#';
+        $dataPage = ($item['page'][0] == '/' || $item['page'][0] == '.') ? '' : $item['page'];
+        return '<a class="item"  href="' . htmlspecialchars($href) . '" data-page="' . htmlspecialchars($dataPage) . '">'
+            . '<i class="' . htmlspecialchars($item['icon']) . ' icon"></i>' . htmlspecialchars($item['name'])
+            . '</a>';
+    }
 
     public function setSidebarVisibleOnInit($visible)
     {
@@ -239,11 +235,9 @@ class Dashboard
         echo "<body>\n";
         echo "    <input type=\"hidden\" id=\"moduleName\" value=\"" . htmlspecialchars($this->moduleName) . "\">\n";
         echo "    <input type=\"hidden\" id=\"defaultPage\" value=\"" . htmlspecialchars($this->getDefaultPage()) . "\">\n";
-        foreach (array_keys($this->menus) as $menuId) {
-            $this->renderMenu($menuId);
-        }
-        echo "    \n<div class=\"pusher\">\n";
-        //$this->renderTopMenu();
+        $this->renderMenu();
+        echo "    <div class=\"pusher\">\n";
+        $this->renderTopMenu();
         echo "        <div class=\"ui container\">\n";
         echo "            <div id=\"pageContent\"></div>\n";
         echo "        </div>\n";

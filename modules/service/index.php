@@ -1,18 +1,16 @@
 <?php
-require (__DIR__ . "/../../DashboardClass.php");
 
 $title = "SSI Service";    // Der Titel Ihres Moduls
 $moduleName = "service";  // Der Name Ihres Moduls
 $version = "1.0.0";       // Die Version Ihres Moduls
 
-$dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
+require (__DIR__ . "/../../DashboardClass.php");
 
-$dashboard->addMenuItem("Haupt-Dashboard", "tachometer alternate icon", "../main/index.php");
-$dashboard->addMenuItem("Home", "home icon", "home", true);
-$dashboard->addMenuItem("Mysql", "database icon", "mysql");
-$dashboard->addMenuItem("Hacker-Files", "building icon", "hacker");
-$dashboard->addMenuItem("Apache", "lightning icon", "apache");
-$dashboard->addMenuItem("Logout", "sign out icon", "logout");
-//$dashboard->addScript("../../js/main.js");
-//$dashboard->addStyle("../../css/basis.css");
+$dashboard->addMenu('leftMenu', 'ui left large vertical fixed sidebar menu');
+$dashboard->addMenuItem('leftMenu', "service", "Home", "home icon", "home", true);
+$dashboard->addMenuItem('leftMenu', "service", "Mysql", "database icon", "mysql");
+$dashboard->addMenuItem('leftMenu', "service", "Hacker-Files", "building icon", "hacker");
+$dashboard->addMenuItem('leftMenu', "service", "Apache", "lightning icon", "apache");
+$dashboard->addMenuItem('leftMenu', "service", "Logout", "sign out icon", "logout");
+
 $dashboard->render();

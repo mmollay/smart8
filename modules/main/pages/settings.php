@@ -1,6 +1,6 @@
 <?
 include (__DIR__ . '/../../../config.php');
-include (__DIR__ . '/../../../smartform/include_form.php');
+include (__DIR__ . '/../../../../smartform/include_form.php');
 
 //Hedging Strategy
 $arr['form'] = array('action' => "ajax/settings_save.php", 'id' => 'form_setting', 'class' => 'center segment', 'width' => '800');

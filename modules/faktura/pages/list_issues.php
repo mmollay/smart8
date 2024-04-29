@@ -1,5 +1,5 @@
 <?php
-include (__DIR__ . '/../../../smartform/include_list.php');
+include (__DIR__ . '/../../../../smartform/include_list.php');
 
 if ($_POST['list_filter']) {
 	$_SESSION["filter"]['issues_list']['account_id'] = $_POST['list_filter'];

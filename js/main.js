@@ -23,9 +23,11 @@ $(document).ready(function () {
     var lastPage = localStorage.getItem(storageKey) || 'home';
     loadContent(moduleName, lastPage); // Vereinheitlichte Funktion verwenden
 
-    $('.ui.menu .item').not('.header').click(function (e) {
+    $('.ui.menu .item').click(function (e) {
         var page = $(this).data('page');
-        if (page) {
+        var moduleName = $(this).data('module');
+
+        if (page && moduleName) {
             e.preventDefault();
             // Alle aktiven Klassen entfernen und die aktive Klasse auf das angeklickte Element setzen
             $('.ui.menu .item').removeClass('active');
@@ -33,10 +35,12 @@ $(document).ready(function () {
             localStorage.setItem(storageKey, page);
             loadContent(moduleName, page); // Vereinheitlichte Funktion verwenden
         }
+
     });
 
     // Sidebar und Top Menu Initialisierung für aktives Item
     $('.ui.menu .item[data-page="' + lastPage + '"]').addClass('active');
+
 
     $('#toggleMenu').click(function () {
         $('.ui.sidebar').sidebar('toggle');
@@ -60,6 +64,4 @@ $(document).ready(function () {
         $(this).addClass('active');
         window.location.href = '../../index.php';
     });
-
-
 });

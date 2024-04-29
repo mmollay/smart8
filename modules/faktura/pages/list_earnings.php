@@ -1,5 +1,5 @@
 <?php
-include (__DIR__ . '/../../../smartform/include_list.php');
+include (__DIR__ . '/../../../../smartform/include_list.php');
 
 // echo $_POST['company_id'];
 

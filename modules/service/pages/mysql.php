@@ -1,7 +1,7 @@
 <?php
 // Filter zurück setzen beim neuladen der der Tabelle
 include_once (__DIR__ . '/../../../config.php');
-include_once (__DIR__ . "/../../../smartform/include_form.php");
+include_once (__DIR__ . "/../../../../smartform/include_form.php");
 
 $array_database = array(
     "ssi_smart_all" => 'ssi_smart(alle)',

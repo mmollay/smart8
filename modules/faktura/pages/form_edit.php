@@ -5,7 +5,7 @@
  * @last-changed 2107-02-20
  */
 include (__DIR__ . '/../f_config.php');
-include (__DIR__ . '/../../../smartform/include_form.php');
+include (__DIR__ . '/../../../../smartform/include_form.php');
 
 // read company_IDs
 $sql_company = $GLOBALS['mysqli']->query("SELECT company_id, company_1 FROM company where user_id = '{$_SESSION['user_id']}'") or die(mysqli_error($GLOBALS['mysqli']));
