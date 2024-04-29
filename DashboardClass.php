@@ -10,8 +10,8 @@ $dashboard->addMenu('mainMenu', 'ui top large fixed  menu');
 $dashboard->addMenuItem('mainMenu', "main", "", "tachometer alternate icon blue icon", "home", "Dashboard");
 //$title
 $dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "Menü aufklappen", "left");
-$dashboard->addMenuItem('mainMenu', $moduleName, "$title", "building icon", "home", "Startseite laden");
-$dashboard->addMenuItem('mainMenu', "main", "$user", "", "setting", "User Einstellungen", "right");
+$dashboard->addMenuItem('mainMenu', $moduleName, $title, "building icon", "home", "Startseite laden");
+$dashboard->addMenuItem('mainMenu', "main", $user, "", "setting", "User Einstellungen", "right");
 $dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "Abmelden", "right");
 
 $dashboard->addJSVar("smart_form_wp", "../../../smartform/");
