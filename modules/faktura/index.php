@@ -13,17 +13,4 @@ $dashboard->addMenuItem('leftMenu', "faktura", "Rechnungen", "file text icon", "
 $dashboard->addMenuItem('leftMenu', "faktura", "Ausgaben", "file text icon", "list_issues");
 $dashboard->addMenuItem('leftMenu', "faktura", "Artikel", "cubes icon", "list_article");
 
-$dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
-$dashboard->setSidebarVisibleOnInit(true);
-
-// Konfiguriere die Sidebar mit einem Array von Einstellungen
-$dashboard->configureSidebar([
-    'transition' => 'overlay',
-    'dimPage' => false,
-    'direction' => 'top',
-    'closable' => true,
-    'duration' => 500,
-    'easing' => 'easeInOutQuad'
-]);
-
 $dashboard->render();

@@ -4,23 +4,32 @@ include (__DIR__ . "/config.php");
 //Top-Leister generell
 $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 
+$user = $userDetails['firstname'] . " " . $userDetails['secondname'];
 
 $dashboard->addMenu('mainMenu', 'ui top large fixed  menu');
+$dashboard->addMenuItem('mainMenu', "main", "", "tachometer alternate icon blue icon", "home", "left");
+//$title
+$dashboard->addMenuItem('mainMenu', "main", "$title", "building icon", "home", "left");
 $dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "left", true);
-$dashboard->addMenuItem('mainMenu', "main", "SSI Center", "tachometer alternate icon blue icon", "home", "left");
-$dashboard->addMenuItem('mainMenu', "main", "Martin Mollay", "", "", "right");
+$dashboard->addMenuItem('mainMenu', "main", "$user", "", "", "right");
 $dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "right");
 
 $dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 $dashboard->addScript("../../../smartform/js/smart_list.js");
 $dashboard->addScript("../../../smartform/js/smart_form.js");
 
+$dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
+$dashboard->setSidebarVisibleOnInit(true);
 
-function getUserName()
-{
-    global $userDetails;
-    return $userDetails['firstname'] . " " . $userDetails['secondname'];
-}
+// Konfiguriere die Sidebar mit einem Array von Einstellungen
+$dashboard->configureSidebar([
+    'transition' => 'overlay',
+    'dimPage' => false,
+    'direction' => 'top',
+    'closable' => true,
+    'duration' => 500,
+    'easing' => 'easeInOutQuad'
+]);
 
 
 class Dashboard
@@ -139,7 +148,6 @@ class Dashboard
             . '</a>';
     }
 
-
     public function configureSidebar(array $config)
     {
         foreach ($config as $key => $value) {
@@ -185,7 +193,6 @@ class Dashboard
     {
         return $this->defaultPage;
     }
-
 
     public function setSidebarVisibleOnInit($visible)
     {

@@ -11,6 +11,8 @@ if ($currentFile !== "login2.php" && $currentFile !== "user_impersonation.php") 
 
 include (__DIR__ . "/functions.php");
 
+
+
 $host = 'localhost';
 $dbname = 'ssi_company';
 $username = 'smart';

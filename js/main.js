@@ -1,6 +1,5 @@
 $(document).ready(function () {
     var moduleName = $('#moduleName').val(); // Modulname aus einem versteckten Feld lesen
-
     // Vereinheitlichte Funktion zum Laden von Inhalten
     window.loadContent = function (module, page) {
         // Speichert die aktuelle Seite im Local Storage unter dem modulspezifischen Key
