@@ -55,7 +55,7 @@ if ($_POST['add_article']) {
  */
 if ($_POST['update_id']) {
 
-    require ("../config.inc.php");
+    include (__DIR__ . '/../f_config.php');
     // Auslesen der Details
     $sql_details = $GLOBALS['mysqli']->query("SELECT * from bill_details WHERE bill_id = {$_POST['update_id']} ") or die(mysqli_error($GLOBALS['mysqli']));
     while ($array_details = mysqli_fetch_array($sql_details)) {

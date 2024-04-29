@@ -1,4 +1,7 @@
 $(document).ready(function () {
+
+    $('.item').popup();
+
     var moduleName = $('#moduleName').val(); // Modulname aus einem versteckten Feld lesen
     // Vereinheitlichte Funktion zum Laden von Inhalten
     window.loadContent = function (module, page) {

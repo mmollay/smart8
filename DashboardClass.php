@@ -7,12 +7,12 @@ $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 $user = $userDetails['firstname'] . " " . $userDetails['secondname'];
 
 $dashboard->addMenu('mainMenu', 'ui top large fixed  menu');
-$dashboard->addMenuItem('mainMenu', "main", "", "tachometer alternate icon blue icon", "home", "left");
+$dashboard->addMenuItem('mainMenu', "main", "", "tachometer alternate icon blue icon", "home", "Dashboard");
 //$title
-$dashboard->addMenuItem('mainMenu', "main", "$title", "building icon", "home", "left");
-$dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "left", true);
-$dashboard->addMenuItem('mainMenu', "main", "$user", "", "", "right");
-$dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "right");
+$dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "Menü aufklappen", "left");
+$dashboard->addMenuItem('mainMenu', $moduleName, "$title", "building icon", "home", "Startseite laden");
+$dashboard->addMenuItem('mainMenu', "main", "$user", "", "setting", "User Einstellungen", "right");
+$dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "Abmelden", "right");
 
 $dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 $dashboard->addScript("../../../smartform/js/smart_list.js");
@@ -79,7 +79,7 @@ class Dashboard
 
     //Wenn kein $module angegeben wird, wird data-page zu einer ID, diese kann man dann über jQuery ansprechen (Bsp.: Menü - Sidebar)
 
-    public function addMenuItem($menuId, $module, $name, $icon, $page, $position = 'left', $isDefault = false)
+    public function addMenuItem($menuId, $module, $name, $icon, $page, $popup = '', $position = 'left', $isDefault = false)
     {
         if (isset($this->menus[$menuId])) {
             $this->menus[$menuId]['items'][] = [
@@ -87,6 +87,7 @@ class Dashboard
                 'name' => $name,
                 'icon' => $icon,
                 'page' => $page,
+                'popup' => $popup,
                 'position' => $position, // 'left' or 'right
                 'isDefault' => $isDefault,
             ];
@@ -124,7 +125,7 @@ class Dashboard
 
             // Ausgabe der Menüstruktur mit Links und Rechts getrennt
             echo "<div class='{$menuId} {$menuClass}'>\n";
-            echo "    $leftItems " . "\n";
+            echo "$leftItems " . "";
             if (isset($rightItems))
                 echo "<div class='right menu'>" . $rightItems . "</div>";
             echo "</div>";
@@ -140,13 +141,38 @@ class Dashboard
         $dataPage = ($item['page'][0] === '/' || $item['page'][0] === '.') ? '' : $item['page'];
 
         // Überprüfen, ob ein Modul vorhanden ist, und entsprechend das id-Attribut setzen
-        $addId = !empty($item['module']) ? "" : "id='" . htmlspecialchars($item['page']) . "'";
+        $addId = $item['module'] ? '' : "id='" . htmlspecialchars($item['page']) . "'";
 
-        // Erzeugen des HTML-Strings für das Menüelement
-        return '<a class="item" ' . $addId . ' href="' . htmlspecialchars($href) . '" data-page="' . htmlspecialchars($dataPage) . '" data-module="' . htmlspecialchars($item['module']) . '">'
-            . '<i class="' . htmlspecialchars($item['icon']) . ' icon"></i> ' . htmlspecialchars($item['name'])
-            . '</a>';
+        // Popup-Attribut hinzufügen, falls vorhanden
+        $addPopup = isset($item['popup']) ? "data-content='" . htmlspecialchars($item['popup']) . "'" : '';
+
+        // Beginnen des HTML-Strings für das Menüelement
+        $html = "" . '   <a ' . $addPopup . ' class="item" ' . $addId . ' href="' . htmlspecialchars($href) . '"';
+
+        // data-page-Attribut hinzufügen, falls vorhanden
+        if ($dataPage !== '') {
+            $html .= ' data-page="' . htmlspecialchars($dataPage) . '"';
+        }
+
+        // data-module-Attribut hinzufügen, falls vorhanden
+        if (isset($item['module'])) {
+            $html .= ' data-module="' . htmlspecialchars($item['module']) . '"';
+        }
+
+        // Icon hinzufügen, falls vorhanden
+        if (isset($item['icon']) && $item['icon'] != '') {
+            $html .= '><i class="' . htmlspecialchars($item['icon']) . ' icon"></i> ';
+        } else {
+            $html .= '>';
+        }
+
+        // Name des Menüelements hinzufügen
+        $html .= htmlspecialchars($item['name']) . '</a>' . "\n";
+        ;
+
+        return $html;
     }
+
 
     public function configureSidebar(array $config)
     {

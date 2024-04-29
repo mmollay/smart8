@@ -7,12 +7,12 @@ include (__DIR__ . '/../f_config.php');
 // Check ob Eintrag bereits vorhanden ist
 // Art_NR UND Art_Title
 if ($_POST['modus'] == 'add_client') {
-	$check_client_number = mysql_singleoutput("SELECT client_number FROM client WHERE client_number='{$_POST['client_number']}' ", "client_number");
-	$check_company_1 = mysql_singleoutput("SELECT * FROM client WHERE company_1 = '{$_POST['company_1']}' ", "company_1");
-	$check_email = mysql_singleoutput("SELECT * FROM client WHERE email = '{$_POST['email']}' ", "email");
+	$check_client_number = mysql_singleoutput("SELECT client_number FROM client WHERE client_number='{$_POST['client_number']}' AND company_id = '{$_POST['company_id']}' ", "client_number");
+	$check_company_1 = mysql_singleoutput("SELECT * FROM client WHERE company_id = '{$_POST['company_id']}' AND company_1 = '{$_POST['company_1']}' ", "company_1");
+	$check_email = mysql_singleoutput("SELECT * FROM client WHERE email = '{$_POST['email']}' AND company_id = '{$_POST['company_id']}' ", "email");
 	// Clientnumber setzen
 } else {
-	$check_client_number = mysql_singleoutput("SELECT client_number FROM client WHERE client_number='{$_POST['client_number']}' AND client_id != '{$_POST['client_id']}' ", "client_number");
+	$check_client_number = mysql_singleoutput("SELECT client_number FROM client WHERE client_number='{$_POST['client_number']}' AND company_id = '{$_POST['company_id']}' AND client_id != '{$_POST['client_id']}' ", "client_number");
 	// $check_email = mysql_singleoutput("SELECT email FROM client WHERE email = '{$_POST['email']}' AND company_id = '{$_SESSION['faktura_company_id']}' AND client_id != '{$_POST['client_id']}' ","email");
 }
 
@@ -27,13 +27,13 @@ if (!$_POST['client_number']) {
 } else {
 	// Template anlegen
 	$GLOBALS['mysqli']->query("REPLACE INTO client SET
-	map_user_id   = '{$_POST['map_user_id']}',
-	map_page_id   = '{$_POST['map_page_id']}',
 	activ         = '{$_POST['activ']}',
-	abo         = '{$_POST['abo']}',
+	abo           = '{$_POST['abo']}',
+	activate      = '{$_POST['activate']}',
+	send_date     = '{$_POST['send_date']}',
 	client_id     = '{$_POST['client_id']}',
 	client_number = '{$_POST['client_number']}',
-	company_id = '{$_SESSION['faktura_company_id']}',
+	company_id = '{$_POST['company_id']}',
 	company_1 = '{$_POST['company_1']}',
 	company_2 = '{$_POST['company_2']}',
 	title = '{$_POST['title']}',

@@ -5,6 +5,6 @@ $version = "1.0.0";       // Die Version Ihres Moduls
 
 require (__DIR__ . "/../../DashboardClass.php");
 
-$dashboard->addMenuItem('mainMenu', "faktura", "Einstellungen", "cog icon", "settings", "right");
+$dashboard->addMenuItem('mainMenu', "faktura", "Einstellungen", "cog icon", "settings", "", "right");
 
 $dashboard->render();

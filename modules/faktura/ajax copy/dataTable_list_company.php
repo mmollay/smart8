@@ -1,22 +1,22 @@
 <?php
-require ("../config.inc.php");
+include (__DIR__ . '/../f_config.php');
 
-$GLOBALS['mysqli']->query ( 'set character set utf8;' );
+$GLOBALS['mysqli']->query('set character set utf8;');
 
 /* Paging */
 $sLimit = "";
-if (isset ( $_GET ['iDisplayStart'] )) {
-	$sLimit = "LIMIT " . $GLOBALS['mysqli']->real_escape_string ( $_GET ['iDisplayStart'] ) . ", " . $GLOBALS['mysqli']->real_escape_string ( $_GET ['iDisplayLength'] );
+if (isset($_GET['iDisplayStart'])) {
+	$sLimit = "LIMIT " . $GLOBALS['mysqli']->real_escape_string($_GET['iDisplayStart']) . ", " . $GLOBALS['mysqli']->real_escape_string($_GET['iDisplayLength']);
 }
 
 /* Ordering */
-if (isset ( $_GET ['iSortCol_0'] )) {
+if (isset($_GET['iSortCol_0'])) {
 	$sOrder = "ORDER BY  ";
-	for($i = 0; $i < $GLOBALS['mysqli']->real_escape_string ( $_GET ['iSortingCols'] ); $i ++) {
-		$sOrder .= fnColumnToField ( $GLOBALS['mysqli']->real_escape_string ( $_GET ['iSortCol_' . $i] ) ) . "
-				" . $GLOBALS['mysqli']->real_escape_string ( $_GET ['sSortDir_' . $i] ) . ", ";
+	for ($i = 0; $i < $GLOBALS['mysqli']->real_escape_string($_GET['iSortingCols']); $i++) {
+		$sOrder .= fnColumnToField($GLOBALS['mysqli']->real_escape_string($_GET['iSortCol_' . $i])) . "
+				" . $GLOBALS['mysqli']->real_escape_string($_GET['sSortDir_' . $i]) . ", ";
 	}
-	$sOrder = substr_replace ( $sOrder, "", - 2 );
+	$sOrder = substr_replace($sOrder, "", -2);
 }
 
 /*
@@ -25,8 +25,8 @@ if (isset ( $_GET ['iSortCol_0'] )) {
  * on very large tables, and MySQL's regex functionality is very limited
  */
 $sWhere = "";
-if ($_GET ['sSearch'] != "") {
-	$sWhere = "WHERE name LIKE '%" . $GLOBALS['mysqli']->real_escape_string ( $_GET ['sSearch'] ) . "%' ";
+if ($_GET['sSearch'] != "") {
+	$sWhere = "WHERE name LIKE '%" . $GLOBALS['mysqli']->real_escape_string($_GET['sSearch']) . "%' ";
 }
 
 $sQuery = "
@@ -35,35 +35,36 @@ $sWhere
 $sOrder
 $sLimit ";
 
-$rResult = $GLOBALS['mysqli']->query ( $sQuery, $gaSql ['link'] ) or die ( mysqli_error ($GLOBALS['mysqli']) );
+$rResult = $GLOBALS['mysqli']->query($sQuery, $gaSql['link']) or die(mysqli_error($GLOBALS['mysqli']));
 
 $sQuery = "SELECT FOUND_ROWS()";
-$rResultFilterTotal = $GLOBALS['mysqli']->query ( $sQuery, $gaSql ['link'] ) or die ( mysqli_error ($GLOBALS['mysqli']) );
-$aResultFilterTotal = mysqli_fetch_array ( $rResultFilterTotal );
-$iFilteredTotal = $aResultFilterTotal [0];
+$rResultFilterTotal = $GLOBALS['mysqli']->query($sQuery, $gaSql['link']) or die(mysqli_error($GLOBALS['mysqli']));
+$aResultFilterTotal = mysqli_fetch_array($rResultFilterTotal);
+$iFilteredTotal = $aResultFilterTotal[0];
 
 $sQuery = "SELECT COUNT(company_id) FROM company ";
-$rResultTotal = $GLOBALS['mysqli']->query ( $sQuery, $gaSql ['link'] ) or die ( mysqli_error ($GLOBALS['mysqli']) );
-$aResultTotal = mysqli_fetch_array ( $rResultTotal );
-$iTotal = $aResultTotal [0];
+$rResultTotal = $GLOBALS['mysqli']->query($sQuery, $gaSql['link']) or die(mysqli_error($GLOBALS['mysqli']));
+$aResultTotal = mysqli_fetch_array($rResultTotal);
+$iTotal = $aResultTotal[0];
 
 $sOutput = '{';
-$sOutput .= '"sEcho": ' . intval ( $_GET ['sEcho'] ) . ', ';
+$sOutput .= '"sEcho": ' . intval($_GET['sEcho']) . ', ';
 $sOutput .= '"iTotalRecords": ' . $iTotal . ', ';
 $sOutput .= '"iTotalDisplayRecords": ' . $iFilteredTotal . ', ';
 $sOutput .= '"aaData": [ ';
-while ( $aRow = mysqli_fetch_array ( $rResult ) ) {
+while ($aRow = mysqli_fetch_array($rResult)) {
 	$sOutput .= "[";
-	$sOutput .= '"' . addslashes ( $aRow ['company_id'] ) . '",';
-	$sOutput .= '"' . addslashes ( $aRow ['name'] ) . '",';
+	$sOutput .= '"' . addslashes($aRow['company_id']) . '",';
+	$sOutput .= '"' . addslashes($aRow['name']) . '",';
 	$sOutput .= '"<button onclick=edit_faktura(' . $id . ')>Edit</button><button class=button_submit>Submit</button>",';
 	$sOutput .= "],";
 }
-$sOutput = substr_replace ( $sOutput, "", - 1 );
+$sOutput = substr_replace($sOutput, "", -1);
 $sOutput .= '] }';
 
 echo $sOutput;
-function fnColumnToField($i) {
+function fnColumnToField($i)
+{
 	if ($i == 0)
 		return "company_id";
 	else if ($i == 1)

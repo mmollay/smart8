@@ -1,5 +1,5 @@
 <?php
-require ("../config.inc.php");
+include (__DIR__ . '/../f_config.php');
 include_once (__DIR__ . '/../../ssi_smart/php_functions/function_sendmail.php');
 
 // notwendig damit der Nachricht übergeben wird, weiss aber nicht warum das "message" übergeben werden kann

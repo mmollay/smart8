@@ -37,3 +37,4 @@ $userDetails = getUserDetails($userId, $db);
 $_SESSION['faktura_company_id'] = $company_id = $userDetails['company_id'];
 
 
+
