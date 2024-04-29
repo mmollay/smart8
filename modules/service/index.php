@@ -12,5 +12,4 @@ $dashboard->addMenuItem('leftMenu', "service", "Mysql", "database icon", "mysql"
 $dashboard->addMenuItem('leftMenu', "service", "Hacker-Files", "building icon", "hacker");
 $dashboard->addMenuItem('leftMenu', "service", "Apache", "lightning icon", "apache");
 $dashboard->addMenuItem('leftMenu', "service", "Logout", "sign out icon", "logout");
-
 $dashboard->render();
