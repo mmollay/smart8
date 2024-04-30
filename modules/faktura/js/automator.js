@@ -2,9 +2,7 @@ if ($('.tr_listvalue').html()) {
 	$('#automator_list').show();
 }
 
-
-
-function insert_inner_issues(automator_id, elba_id = false, fromlist ) {
+function insert_inner_issues(automator_id, elba_id = false, fromlist) {
 
 	// call ajax
 	$.ajax({
@@ -14,10 +12,10 @@ function insert_inner_issues(automator_id, elba_id = false, fromlist ) {
 		data: ({
 			elba_id: elba_id,
 			automator_id: automator_id,
-			fromlist : fromlist
+			fromlist: fromlist
 		}),
 		dataType: "script",
-		success: function() {
+		success: function () {
 
 			if (!$('.tr_listvalue').html()) {
 				$('#automator_list').hide();
@@ -41,7 +39,7 @@ function remove_inner_elba(elba_id) {
 			elba_id: elba_id
 		}),
 		dataType: "script",
-		success: function() {
+		success: function () {
 			if (!$('.tr_listvalue').html()) {
 				$('#automator_list').hide();
 			}

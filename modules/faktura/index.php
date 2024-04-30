@@ -7,10 +7,12 @@ require (__DIR__ . "/../../DashboardClass.php");
 
 $dashboard->addMenu('leftMenu', 'ui left large vertical fixed sidebar menu');
 
-$dashboard->addMenuItem('leftMenu', "faktura", "Home", "home icon", "home");
-$dashboard->addMenuItem('leftMenu', "faktura", "Kunden", "users icon", "list_clients");
-$dashboard->addMenuItem('leftMenu', "faktura", "Rechnungen", "file text icon", "list_earnings");
-$dashboard->addMenuItem('leftMenu', "faktura", "Ausgaben", "file text icon", "list_issues");
-$dashboard->addMenuItem('leftMenu', "faktura", "Artikel", "cubes icon", "list_article");
+$dashboard->addMenuItem('leftMenu', "faktura", "home", "Home", "home icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_clients", "Kunden", "users icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_earnings", "Rechnungen", "file green text icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_issues", "Ausgaben", "file red text icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_article", "Artikel", "cubes icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_elba", "Elba", "money yellow check icon");
+$dashboard->addScript("js/automator.js");
 
 $dashboard->render();

@@ -8,7 +8,7 @@ $todo_entry = '<br><div align=center><form><div id=todo_border>Todo: <input type
 $todo_entry .= "<div id=window></div><div id=list></div>";
 
 // Ausgabe der Mahnliste
-include ('../inc/call_remind_list.php');
+//include ('../inc/call_remind_list.php');
 
 // $info_list_table .= "<br><button id=button_send_remind>Mahner erinnern</button><br>";
 $setContent = '';

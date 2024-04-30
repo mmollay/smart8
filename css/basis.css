@@ -16,17 +16,6 @@ body {
     background-color: #f5f4f4;
 }
 
-.dashboard_sidebar {
-    position: fixed;
-    top: 40px;
-    z-index: 100;
-}
-
-.ui.green.top.massive.fixed.menu {
-    background-color: #e4e4e4;
-    /* Ein kräftigeres Grau */
-}
-
 
 /* Ändert die Farbe des Menü-Icons */
 #toggleMenu .sidebar.icon {
@@ -39,6 +28,7 @@ h1 {
     /* Dunkelgrau für den Text */
 }
 
-.mainMenu {
-    /*  background-color: rgb(214, 214, 214) !important; */
+.leftMenu {
+    position: fixed;
+    top: 30px;
 }

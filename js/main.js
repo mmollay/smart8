@@ -1,6 +1,7 @@
 $(document).ready(function () {
 
     $('.item').popup();
+    $('.ui.dropdown').dropdown();
 
     var moduleName = $('#moduleName').val(); // Modulname aus einem versteckten Feld lesen
 

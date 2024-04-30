@@ -6,11 +6,9 @@ $version = "1.0.0";       // Die Version Ihres Moduls
 
 require (__DIR__ . "/../../DashboardClass.php");
 
-$dashboard->addMenu('leftMenu', 'ui left large vertical fixed sidebar menu');
-$dashboard->addMenuItem('leftMenu', "service", "Home", "home icon", "home", "Home");
-$dashboard->addMenuItem('leftMenu', "service", "Mysql", "database icon", "mysql");
-$dashboard->addMenuItem('leftMenu', "service", "Hacker-Files", "building icon", "hacker");
-$dashboard->addMenuItem('leftMenu', "service", "Apache", "lightning icon", "apache");
-$dashboard->addMenuItem('leftMenu', "service", "Logout", "sign out icon", "logout");
-
+$dashboard->addMenu('leftMenu', 'ui left large vertical menu');
+$dashboard->addMenuItem('leftMenu', "service", "home", "Home", "home icon", "Home");
+//$dashboard->addMenuItem('leftMenu', "service", "mysql", "Mysql", "database icon", "");
+$dashboard->addMenuItem('leftMenu', "service", "hacker", "Hacker-Files", "building icon");
+$dashboard->addMenuItem('leftMenu', "service", "apache", "Apache", "lightning icon", 'Apache');
 $dashboard->render();

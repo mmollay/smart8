@@ -7,12 +7,11 @@ $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 $user = $userDetails['firstname'] . " " . $userDetails['secondname'];
 
 $dashboard->addMenu('mainMenu', 'ui top large fixed  menu');
-$dashboard->addMenuItem('mainMenu', "main", "", "tachometer alternate icon blue icon", "home", "Dashboard");
-//$title
-$dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "Menü aufklappen", "left");
-$dashboard->addMenuItem('mainMenu', $moduleName, $title, "building icon", "home", "Startseite laden");
-$dashboard->addMenuItem('mainMenu', "main", $user, "", "setting", "User Einstellungen", "right");
-$dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "Abmelden", "right");
+$dashboard->addMenuItem('mainMenu', "main", "../main/index.php", "", "tachometer alternate icon blue icon", "Dashboard");
+$dashboard->addMenuItem('mainMenu', "", "toggleMenu", "Menü", "sidebar icon", "Menü aufklappen");
+$dashboard->addMenuItem('mainMenu', $moduleName, "home", $title, "building icon", "Startseite laden");
+$dashboard->addMenuItem('mainMenu', "main", "setting", $user, "", "User Einstellungen", "right");
+$dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sign red out icon", "Abmelden", "right");
 
 $dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 $dashboard->addScript("../../../smartform/js/smart_list.js");
@@ -67,7 +66,7 @@ class Dashboard
         $this->moduleName = $moduleName;
     }
 
-    public function addMenu($menuId, $menuClass = 'ui menu')
+    public function addMenu($menuId, $menuClass = 'ui compact menu')
     {
         if (!isset($this->menus[$menuId])) {
             $this->menus[$menuId] = [
@@ -79,17 +78,18 @@ class Dashboard
 
     //Wenn kein $module angegeben wird, wird data-page zu einer ID, diese kann man dann über jQuery ansprechen (Bsp.: Menü - Sidebar)
 
-    public function addMenuItem($menuId, $module, $name, $icon, $page, $popup = '', $position = 'left', $isDefault = false)
+    public function addMenuItem($menuId, $module, $page, $name, $icon, $popup = '', $position = 'left', $class = '', $isDefault = false)
     {
         if (isset($this->menus[$menuId])) {
             $this->menus[$menuId]['items'][] = [
                 'module' => $module, // 'main' or 'faktura
+                'page' => $page,
                 'name' => $name,
                 'icon' => $icon,
-                'page' => $page,
                 'popup' => $popup,
                 'position' => $position, // 'left' or 'right
                 'isDefault' => $isDefault,
+                'class' => $class
             ];
             if ($isDefault) {
                 $this->defaultPage = $page;
@@ -109,8 +109,12 @@ class Dashboard
 
             foreach ($menu['items'] as $item) {
                 $itemHtml = '';
+
+                if (!$item['class'])
+                    $item['class'] = 'item';
+
                 if (!$item['page']) {
-                    $itemHtml = '<div class="item">' . htmlspecialchars($item['name']) . '</div>';
+                    $itemHtml = '<div class="' . $item['class'] . '">' . $item['name'] . '</div>';
                 } else {
                     $itemHtml = $this->renderMenuItem($item);
                 }
@@ -168,7 +172,6 @@ class Dashboard
 
         // Name des Menüelements hinzufügen
         $html .= htmlspecialchars($item['name']) . '</a>' . "\n";
-        ;
 
         return $html;
     }
@@ -270,6 +273,7 @@ class Dashboard
         }
         echo "</head>\n";
         echo "<body>\n";
+
         echo "    <input type=\"hidden\" id=\"moduleName\" value=\"" . htmlspecialchars($this->moduleName) . "\">\n";
         echo "    <input type=\"hidden\" id=\"defaultPage\" value=\"" . htmlspecialchars($this->getDefaultPage()) . "\">\n";
         foreach (array_keys($this->menus) as $menuId) {
