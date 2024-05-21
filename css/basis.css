@@ -12,23 +12,23 @@ body {
     padding: 1em 0.5em;
 }
 
-.ui.menu {
-    background-color: #f5f4f4;
-}
-
-
-/* Ändert die Farbe des Menü-Icons */
-#toggleMenu .sidebar.icon {
-    color: #9e9e9e;
-    /* Passend zum restlichen Design */
-}
-
 h1 {
     color: #d97d7d6b;
     /* Dunkelgrau für den Text */
 }
 
-.leftMenu {
-    position: fixed;
-    top: 30px;
+ #leftMenu,
+#rightMenu {
+    top: 53px !important;
+} 
+
+#mainMenu {
+    background-color: #eeeeee;
+    /* Dunkelgrau für das Menü */
+
+}
+
+#pageContent {
+    padding: 0px 35px 0px 35px;
+    transition: margin-left 0.5s;
 }

@@ -4,6 +4,7 @@ include (__DIR__ . '/../config.php');
 $set_module['faktura'] = true;
 $set_module['newsletter'] = true;
 $set_module['service'] = true;
+$set_module['trader'] = true;
 
 // $set_module['userlist'] = true;
 // $set_module['setting'] = true;
@@ -18,7 +19,7 @@ $content .= "<div class='ui link cards centered'>";
 $modules = [
     //'newsletter' => ["Newsletter", 'send outline', '', '../newsletter/', 'Versende wichtige Mail an deine Newsletterliste'],
     'faktura' => ["Faktura", 'book', '', '../faktura/', 'Deine Buchhaltung immer im Griff'],
-    // 'trader' => ["Trader", 'wallet', '', 'modules/trader/', 'Make your mouney'],
+    'trader' => ["Trader", 'wallet', '', '../trader/', 'Make your mouney'],
     // 'learning' => ["Learning", 'student', '', 'modules/learning/', 'Für Prüfungen üben'],
     // 'kmlist' => ["KM-Liste", 'road', '', 'modules/km/', 'Jeder Kilometer zählt :)'],
     // 'map' => ["Fruit-Map", 'fruit-apple', '', 'modules/map/', 'Maps'],
