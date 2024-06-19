@@ -1,0 +1,84 @@
+Version 0.8.2 (April 23, 2024)
+Korregierte Anzeige der Charts für Wochen
+
+
+Version 0.8.1 (April 18, 2024)
+Speichern von Strategien
+Überarbeitung der charts
+Dropdown for contracts 
+
+Version 0.8.0 (April 9, 2024)
+Management of sending strategies
+Display of current and new strategies
+Code cleanup
+Tokens are now stored in the database
+Profit in the user list
+Dropdown in charts for selecting between Real and Demo
+Display of strategies in orders
+
+Version 0.7.1 (March 23, 2024)
+Improved display of charts (Accounts instead of Server)
+Saving the strategy in connection with the server_id
+Strategy management revised
+
+Version 0.7 (March 14, 2024)
+Implemented display of currently used lots and hedging communication, along with margin.
+Enhanced modal functionality: modals are now removed in the background after saving to prevent field conflicts.
+Split servers between Demo and Real environments for better management.
+Improved loading speed through JavaScript optimization.
+Client interface: Introduced personal login featuring display of daily profits and statistics.
+Dashboard now shows MT5 servers.
+Daily profits are now displayed in the "brokers" section.
+Introduced new grouping options for orders.
+
+Version 0.6 (March 8, 2024)
+Dashboard completely revised for better clarity (Demo and Real)
+Button added for token generation
+Order fetching automated every 10 minutes
+Selection of all strategies
+Selection of default values in the server list for lot size and strategy
+Cloning of broker and server for faster setup
+Display of current profit in the server list (updated every 5 minutes)
+
+Version 0.5 (February 28, 2024)
+Revised chart presentation
+Additional "Pause" strategy button
+Automatic token renewal every 12 hours
+Improved grouping of hedges with detailed listing of positions
+
+Version 0.4 (February 24, 2024)
+Added further groupings to orders: Days, Month, Year, and an option to delete individual entries.
+Introduced a chart feature for graphical representation of profits.
+Completely revised homepage. Launching of MT5 servers and hedging strategy.
+Generation of tokens for server communication.
+
+Version 0.3 (February 23, 2024)
+Expanded server list functionalities (options include: lot size, broker, strategy).
+Order list now features grouping functionality.
+Menu restructured for improved usability.
+Strategy list and form have been extended.
+
+Version 0.2 (February 21, 2024)
+Code cleaning
+Menu restructuring
+New filters for orders (Server and Date)
+Server selection for Hedging Strategy
+Creating a database for client financing and profit sharing
+Form for client investment
+
+Version 0.1 (February 17, 2024)
+Multi-server usage
+Client database (Edit and Delete)
+Order import interface
+Order output with filter function
+Current display of the "Dax" on the homepage
+
+Version 0.0.8 (February 7, 2024)
+Hedging strategy clone button
+
+Version 0.0.7 (February 6, 2024)
+Ajax loading - EMA strategy buttons
+
+Version 0.0.6 (February 1, 2024)
+Basics are online now
+Auto-reload for stock data every 60 seconds

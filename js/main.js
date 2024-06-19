@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     $('.item').popup();
     $('.ui.dropdown').dropdown();
 
@@ -69,3 +68,20 @@ $(document).ready(function () {
         window.location.href = '../../index.php';
     });
 });
+
+jQuery.fn.message = function (settings) {
+    message(settings)
+}
+
+function message(settings) {
+    settings = jQuery.extend({ title: "Gespeichert", delay: 10000, text: '', icon: 'info', }, settings);
+
+    var title = settings.title;
+    var text = settings.text;
+    var delay = settings.delay;
+    var icon = settings.icon;
+    var type = settings.type;
+
+    //$('.toast-container').hide();
+    $('body').toast({ title: title, message: text, position: 'top center', class: icon });
+}

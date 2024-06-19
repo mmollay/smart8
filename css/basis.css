@@ -17,10 +17,10 @@ h1 {
     /* Dunkelgrau für den Text */
 }
 
- #leftMenu,
+#leftMenu,
 #rightMenu {
-    top: 53px !important;
-} 
+    top: 50px !important;
+}
 
 #mainMenu {
     background-color: #eeeeee;

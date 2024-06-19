@@ -7,7 +7,6 @@ $version = "1.0.0";       // Die Version Ihres Moduls
 require (__DIR__ . "/../../DashboardClass.php");
 
 $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
-$dashboard->enableJSForMenu('leftMenu');
 $dashboard->addMenuItem('leftMenu', "service", "home", "Home", "home icon", "Home");
 $dashboard->addMenuItem('leftMenu', "service", "hacker", "Hacker-Files", "building icon");
 $dashboard->addMenuItem('leftMenu', "service", "apache", "Apache", "lightning icon", 'Apache');

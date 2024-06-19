@@ -6,7 +6,7 @@ $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 
 $user = $userDetails['firstname'] . " " . $userDetails['secondname'];
 
-$dashboard->addMenu('mainMenu', 'ui massive top fixed menu', false);
+$dashboard->addMenu('mainMenu', 'ui huge  top fixed menu', false);
 $dashboard->addMenuItem('mainMenu', "main", "../main/index.php", "", "tachometer alternate icon blue icon", "Dashboard");
 $dashboard->addMenuItem('mainMenu', $moduleName, "home", $title, "building icon", "Startseite laden");
 $dashboard->addMenuItem('mainMenu', "main", "setting", $user, "", "User Einstellungen", "right");
@@ -15,6 +15,7 @@ $dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sig
 $dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 $dashboard->addScript("../../../smartform/js/smart_list.js");
 $dashboard->addScript("../../../smartform/js/smart_form.js");
+//$dashboard->addScript("alert('test');", true);  //Inline-Script
 
 $dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
 $dashboard->setSidebarVisibleOnInit(true);
@@ -36,6 +37,7 @@ class Dashboard
     private $topMenuItems = [];
     private $pageTitle;
     private $scripts = [];
+    private $inlineScripts = [];
     private $styles = [];
     private $jsVars = [];
     private $userId;
@@ -112,7 +114,7 @@ class Dashboard
 
             foreach ($menu['items'] as $item) {
                 $itemHtml = !$item['page']
-                    ? '<div class="header item">'.$item['name'].'</div>'
+                    ? '<div class="header item">' . $item['name'] . '</div>'
                     : $this->renderMenuItem($item);
 
                 if ($item['position'] === 'right') {
@@ -184,9 +186,13 @@ class Dashboard
         $this->menuClass = $class;
     }
 
-    public function addScript($scriptPath)
+    public function addScript($scriptPath, $isInline = false)
     {
-        $this->scripts[] = $scriptPath;
+        if ($isInline) {
+            $this->inlineScripts[] = $scriptPath;
+        } else {
+            $this->scripts[] = $scriptPath;
+        }
     }
 
     public function addStyle($stylePath)
@@ -396,6 +402,11 @@ class Dashboard
         foreach ($this->scripts as $script) {
             echo "    <script src=\"" . htmlspecialchars($script) . "\"></script>\n";
         }
+        foreach ($this->inlineScripts as $inlineScript) {
+            echo "<script>{$inlineScript}</script>\n";
+        }
+
+
         echo "</head>\n";
         echo "<body>\n";
         foreach (array_keys($this->menus) as $menuId) {
