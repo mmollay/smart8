@@ -415,7 +415,7 @@ class Dashboard
         echo "    \n<div class=\"pusher\">\n";
         echo "            <div id=\"pageContent\"></div>\n";
         echo "        <div align=\"center\">\n";
-        echo "            <div class=\"ui label basic\">Version " . htmlspecialchars($this->version) . "</div>\n";
+        echo "            <br><div class=\"ui label basic\">Version " . htmlspecialchars($this->version) . "</div>\n";
         echo "        </div>\n";
         echo "    </div>\n";
         echo "    <script src=\"../../js/main.js\"></script>\n";

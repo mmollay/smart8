@@ -8,9 +8,7 @@ $currentFile = basename($_SERVER['PHP_SELF']);
 if ($currentFile !== "login2.php" && $currentFile !== "user_impersonation.php") {
     include (__DIR__ . "/check_permission.php");
 }
-
 include (__DIR__ . "/functions.php");
-
 
 
 $host = 'localhost';

@@ -12,7 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = mysqli_stmt_get_result($stmt);
     $user = mysqli_fetch_assoc($result);
 
-    if ($user) {
+    if (is_array($user)) {
+        // Debug-Ausgaben
+        // echo "Benutzer gefunden.<br>";
+        // echo "Eingegebenes Passwort: $password<br>";
+        // echo "Gespeichertes Passwort (Hash): " . $user['password'] . "<br>";
+
         // Prüfen, ob das Passwort gehasht ist
         if (password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
             // Passwort muss neu gehasht werden
@@ -20,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $update_stmt = mysqli_prepare($db, "UPDATE user2company SET password = ? WHERE user_name = ?");
             mysqli_stmt_bind_param($update_stmt, "ss", $hash, $username);
             if (mysqli_stmt_execute($update_stmt)) {
-                echo "Passwort wurde erfolgreich neu gehasht und aktualisiert.";
+                echo "Passwort wurde erfolgreich neu gehasht und aktualisiert.<br>";
             } else {
-                echo "Fehler beim Aktualisieren des Passworts.";
+                echo "Fehler beim Aktualisieren des Passworts.<br>";
             }
             mysqli_stmt_close($update_stmt);
         } else if (password_verify($password, $user['password'])) {

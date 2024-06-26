@@ -8,7 +8,8 @@ function getBrokerUserByClientId($db, $clientId)
     }
 
     // Erweiterte SQL-Abfrage, um positive_multiplier und negative_multiplier einzuschließen
-    $sql = "SELECT c.account, c.positive_multiplier, c.negative_multiplier FROM clients AS c WHERE c.client_id = ? LIMIT 1";
+//    $sql = "SELECT c.account, c.positive_multiplier, c.negative_multiplier FROM clients AS c WHERE c.client_id = ? LIMIT 1";
+    $sql = "SELECT d.account, d.positive_multiplier, d.negative_multiplier FROM deposits AS d WHERE d.client_id = ? LIMIT 1";
 
     // Prepared Statement vorbereiten
     if ($stmt = $db->prepare($sql)) {

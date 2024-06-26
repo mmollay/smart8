@@ -84,7 +84,7 @@ switch ($_POST['list_id']) {
 if ($_POST['list_id'] != 'client_oegt_list')
 	if ($_POST['list_id'] != 'bill_list' and $_POST['list_id'] != 'issues_list') {
 		$arr['button']['submit'] = array('value' => 'Speichern', 'color' => 'blue');
-		$arr['button']['close'] = array('value' => 'Schließen', 'color' => 'gray', 'js' => "$('#modal_form, #modal_form_edit, #modal_form_clone, #modal_form_new').modal('hide'); $('.ui.modal>.content').empty();");
+		$arr['button']['close'] = array('value' => 'Schließen', 'color' => 'gray', 'js' => "$('.ui.modal').modal('hide').modal('hide dimmer').find('.content').empty();");
 	}
 
 

@@ -1,5 +1,5 @@
 <?
-include (__DIR__ . '/../../config.php');
+include (__DIR__ . '/../../conmodules/faktura/f_config.phpfig.php');
 include (__DIR__ . '/functions.inc.php');
 // Aktuelles Jahr
 $year = date('Y');

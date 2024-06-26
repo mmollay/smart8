@@ -12,6 +12,3 @@ function afterFormSubmit(id, customTitle = 'Data has been saved') {
 	}
 
 }
-// Verwendung der Funktion
-// afterFormSubmit(id); // Verwendet den Standardtitel
-// afterFormSubmit(id, 'The investment has been saved'); // Verwendet einen angepassten Titel

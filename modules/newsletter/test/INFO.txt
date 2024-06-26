@@ -1,0 +1,9 @@
+bounce: E-Mails, die nicht zugestellt werden konnten und als unzustellbar zurückgesendet wurden.
+send: E-Mails, die erfolgreich vom Mailjet-System versendet wurden.
+open: E-Mails, die vom Empfänger geöffnet wurden.
+click: Links in der E-Mail, die vom Empfänger angeklickt wurden.
+unsub: Empfänger, die sich von der Mailingliste abgemeldet haben.
+blocked: E-Mails, die nicht zugestellt werden konnten, weil sie von den Servern des Empfängers blockiert wurden.
+spam: E-Mails, die vom Empfänger als Spam markiert wurden.
+deferred: E-Mails, deren Zustellung verzögert wurde und die zu einem späteren Zeitpunkt erneut zugestellt werden.
+delivered: E-Mails, die erfolgreich zugestellt wurden.

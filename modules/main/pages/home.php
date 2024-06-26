@@ -17,7 +17,7 @@ $content .= "<div class='ui link cards centered'>";
 
 // Definition der Module
 $modules = [
-    //'newsletter' => ["Newsletter", 'send outline', '', '../newsletter/', 'Versende wichtige Mail an deine Newsletterliste'],
+    'newsletter' => ["Newsletter", 'send outline', '', '../newsletter/', 'Versende wichtige Mail an deine Newsletterliste'],
     'faktura' => ["Faktura", 'book', '', '../faktura/', 'Deine Buchhaltung immer im Griff'],
     'trader' => ["Trader", 'wallet', '', '../trader/', 'Make your mouney'],
     // 'learning' => ["Learning", 'student', '', 'modules/learning/', 'Für Prüfungen üben'],
