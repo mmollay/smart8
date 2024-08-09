@@ -1,0 +1,367 @@
+// Globale Variablen
+let listInstances = {};
+
+function loadListGenerator(url, customState = {}) {
+    const contentId = customState.contentId || 'content';
+    currentContentId = contentId; // Speichern der aktuellen ContentID
+
+    if (!listInstances[contentId]) {
+        listInstances[contentId] = {
+            currentUrl: url,
+            state: {
+                page: 1,
+                sort: 'id',
+                sortDir: 'ASC',
+                search: '',
+                filters: {},
+                saveState: true,
+                contentId: contentId
+            }
+        };
+    }
+
+    let instance = listInstances[contentId];
+    instance.currentUrl = url;
+
+    // Lade gespeicherten Zustand aus localStorage nur wenn saveState true ist
+    const savedState = (customState.saveState !== false) ? JSON.parse(localStorage.getItem(`${url}_${contentId}`)) || {} : {};
+
+    // Verschmelze den Standard-Zustand, gespeicherten Zustand und benutzerdefinierten Zustand
+    instance.state = {
+        ...instance.state,
+        ...savedState,
+        ...customState
+    };
+
+    console.log(`Sende AJAX-Anfrage für ${contentId} mit Zustand:`, instance.state);
+
+    $.ajax({
+        url: url,
+        method: "GET",
+        data: {
+            ...instance.state,
+            filters: instance.state.filters
+        },
+        success: function (response) {
+            $(`#${contentId}`).html(response);
+            setupEventHandlers(contentId);
+            console.log(`AJAX-Anfrage erfolgreich für ${contentId}`);
+            if (instance.isSearchFocused) {
+                $(`#search_${contentId}`).focus();
+                var searchInput = $(`#search_${contentId}`)[0];
+                if (searchInput) {
+                    searchInput.selectionStart = searchInput.selectionEnd = searchInput.value.length;
+                }
+            }
+
+            // Stelle Suchwert wieder her
+            $(`#search_${contentId}`).val(instance.state.search);
+
+            // Stelle Filterwerte wieder her
+            restoreFilters(contentId);
+
+            // Speichere Zustand im localStorage nur wenn saveState true ist
+            if (instance.state.saveState) {
+                localStorage.setItem(`${url}_${contentId}`, JSON.stringify(instance.state));
+            }
+        },
+        error: function (xhr, status, error) {
+            $(`#${contentId}`).html("<div class='ui negative message'>Fehler beim Laden der Daten.</div>");
+            console.error(`AJAX-Anfrage fehlgeschlagen für ${contentId}:`, status, error);
+        }
+    });
+}
+
+function reloadTable(contentId = null) {
+    const targetContentId = contentId || currentContentId;
+    if (!targetContentId) {
+        console.error('Keine ContentID verfügbar. Bitte geben Sie eine an oder laden Sie zuerst eine Tabelle.');
+        return;
+    }
+    let instance = listInstances[targetContentId];
+    loadListGenerator(instance.currentUrl, instance.state);
+}
+
+function setupEventHandlers(contentId) {
+    let instance = listInstances[contentId];
+
+    // Externe Buttons einrichten
+    $(`#${contentId} button[data-modal]`).off('click').on('click', function () {
+        const modalId = $(this).data('modal');
+        const $modal = $('#' + modalId);
+    });
+
+    // Popups für externe Buttons initialisieren
+    $(`#${contentId} button[data-content]`).popup({
+        position: 'top center',
+        variation: 'basic'
+    });
+
+    // Sortierbare Spalten einrichten
+    $(`#${contentId} .sortable`).off('click').on('click', function () {
+        const column = $(this).data('column');
+        console.log(`Angeklickte Spalte für ${contentId}:`, column);
+
+        if (instance.state.sort === column) {
+            instance.state.sortDir = instance.state.sortDir === 'ASC' ? 'DESC' : 'ASC';
+        } else {
+            instance.state.sort = column;
+            instance.state.sortDir = 'ASC';
+        }
+        instance.state.page = 1;
+        console.log(`Aktualisierter Zustand für ${contentId}:`, instance.state);
+        reloadTable(contentId);
+    });
+
+    // Suchfeld einrichten
+    $(`#search_${contentId}`).off('input focus blur').on({
+        'input': function () {
+            instance.state.search = $(this).val();
+            instance.state.page = 1;
+            reloadTable(contentId);
+        },
+        'focus': function () {
+            instance.isSearchFocused = true;
+        },
+        'blur': function () {
+            instance.isSearchFocused = false;
+        }
+    });
+
+    // Paginierung einrichten
+    $(`#pagination_${contentId} .item`).off('click').on('click', function () {
+        if (!$(this).hasClass('disabled')) {
+            instance.state.page = $(this).data('page');
+            reloadTable(contentId);
+        }
+    });
+
+    // Filter-Dropdowns einrichten
+    let filterTimeout;
+    $(`#${contentId} .ui.dropdown[id^="filter_${contentId}_"]`).dropdown({
+        clearable: true,
+        onChange: function (value, text, $choice) {
+            const filterName = $(this).attr('id').replace(`filter_${contentId}_`, '');
+            if (instance.state.filters[filterName] !== value) {
+                instance.state.filters[filterName] = value;
+                instance.state.page = 1;
+
+                // Lösche bestehenden Timeout
+                clearTimeout(filterTimeout);
+
+                // Setze neuen Timeout
+                filterTimeout = setTimeout(() => {
+                    reloadTable(contentId);
+                }, 300); // 300ms Verzögerung
+            }
+        }
+    });
+
+    // Modal-Trigger einrichten
+    $(`#${contentId} [data-modal]`).off('click').on('click', function () {
+        const modalId = $(this).data('modal');
+        const $modal = $('#' + modalId);
+
+        // Sammle nur die relevanten data-* Attribute
+        const data = {};
+        $.each(this.attributes, function () {
+            if (this.name.startsWith('data-') &&
+                !['data-modal', 'data-content', 'data-variation'].includes(this.name)) {
+                const key = this.name.slice(5); // Entfernt das 'data-' Präfix
+                data[key] = this.value;
+            }
+        });
+
+        console.log('Collected modal data:', data); // Debugging
+
+        // Lade den Inhalt dynamisch
+        const contentUrl = $modal.data('content-url');
+        const method = $modal.data('method') || 'POST'; // Standard ist POST, falls nicht anders angegeben
+
+        $.ajax({
+            url: contentUrl,
+            method: method,
+            data: data,
+            success: function (response) {
+                $modal.find('.content').html(response);
+
+                // Fülle das Modal-Formular mit den Daten
+                for (let key in data) {
+                    const $field = $modal.find(`[name="${key}"]`);
+                    if ($field.length) {
+                        $field.val(data[key]);
+                        console.log(`Feld gefüllt: ${key} = ${data[key]}`); // Debugging
+                    } else {
+                        console.log(`Feld nicht gefunden: ${key}`); // Debugging
+                    }
+                }
+
+                // Initialisiere Formularelemente falls nötig
+                $modal.find('.ui.dropdown').dropdown();
+                $modal.find('.ui.checkbox').checkbox();
+
+                // Öffne das Modal
+                $modal.modal({
+                    closable: false,
+                    observeChanges: true,
+                    onApprove: function () {
+                        return submitModalForm($modal, contentId);
+                    }
+                }).modal('show');
+            },
+            error: function () {
+                $modal.find('.content').html("<div class='ui negative message'>Fehler beim Laden des Inhalts.</div>");
+                $modal.modal('show');
+            }
+        });
+    });
+
+    // Initialisiere Modals
+    $('.ui.modal').modal({
+        closable: false,
+        onApprove: function () {
+            console.log('Modal bestätigt');
+            return false; // Verhindert automatisches Schließen
+        }
+    });
+
+    // Aktualisiere den Speicherzustand-Toggle-Handler
+    $(`#saveStateToggle_${contentId}`).off('change').on('change', function () {
+        instance.state.saveState = $(this).is(':checked');
+        if (!instance.state.saveState) {
+            localStorage.removeItem(`${instance.currentUrl}_${contentId}`);
+        }
+        reloadTable(contentId);
+    });
+
+    // Initialisiere Popups
+    $(`#${contentId} .ui.button[data-content]`).popup({
+        position: 'top center',
+        variation: 'tiny'
+    });
+}
+
+function restoreFilters(contentId) {
+    let instance = listInstances[contentId];
+    for (let filterName in instance.state.filters) {
+        const $filter = $(`#filter_${contentId}_${filterName}`);
+        if ($filter.length) {
+            $filter.dropdown('set selected', instance.state.filters[filterName]);
+        }
+    }
+}
+
+function submitModalForm($modal, contentId) {
+    const $form = $modal.find('form');
+    if ($form.length) {
+        $.ajax({
+            url: $form.attr('action'),
+            method: $form.attr('method'),
+            data: new FormData($form[0]),
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log('Form submission response:', response); // Debugging
+                if (response.success) {
+                    $modal.modal('hide');
+                    reloadTable(contentId);
+                    showToast(response.message, 'success');
+                } else {
+                    showToast(response.message, 'error');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Form submission error:', status, error); // Debugging
+                showToast('Fehler beim Speichern der Daten.', 'error');
+            }
+        });
+    }
+    return false; // Verhindert das Schließen des Modals
+}
+
+function showToast(message, type) {
+    $('body').toast({
+        message: message,
+        class: type,
+        showProgress: 'bottom',
+        classProgress: type === 'success' ? 'green' : 'red'
+    });
+}
+
+function setupListGenerator(contentId) {
+    let instance = {
+        state: {
+            page: 1,
+            sort: 'id',
+            sortDir: 'ASC',
+            search: '',
+            filters: {},
+            contentId: contentId
+        }
+    };
+
+    // Funktion zum Neuladen der Tabelle
+    function reloadTable() {
+        $.ajax({
+            url: window.location.href,
+            method: 'GET',
+            data: instance.state,
+            success: function (response) {
+                $(`#${contentId}`).html($(response).find(`#${contentId}`).html());
+                setupListGenerator(contentId);
+            },
+            error: function (xhr, status, error) {
+                console.error('Fehler beim Neuladen der Tabelle:', error);
+            }
+        });
+    }
+
+    // Setup sortierbare Spalten
+    $(`#${contentId} .sortable`).off('click').on('click', function () {
+        const column = $(this).data('column');
+        if (instance.state.sort === column) {
+            instance.state.sortDir = instance.state.sortDir === 'ASC' ? 'DESC' : 'ASC';
+        } else {
+            instance.state.sort = column;
+            instance.state.sortDir = 'ASC';
+        }
+        instance.state.page = 1;
+        reloadTable();
+    });
+
+    // Setup Suchfeld
+    $(`#search_${contentId}`).off('input').on('input', function () {
+        instance.state.search = $(this).val();
+        instance.state.page = 1;
+        reloadTable();
+    });
+
+    // Setup Paginierung
+    $(`#pagination_${contentId} .item`).off('click').on('click', function () {
+        if (!$(this).hasClass('disabled')) {
+            instance.state.page = $(this).data('page');
+            reloadTable();
+        }
+    });
+
+    // Setup Filter-Dropdowns
+    $(`#${contentId} .ui.dropdown[id^="filter_${contentId}_"]`).dropdown({
+        onChange: function (value, text, $choice) {
+            const filterName = $(this).attr('id').replace(`filter_${contentId}_`, '');
+            instance.state.filters[filterName] = value;
+            instance.state.page = 1;
+            reloadTable();
+        }
+    });
+
+    // Initialisiere alle Semantic UI Komponenten
+    $(`#${contentId} .ui.dropdown`).dropdown();
+    $(`#${contentId} .ui.checkbox`).checkbox();
+}
+
+
+// Initialisiere bei Document Ready
+$(document).ready(function () {
+    $('.ui.dropdown').dropdown();
+    // Initiales Laden der ListGenerators wird von der Seite selbst aufgerufen
+});

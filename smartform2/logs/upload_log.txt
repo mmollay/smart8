@@ -1,0 +1,108 @@
+Upload attempt: 2024-07-12 09:24:45
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [uploadPath] => uploads/
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:29:06
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [uploadPath] => uploads/
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:35:38
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "uploads/"
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:36:32
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "uploads/"
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:38:33
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "uploads/"
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:39:03
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "uploads2/"
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:42:29
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "../uploads/"
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:44:07
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "../uploads/"
+)
+
+FILES data: Array
+(
+)
+
+Upload attempt: 2024-07-12 09:44:49
+File upload error or no file uploaded. No 'upload' key in $_FILES.
+POST data: Array
+(
+    [upload] => [object Promise]
+    [ckEditorConfig] => "../uploads/"
+)
+
+FILES data: Array
+(
+)
+

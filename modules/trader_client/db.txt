@@ -1,0 +1,467 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Erstellungszeit: 15. Mrz 2024 um 12:36
+-- Server-Version: 10.4.28-MariaDB
+-- PHP-Version: 8.2.4
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- Datenbank: `ssi_trader`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `broker`
+--
+
+CREATE TABLE `broker` (
+  `broker_id` int(11) NOT NULL,
+  `broker_server` varchar(255) NOT NULL,
+  `user` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `real_account` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `clients`
+--
+
+CREATE TABLE `clients` (
+  `client_id` int(11) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `street` varchar(100) DEFAULT NULL,
+  `zip` varchar(10) DEFAULT NULL,
+  `country` varchar(50) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `company` varchar(100) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `server_id` int(4) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `broker_id` int(11) NOT NULL,
+  `account` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `deposits`
+--
+
+CREATE TABLE `deposits` (
+  `deposit_id` int(11) NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `deposit_date` date NOT NULL,
+  `description` text DEFAULT NULL,
+  `positive_multiplier` decimal(5,2) DEFAULT 0.50,
+  `negative_multiplier` decimal(5,2) DEFAULT 0.10,
+  `account` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `fetch_logs`
+--
+
+CREATE TABLE `fetch_logs` (
+  `id` int(11) NOT NULL,
+  `server_id` int(11) NOT NULL,
+  `broker_id` int(11) NOT NULL,
+  `fetched_count` int(11) DEFAULT 0,
+  `fetch_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `already_inserted_count` int(11) DEFAULT 0,
+  `fetch_method` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `hedging`
+--
+
+CREATE TABLE `hedging` (
+  `strategy_id` int(11) NOT NULL,
+  `group_id` int(5) NOT NULL,
+  `level` int(4) NOT NULL,
+  `LotSizePercentage` float(10,2) NOT NULL,
+  `entrypoint` float(10,2) NOT NULL,
+  `takeprofit` float(10,2) NOT NULL,
+  `info` varchar(200) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reverse` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `hedging_group`
+--
+
+CREATE TABLE `hedging_group` (
+  `group_id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `text` text NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `hedging_log`
+--
+
+CREATE TABLE `hedging_log` (
+  `log_id` int(11) NOT NULL,
+  `strategy_id` int(11) NOT NULL,
+  `action` varchar(50) NOT NULL,
+  `dax_value` float(10,2) NOT NULL,
+  `qty` float(10,2) NOT NULL,
+  `price` float(10,2) DEFAULT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `orders`
+--
+
+CREATE TABLE `orders` (
+  `ticket` int(11) NOT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `time` bigint(20) DEFAULT NULL,
+  `time_msc` bigint(20) DEFAULT NULL,
+  `type` tinyint(4) DEFAULT NULL,
+  `entry` tinyint(4) DEFAULT NULL,
+  `magic` int(11) DEFAULT NULL,
+  `position_id` int(11) DEFAULT NULL,
+  `reason` tinyint(4) DEFAULT NULL,
+  `volume` float DEFAULT NULL,
+  `price` float DEFAULT NULL,
+  `commission` float DEFAULT NULL,
+  `swap` float DEFAULT NULL,
+  `profit` float DEFAULT NULL,
+  `fee` float DEFAULT NULL,
+  `symbol_id` int(11) DEFAULT NULL,
+  `comment` text DEFAULT NULL,
+  `external_id` varchar(255) DEFAULT NULL,
+  `server_id` int(11) NOT NULL,
+  `broker_id` int(11) NOT NULL,
+  `lotgroup_id` int(11) NOT NULL,
+  `trash` int(1) NOT NULL,
+  `account` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `profit_shares`
+--
+
+CREATE TABLE `profit_shares` (
+  `profit_share_id` int(11) NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `profit_percentage` decimal(5,2) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `paid_out` tinyint(1) DEFAULT 0,
+  `comment` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `servers`
+--
+
+CREATE TABLE `servers` (
+  `server_id` int(4) NOT NULL,
+  `url` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) NOT NULL,
+  `strategy_id` int(10) NOT NULL,
+  `broker_id` int(11) NOT NULL,
+  `lotsize` decimal(10,2) NOT NULL,
+  `active` int(1) NOT NULL,
+  `strategy_default` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `setting`
+--
+
+CREATE TABLE `setting` (
+  `setting_id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `strategy_id` int(11) NOT NULL,
+  `broker_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `stocks_data`
+--
+
+CREATE TABLE `stocks_data` (
+  `id` int(11) NOT NULL,
+  `buy` int(11) NOT NULL,
+  `sell` int(11) NOT NULL,
+  `time` datetime NOT NULL,
+  `price` decimal(14,9) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `stock_index`
+--
+
+CREATE TABLE `stock_index` (
+  `id` int(11) NOT NULL,
+  `timestamp` datetime DEFAULT current_timestamp(),
+  `symbol` varchar(50) DEFAULT NULL,
+  `ask` decimal(10,2) DEFAULT NULL,
+  `bid` decimal(10,2) DEFAULT NULL,
+  `volume` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `symbols`
+--
+
+CREATE TABLE `symbols` (
+  `symbol_id` int(11) NOT NULL,
+  `symbol` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Indizes der exportierten Tabellen
+--
+
+--
+-- Indizes für die Tabelle `broker`
+--
+ALTER TABLE `broker`
+  ADD PRIMARY KEY (`broker_id`),
+  ADD UNIQUE KEY `user` (`user`);
+
+--
+-- Indizes für die Tabelle `clients`
+--
+ALTER TABLE `clients`
+  ADD PRIMARY KEY (`client_id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indizes für die Tabelle `deposits`
+--
+ALTER TABLE `deposits`
+  ADD PRIMARY KEY (`deposit_id`),
+  ADD KEY `client_id` (`client_id`);
+
+--
+-- Indizes für die Tabelle `fetch_logs`
+--
+ALTER TABLE `fetch_logs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indizes für die Tabelle `hedging`
+--
+ALTER TABLE `hedging`
+  ADD PRIMARY KEY (`strategy_id`);
+
+--
+-- Indizes für die Tabelle `hedging_group`
+--
+ALTER TABLE `hedging_group`
+  ADD PRIMARY KEY (`group_id`);
+
+--
+-- Indizes für die Tabelle `hedging_log`
+--
+ALTER TABLE `hedging_log`
+  ADD PRIMARY KEY (`log_id`);
+
+--
+-- Indizes für die Tabelle `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`ticket`),
+  ADD KEY `symbol_id` (`symbol_id`),
+  ADD KEY `broker_id` (`broker_id`),
+  ADD KEY `account` (`account`);
+
+--
+-- Indizes für die Tabelle `profit_shares`
+--
+ALTER TABLE `profit_shares`
+  ADD PRIMARY KEY (`profit_share_id`),
+  ADD KEY `client_id` (`client_id`);
+
+--
+-- Indizes für die Tabelle `servers`
+--
+ALTER TABLE `servers`
+  ADD PRIMARY KEY (`server_id`);
+
+--
+-- Indizes für die Tabelle `setting`
+--
+ALTER TABLE `setting`
+  ADD PRIMARY KEY (`setting_id`),
+  ADD UNIQUE KEY `user_id` (`user_id`),
+  ADD KEY `strategy_id` (`strategy_id`);
+
+--
+-- Indizes für die Tabelle `stocks_data`
+--
+ALTER TABLE `stocks_data`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_time_price` (`time`,`price`),
+  ADD UNIQUE KEY `idx_price_time` (`price`,`time`);
+
+--
+-- Indizes für die Tabelle `stock_index`
+--
+ALTER TABLE `stock_index`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `timestamp` (`timestamp`),
+  ADD KEY `symbol` (`symbol`);
+
+--
+-- Indizes für die Tabelle `symbols`
+--
+ALTER TABLE `symbols`
+  ADD PRIMARY KEY (`symbol_id`),
+  ADD UNIQUE KEY `symbol` (`symbol`);
+
+--
+-- AUTO_INCREMENT für exportierte Tabellen
+--
+
+--
+-- AUTO_INCREMENT für Tabelle `broker`
+--
+ALTER TABLE `broker`
+  MODIFY `broker_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `clients`
+--
+ALTER TABLE `clients`
+  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `deposits`
+--
+ALTER TABLE `deposits`
+  MODIFY `deposit_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `fetch_logs`
+--
+ALTER TABLE `fetch_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `hedging`
+--
+ALTER TABLE `hedging`
+  MODIFY `strategy_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `hedging_group`
+--
+ALTER TABLE `hedging_group`
+  MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `hedging_log`
+--
+ALTER TABLE `hedging_log`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `profit_shares`
+--
+ALTER TABLE `profit_shares`
+  MODIFY `profit_share_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `servers`
+--
+ALTER TABLE `servers`
+  MODIFY `server_id` int(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `setting`
+--
+ALTER TABLE `setting`
+  MODIFY `setting_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `stocks_data`
+--
+ALTER TABLE `stocks_data`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `stock_index`
+--
+ALTER TABLE `stock_index`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `symbols`
+--
+ALTER TABLE `symbols`
+  MODIFY `symbol_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints der exportierten Tabellen
+--
+
+--
+-- Constraints der Tabelle `deposits`
+--
+ALTER TABLE `deposits`
+  ADD CONSTRAINT `deposits_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`symbol_id`) REFERENCES `symbols` (`symbol_id`);
+
+--
+-- Constraints der Tabelle `profit_shares`
+--
+ALTER TABLE `profit_shares`
+  ADD CONSTRAINT `profit_shares_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`);
+COMMIT;

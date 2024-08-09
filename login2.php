@@ -1,4 +1,4 @@
-<?php
+    <?php
 session_start();
 include ('config.php'); // Stellen Sie sicher, dass Ihre config.php Datei die mysqli Verbindung herstellt
 
@@ -12,26 +12,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = mysqli_stmt_get_result($stmt);
     $user = mysqli_fetch_assoc($result);
 
-    if ($user) {
-        // Prüfen, ob das Passwort gehasht ist
-        if (password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
-            // Passwort muss neu gehasht werden
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $update_stmt = mysqli_prepare($db, "UPDATE user2company SET password = ? WHERE user_name = ?");
-            mysqli_stmt_bind_param($update_stmt, "ss", $hash, $username);
-            if (mysqli_stmt_execute($update_stmt)) {
-                echo "Passwort wurde erfolgreich neu gehasht und aktualisiert.";
+    if (is_array($user)) {
+        // Überprüfen, ob das gespeicherte Passwort ein Hash ist
+        if (password_get_info($user['password'])['algoName'] === 'unknown') {
+            // Das Passwort liegt im Klartext vor
+            if ($password === $user['password']) {
+                // Passwort ist korrekt, jetzt hashen und in der Datenbank aktualisieren
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $update_stmt = mysqli_prepare($db, "UPDATE user2company SET password = ? WHERE user_name = ?");
+                mysqli_stmt_bind_param($update_stmt, "ss", $hash, $username);
+                if (mysqli_stmt_execute($update_stmt)) {
+                    echo "Passwort wurde erfolgreich gehasht und aktualisiert.<br>";
+                } else {
+                    echo "Fehler beim Aktualisieren des Passworts.<br>";
+                }
+                mysqli_stmt_close($update_stmt);
+
+                // Login erfolgreich
+                $_SESSION['client_id'] = $user['user_id'];
+                echo "Erfolg";
             } else {
-                echo "Fehler beim Aktualisieren des Passworts.";
+                // Passwort ist falsch
+                echo "Fehler";
             }
-            mysqli_stmt_close($update_stmt);
-        } else if (password_verify($password, $user['password'])) {
-            // Das Passwort ist korrekt und bereits gehasht
-            $_SESSION['client_id'] = $user['user_id'];
-            echo "Erfolg";
         } else {
-            // Das Passwort ist falsch
-            echo "Fehler";
+            // Das Passwort ist bereits gehasht
+            if (password_verify($password, $user['password'])) {
+                // Login erfolgreich
+                $_SESSION['client_id'] = $user['user_id'];
+                echo "Erfolg";
+            } else {
+                // Passwort ist falsch
+                echo "Fehler";
+            }
         }
     } else {
         // Kein Benutzer gefunden

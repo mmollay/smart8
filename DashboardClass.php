@@ -4,31 +4,43 @@ include (__DIR__ . "/config.php");
 //Top-Leister generell
 $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 
+$user = $userDetails['firstname'] . " " . $userDetails['secondname'];
 
-$dashboard->addMenu('mainMenu', 'ui top large fixed  menu');
-$dashboard->addMenuItem('mainMenu', "", "Menü", "sidebar icon", "toggleMenu", "left", true);
-$dashboard->addMenuItem('mainMenu', "main", "SSI Center", "tachometer alternate icon blue icon", "home", "left");
-$dashboard->addMenuItem('mainMenu', "main", "Martin Mollay", "", "", "right");
-$dashboard->addMenuItem('mainMenu', "main", "Abmelden", "sign red out icon", "../../logout.php", "right");
+$dashboard->addMenu('mainMenu', 'ui huge  top fixed menu', false);
+$dashboard->addMenuItem('mainMenu', "main", "../main/index.php", "", "tachometer alternate icon blue icon", "Dashboard");
+$dashboard->addMenuItem('mainMenu', $moduleName, "home", $title, "building icon", "Startseite laden");
+$dashboard->addMenuItem('mainMenu', "main", "setting", $user, "", "User Einstellungen", "right");
+$dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sign red out icon", "Abmelden", "right");
 
-$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
+//$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 $dashboard->addScript("../../../smartform/js/smart_list.js");
-$dashboard->addScript("../../../smartform/js/smart_form.js");
 
+//$dashboard->addScript("../../../smartform/js/smart_form.js");
+$dashboard->addScript("../../smartform2/js/listGenerator.js");
+$dashboard->addScript("../../smartform2/js/formGenerator.js");
+//$dashboard->addScript("alert('test');", true);  //Inline-Script
 
-function getUserName()
-{
-    global $userDetails;
-    return $userDetails['firstname'] . " " . $userDetails['secondname'];
-}
+$dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
+$dashboard->setSidebarVisibleOnInit(true);
 
+// Konfiguriere die Sidebar mit einem Array von Einstellungen
+$dashboard->configureSidebar([
+    'transition' => 'overlay',
+    'dimPage' => false,
+    'direction' => 'top',
+    'closable' => true,
+    'duration' => 500,
+    'easing' => 'easeInOutQuad'
+]);
 
 class Dashboard
 {
+    private $jsEnabledMenus = [];
     private $menus = [];
     private $topMenuItems = [];
     private $pageTitle;
     private $scripts = [];
+    private $inlineScripts = [];
     private $styles = [];
     private $jsVars = [];
     private $userId;
@@ -58,28 +70,34 @@ class Dashboard
         $this->moduleName = $moduleName;
     }
 
-    public function addMenu($menuId, $menuClass = 'ui menu')
+    public function addMenu($menuId, $menuClass = 'ui compact menu', $toggleButton = false)
     {
+        $validPositions = ['left', 'right', 'top', 'bottom'];
+        $positionClasses = explode(" ", $menuClass);
+        $position = reset(array_intersect($positionClasses, $validPositions));
+
         if (!isset($this->menus[$menuId])) {
             $this->menus[$menuId] = [
                 'menuClass' => $menuClass,
-                'items' => []
+                'items' => [],
+                'position' => $position,
+                'toggleButton' => $toggleButton
             ];
         }
     }
 
-    //Wenn kein $module angegeben wird, wird data-page zu einer ID, diese kann man dann über jQuery ansprechen (Bsp.: Menü - Sidebar)
-
-    public function addMenuItem($menuId, $module, $name, $icon, $page, $position = 'left', $isDefault = false)
+    public function addMenuItem($menuId, $module, $page, $name, $icon, $popup = '', $position = 'left', $class = '', $isDefault = false)
     {
         if (isset($this->menus[$menuId])) {
             $this->menus[$menuId]['items'][] = [
-                'module' => $module, // 'main' or 'faktura
+                'module' => $module,
+                'page' => $page,
                 'name' => $name,
                 'icon' => $icon,
-                'page' => $page,
-                'position' => $position, // 'left' or 'right
+                'popup' => $popup,
+                'position' => $position,
                 'isDefault' => $isDefault,
+                'class' => $class
             ];
             if ($isDefault) {
                 $this->defaultPage = $page;
@@ -92,20 +110,16 @@ class Dashboard
         if (isset($this->menus[$menuId])) {
             $menu = $this->menus[$menuId];
             $menuClass = htmlspecialchars($menu['menuClass']);
+            $toggleButtonId = "toggle-button-$menuId";
 
-            // Links- und Rechtscontainer vorbereiten
             $leftItems = '';
             $rightItems = '';
 
             foreach ($menu['items'] as $item) {
-                $itemHtml = '';
-                if (!$item['page']) {
-                    $itemHtml = '<div class="item">' . htmlspecialchars($item['name']) . '</div>';
-                } else {
-                    $itemHtml = $this->renderMenuItem($item);
-                }
+                $itemHtml = !$item['page']
+                    ? '<div class="header item">' . $item['name'] . '</div>'
+                    : $this->renderMenuItem($item);
 
-                // Position der Menüelemente prüfen und entsprechend zuweisen
                 if ($item['position'] === 'right') {
                     $rightItems .= $itemHtml;
                 } else {
@@ -113,32 +127,43 @@ class Dashboard
                 }
             }
 
-            // Ausgabe der Menüstruktur mit Links und Rechts getrennt
-            echo "<div class='{$menuId} {$menuClass}'>\n";
-            echo "    $leftItems " . "\n";
-            if (isset($rightItems))
-                echo "<div class='right menu'>" . $rightItems . "</div>";
+            //Wenn toggleButton nicht gesetzt, dann return
+            if ($this->menus[$menuId]['toggleButton'] == true) {
+                $toggleButtonHtml = "<button class='ui button' id='{$toggleButtonId}'>&#9776;</button>";
+            }
+
+            echo "<div class='{$menuClass}' id='{$menuId}'>\n";
+            echo $toggleButtonHtml;
+            echo $leftItems;
+            if (!empty($rightItems)) {
+                echo "<div class='right menu'>{$rightItems}</div>";
+            }
             echo "</div>";
         }
     }
 
     private function renderMenuItem($item)
     {
-        // Bestimmen des korrekten href-Attributwerts basierend auf der Seite
-        $href = ($item['page'][0] === '/' || $item['page'][0] === '.') ? $item['page'] : '#';
+        $href = ($item['page'][0] === '/' || $item['page'][0] === '.') ? htmlspecialchars($item['page']) : '#';
+        $dataPage = ($item['page'][0] === '/' || $item['page'][0] === '.') ? '' : htmlspecialchars($item['page']);
+        $addId = $item['module'] ? '' : "id='" . htmlspecialchars($item['page']) . "'";
+        $addPopup = $item['popup'] ? "data-content='" . htmlspecialchars($item['popup']) . "'" : '';
 
-        // Bestimmen des data-page-Attributwerts
-        $dataPage = ($item['page'][0] === '/' || $item['page'][0] === '.') ? '' : $item['page'];
+        $html = "<a {$addPopup} class='item' {$addId} href='{$href}'";
+        if ($dataPage !== '') {
+            $html .= " data-page='{$dataPage}'";
+        }
+        if (isset($item['module'])) {
+            $html .= " data-module='" . htmlspecialchars($item['module']) . "'";
+        }
+        $html .= '>';
+        if (isset($item['icon']) && $item['icon'] !== '') {
+            $html .= "<i class='" . htmlspecialchars($item['icon']) . " icon'></i> ";
+        }
+        $html .= $item['name'] . '</a>' . "\n";
 
-        // Überprüfen, ob ein Modul vorhanden ist, und entsprechend das id-Attribut setzen
-        $addId = !empty($item['module']) ? "" : "id='" . htmlspecialchars($item['page']) . "'";
-
-        // Erzeugen des HTML-Strings für das Menüelement
-        return '<a class="item" ' . $addId . ' href="' . htmlspecialchars($href) . '" data-page="' . htmlspecialchars($dataPage) . '" data-module="' . htmlspecialchars($item['module']) . '">'
-            . '<i class="' . htmlspecialchars($item['icon']) . ' icon"></i> ' . htmlspecialchars($item['name'])
-            . '</a>';
+        return $html;
     }
-
 
     public function configureSidebar(array $config)
     {
@@ -147,6 +172,11 @@ class Dashboard
                 $this->sidebarConfig[$key] = $value;
             }
         }
+    }
+
+    public function enableJSForMenu($menuId)
+    {
+        $this->jsEnabledMenus[$menuId] = true;
     }
 
     public function setSidebarClass($class)
@@ -159,9 +189,13 @@ class Dashboard
         $this->menuClass = $class;
     }
 
-    public function addScript($scriptPath)
+    public function addScript($scriptPath, $isInline = false)
     {
-        $this->scripts[] = $scriptPath;
+        if ($isInline) {
+            $this->inlineScripts[] = $scriptPath;
+        } else {
+            $this->scripts[] = $scriptPath;
+        }
     }
 
     public function addStyle($stylePath)
@@ -186,7 +220,6 @@ class Dashboard
         return $this->defaultPage;
     }
 
-
     public function setSidebarVisibleOnInit($visible)
     {
         $this->sidebarVisibleOnInit = (bool) $visible;
@@ -195,6 +228,143 @@ class Dashboard
     public function isSidebarVisibleOnInit()
     {
         return $this->sidebarVisibleOnInit;
+    }
+
+    private function generateMenuJS($menuId)
+    {
+        //Wenn toggleButton nicht gesetzt, dann return
+        if ($this->menus[$menuId]['toggleButton'] !== true) {
+            return;
+        }
+
+        $position = $this->menus[$menuId]['position'];
+
+        if ($position === 'right' or $position === 'left') {
+            $cssSide = ($position === 'right' ? 'right' : 'left');
+            echo "<script>
+        $(document).ready(function () {
+            var menuSelector = '#{$menuId}';
+            var toggleButton = '#toggle-button-{$menuId}';
+            var menuVisible = localStorage.getItem('menuVisible{$menuId}') === 'true';
+            var contentMargin = $(menuSelector).width();
+            var cssSide = '{$cssSide}';
+
+            if (menuVisible) {
+                $(menuSelector).css(cssSide, '0');
+                $('#pageContent').css('margin-' + cssSide, contentMargin + 'px');
+            } else {
+                $(menuSelector).css(cssSide, '-' + contentMargin + 'px');
+                $('#pageContent').css('margin-' + cssSide, '0px');
+            }
+
+            $(toggleButton).click(function () {
+            
+                menuVisible = !menuVisible;
+                if (menuVisible) {
+                    $(menuSelector).css(cssSide, '0');
+                    $('#pageContent').css('margin-' + cssSide, contentMargin + 'px');
+                } else {
+                    $(menuSelector).css(cssSide, '-' + contentMargin + 'px');
+                    $('#pageContent').css('margin-' + cssSide, '0px');  
+                }
+                localStorage.setItem('menuVisible{$menuId}', menuVisible);
+            });
+        });
+    </script>";
+        } elseif ($position === 'top' or $position === 'bottom') {
+            $cssSide = ($position === 'bottom' ? 'bottom' : 'top');
+            echo "<script>
+        $(document).ready(function () {
+        var menuSelector = '#{$menuId}';
+        var toggleButton = '#toggle-button-{$menuId}';
+        var menuVisible = localStorage.getItem('menuVisible{$menuId}') === 'true';
+        var contentMargin = $(menuSelector).height();
+        var cssSide = '{$cssSide}';
+
+        if (menuVisible) {
+            $(menuSelector).css(cssSide, '0');
+            $('#pageContent').css('margin-' + cssSide, contentMargin + 'px');
+        } else {
+            $(menuSelector).css(cssSide, '-' + contentMargin + 'px');
+            $('#pageContent').css('margin-' + cssSide, '0px');
+        }
+
+        $(toggleButton).click(function () {
+        
+            menuVisible = !menuVisible;
+            if (menuVisible) {
+                $(menuSelector).css(cssSide, '0');
+                $('#pageContent').css('margin-' + cssSide, contentMargin + 'px');
+            } else {
+                $(menuSelector).css(cssSide, '-' + contentMargin + 'px');
+                $('#pageContent').css('margin-' + cssSide, '0px');  
+            }
+            localStorage.setItem('menuVisible{$menuId}', menuVisible);
+        });
+    });
+    </script>";
+        }
+
+    }
+    private function generateMenuCSS($menuId)
+    {
+        //Wenn toggleButton nicht gesetzt, dann return
+        if ($this->menus[$menuId]['toggleButton'] != true) {
+            return;
+        }
+
+
+        if (isset($this->menus[$menuId]) && in_array($this->menus[$menuId]['position'], ['left', 'right'])) {
+            $position = $this->menus[$menuId]['position'];
+            $cssSide = ($position === 'right' ? 'right' : 'left');
+            $togglePosition = $position == 'left' ? 'right: -30px;' : 'left: -26px';
+
+            echo "<style>
+            #$menuId {
+                $cssSide: -200px;
+                transition: $cssSide 0.5s;
+            }
+
+            #toggle-button-$menuId {
+                background-color: #2185d0;
+                color: white;
+                border-radius: " . ($position === 'right' ? '5px 0 0 5px' : '0 5px 5px 0') . ";
+                width: 25px;
+                text-align: center;
+                position: absolute;
+                $togglePosition;
+                top: 60px;
+                padding: 10px 0;
+                cursor: pointer;
+                font-size: 16px;
+            }
+        </style>";
+            //bei top und bottom
+        } elseif (isset($this->menus[$menuId]) && in_array($this->menus[$menuId]['position'], ['top', 'bottom'])) {
+            $position = $this->menus[$menuId]['position'];
+            $cssSide = ($position === 'bottom' ? 'bottom' : 'top');
+            $togglePosition = $position == 'top' ? 'bottom: -25px;' : 'top: -25px';
+
+            echo "<style>
+            #$menuId {
+                $cssSide: 0px;
+                transition: $cssSide 0.5s;
+            }
+            #toggle-button-$menuId {
+                background-color: #2185d0;
+                color: white;
+                border-radius: " . ($position === 'bottom' ? '5px 5px 0 0' : '0 0 5px 5px') . ";
+                width: 30px;
+                text-align: center;
+                position: absolute;
+                $togglePosition;
+                left: 50%;
+                padding: 4px 0;
+                cursor: pointer;
+                font-size: 16px;
+            }
+        </style>";
+        }
     }
 
     public function renderSidebarJS()
@@ -225,34 +395,42 @@ class Dashboard
         echo "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
         echo "    <title>" . htmlspecialchars($this->pageTitle) . "</title>\n";
         echo "    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.css\">\n";
-        echo "    <link rel=\"stylesheet\" href=\"../../css/basis.css\">\n";
         foreach ($this->styles as $style) {
             echo "    <link rel=\"stylesheet\" href=\"" . htmlspecialchars($style) . "\">\n";
         }
+        echo "    <link rel=\"stylesheet\" href=\"../../css/basis.css\">\n";
         echo "    <script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>\n";
         echo "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js\"></script>\n";
         $this->renderJSVars();
         foreach ($this->scripts as $script) {
             echo "    <script src=\"" . htmlspecialchars($script) . "\"></script>\n";
         }
+        foreach ($this->inlineScripts as $inlineScript) {
+            echo "<script>{$inlineScript}</script>\n";
+        }
+
+
         echo "</head>\n";
         echo "<body>\n";
-        echo "    <input type=\"hidden\" id=\"moduleName\" value=\"" . htmlspecialchars($this->moduleName) . "\">\n";
-        echo "    <input type=\"hidden\" id=\"defaultPage\" value=\"" . htmlspecialchars($this->getDefaultPage()) . "\">\n";
         foreach (array_keys($this->menus) as $menuId) {
             $this->renderMenu($menuId);
         }
         echo "    \n<div class=\"pusher\">\n";
-        //$this->renderTopMenu();
-        echo "        <div class=\"ui container\">\n";
         echo "            <div id=\"pageContent\"></div>\n";
-        echo "        </div>\n";
         echo "        <div align=\"center\">\n";
-        echo "            <div class=\"ui label basic\">Version " . htmlspecialchars($this->version) . "</div>\n";
+        echo "            <br><div class=\"ui label basic\">Version " . htmlspecialchars($this->version) . "</div>\n";
         echo "        </div>\n";
         echo "    </div>\n";
         echo "    <script src=\"../../js/main.js\"></script>\n";
+
+        foreach (array_keys($this->menus) as $menuId) {
+            $this->generateMenuCSS($menuId);
+            $this->generateMenuJS($menuId);
+        }
+
         $this->renderSidebarJS();
+        echo "    <input type=\"hidden\" id=\"moduleName\" value=\"" . htmlspecialchars($this->moduleName) . "\">";
+        echo "    <input type=\"hidden\" id=\"defaultPage\" value=\"" . htmlspecialchars($this->getDefaultPage()) . "\">";
         echo "</body>\n";
         echo "</html>\n";
     }
@@ -261,4 +439,5 @@ class Dashboard
     {
         $this->renderTemplate();
     }
+
 }

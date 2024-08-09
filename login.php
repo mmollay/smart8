@@ -52,7 +52,7 @@
         </form>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js"></script>
     <script>
         $(document).ready(function () {
 
@@ -82,12 +82,19 @@
                         if (response.trim() === "Erfolg") {
                             window.location.href = 'modules/main/index.php'; // Weiterleitung zur sicheren Seite
                         } else {
-                            alert("Ungültiger Benutzername oder Passwort");
+                            $('body')
+                                .toast({
+                                    class: 'error',
+                                    message: 'Ungültiger Benutzername oder Passwort'
+                                });
                         }
                     },
                     error: function () {
-                        // Behandlung bei Fehler
-                        alert("Ein Fehler ist aufgetreten.");
+                        $('body')
+                            .toast({
+                                class: 'error',
+                                message: 'Ein Fehler ist aufgetreten.'
+                            });
                     }
                 });
             });
