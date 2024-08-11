@@ -32,7 +32,7 @@ $listConfig = [
     'celled' => true,
     'width' => '1200px',
     'tableClasses' => 'ui celled striped definition small compact table',
-    'debug' => true,
+    //'debug' => true,
     'rememberFilters' => true,
 ];
 

@@ -100,7 +100,9 @@ $formGenerator->addField([
         'deleteAllButtonId' => 'delete-all',
         'progressContainerId' => 'progress-container',
         'progressBarId' => 'progress',
-        'showDeleteAllButton' => true  // Option zum Anzeigen des "Alles löschen" Buttons
+        'showDeleteAllButton' => true,  // Option zum Anzeigen des "Alles löschen" Buttons
+        'onFileListChange' => 'updateFileListInDatabase',
+
     )
 ]);
 
@@ -187,7 +189,7 @@ function getSelectedEmailContentGroups($db, $email_content_id)
             showToast('Gruppe erfolgreich gespeichert', 'success');
             // Hier können Sie zusätzliche Aktionen nach erfolgreicher Speicherung hinzufügen
             // z.B. Modal schließen, Liste aktualisieren, etc.
-            $('.ui.modal').modal('hide');
+            // $('.ui.modal').modal('hide');
             if (typeof reloadTable === 'function') {
                 reloadTable();
             }
@@ -195,4 +197,32 @@ function getSelectedEmailContentGroups($db, $email_content_id)
             showToast('Fehler beim Speichern der Gruppe: ' + response.message, 'error');
         }
     }
+
+    function updateFileListInDatabase(fileList) {
+        console.log('updateFileListInDatabase ist definiert:', typeof updateFileListInDatabase === 'function');
+
+        const formData = new FormData();
+        formData.append('action', 'updateFileList');
+        formData.append('update_id', <?php echo json_encode($update_id); ?>);
+        formData.append('fileList', JSON.stringify(fileList));
+
+        fetch('ajax/update_file_list.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Dateiliste erfolgreich aktualisiert');
+                } else {
+                    console.error('Fehler beim Aktualisieren der Dateiliste:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Fehler beim Senden der Anfrage:', error);
+            });
+    }
+
+
+
 </script>

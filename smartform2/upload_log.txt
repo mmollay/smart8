@@ -830,3 +830,25 @@ File upload error:
 [2024-08-07 19:32:39] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
 [2024-08-07 19:32:39] File received: Bildschirmfoto 2024-07-11 um 08.49.53.png
 [2024-08-07 19:32:39] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/3564c0ecdec57f02217236e1f365d7db.png
+[2024-08-10 22:36:28] POST data: Array
+(
+    [ckEditorConfig] => ""
+)
+
+[2024-08-10 22:36:28] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => Bildschirmfoto 2024-07-11 um 08.49.53.png
+            [full_path] => Bildschirmfoto 2024-07-11 um 08.49.53.png
+            [type] => image/png
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/php4R90rY
+            [error] => 0
+            [size] => 24651
+        )
+
+)
+
+[2024-08-10 22:36:28] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-08-10 22:36:28] File received: Bildschirmfoto 2024-07-11 um 08.49.53.png
+[2024-08-10 22:36:28] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/a2acf41d9541e9a7569fab1f7d34bf93.png

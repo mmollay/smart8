@@ -41,15 +41,16 @@ $formGenerator->addButtonElement([
     [
         'type' => 'submit',
         'value' => 'Löschen',
-        'icon' => 'trash',
-        'class' => 'red',
+        'icon' => 'delete',
+        'class' => 'ui red button'
     ],
     [
         'type' => 'close',
-        'value' => 'Abbrechen',
-        'icon' => 'close',
+        'value' => 'Schließen',
+        'icon' => 'close'
     ]
 ]);
+
 
 echo $formGenerator->generateForm();
 echo $formGenerator->generateJS();

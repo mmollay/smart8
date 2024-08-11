@@ -5,25 +5,20 @@ $version = "1.0.0";       // Die Version Ihres Moduls
 
 require (__DIR__ . "/../../DashboardClass.php");
 
-$dashboard->addMenu('leftMenu', 'ui left large vertical fixed sidebar menu');
+$dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
+$dashboard->addMenuItem('leftMenu', "faktura", "home", "Home", "home icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_clients", "Kunden", "users icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_earnings", "Rechnungen", "file green text icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_issues", "Ausgaben", "file red text icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_article", "Artikel", "cubes icon");
+$dashboard->addMenuItem('leftMenu', "faktura", "list_elba", "Elba", "money yellow check icon");
 
-$dashboard->addMenuItem('leftMenu', "faktura", "Home", "home icon", "home");
-$dashboard->addMenuItem('leftMenu', "faktura", "Kunden", "users icon", "list_clients");
-$dashboard->addMenuItem('leftMenu', "faktura", "Rechnungen", "file text icon", "list_earnings");
-$dashboard->addMenuItem('leftMenu', "faktura", "Ausgaben", "file text icon", "list_issues");
-$dashboard->addMenuItem('leftMenu', "faktura", "Artikel", "cubes icon", "list_article");
+// $dashboard->addMenu('rightMenu', 'ui labeled icon right fixed menu mini vertical', true);
+// $dashboard->addMenuItem('rightMenu', "", "", "Martin", "");
+// $dashboard->addMenuItem('rightMenu', "faktura", "home", "Home", "home icon");
+// $dashboard->addMenuItem('rightMenu', "faktura", "list_clients1", "Kunden", "users icon");
+// $dashboard->enableJSForMenu('rightMenu');
 
-$dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
-$dashboard->setSidebarVisibleOnInit(true);
-
-// Konfiguriere die Sidebar mit einem Array von Einstellungen
-$dashboard->configureSidebar([
-    'transition' => 'overlay',
-    'dimPage' => false,
-    'direction' => 'top',
-    'closable' => true,
-    'duration' => 500,
-    'easing' => 'easeInOutQuad'
-]);
+$dashboard->addScript("js/automator.js");
 
 $dashboard->render();

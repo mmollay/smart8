@@ -1,4 +1,5 @@
 class FileUploader {
+
     constructor(config) {
         this.config = config;
         this.translations = config.translations;
@@ -10,6 +11,21 @@ class FileUploader {
         this.setAcceptedFormats();
         this.bindEvents();
         this.loadFileList();
+        this.onFileListChange = config.onFileListChange;
+    }
+
+    triggerFileListChange() {
+
+        // if (typeof this.onFileListChange === 'function') {
+        alert('triggerFileListChange');
+        const fileList = this.filesToUpload.map(file => ({
+            name: file.split('/').pop(),
+            type: file.split('.').pop().toLowerCase(),
+            size: this.getFileSize(file.split('/').pop())
+        }));
+        this.onFileListChange(fileList);
+
+        // }
     }
 
     // Fügen Sie diese neue Methode hinzu
@@ -152,6 +168,7 @@ class FileUploader {
         }
 
         this.loadFileList();
+        this.triggerFileListChange();
     }
 
     isAllowedFileType(fileName) {
@@ -221,7 +238,13 @@ class FileUploader {
             })
             .catch(error => {
                 this.showToast('error', this.translations.delete_error + error);
+            })
+
+            .then(() => {
+                this.triggerFileListChange();
             });
+
+
     }
 
     deleteAllFiles() {
@@ -244,6 +267,10 @@ class FileUploader {
                 })
                 .catch(error => {
                     this.showToast('error', this.translations.delete_all_error + error);
+                })
+
+                .then(() => {
+                    this.triggerFileListChange();
                 });
         }
     }

@@ -478,6 +478,8 @@ switch ($_POST['list_id']) {
 		if (!$account)
 			$account = 0;
 
+		$amazon_order_nr = '';
+
 		if (!$bill_id) {
 			// New Insert from issue
 			$GLOBALS['mysqli']->query("INSERT INTO issues SET
@@ -494,7 +496,8 @@ switch ($_POST['list_id']) {
     		mwst        = '$mwst',
     		tax         = $tax,
             elba_id     = 0,
-    		comment     = '$comment'
+    		comment     = '$comment',
+			amazon_order_nr = '$amazon_order_nr'
 		") or die(mysqli_error($GLOBALS['mysqli']));
 		} else {
 			// UPDATE from an issue
@@ -513,6 +516,7 @@ switch ($_POST['list_id']) {
     		tax         = $tax,
             elba_id     = 0,
     		comment     = '$comment'
+			amazon_order_nr = '$amazon_order_nr'
                 WHERE bill_id     = '$bill_id'
 		") or die(mysqli_error($GLOBALS['mysqli']));
 		}

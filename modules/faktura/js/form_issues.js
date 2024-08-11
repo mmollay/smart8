@@ -1,12 +1,8 @@
 $(document).ready(function () {
 
-	//if ($('#brutto').val() != '') { $('#netto').prop('disabled', true); }
-	//if ($('#netto').val() != '') { $('#brutto').prop('disabled', true); }
-
-
 	$('#date_create').change(function () {
 		if ($('#date_booking').val() == '') $('#date_booking').val($('#date_create').val());
-		$('#description').focus().focus(900);
+		$('#description').focus();
 	});
 
 	$('.ui.search').search({

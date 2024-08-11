@@ -87,7 +87,7 @@ try {
 			$sender_id = intval($_POST['sender_id'] ?? 0);
 			$subject = sanitizeInput($_POST['subject'] ?? '');
 			$message = $_POST['message'] ?? ''; // Nicht sanitieren, da es HTML enthalten kann
-			$group_ids = array_filter(array_map('intval', explode(',', $_POST['tags'][0] ?? '')));
+			$group_ids = array_filter(array_map('intval', explode(',', $_POST['tags'] ?? '')));
 
 			if ($id) {
 				$stmt = $db->prepare("UPDATE email_contents SET sender_id = ?, subject = ?, message = ? WHERE id = ?");
@@ -97,17 +97,29 @@ try {
 				$stmt->bind_param("iss", $sender_id, $subject, $message);
 			}
 			$stmt->execute();
-			$email_content_id = $id ?? $stmt->insert_id;
+			$email_content_id = $id ?? $db->insert_id;
 
-			$db->query("DELETE FROM email_content_groups WHERE email_content_id = $email_content_id");
+			// Bestehende Gruppen-Zuordnungen löschen
+			$stmt = $db->prepare("DELETE FROM email_content_groups WHERE email_content_id = ?");
+			$stmt->bind_param("i", $email_content_id);
+			$stmt->execute();
 
-			$stmt = $db->prepare("INSERT INTO email_content_groups (email_content_id, group_id) VALUES (?, ?)");
-			foreach ($group_ids as $group_id) {
-				$stmt->bind_param("ii", $email_content_id, $group_id);
-				$stmt->execute();
+			// Neue Gruppen-Zuordnungen einfügen
+			if (!empty($group_ids)) {
+				$stmt = $db->prepare("INSERT INTO email_content_groups (email_content_id, group_id) VALUES (?, ?)");
+				foreach ($group_ids as $group_id) {
+					$stmt->bind_param("ii", $email_content_id, $group_id);
+					$stmt->execute();
+				}
 			}
-			break;
 
+			// Aktualisiere den send_status, falls nötig
+			$send_status = 0; // Standardwert, kann je nach Anforderung angepasst werden
+			$stmt = $db->prepare("UPDATE email_contents SET send_status = ? WHERE id = ?");
+			$stmt->bind_param("ii", $send_status, $email_content_id);
+			$stmt->execute();
+
+			break;
 		case 'groups':
 			$name = sanitizeInput($_POST['name'] ?? '');
 			$description = sanitizeInput($_POST['description'] ?? '');

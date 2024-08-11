@@ -1,5 +1,6 @@
 // Globale Variablen
 let listInstances = {};
+let autoReloadTimers = {};
 
 function loadListGenerator(url, customState = {}) {
     const contentId = customState.contentId || 'content';
@@ -15,7 +16,9 @@ function loadListGenerator(url, customState = {}) {
                 search: '',
                 filters: {},
                 saveState: true,
-                contentId: contentId
+                contentId: contentId,
+                autoReloadInterval: customState.autoReloadInterval || 0 // Fügen Sie dies hinzu
+
             }
         };
     }
@@ -64,6 +67,9 @@ function loadListGenerator(url, customState = {}) {
             if (instance.state.saveState) {
                 localStorage.setItem(`${url}_${contentId}`, JSON.stringify(instance.state));
             }
+
+            // Fügen Sie diese Zeile hinzu, um den Auto-Reload einzurichten
+            setupAutoReload(contentId);
         },
         error: function (xhr, status, error) {
             $(`#${contentId}`).html("<div class='ui negative message'>Fehler beim Laden der Daten.</div>");
@@ -80,6 +86,9 @@ function reloadTable(contentId = null) {
     }
     let instance = listInstances[targetContentId];
     loadListGenerator(instance.currentUrl, instance.state);
+
+    // Setze den Auto-Reload-Timer zurück
+    setupAutoReload(targetContentId);
 }
 
 function setupEventHandlers(contentId) {
@@ -279,6 +288,16 @@ function submitModalForm($modal, contentId) {
     return false; // Verhindert das Schließen des Modals
 }
 
+function reloadTable(contentId = null) {
+    const targetContentId = contentId || currentContentId;
+    if (!targetContentId) {
+        console.error('Keine ContentID verfügbar. Bitte geben Sie eine an oder laden Sie zuerst eine Tabelle.');
+        return;
+    }
+    let instance = listInstances[targetContentId];
+    loadListGenerator(instance.currentUrl, instance.state);
+}
+
 function showToast(message, type) {
     $('body').toast({
         message: message,
@@ -287,6 +306,27 @@ function showToast(message, type) {
         classProgress: type === 'success' ? 'green' : 'red'
     });
 }
+
+// Modifizierte setupAutoReload Funktion
+function setupAutoReload(contentId) {
+    const instance = listInstances[contentId];
+    const interval = instance.state.autoReloadInterval;
+
+    if (autoReloadTimers[contentId]) {
+        clearInterval(autoReloadTimers[contentId]);
+    }
+
+    if (interval > 0) {
+        console.log(`Auto-Reload für ${contentId} mit Intervall ${interval}ms eingerichtet`);
+        autoReloadTimers[contentId] = setInterval(() => {
+            if (!document.hidden) {
+                console.log(`Auto-Reload für ${contentId} ausgeführt`);
+                reloadTable(contentId);
+            }
+        }, interval);
+    }
+}
+
 
 function setupListGenerator(contentId) {
     let instance = {
@@ -364,4 +404,12 @@ function setupListGenerator(contentId) {
 $(document).ready(function () {
     $('.ui.dropdown').dropdown();
     // Initiales Laden der ListGenerators wird von der Seite selbst aufgerufen
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            for (let contentId in listInstances) {
+                setupAutoReload(contentId);
+            }
+        }
+    });
 });

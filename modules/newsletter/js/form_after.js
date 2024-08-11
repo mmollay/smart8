@@ -19,7 +19,6 @@ $(document).ready(function () {
 	});
 });
 
-
 function afterFormSubmit(id, customTitle = 'Data has been saved') {
 
 	// Verwenden des customTitle, falls angegeben, sonst den Standardtitel
@@ -40,35 +39,35 @@ function sendNewsletter(contentId) {
 		url: 'ajax/send_newsletter.php',
 		method: 'POST',
 		data: { content_id: contentId },
-		success: function (response) {
-			try {
-				var data = JSON.parse(response);
-				if (data.status === 'success') {
-					$('body').toast({
-						message: 'Newsletter wird gesendet.',
-						class: 'success'
-					});
-					table_reload();
-				} else {
-					$('body').toast({
-						message: 'Fehler beim Senden des Newsletters: ' + data.message,
-						class: 'error'
-					});
-				}
-			} catch (e) {
-				console.error('Error parsing JSON:', response);
+		dataType: 'json',
+		success: function (data) {
+			if (data.status === 'success') {
 				$('body').toast({
-					message: 'Fehler beim Verarbeiten der Server-Antwort.',
-					class: 'error'
+					message: data.message || 'Newsletter wird gesendet.',
+					class: 'success',
+					showProgress: 'bottom'
 				});
+				if (typeof reloadTable === 'function') {
+					reloadTable();
+				} else {
+					console.warn('reloadTable function is not defined');
+				}
+			} else {
+				showErrorToast(data.message || 'Unbekannter Fehler beim Senden des Newsletters.');
 			}
 		},
 		error: function (xhr, status, error) {
 			console.error('AJAX error:', status, error);
-			$('body').toast({
-				message: 'Fehler beim Senden der Anfrage.',
-				class: 'error'
-			});
+			showErrorToast('Fehler beim Senden der Anfrage: ' + status);
 		}
+	});
+}
+
+function showErrorToast(message) {
+	$('body').toast({
+		message: message,
+		class: 'error',
+		showProgress: 'bottom',
+		displayTime: 5000 // Zeige Fehlermeldungen länger an
 	});
 }

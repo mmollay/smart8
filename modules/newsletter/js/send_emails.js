@@ -23,6 +23,7 @@ $(document).ready(function () {
                     $button.removeClass('blue loading').addClass('red')
                         .html('<i class="exclamation triangle icon"></i>Fehler aufgetreten');
                 }
+                reloadTable();
             },
             error: function () {
                 // Netzwerk- oder Server-Fehler

@@ -135,11 +135,18 @@ class ListGenerator
 
     public function addColumn($key, $label, $options = [])
     {
+        $defaultOptions = [
+            'allowHtml' => false,
+            'width' => '',  // Neue Option für die Spaltenbreite
+            'formatter' => null
+        ];
+
         $this->columns[$key] = [
             'label' => $label,
-            'options' => array_merge(['allowHtml' => false], $options)
+            'options' => array_merge($defaultOptions, $options)
         ];
     }
+
     public function addFilter($key, $label, $options, $config = [])
     {
         $defaultConfig = [
@@ -436,7 +443,15 @@ class ListGenerator
             'confirmMessage' => null,
             'popup' => null,
             'conditions' => [],
-            'params' => []
+            'params' => [],
+            'visible' => true,
+            'disabled' => false,
+            'dynamicLabel' => null,
+            'dynamicClass' => null,
+            'tooltip' => null,
+            'permission' => null,
+            'sortOrder' => 0,
+            'hotkey' => null
         ];
 
         $options = array_merge($defaultOptions, $options);
@@ -495,11 +510,11 @@ class ListGenerator
 
             $isIconButton = empty($button['label']) && !empty($button['icon']);
             $buttonClass = $button['class'];
-            if ($isIconButton) {
+            if ($isIconButton && strpos($buttonClass, 'icon') === false) {
                 $buttonClass .= ' icon';
             }
 
-            $html .= "<button {$attributes} class='" . htmlspecialchars($buttonClass, ENT_QUOTES, 'UTF-8') . "'>";
+            $html .= "<button id='{$id}' {$attributes} class='" . htmlspecialchars($buttonClass, ENT_QUOTES, 'UTF-8') . "'>";
             if (!empty($button['icon'])) {
                 $html .= "<i class='" . htmlspecialchars($button['icon'], ENT_QUOTES, 'UTF-8') . " icon'></i>";
             }
@@ -626,7 +641,8 @@ class ListGenerator
         foreach ($this->columns as $key => $column) {
             $sortClass = $this->getSortClass($key);
             $sortIcon = $this->getSortIcon($key);
-            $html .= "<th class='sortable {$sortClass}' data-column='{$key}'>{$column['label']} {$sortIcon}</th>";
+            $width = $column['options']['width'] ? "width: {$column['options']['width']};" : "";
+            $html .= "<th class='sortable {$sortClass}' data-column='{$key}' style='{$width}'>{$column['label']} {$sortIcon}</th>";
         }
 
         if (isset($this->buttonColumnTitles['right'])) {
@@ -655,7 +671,6 @@ class ListGenerator
     {
         $html = "<tr class='{$this->config['rowClasses']}'>";
 
-
         if (isset($this->buttonColumnTitles['left'])) {
             $alignment = $this->buttonColumnAlignments['left'];
             $html .= "<td class='button-column {$alignment} aligned'>" . $this->renderButtons($item, 'left') . "</td>";
@@ -664,7 +679,8 @@ class ListGenerator
         foreach ($this->columns as $key => $column) {
             $value = $item[$key] ?? '';
             $value = $this->formatColumnValue($value, $column, $item);
-            $html .= "<td class='{$this->config['cellClasses']}'>{$value}</td>";
+            $width = $column['options']['width'] ? "width: {$column['options']['width']};" : "";
+            $html .= "<td class='{$this->config['cellClasses']}' style='{$width}'>{$value}</td>";
         }
 
         if (isset($this->buttonColumnTitles['right'])) {

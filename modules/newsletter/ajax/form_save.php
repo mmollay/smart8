@@ -21,12 +21,10 @@ function handleDatabaseOperation($db, $operation, $table, $data, $id = null)
 	if (!$stmt) {
 		throw new Exception("Prepare failed: " . $db->error);
 	}
-
 	$stmt->bind_param($types, ...$values);
 	if (!$stmt->execute()) {
 		throw new Exception("Execute failed: " . $stmt->error);
 	}
-
 	$affected_id = $operation === 'INSERT' ? $stmt->insert_id : $id;
 	$stmt->close();
 	return $affected_id;
@@ -34,69 +32,76 @@ function handleDatabaseOperation($db, $operation, $table, $data, $id = null)
 
 function saveGroups($db, $table, $content_id, $group_ids)
 {
+	$group_ids = explode(',', $group_ids);
 
-	$db->query("DELETE FROM $table WHERE {$table}_id = $content_id");
-	$stmt = $db->prepare("INSERT INTO $table ({$table}_id, group_id) VALUES (?, ?)");
+	$id_column = $table === 'email_content_groups' ? 'email_content_id' : 'recipient_group_id';
 
-	foreach ($group_ids as $group_id) {
-
-		if (!empty($group_id)) {
-
-			$stmt->bind_param("ii", $content_id, $group_id);
-			$stmt->execute();
-		}
-	}
+	$stmt = $db->prepare("DELETE FROM $table WHERE $id_column = ?");
+	$stmt->bind_param("i", $content_id);
+	$stmt->execute();
 	$stmt->close();
+
+	if (!empty($group_ids)) {
+		$stmt = $db->prepare("INSERT INTO $table ($id_column, group_id) VALUES (?, ?)");
+		foreach ($group_ids as $group_id) {
+			if (!empty($group_id)) {
+				$stmt->bind_param("ii", $content_id, $group_id);
+				$stmt->execute();
+			}
+		}
+		$stmt->close();
+	}
+}
+
+function sanitizeInput($input)
+{
+	return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
 }
 
 $db->begin_transaction();
-
 try {
-	$list_id = $_POST['list_id'] ?? '';
-	$id = $_POST['update_id'] ?? null;
+	$list_id = sanitizeInput($_POST['list_id'] ?? '');
+	$id = isset($_POST['update_id']) ? intval($_POST['update_id']) : null;
 	$operation = $id ? 'UPDATE' : 'INSERT';
-
-	//muss ich noch anpassen?! 
-	$_POST['tags'] = $_POST['tags'][0];
-
+	$tags = $_POST['tags'][0];
+	$tags = isset($_POST['tags']) ? (is_array($_POST['tags']) ? $_POST['tags'] : explode(',', $_POST['tags'])) : [];
+	$group_ids = array_filter(array_map('intval', $tags));
+	$group_ids = $tags[0];
 	switch ($list_id) {
 		case 'senders':
 		case 'recipients':
 			$data = [
-				'first_name' => $_POST['first_name'] ?? null,
-				'last_name' => $_POST['last_name'] ?? null,
-				'company' => $_POST['company'] ?? null,
-				'email' => $_POST['email'] ?? null,
+				'first_name' => sanitizeInput($_POST['first_name'] ?? ''),
+				'last_name' => sanitizeInput($_POST['last_name'] ?? ''),
+				'company' => sanitizeInput($_POST['company'] ?? ''),
+				'email' => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
 				'gender' => in_array($_POST['gender'] ?? '', ['male', 'female', 'other']) ? $_POST['gender'] : 'other',
-				'title' => $_POST['title'] ?? null,
-				'comment' => $_POST['comment'] ?? null
+				'title' => sanitizeInput($_POST['title'] ?? ''),
+				'comment' => sanitizeInput($_POST['comment'] ?? '')
 			];
 			$affected_id = handleDatabaseOperation($db, $operation, $list_id, $data, $id);
-
 			if ($list_id === 'recipients') {
-
-				$group_ids = isset($_POST['tags']) ? (is_array($_POST['tags']) ? $_POST['tags'] : explode(',', $_POST['tags'])) : [];
-
 				saveGroups($db, 'recipient_group', $affected_id, $group_ids);
 			}
 			break;
 
 		case 'newsletters':
 			$data = [
-				'sender_id' => $_POST['sender_id'] ?? null,
-				'subject' => $_POST['subject'] ?? null,
-				'message' => $_POST['message'] ?? null
+				'sender_id' => intval($_POST['sender_id'] ?? 0),
+				'subject' => sanitizeInput($_POST['subject'] ?? ''),
+				'message' => $_POST['message'] ?? '', // Nicht sanitieren, da es HTML enthalten kann
+				'send_status' => 0 // Setze den Standard-Status
 			];
 			$affected_id = handleDatabaseOperation($db, $operation, 'email_contents', $data, $id);
-			$group_ids = isset($_POST['tags']) ? (is_array($_POST['tags']) ? $_POST['tags'] : explode(',', $_POST['tags'])) : [];
 			saveGroups($db, 'email_content_groups', $affected_id, $group_ids);
+
 			break;
 
 		case 'groups':
 			$data = [
-				'name' => $_POST['name'] ?? null,
-				'description' => $_POST['description'] ?? null,
-				'color' => $_POST['color'] ?? null
+				'name' => sanitizeInput($_POST['name'] ?? ''),
+				'description' => sanitizeInput($_POST['description'] ?? ''),
+				'color' => sanitizeInput($_POST['color'] ?? '')
 			];
 			handleDatabaseOperation($db, $operation, 'groups', $data, $id);
 			break;
@@ -110,7 +115,7 @@ try {
 } catch (Exception $e) {
 	$db->rollback();
 	echo json_encode(['success' => false, 'message' => 'Fehler: ' . $e->getMessage()]);
+} finally {
+	$db->close();
 }
-
-$db->close();
 ?>

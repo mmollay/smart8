@@ -5,6 +5,22 @@ $version = "1.0.0";       // Die Version Ihres Moduls
 
 require (__DIR__ . "/../../DashboardClass.php");
 
-$dashboard->addMenuItem('mainMenu', "faktura", "Einstellungen", "cog icon", "settings", "right");
+$menu = '
+<div class="ui dropdown">
+  <div class="text">File</div>
+  <i class="dropdown icon"></i>
+  <div class="menu">
+    <div class="item" data-page="mysql" data-module="service" >Mysql</div>
+    <div class="item" data-page="hacker" data-module="service">Hacker-Files</div>
+  </div>
+  </div>
+</div>';
+
+
+$user = $userDetails['firstname'] . " " . $userDetails['secondname'];
+
+//$dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
+//$dashboard->addMenuItem('leftMenu', "service", "test", $menu, "home icon", "Home", '', "ui dropdown item", "left");
+//$dashboard->enableJSForMenu('leftMenu');
 
 $dashboard->render();

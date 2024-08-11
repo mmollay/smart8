@@ -1,7 +1,7 @@
 <?php
 $add_js .= "<script type=\"text/javascript\" src=\"js/form_issues.js\"></script>";
 
-if (isset ($_GET['clone']))
+if (isset($_GET['clone']))
     $clone = true;
 
 if ($_POST['update_id']) {
@@ -27,12 +27,12 @@ if (!$date_create and !$_POST['update_id']) {
 // }
 
 // Konten auslesen aus der Datenbank
-$sql_query = $GLOBALS['mysqli']->query("SELECT * FROM accounts WHERE `option` = 'out' order by title ") or die (mysqli_error($GLOBALS['mysqli'])); // AND company_id = '{$_SESSION['faktura_company_id']}'
+$sql_query = $GLOBALS['mysqli']->query("SELECT * FROM accounts WHERE `option` = 'out' order by title ") or die(mysqli_error($GLOBALS['mysqli'])); // AND company_id = '{$_SESSION['faktura_company_id']}'
 while ($sql_array = mysqli_fetch_array($sql_query)) {
     $account_array_out[$sql_array['account_id']] = $sql_array['title'] . "(" . $sql_array['tax'] . "%)";
 }
 
-$sql_query = $GLOBALS['mysqli']->query("SELECT * FROM issues_group order by name") or die (mysqli_error($GLOBALS['mysqli'])); // AND company_id = '{$_SESSION['faktura_company_id']}'
+$sql_query = $GLOBALS['mysqli']->query("SELECT * FROM issues_group order by name") or die(mysqli_error($GLOBALS['mysqli'])); // AND company_id = '{$_SESSION['faktura_company_id']}'
 while ($sql_array = mysqli_fetch_array($sql_query)) {
     if ($sql_array['name']) {
         $issues_group_array[$sql_array['issues_group_id']] = $sql_array['name'];
@@ -139,31 +139,56 @@ if ($clone)
     $success_add_js = "$('#modal_form_edit').modal('hide');";
 elseif (!$_POST['update_id']) {
     $success_add_js = "
-			new_bill_number = parseInt($('#bill_number').val());
-			$('#bill_number').val(new_bill_number+1);
-			$('#description,#date_booking,#company_1,#netto,#brutto,#comment').val('');
-			$('#dropdown_account, #dropdown_client_id').dropdown('clear');
-			$('#netto').prop('disabled', false);
-			$('#brutto').prop('disabled', false);
-            $('#date_create').focus().focus(900);
-			";
+    new_bill_number = parseInt($('#bill_number').val());
+    $('#bill_number').val(new_bill_number + 1);
+    $('#description,#date_booking,#company_1,#netto,#brutto,#comment').val('');
+    $('#dropdown_account, #dropdown_client_id').dropdown('clear');
+    $('#netto').prop('disabled', false);
+    $('#brutto').prop('disabled', false);
+    $('#date_create').focus(function() {
+        $(this).parent().calendar('popup', 'show');
+    });
+    setTimeout(function() {
+        $('#date_create').focus();
+    }, 500); // Verzögert den Fokus um 500 Millisekunden (0,5 Sekunden)
+";
+
 }
 
 $success = "
-		
-				if ( data  == 'number_exist' ) {
-					$('#message').message({status:'error', title:'Rechnungsnummer bereits vergeben' });
-				}
-				else if ( data  == 'ok' ) {
-					$success_add_js
-					$('#message').message({status:'info', title:'Eine neue Ausgabe wurde gespeichert' });
-					table_reload();
-				}
-				else if ( data  == 'update') {
-					$('#modal_form_edit').modal('hide');
-					$('#message').message({status:'info', title:'Die Ausgabe wurde aktualisiert' });
-					table_reload();
-				}";
+if (data == 'number_exist') {
+    $('body').toast({
+        class: 'error',
+        showIcon: 'exclamation triangle',
+        title: 'Fehler',
+        message: 'Rechnungsnummer bereits vergeben',
+        position: 'top right',
+        displayTime: 4000
+    });
+} else if (data == 'ok') {
+    $success_add_js
+    $('body').toast({
+        class: 'success',
+        showIcon: 'checkmark',
+        title: 'Erfolg',
+        message: 'Eine neue Ausgabe wurde gespeichert',
+        position: 'top right',
+        displayTime: 4000
+    });
+    table_reload();
+} else if (data == 'update') {
+    $('#modal_form_edit').modal('hide');
+    $('body').toast({
+        class: 'info',
+        showIcon: 'info circle',
+        title: 'Aktualisiert',
+        message: 'Die Ausgabe wurde aktualisiert',
+        position: 'top right',
+        displayTime: 4000
+    });
+    table_reload();
+}";
+
 
 $arr['ajax'] = array(
     'id' => 'form_issues',
