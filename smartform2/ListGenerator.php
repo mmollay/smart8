@@ -26,6 +26,19 @@ class ListGenerator
 
     private $searchableColumns = [];
 
+    private $groupBy = null;
+    private $groupByOptions = [];
+
+    public function setGroupBy($column)
+    {
+        $this->groupBy = $column;
+    }
+
+    public function addGroupByOption($column, $label)
+    {
+        $this->groupByOptions[$column] = $label;
+    }
+
     public function __construct($config)
     {
         $defaultConfig = [
@@ -150,9 +163,16 @@ class ListGenerator
     public function addFilter($key, $label, $options, $config = [])
     {
         $defaultConfig = [
-            'placeholder' => 'Alle',
-            'clearable' => false,
-            'where' => "$key = ?"
+            'type' => 'dropdown',
+            'multiple' => false,
+            'placeholder' => 'Bitte auswählen',
+            'searchable' => false,
+            'maxSelections' => null,
+            'fullTextSearch' => false,
+            'allowAdditions' => false,
+            'customClass' => '',
+            'clearable' => true,
+            'where' => "{$key} = ?"
         ];
 
         // Wenn $config ein String ist, nehmen wir an, es ist die WHERE-Bedingung
@@ -177,10 +197,10 @@ class ListGenerator
         ]);
 
         if (!$this->useDatabase) {
-            // Logic for non-database data
+            // Logik für nicht-Datenbank-Daten
             $data = $this->data;
 
-            // Apply filters
+            // Filter anwenden
             foreach ($this->filters as $key => $filter) {
                 if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
                     $filterValue = $_GET['filters'][$key];
@@ -190,7 +210,7 @@ class ListGenerator
                 }
             }
 
-            // Apply search
+            // Suche anwenden
             if (!empty($this->config['search']) && !empty($this->searchableColumns)) {
                 $searchTerm = $this->config['search'];
                 $data = array_filter($data, function ($item) use ($searchTerm) {
@@ -203,28 +223,59 @@ class ListGenerator
                 });
             }
 
-            // Apply sorting
+            // Gruppierung anwenden
+            if ($this->groupBy) {
+                $data = $this->groupNonDatabaseData($data, $this->groupBy);
+            }
+
+            // Sortierung anwenden
             $sortColumn = $this->config['sortColumn'];
             $sortDirection = $this->config['sortDirection'];
-            usort($data, function ($a, $b) use ($sortColumn, $sortDirection) {
-                $result = $a[$sortColumn] <=> $b[$sortColumn];
-                return $sortDirection === 'DESC' ? -$result : $result;
-            });
+            if (!$this->groupBy) {
+                usort($data, function ($a, $b) use ($sortColumn, $sortDirection) {
+                    $result = $a[$sortColumn] <=> $b[$sortColumn];
+                    return $sortDirection === 'DESC' ? -$result : $result;
+                });
+            } else {
+                // Sortiere jede Gruppe separat
+                foreach ($data as &$group) {
+                    usort($group, function ($a, $b) use ($sortColumn, $sortDirection) {
+                        $result = $a[$sortColumn] <=> $b[$sortColumn];
+                        return $sortDirection === 'DESC' ? -$result : $result;
+                    });
+                }
+            }
 
-            $this->totalRows = count($data);
+            $this->totalRows = $this->groupBy ? array_sum(array_map('count', $data)) : count($data);
 
-            // Apply pagination
-            $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
-            $data = array_slice($data, $offset, $this->config['itemsPerPage']);
+            // Paginierung anwenden
+            if (!$this->groupBy) {
+                $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
+                $data = array_slice($data, $offset, $this->config['itemsPerPage']);
+            } else {
+                // Paginierung für gruppierte Daten
+                $paginatedData = [];
+                $itemCount = 0;
+                $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
+                foreach ($data as $groupKey => $groupItems) {
+                    if ($itemCount >= $offset && $itemCount < ($offset + $this->config['itemsPerPage'])) {
+                        $paginatedData[$groupKey] = array_slice($groupItems, 0, $this->config['itemsPerPage'] - count($paginatedData));
+                    }
+                    $itemCount += count($groupItems);
+                    if (count($paginatedData) >= $this->config['itemsPerPage'])
+                        break;
+                }
+                $data = $paginatedData;
+            }
 
             return $data;
         } else {
-            // Database logic
+            // Datenbanklogik
             $innerWhereConditions = [];
             $params = [];
             $hasGroupBy = stripos($this->query, 'GROUP BY') !== false;
 
-            // Build filter conditions
+            // Filter-Bedingungen erstellen
             foreach ($this->filters as $key => $filter) {
                 if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
                     $filterValue = $_GET['filters'][$key];
@@ -234,7 +285,7 @@ class ListGenerator
                 }
             }
 
-            // Build search condition
+            // Suchbedingung erstellen
             if (!empty($this->config['search']) && !empty($this->searchableColumns)) {
                 $searchConditions = [];
                 foreach ($this->searchableColumns as $col) {
@@ -247,7 +298,7 @@ class ListGenerator
 
             $innerWhereClause = $innerWhereConditions ? "WHERE " . implode(' AND ', $innerWhereConditions) : "";
 
-            // Modify the query based on whether it has a GROUP BY clause or not
+            // Abfrage basierend auf GROUP BY Klausel modifizieren
             if ($hasGroupBy) {
                 $modifiedQuery = preg_replace(
                     '/GROUP BY/i',
@@ -258,8 +309,13 @@ class ListGenerator
                 $modifiedQuery = $this->query . ' ' . $innerWhereClause;
             }
 
-            // Count total rows
-            if ($hasGroupBy) {
+            // Gruppierung hinzufügen, falls erforderlich
+            if ($this->groupBy) {
+                $modifiedQuery = $this->addGroupByToQuery($modifiedQuery, $this->groupBy);
+            }
+
+            // Gesamtzahl der Zeilen zählen
+            if ($hasGroupBy || $this->groupBy) {
                 $countQuery = "SELECT COUNT(*) as total FROM ({$modifiedQuery}) as subquery";
             } else {
                 $countQuery = "SELECT COUNT(*) as total FROM ({$this->query}) as subquery {$innerWhereClause}";
@@ -285,7 +341,7 @@ class ListGenerator
 
             $this->debugLog("Total rows", ['count' => $this->totalRows]);
 
-            // Validate the sort column
+            // Sortierspalte validieren
             $validColumns = array_keys($this->columns);
             $sortColumn = in_array($this->config['sortColumn'], $validColumns)
                 ? $this->config['sortColumn']
@@ -293,13 +349,15 @@ class ListGenerator
 
             $sortDirection = $this->config['sortDirection'] === 'DESC' ? 'DESC' : 'ASC';
 
-            // Fetch data
+            // Daten abrufen
             $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
 
-            // Main data query
+            // Hauptdatenabfrage
             $query = $modifiedQuery;
-            $query .= " ORDER BY " . $this->db->real_escape_string($sortColumn) . " " . $sortDirection;
-            $query .= " LIMIT ? OFFSET ?";
+            if (!$this->groupBy) {
+                $query .= " ORDER BY " . $this->db->real_escape_string($sortColumn) . " " . $sortDirection;
+                $query .= " LIMIT ? OFFSET ?";
+            }
 
             $this->debugLog("Final SQL Query", [
                 'query' => $query,
@@ -308,15 +366,56 @@ class ListGenerator
 
             $stmt = $this->db->prepare($query);
             if ($stmt) {
-                $params[] = intval($this->config['itemsPerPage']);
-                $params[] = $offset;
-                $types = str_repeat('s', count($params) - 2) . 'ii';
-                $stmt->bind_param($types, ...$params);
+                if (!$this->groupBy) {
+                    $params[] = intval($this->config['itemsPerPage']);
+                    $params[] = $offset;
+                    $types = str_repeat('s', count($params) - 2) . 'ii';
+                } else {
+                    $types = str_repeat('s', count($params));
+                }
+
+                if (!empty($params)) {
+                    $stmt->bind_param($types, ...$params);
+                }
+
 
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $data = $result->fetch_all(MYSQLI_ASSOC);
                 $stmt->close();
+
+                if ($this->groupBy) {
+                    $groupedData = [];
+                    foreach ($data as $row) {
+                        $groupValue = $row[$this->groupBy];
+                        if (!isset($groupedData[$groupValue])) {
+                            $groupedData[$groupValue] = [];
+                        }
+                        $groupedData[$groupValue][] = $row;
+                    }
+                    $data = $groupedData;
+
+                    // Sortiere jede Gruppe
+                    foreach ($data as &$group) {
+                        usort($group, function ($a, $b) use ($sortColumn, $sortDirection) {
+                            $result = $a[$sortColumn] <=> $b[$sortColumn];
+                            return $sortDirection === 'DESC' ? -$result : $result;
+                        });
+                    }
+
+                    // Paginierung für gruppierte Daten
+                    $paginatedData = [];
+                    $itemCount = 0;
+                    foreach ($data as $groupKey => $groupItems) {
+                        if ($itemCount >= $offset && $itemCount < ($offset + $this->config['itemsPerPage'])) {
+                            $paginatedData[$groupKey] = array_slice($groupItems, 0, $this->config['itemsPerPage'] - count($paginatedData));
+                        }
+                        $itemCount += count($groupItems);
+                        if (count($paginatedData) >= $this->config['itemsPerPage'])
+                            break;
+                    }
+                    $data = $paginatedData;
+                }
 
                 $this->debugLog("Data fetched", [
                     'totalRows' => $this->totalRows,
@@ -328,6 +427,33 @@ class ListGenerator
             return [];
         }
     }
+
+    private function addGroupByToQuery($query, $groupBy)
+    {
+        // Überprüfen, ob die Abfrage bereits ein GROUP BY enthält
+        if (stripos($query, 'GROUP BY') === false) {
+            // Wenn nicht, füge GROUP BY hinzu
+            $query .= " GROUP BY $groupBy";
+        } else {
+            // Wenn ja, erweitere das bestehende GROUP BY
+            $query = preg_replace('/GROUP BY (.*)/i', "GROUP BY $1, $groupBy", $query);
+        }
+        return $query;
+    }
+
+    private function groupNonDatabaseData($data, $groupBy)
+    {
+        $groupedData = [];
+        foreach ($data as $item) {
+            $groupValue = $item[$groupBy] ?? 'Andere';
+            if (!isset($groupedData[$groupValue])) {
+                $groupedData[$groupValue] = [];
+            }
+            $groupedData[$groupValue][] = $item;
+        }
+        return $groupedData;
+    }
+
     public function addExternalButton($id, $options)
     {
         $defaultOptions = [
@@ -523,7 +649,8 @@ class ListGenerator
             }
             $html .= "</button>";
         }
-        return $html;
+
+        return "<div class='ui buttons'>$html</div>";
     }
 
     private function getButtonParams($button, $item)
@@ -553,7 +680,6 @@ class ListGenerator
 
     public function generateList()
     {
-
         $this->saveFiltersToSession();
 
         $data = $this->fetchData();
@@ -579,7 +705,208 @@ class ListGenerator
 
         $html .= $this->generateFilters();
 
-        $html .= "<table class='{$tableClasses}'>";
+        // Gruppieren-Dropdown hinzufügen
+        $html .= $this->generateGroupByDropdown();
+
+        if ($this->groupBy) {
+            $html .= $this->generateGroupedTable($data);
+        } else {
+            $html .= "<table class='{$tableClasses}'>";
+            $html .= $this->generateTableHeader();
+            $html .= "<tbody>";
+
+            if (empty($data) && $this->config['showNoDataMessage']) {
+                $html .= $this->generateNoDataMessage();
+            } else {
+                foreach ($data as $item) {
+                    $html .= $this->generateTableRow($item);
+                }
+            }
+
+            $html .= "</tbody>";
+
+            if ($this->config['showFooter']) {
+                $html .= $this->generateTableFooter($totalRows, $currentPage, $totalPages);
+            }
+
+            $html .= "</table>";
+        }
+
+        if ($this->config['showPagination']) {
+            $html .= $this->generatePagination($currentPage, $totalPages);
+        }
+
+        // Render bottom external buttons
+        $html .= $this->renderExternalButtons('bottom');
+
+        $html .= "</div>";
+        $html .= $this->renderModals();
+
+        return $html;
+    }
+
+    private function generateGroupedTable($data)
+    {
+        $html = '';
+        foreach ($data as $groupValue => $groupItems) {
+            $html .= "<h3 class='ui header'>{$groupValue}</h3>";
+            $html .= "<table class='{$this->buildTableClasses()}'>";
+            $html .= $this->generateTableHeader();
+            $html .= "<tbody>";
+
+            foreach ($groupItems as $item) {
+                $html .= $this->generateTableRow($item);
+            }
+
+            $html .= "</tbody>";
+            $html .= "</table>";
+        }
+        return $html;
+    }
+
+    private function generateGroupByDropdown()
+    {
+        if (empty($this->groupByOptions)) {
+            return '';
+        }
+
+        $html = "<div class='ui form' style='margin-bottom: 20px;'>";
+        $html .= "<div class='field'>";
+        $html .= "<label>Gruppieren nach:</label>";
+        $html .= "<select id='groupBySelect' class='ui clearable dropdown'>";
+        $html .= "<option value=''>Keine Gruppierung</option>";
+
+        foreach ($this->groupByOptions as $column => $label) {
+            $selected = ($this->groupBy == $column) ? 'selected' : '';
+            $html .= "<option value='{$column}' {$selected}>{$label}</option>";
+        }
+
+        $html .= "</select>";
+        $html .= "</div>";
+        $html .= "</div>";
+
+        return $html;
+    }
+
+    private function generateSearchField()
+    {
+        $searchInputId = "search_{$this->config['contentId']}";
+        return "
+        <div class='ui search' style='margin-bottom: 10px;'>
+            <div class='ui fluid icon input'>
+                <input class='prompt' type='text' placeholder='Suchen...' id='{$searchInputId}' value='" . htmlspecialchars($this->config['search'], ENT_QUOTES, 'UTF-8') . "'>
+                <i class='search icon'></i>
+            </div>
+        </div>";
+    }
+
+    private function generateFilters()
+    {
+        if (empty($this->filters)) {
+            return '';
+        }
+
+        $filterClass = $this->config['filterClass'] ?? 'ui segment';
+
+        $html = "<div class='{$filterClass}' style='margin-bottom: 20px;'>";
+        $html .= "<div class='ui form'>";
+        $html .= "<div class='ui stackable grid'>";
+        foreach ($this->filters as $key => $filter) {
+            $filterId = "filter_{$this->config['contentId']}_{$key}";
+            $html .= "<div class='four wide column'>";
+            $html .= "<div class='field'>";
+            $html .= "<label>{$filter['label']}</label>";
+
+            $dropdownClass = 'ui fluid dropdown';
+            if ($filter['config']['searchable']) {
+                $dropdownClass .= ' search';
+            }
+            if ($filter['config']['multiple']) {
+                $dropdownClass .= ' multiple';
+            }
+            if ($filter['config']['clearable']) {
+                $dropdownClass .= ' clearable';
+            }
+            $dropdownClass .= ' ' . $filter['config']['customClass'];
+
+            $html .= "<select class='{$dropdownClass}' name='{$filterId}' id='{$filterId}'";
+            if ($filter['config']['multiple']) {
+                $html .= " multiple='multiple'";
+            }
+            if ($filter['config']['maxSelections']) {
+                $html .= " data-max-selections='{$filter['config']['maxSelections']}'";
+            }
+            if ($filter['config']['fullTextSearch']) {
+                $html .= " data-full-text-search='true'";
+            }
+            if ($filter['config']['allowAdditions']) {
+                $html .= " data-allow-additions='true'";
+            }
+            $html .= ">";
+
+            $html .= "<option value=''>{$filter['config']['placeholder']}</option>";
+            foreach ($filter['options'] as $value => $label) {
+                $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'selected' : '';
+                $html .= "<option value='{$value}' {$selected}>{$label}</option>";
+            }
+            $html .= "</select>";
+            $html .= "</div>";
+            $html .= "</div>";
+        }
+
+        $html .= "</div>"; // Ende der Grid
+        $html .= "</div>"; // Ende der Form
+        $html .= "</div>"; // Ende des Segments
+
+        return $html;
+    }
+
+    private function generatePagination($currentPage, $totalPages)
+    {
+        $html = "<div class='ui pagination menu'>";
+
+        // Previous page
+        $paginationId = "pagination_{$this->config['contentId']}";
+        $html = "<div id='{$paginationId}' class='ui pagination menu'>";
+
+        // Previous page
+        $prevDisabled = ($currentPage == 1) ? 'disabled' : '';
+        $html .= "<a class='item {$prevDisabled}' data-page='" . ($currentPage - 1) . "'>Vorherige</a>";
+
+        // Page numbers
+        $startPage = max(1, $currentPage - 2);
+        $endPage = min($totalPages, $startPage + 4);
+
+        if ($startPage > 1) {
+            $html .= "<a class='item' data-page='1'>1</a>";
+            if ($startPage > 2) {
+                $html .= "<span class='item disabled'>...</span>";
+            }
+        }
+
+        for ($i = $startPage; $i <= $endPage; $i++) {
+            $activeClass = ($i == $currentPage) ? 'active' : '';
+            $html .= "<a class='item {$activeClass}' data-page='{$i}'>{$i}</a>";
+        }
+
+        if ($endPage < $totalPages) {
+            if ($endPage < $totalPages - 1) {
+                $html .= "<span class='item disabled'>...</span>";
+            }
+            $html .= "<a class='item' data-page='{$totalPages}'>{$totalPages}</a>";
+        }
+
+        // Next page
+        $nextDisabled = ($currentPage == $totalPages) ? 'disabled' : '';
+        $html .= "<a class='item {$nextDisabled}' data-page='" . ($currentPage + 1) . "'>Nächste</a>";
+
+        $html .= "</div>";
+        return $html;
+    }
+
+    private function generateRegularTable($data)
+    {
+        $html = "<table class='{$this->buildTableClasses()}'>";
         $html .= $this->generateTableHeader();
         $html .= "<tbody>";
 
@@ -594,23 +921,14 @@ class ListGenerator
         $html .= "</tbody>";
 
         if ($this->config['showFooter']) {
-            $html .= $this->generateTableFooter($totalRows, $currentPage, $totalPages);
+            $html .= $this->generateTableFooter($this->totalRows, $this->config['page'], ceil($this->totalRows / $this->config['itemsPerPage']));
         }
 
         $html .= "</table>";
 
-        if ($this->config['showPagination']) {
-            $html .= $this->generatePagination($currentPage, $totalPages);
-        }
-
-        // Render bottom external buttons
-        $html .= $this->renderExternalButtons('bottom');
-
-        $html .= "</div>";
-        $html .= $this->renderModals();
-
         return $html;
     }
+
 
     private function buildTableClasses()
     {
@@ -659,6 +977,7 @@ class ListGenerator
             ? ($this->config['sortDirection'] === 'ASC' ? 'sorted ascending' : 'sorted descending')
             : '';
     }
+
 
     private function getSortIcon($key)
     {
@@ -756,96 +1075,7 @@ class ListGenerator
         return in_array($size, $validSizes) ? $size : '';
     }
 
-    private function generateSearchField()
-    {
-        $searchInputId = "search_{$this->config['contentId']}";
-        return "
-        <div class='ui search' style='margin-bottom: 10px;'>
-            <div class='ui fluid icon input'>
-                <input class='prompt' type='text' placeholder='Suchen...' id='{$searchInputId}' value='" . htmlspecialchars($this->config['search'], ENT_QUOTES, 'UTF-8') . "'>
-                <i class='search icon'></i>
-            </div>
-        </div>";
-    }
 
-    private function generateFilters()
-    {
-        if (empty($this->filters)) {
-            return '';
-        }
-
-        $filterClass = $this->config['filterClass'] ?? 'ui segment';
-
-        $html = "<div class='{$filterClass}' style='margin-bottom: 20px;'>";
-        $html .= "<div class='ui form'>";
-        $html .= "<div class='ui stackable grid'>";
-        foreach ($this->filters as $key => $filter) {
-            $filterId = "filter_{$this->config['contentId']}_{$key}";
-            $html .= "<div class='four wide column'>";
-            $html .= "<div class='field'>";
-            $html .= "<label>{$filter['label']}</label>";
-            $html .= "<select class='ui fluid dropdown' name='{$filterId}' id='{$filterId}'>";
-            $html .= "<option value=''>{$filter['config']['placeholder']}</option>";
-            foreach ($filter['options'] as $value => $label) {
-                $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'selected' : '';
-                $html .= "<option value='{$value}' {$selected}>{$label}</option>";
-            }
-            $html .= "</select>";
-            $html .= "</div>";
-            $html .= "</div>";
-        }
-
-        $html .= "</div>"; // Ende der Grid
-        $html .= "</div>"; // Ende der Form
-        $html .= "</div>"; // Ende des Segments
-
-        return $html;
-    }
-    private function generatePagination($currentPage, $totalPages)
-    {
-        $html = "<div class='ui pagination menu'>";
-
-        // Previous page
-        $paginationId = "pagination_{$this->config['contentId']}";
-        $html = "<div id='{$paginationId}' class='ui pagination menu'>";
-
-        // Previous page
-        $prevDisabled = ($currentPage == 1) ? 'disabled' : '';
-        $html .= "<a class='item {$prevDisabled}' data-page='" . ($currentPage - 1) . "'>Vorherige</a>";
-
-
-        // Page numbers
-        $startPage = max(1, $currentPage - 2);
-        $endPage = min($totalPages, $startPage + 4);
-
-        if ($startPage > 1) {
-            $html .= "<a class='item' data-page='1'>1</a>";
-            if ($startPage > 2) {
-                $html .= "<span class='item disabled'>...</span>";
-            }
-        }
-
-        for ($i = $startPage; $i <= $endPage; $i++) {
-            $activeClass = ($i == $currentPage) ? 'active' : '';
-            $html .= "<a class='item {$activeClass}' data-page='{$i}'>{$i}</a>";
-        }
-
-        if ($endPage < $totalPages) {
-            if ($endPage < $totalPages - 1) {
-                $html .= "<span class='item disabled'>...</span>";
-            }
-            $html .= "<a class='item' data-page='{$totalPages}'>{$totalPages}</a>";
-        }
-
-        // Next page
-        $nextDisabled = ($currentPage == $totalPages) ? 'disabled' : '';
-        $html .= "<a class='item {$nextDisabled}' data-page='" . ($currentPage + 1) . "'>Nächste</a>";
-
-
-
-        $html .= "</div>";
-        return $html;
-    }
 
     private function debugLog($message, $data = null)
     {

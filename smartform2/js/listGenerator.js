@@ -94,6 +94,8 @@ function reloadTable(contentId = null) {
 function setupEventHandlers(contentId) {
     let instance = listInstances[contentId];
 
+    initializeGroupByDropdown();
+
     // Externe Buttons einrichten
     $(`#${contentId} button[data-modal]`).off('click').on('click', function () {
         const modalId = $(this).data('modal');
@@ -147,23 +149,19 @@ function setupEventHandlers(contentId) {
 
     // Filter-Dropdowns einrichten
     let filterTimeout;
-    $(`#${contentId} .ui.dropdown[id^="filter_${contentId}_"]`).dropdown({
-        clearable: true,
-        onChange: function (value, text, $choice) {
-            const filterName = $(this).attr('id').replace(`filter_${contentId}_`, '');
-            if (instance.state.filters[filterName] !== value) {
+
+    $(`#${contentId} .ui.dropdown[id^="filter_${contentId}_"]`).each(function () {
+        $(this).dropdown({
+            fullTextSearch: $(this).data('full-text-search') || false,
+            allowAdditions: $(this).data('allow-additions') || false,
+            maxSelections: $(this).data('max-selections') || null,
+            onChange: function (value, text, $choice) {
+                const filterName = $(this).attr('id').replace(`filter_${contentId}_`, '');
                 instance.state.filters[filterName] = value;
                 instance.state.page = 1;
-
-                // Lösche bestehenden Timeout
-                clearTimeout(filterTimeout);
-
-                // Setze neuen Timeout
-                filterTimeout = setTimeout(() => {
-                    reloadTable(contentId);
-                }, 300); // 300ms Verzögerung
+                reloadTable(contentId);
             }
-        }
+        });
     });
 
     // Modal-Trigger einrichten
@@ -296,6 +294,11 @@ function reloadTable(contentId = null) {
     }
     let instance = listInstances[targetContentId];
     loadListGenerator(instance.currentUrl, instance.state);
+    // Setze den Auto-Reload-Timer zurück
+    setupAutoReload(targetContentId);
+
+    // Gruppieren-Dropdown nach dem Neuladen der Tabelle erneut initialisieren
+    initializeGroupByDropdown();
 }
 
 function showToast(message, type) {
@@ -327,6 +330,16 @@ function setupAutoReload(contentId) {
     }
 }
 
+function initializeGroupByDropdown() {
+    $('#groupBySelect').dropdown({
+        onChange: function (value) {
+            let instance = listInstances[currentContentId];
+            instance.state.groupBy = value;
+            instance.state.page = 1;
+            reloadTable();
+        }
+    });
+}
 
 function setupListGenerator(contentId) {
     let instance = {
@@ -412,4 +425,8 @@ $(document).ready(function () {
             }
         }
     });
+
+    // Gruppieren-Dropdown initialisieren
+    initializeGroupByDropdown();
+
 });

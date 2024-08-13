@@ -82,10 +82,9 @@ class ListGenerator
             'popup' => null, // Neue Option für Popup
         ], $options);
     }
-
-    public function addFilter($key, $label, $options, $settings = [])
+    public function addFilter($key, $label, $options, $config = [])
     {
-        $defaultSettings = [
+        $defaultConfig = [
             'type' => 'dropdown',
             'multiple' => false,
             'placeholder' => 'Bitte auswählen',
@@ -94,96 +93,84 @@ class ListGenerator
             'fullTextSearch' => false,
             'allowAdditions' => false,
             'customClass' => '',
+            'clearable' => false,
+            'where' => "{$key} = ?"
         ];
-
-        $mergedSettings = array_merge($defaultSettings, $settings);
 
         $this->filters[$key] = [
             'label' => $label,
             'options' => $options,
-            'settings' => $mergedSettings
+            'config' => array_merge($defaultConfig, $config)
         ];
     }
 
     private function renderFilters()
     {
-        // Wenn keine Filter vorhanden sind, geben wir einen leeren String zurück
         if (empty($this->filters)) {
             return '';
         }
 
-        $containerClass = $this->options['filterContainerClass'];
-        $containerStyle = $this->options['filterContainerStyle'];
-        $fieldClass = $this->options['filterFieldClass'];
-        $fieldStyle = $this->options['filterFieldStyle'];
-        $labelStyle = $this->options['filterLabelStyle'];
-        $selectStyle = $this->options['filterSelectStyle'];
-
-        if ($this->options['filterLayout'] === 'inline') {
-            $containerStyle .= ' display: flex; flex-wrap: wrap; align-items: flex-start;';
-            $fieldStyle .= " min-width: {$this->options['filterMinWidth']}; flex: 1 1 auto;";
-        }
-
-        $html = "<div class=\"{$containerClass}\" style=\"{$containerStyle}\">";
+        $html = "<div class='{$this->options['filterContainerClass']}' style='{$this->options['filterContainerStyle']}'>";
+        $html .= "<div class='ui form'>";
+        $html .= "<div class='ui stackable grid'>";
 
         foreach ($this->filters as $key => $filter) {
-            $html .= "<div class=\"{$fieldClass}\" style=\"{$fieldStyle}\">";
-            $html .= "<label style=\"{$labelStyle}\">" . htmlspecialchars($filter['label']) . '</label>';
-            $settings = $filter['settings'];
-
-            $classes = ['ui', 'dropdown'];
-            if ($settings['multiple'])
-                $classes[] = 'multiple';
-            if ($settings['searchable'])
-                $classes[] = 'search';
-            if ($settings['customClass'])
-                $classes[] = $settings['customClass'];
-
-            $attributes = [
-                'class' => implode(' ', $classes),
-                'name' => "filter_{$key}" . ($settings['multiple'] ? '[]' : ''),
-                'data-filter' => $key,
-                'style' => $selectStyle,
-            ];
-
-            if ($settings['multiple'])
-                $attributes['multiple'] = 'multiple';
-            if ($settings['maxSelections'])
-                $attributes['data-max-selections'] = $settings['maxSelections'];
-            if ($settings['allowAdditions'])
-                $attributes['data-allow-additions'] = 'true';
-
-            $html .= '<select ' . $this->htmlAttributes($attributes) . '>';
-            $html .= '<option value="">' . htmlspecialchars($settings['placeholder']) . '</option>';
-
-            $selectedValues = isset($_GET["filter_{$key}"]) ? (is_array($_GET["filter_{$key}"]) ? $_GET["filter_{$key}"] : explode(',', $_GET["filter_{$key}"])) : [];
-
-            foreach ($filter['options'] as $value => $label) {
-                $selected = in_array($value, $selectedValues) ? 'selected' : '';
-                $html .= '<option value="' . htmlspecialchars($value) . '" ' . $selected . '>' . htmlspecialchars($label) . '</option>';
-            }
-            $html .= '</select>';
-            $html .= '</div>';
+            $html .= $this->renderFilterField($key, $filter);
         }
-        $html .= '</div>';
+
+        $html .= "</div></div></div>";
+
         return $html;
     }
 
-    private function htmlAttributes($attributes)
+    private function renderFilterField($key, $filter)
     {
-        return implode(
-            ' ',
-            array_map(
-                function ($key, $value) {
-                    if (is_bool($value)) {
-                        return $value ? $key : '';
-                    }
-                    return $key . '="' . htmlspecialchars($value) . '"';
-                },
-                array_keys($attributes),
-                $attributes
-            )
-        );
+        $filterId = "filter_{$this->listId}_{$key}";
+        $html = "<div class='four wide column'>";
+        $html .= "<div class='{$this->options['filterFieldClass']}' style='{$this->options['filterFieldStyle']}'>";
+        $html .= "<label style='{$this->options['filterLabelStyle']}'>{$filter['label']}</label>";
+
+        $dropdownClass = $this->getFilterDropdownClass($filter['config']);
+
+        $html .= "<select class='{$dropdownClass}' name='{$filterId}' id='{$filterId}' style='{$this->options['filterSelectStyle']}'";
+        $html .= $this->getFilterAttributes($filter['config']);
+        $html .= ">";
+
+        $html .= "<option value=''>{$filter['config']['placeholder']}</option>";
+        foreach ($filter['options'] as $value => $label) {
+            $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'selected' : '';
+            $html .= "<option value='{$value}' {$selected}>{$label}</option>";
+        }
+        $html .= "</select>";
+        $html .= "</div></div>";
+
+        return $html;
+    }
+
+    private function getFilterDropdownClass($config)
+    {
+        $class = 'ui fluid dropdown';
+        if ($config['searchable'])
+            $class .= ' search';
+        if ($config['multiple'])
+            $class .= ' multiple';
+        if ($config['clearable'])
+            $class .= ' clearable';
+        return $class . ' ' . $config['customClass'];
+    }
+
+    private function getFilterAttributes($config)
+    {
+        $attrs = '';
+        if ($config['multiple'])
+            $attrs .= " multiple='multiple'";
+        if ($config['maxSelections'])
+            $attrs .= " data-max-selections='{$config['maxSelections']}'";
+        if ($config['fullTextSearch'])
+            $attrs .= " data-full-text-search='true'";
+        if ($config['allowAdditions'])
+            $attrs .= " data-allow-additions='true'";
+        return $attrs;
     }
 
     public function setButtonGroupPosition($groupName, $alignment = 'center')
@@ -262,7 +249,6 @@ class ListGenerator
             throw new InvalidArgumentException("Ungültige Position für Button. Erlaubt sind 'left', 'right', 'before' oder 'after'.");
         }
     }
-
 
     public function setButtonColumnTitle($position, $title)
     {
@@ -376,7 +362,15 @@ class ListGenerator
     }
     public function __construct($options = [])
     {
-        $this->options = array_merge([
+        $this->options = array_merge($this->getDefaultOptions(), $options);
+        $this->width = $this->options['width'];
+        $this->listId = $options['listId'] ?? 'listGenerator_' . uniqid();
+        $this->applyTableStyles();
+    }
+
+    private function getDefaultOptions()
+    {
+        return [
             'itemsPerPage' => 10,
             'sortColumn' => 'id',
             'sortDirection' => 'ASC',
@@ -391,26 +385,25 @@ class ListGenerator
             'headerClasses' => '',
             'rowClasses' => '',
             'cellClasses' => '',
-            // Neue Fomantic UI spezifische Optionen
             'celled' => false,
             'basic' => false,
             'striped' => false,
             'selectable' => false,
-            'attached' => null, // kann 'top', 'bottom' oder null sein
+            'attached' => null,
             'definition' => false,
             'collapsing' => false,
             'stackable' => false,
             'unstackable' => false,
             'padded' => false,
             'compact' => false,
-            'size' => null, // kann 'small', 'large' oder null sein
-            'color' => null, // kann jede Fomantic UI Farbe sein
+            'size' => null,
+            'color' => null,
             'inverted' => false,
             'singleLine' => false,
             'fixed' => false,
             'structured' => false,
-            'columnCount' => null, // kann 1 bis 16 sein oder null
-            'filterLayout' => 'inline', // 'inline' oder 'vertical'
+            'columnCount' => null,
+            'filterLayout' => 'inline',
             'filterContainerClass' => 'ui message form',
             'filterContainerStyle' => 'margin-bottom: 1em;',
             'filterFieldClass' => 'field',
@@ -419,13 +412,7 @@ class ListGenerator
             'filterSelectStyle' => 'width: 100%;',
             'filterMinWidth' => '200px',
             'width' => '100%',
-
-
-        ], $options);
-
-        $this->width = $this->options['width'];
-        $this->listId = $options['listId'] ?? 'listGenerator_' . uniqid();
-        $this->applyTableStyles();
+        ];
     }
 
     private function applyTableStyles()
@@ -541,13 +528,13 @@ class ListGenerator
         ]);
     }
 
-
+sddsf
     public function generate($returnJson = false)
     {
         if ($this->db) {
             $this->loadFromDatabase();
         } else {
-            $this->processArrayData();
+
         }
 
         if ($returnJson) {
@@ -587,77 +574,29 @@ class ListGenerator
         return $positions;
     }
 
-    private function loadFromDatabase()
+    private function applyFilters(&$query, &$params)
     {
-        if ($this->isFullQuery) {
-            $baseQuery = "SELECT * FROM (" . $this->fullQuery . ") as subquery";
-        } else {
-            $baseQuery = "SELECT * FROM {$this->table}";
-        }
-
-        $whereClauses = [];
-        $params = [];
-
-        // Suchfunktion
-        if ($this->options['search']) {
-            $searchFields = array_filter($this->columns, function ($col) {
-                return $col['searchable'];
-            });
-            if (!empty($searchFields)) {
-                $searchClauses = array_map(function ($col) {
-                    return "CAST(subquery.{$col['name']} AS CHAR) LIKE ?";
-                }, $searchFields);
-                $whereClauses[] = '(' . implode(' OR ', $searchClauses) . ')';
-                $params = array_fill(0, count($searchFields), '%' . $this->options['search'] . '%');
-            }
-        }
-
-        // Dropdown-Filter
         foreach ($this->filters as $key => $filter) {
-            if (isset($_GET['filter_' . $key]) && $_GET['filter_' . $key] !== '') {
-                $filterValues = is_array($_GET['filter_' . $key]) ? $_GET['filter_' . $key] : explode(',', $_GET['filter_' . $key]);
-                $placeholders = implode(',', array_fill(0, count($filterValues), '?'));
-                $whereClauses[] = "subquery.{$key} IN ({$placeholders})";
-                $params = array_merge($params, $filterValues);
+            if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
+                $filterValue = $_GET['filters'][$key];
+                $whereClause = $filter['config']['where'];
+
+                if (strpos($whereClause, '{value}') !== false) {
+                    // Wenn {value} in der WHERE-Klausel vorhanden ist, ersetzen wir es direkt
+                    $whereClause = str_replace('{value}', $filterValue, $whereClause);
+                    $query .= " AND ($whereClause)";
+                } elseif (strpos($whereClause, '?') !== false) {
+                    // Wenn ein Fragezeichen vorhanden ist, fügen wir den Wert als Parameter hinzu
+                    $query .= " AND ($whereClause)";
+                    $params[] = $filterValue;
+                } else {
+                    // Wenn weder {value} noch ? vorhanden sind, nehmen wir an, dass es sich um eine direkte Bedingung handelt
+                    $query .= " AND ($whereClause)";
+                }
             }
         }
-
-        // Erstellen der WHERE-Klausel
-        $whereClause = '';
-        if (!empty($whereClauses)) {
-            $whereClause = " WHERE " . implode(' AND ', $whereClauses);
-        }
-
-        // Sortierung
-        $orderClause = '';
-        if (
-            isset($this->columns[$this->options['sortColumn']]) &&
-            $this->columns[$this->options['sortColumn']]['sortable']
-        ) {
-            $orderClause = " ORDER BY subquery." . $this->db->real_escape_string($this->columns[$this->options['sortColumn']]['name'])
-                . " " . $this->options['sortDirection'];
-        }
-
-        // Zusammensetzen der finalen Abfrage
-        $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM ({$baseQuery}) as subquery{$whereClause}{$orderClause} LIMIT ? OFFSET ?";
-
-        $stmt = $this->db->prepare($sql);
-        if ($stmt === false) {
-            throw new Exception("Fehler bei der Vorbereitung der SQL-Abfrage: " . $this->db->error);
-        }
-
-        $offset = ($this->options['page'] - 1) * $this->options['itemsPerPage'];
-        $params[] = $this->options['itemsPerPage'];
-        $params[] = $offset;
-
-        $types = str_repeat('s', count($params));
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        $this->data = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-        $this->totalRows = $this->db->query('SELECT FOUND_ROWS()')->fetch_row()[0];
-        $this->totalPages = ceil($this->totalRows / $this->options['itemsPerPage']);
     }
+
 
     private function processArrayData()
     {

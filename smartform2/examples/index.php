@@ -98,7 +98,7 @@
             });
 
             // Initial load of the MySQL Benutzerliste
-            //loadListGenerator('list_mysql.php', { saveState: true, contentId: 'content1' });
+            loadListGenerator('list_mysql.php', { saveState: false, contentId: 'content1' });
             //loadListGenerator('list_array.php', { contentId: 'content2' });
         });
     </script>

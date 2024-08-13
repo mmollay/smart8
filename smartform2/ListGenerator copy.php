@@ -18,14 +18,18 @@ class ListGenerator
 
     private $modals = [];
 
+    private $sessionKey;
+
     private $externalButtons = [];
 
     private $buttonColumnAlignments = ['left' => 'left', 'right' => 'right'];
 
+    private $searchableColumns = [];
 
     public function __construct($config)
     {
         $defaultConfig = [
+            'debug' => false,
             'listId' => 'defaultList',
             'contentId' => 'content2',
             'itemsPerPage' => 10,
@@ -48,10 +52,58 @@ class ListGenerator
             'size' => 'small',
             'width' => '100%',
             'filterClass' => 'ui message',
+            'rememberFilters' => true,
         ];
 
         $this->config = array_merge($defaultConfig, $config);
+        $this->sessionKey = 'listGenerator_' . $this->config['listId'];
+
+        if ($this->config['rememberFilters']) {
+            $this->loadFiltersFromSession();
+        } else {
+            $this->clearFiltersFromSession();
+        }
+
     }
+
+    private function loadFiltersFromSession()
+    {
+        if (isset($_SESSION[$this->sessionKey])) {
+            $savedFilters = $_SESSION[$this->sessionKey];
+            $_GET['filters'] = $savedFilters['filters'] ?? [];
+            $_GET['search'] = $savedFilters['search'] ?? '';
+            $_GET['sort'] = $savedFilters['sort'] ?? $this->config['sortColumn'];
+            $_GET['sortDir'] = $savedFilters['sortDir'] ?? $this->config['sortDirection'];
+            $_GET['page'] = $savedFilters['page'] ?? 1;
+        }
+    }
+
+    private function clearFiltersFromSession()
+    {
+
+        unset($_SESSION[$this->sessionKey]);
+        $_GET['filters'] = [];
+        $_GET['search'] = '';
+        $_GET['sort'] = $this->config['sortColumn'];
+        $_GET['sortDir'] = $this->config['sortDirection'];
+        $_GET['page'] = 1;
+    }
+
+    private function saveFiltersToSession()
+    {
+        if ($this->config['rememberFilters']) {
+            $dataToSave = [
+                'filters' => $_GET['filters'] ?? [],
+                'search' => $_GET['search'] ?? '',
+                'sort' => $_GET['sort'] ?? $this->config['sortColumn'],
+                'sortDir' => $_GET['sortDir'] ?? $this->config['sortDirection'],
+                'page' => $_GET['page'] ?? 1
+            ];
+            $_SESSION[$this->sessionKey] = $dataToSave;
+            error_log("Saved to session: " . print_r($dataToSave, true));
+        }
+    }
+
 
     public function getConfig()
     {
@@ -69,51 +121,81 @@ class ListGenerator
         $this->db = $db;
         $this->query = $query;
         $this->useDatabase = $useDatabase;
+
+        $this->debugLog("Database set", [
+            'query' => $query,
+            'useDatabase' => $useDatabase
+        ]);
+    }
+
+    public function setSearchableColumns(array $columns)
+    {
+        $this->searchableColumns = $columns;
     }
 
     public function addColumn($key, $label, $options = [])
     {
+        $defaultOptions = [
+            'allowHtml' => false,
+            'width' => '',  // Neue Option für die Spaltenbreite
+            'formatter' => null
+        ];
+
         $this->columns[$key] = [
             'label' => $label,
-            'options' => array_merge(['allowHtml' => false], $options)
+            'options' => array_merge($defaultOptions, $options)
         ];
     }
 
-    public function addFilter($key, $label, $options)
+    public function addFilter($key, $label, $options, $config = [])
     {
+        $defaultConfig = [
+            'placeholder' => 'Alle',
+            'clearable' => false,
+            'where' => "$key = ?"
+        ];
+
+        // Wenn $config ein String ist, nehmen wir an, es ist die WHERE-Bedingung
+        if (is_string($config)) {
+            $config = ['where' => $config];
+        }
+
+        $finalConfig = array_merge($defaultConfig, $config);
+
         $this->filters[$key] = [
             'label' => $label,
-            'options' => $options
+            'options' => $options,
+            'config' => $finalConfig
         ];
     }
 
     private function fetchData()
     {
-        error_log("Fetching data with config: " . print_r($this->config, true));
-        error_log("Received GET parameters: " . print_r($_GET, true));
+        $this->debugLog("Fetching data", [
+            'config' => $this->config,
+            'GET' => $_GET
+        ]);
 
         if (!$this->useDatabase) {
+            // Logic for non-database data
             $data = $this->data;
 
             // Apply filters
             foreach ($this->filters as $key => $filter) {
-                $filterId = "filter_{$this->config['contentId']}_{$key}";
                 if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
                     $filterValue = $_GET['filters'][$key];
-                    error_log("Applying array filter: $key = $filterValue");
-                    $data = array_filter($data, function ($item) use ($key, $filterValue) {
-                        return $item[$key] == $filterValue;
-                    });
+                    $innerWhereConditions[] = $filter['config']['where'];
+                    $params[] = $filterValue;
+                    $this->debugLog("Applied filter", ["key" => $key, "value" => $filterValue]);
                 }
             }
 
             // Apply search
-            if (!empty($this->config['search'])) {
+            if (!empty($this->config['search']) && !empty($this->searchableColumns)) {
                 $searchTerm = $this->config['search'];
-                error_log("Applying array search: $searchTerm");
                 $data = array_filter($data, function ($item) use ($searchTerm) {
-                    foreach ($item as $value) {
-                        if (stripos($value, $searchTerm) !== false) {
+                    foreach ($this->searchableColumns as $column) {
+                        if (isset($item[$column]) && stripos($item[$column], $searchTerm) !== false) {
                             return true;
                         }
                     }
@@ -124,7 +206,6 @@ class ListGenerator
             // Apply sorting
             $sortColumn = $this->config['sortColumn'];
             $sortDirection = $this->config['sortDirection'];
-            error_log("Applying array sort: $sortColumn $sortDirection");
             usort($data, function ($a, $b) use ($sortColumn, $sortDirection) {
                 $result = $a[$sortColumn] <=> $b[$sortColumn];
                 return $sortDirection === 'DESC' ? -$result : $result;
@@ -136,44 +217,58 @@ class ListGenerator
             $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
             $data = array_slice($data, $offset, $this->config['itemsPerPage']);
 
-            error_log("Array data fetched. Total rows: {$this->totalRows}, Returned rows: " . count($data));
             return $data;
         } else {
-            // Datenbank-Logik
-            $searchCondition = '';
-            $filterConditions = [];
+            // Database logic
+            $innerWhereConditions = [];
             $params = [];
+            $hasGroupBy = stripos($this->query, 'GROUP BY') !== false;
 
             // Build filter conditions
             foreach ($this->filters as $key => $filter) {
-                $filterId = "filter_{$this->config['contentId']}_{$key}";
                 if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
-                    $filterConditions[] = "$key = ?";
-                    $params[] = $_GET['filters'][$key];
-                    error_log("Applied database filter: $key = {$_GET['filters'][$key]}");
+                    $filterValue = $_GET['filters'][$key];
+                    $innerWhereConditions[] = $filter['config']['where'];
+                    $params[] = $filterValue;
+                    $this->debugLog("Applied filter", ["key" => $key, "value" => $filterValue]);
                 }
             }
 
             // Build search condition
-            if (!empty($this->config['search'])) {
-                $searchColumns = array_keys($this->columns);
+            if (!empty($this->config['search']) && !empty($this->searchableColumns)) {
                 $searchConditions = [];
-                foreach ($searchColumns as $col) {
+                foreach ($this->searchableColumns as $col) {
                     $searchConditions[] = "$col LIKE ?";
                     $params[] = "%{$this->config['search']}%";
                 }
-                $searchCondition = "(" . implode(' OR ', $searchConditions) . ")";
-                error_log("Applied database search condition: $searchCondition");
+                $innerWhereConditions[] = "(" . implode(' OR ', $searchConditions) . ")";
+                $this->debugLog("Applied search condition", $searchConditions);
             }
 
-            // Combine filter and search conditions
-            $whereConditions = array_merge($filterConditions, $searchCondition ? [$searchCondition] : []);
-            $whereClause = $whereConditions ? "WHERE " . implode(' AND ', $whereConditions) : "";
+            $innerWhereClause = $innerWhereConditions ? "WHERE " . implode(' AND ', $innerWhereConditions) : "";
+
+            // Modify the query based on whether it has a GROUP BY clause or not
+            if ($hasGroupBy) {
+                $modifiedQuery = preg_replace(
+                    '/GROUP BY/i',
+                    $innerWhereClause . ' GROUP BY',
+                    $this->query
+                );
+            } else {
+                $modifiedQuery = $this->query . ' ' . $innerWhereClause;
+            }
 
             // Count total rows
-            $countQuery = "SELECT COUNT(*) as total FROM ({$this->query}) as subquery $whereClause";
-            error_log("Count query: $countQuery");
-            error_log("Count query params: " . print_r($params, true));
+            if ($hasGroupBy) {
+                $countQuery = "SELECT COUNT(*) as total FROM ({$modifiedQuery}) as subquery";
+            } else {
+                $countQuery = "SELECT COUNT(*) as total FROM ({$this->query}) as subquery {$innerWhereClause}";
+            }
+
+            $this->debugLog("Count query", [
+                'query' => $countQuery,
+                'params' => $params
+            ]);
 
             $stmt = $this->db->prepare($countQuery);
             if ($stmt) {
@@ -188,60 +283,51 @@ class ListGenerator
                 $stmt->close();
             }
 
-            // Validiere die Sortierspalte
-            $validColumns = array_keys($this->columns);
-            $sortColumn = null;
+            $this->debugLog("Total rows", ['count' => $this->totalRows]);
 
-            if ($this->config['sortColumn'] && in_array($this->config['sortColumn'], $validColumns)) {
-                $sortColumn = $this->config['sortColumn'];
-            } else {
-                // Fallback auf die erste definierte Spalte
-                $sortColumn = reset($validColumns);
-            }
+            // Validate the sort column
+            $validColumns = array_keys($this->columns);
+            $sortColumn = in_array($this->config['sortColumn'], $validColumns)
+                ? $this->config['sortColumn']
+                : reset($validColumns);
 
             $sortDirection = $this->config['sortDirection'] === 'DESC' ? 'DESC' : 'ASC';
-
-            // Erstelle die ORDER BY Klausel
-            $orderBy = "ORDER BY " . $this->db->real_escape_string($sortColumn) . " " . $sortDirection;
 
             // Fetch data
             $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
 
-            // Füge die ORDER BY Klausel zur Hauptabfrage hinzu, wenn sie nicht bereits eine ORDER BY Klausel enthält
-            if (stripos($this->query, 'ORDER BY') === false) {
-                $query = "SELECT * FROM ({$this->query}) as subquery $whereClause $orderBy LIMIT ? OFFSET ?";
-            } else {
-                $query = "SELECT * FROM ({$this->query}) as subquery $whereClause LIMIT ? OFFSET ?";
-            }
+            // Main data query
+            $query = $modifiedQuery;
+            $query .= " ORDER BY " . $this->db->real_escape_string($sortColumn) . " " . $sortDirection;
+            $query .= " LIMIT ? OFFSET ?";
 
-            error_log("Final SQL Query: $query");
+            $this->debugLog("Final SQL Query", [
+                'query' => $query,
+                'params' => $params
+            ]);
 
             $stmt = $this->db->prepare($query);
             if ($stmt) {
-                if (!empty($params)) {
-                    $types = str_repeat('s', count($params));
-                    $types .= 'ii';  // Für LIMIT und OFFSET
-                    $params[] = intval($this->config['itemsPerPage']);
-                    $params[] = $offset;
-                    $stmt->bind_param($types, ...$params);
-                } else {
-                    $stmt->bind_param('ii', $this->config['itemsPerPage'], $offset);
-                }
-                error_log("Query parameters: " . print_r($params, true));
+                $params[] = intval($this->config['itemsPerPage']);
+                $params[] = $offset;
+                $types = str_repeat('s', count($params) - 2) . 'ii';
+                $stmt->bind_param($types, ...$params);
+
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $data = $result->fetch_all(MYSQLI_ASSOC);
                 $stmt->close();
 
-                error_log("Database data fetched. Total rows: {$this->totalRows}, Returned rows: " . count($data));
+                $this->debugLog("Data fetched", [
+                    'totalRows' => $this->totalRows,
+                    'returnedRows' => count($data)
+                ]);
                 return $data;
             }
-            error_log("Failed to prepare SQL statement");
+            $this->debugLog("Failed to prepare SQL statement", ['query' => $query]);
             return [];
         }
-
     }
-
     public function addExternalButton($id, $options)
     {
         $defaultOptions = [
@@ -357,7 +443,15 @@ class ListGenerator
             'confirmMessage' => null,
             'popup' => null,
             'conditions' => [],
-            'params' => []
+            'params' => [],
+            'visible' => true,
+            'disabled' => false,
+            'dynamicLabel' => null,
+            'dynamicClass' => null,
+            'tooltip' => null,
+            'permission' => null,
+            'sortOrder' => 0,
+            'hotkey' => null
         ];
 
         $options = array_merge($defaultOptions, $options);
@@ -416,11 +510,11 @@ class ListGenerator
 
             $isIconButton = empty($button['label']) && !empty($button['icon']);
             $buttonClass = $button['class'];
-            if ($isIconButton) {
+            if ($isIconButton && strpos($buttonClass, 'icon') === false) {
                 $buttonClass .= ' icon';
             }
 
-            $html .= "<button {$attributes} class='" . htmlspecialchars($buttonClass, ENT_QUOTES, 'UTF-8') . "'>";
+            $html .= "<button id='{$id}' {$attributes} class='" . htmlspecialchars($buttonClass, ENT_QUOTES, 'UTF-8') . "'>";
             if (!empty($button['icon'])) {
                 $html .= "<i class='" . htmlspecialchars($button['icon'], ENT_QUOTES, 'UTF-8') . " icon'></i>";
             }
@@ -429,7 +523,8 @@ class ListGenerator
             }
             $html .= "</button>";
         }
-        return $html;
+
+        return "<div class='ui buttons'>$html</div>";
     }
 
     private function getButtonParams($button, $item)
@@ -459,6 +554,9 @@ class ListGenerator
 
     public function generateList()
     {
+
+        $this->saveFiltersToSession();
+
         $data = $this->fetchData();
         $totalRows = $this->totalRows;
         $totalPages = ceil($totalRows / $this->config['itemsPerPage']);
@@ -544,7 +642,8 @@ class ListGenerator
         foreach ($this->columns as $key => $column) {
             $sortClass = $this->getSortClass($key);
             $sortIcon = $this->getSortIcon($key);
-            $html .= "<th class='sortable {$sortClass}' data-column='{$key}'>{$column['label']} {$sortIcon}</th>";
+            $width = $column['options']['width'] ? "width: {$column['options']['width']};" : "";
+            $html .= "<th class='sortable {$sortClass}' data-column='{$key}' style='{$width}'>{$column['label']} {$sortIcon}</th>";
         }
 
         if (isset($this->buttonColumnTitles['right'])) {
@@ -562,6 +661,7 @@ class ListGenerator
             : '';
     }
 
+
     private function getSortIcon($key)
     {
         return $key === $this->config['sortColumn']
@@ -573,7 +673,6 @@ class ListGenerator
     {
         $html = "<tr class='{$this->config['rowClasses']}'>";
 
-
         if (isset($this->buttonColumnTitles['left'])) {
             $alignment = $this->buttonColumnAlignments['left'];
             $html .= "<td class='button-column {$alignment} aligned'>" . $this->renderButtons($item, 'left') . "</td>";
@@ -582,7 +681,8 @@ class ListGenerator
         foreach ($this->columns as $key => $column) {
             $value = $item[$key] ?? '';
             $value = $this->formatColumnValue($value, $column, $item);
-            $html .= "<td class='{$this->config['cellClasses']}'>{$value}</td>";
+            $width = $column['options']['width'] ? "width: {$column['options']['width']};" : "";
+            $html .= "<td class='{$this->config['cellClasses']}' style='{$width}'>{$value}</td>";
         }
 
         if (isset($this->buttonColumnTitles['right'])) {
@@ -610,7 +710,15 @@ class ListGenerator
         $colspan = count($this->columns) +
             (isset($this->buttonColumnTitles['left']) ? 1 : 0) +
             (isset($this->buttonColumnTitles['right']) ? 1 : 0);
-        return "<tr><td colspan='{$colspan}'>{$this->config['noDataMessage']}</td></tr>";
+
+        return "
+    <tr>
+        <td colspan='{$colspan}' style='text-align: center; padding: 40px;'>
+            <div class='ui message' style='display: inline-block;'>
+                <p>{$this->config['noDataMessage']}</p>
+            </div>
+        </td>
+    </tr>";
     }
 
     private function generateTableFooter($totalRows, $currentPage, $totalPages)
@@ -673,16 +781,15 @@ class ListGenerator
         $html = "<div class='{$filterClass}' style='margin-bottom: 20px;'>";
         $html .= "<div class='ui form'>";
         $html .= "<div class='ui stackable grid'>";
-
         foreach ($this->filters as $key => $filter) {
             $filterId = "filter_{$this->config['contentId']}_{$key}";
             $html .= "<div class='four wide column'>";
             $html .= "<div class='field'>";
             $html .= "<label>{$filter['label']}</label>";
             $html .= "<select class='ui fluid dropdown' name='{$filterId}' id='{$filterId}'>";
-            $html .= "<option value=''>Alle</option>";
+            $html .= "<option value=''>{$filter['config']['placeholder']}</option>";
             foreach ($filter['options'] as $value => $label) {
-                $selected = (isset($_GET[$filterId]) && $_GET[$filterId] == $value) ? 'selected' : '';
+                $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'selected' : '';
                 $html .= "<option value='{$value}' {$selected}>{$label}</option>";
             }
             $html .= "</select>";
@@ -741,5 +848,17 @@ class ListGenerator
         $html .= "</div>";
         return $html;
     }
+
+    private function debugLog($message, $data = null)
+    {
+        if ($this->config['debug']) {
+            $logMessage = date('[Y-m-d H:i:s] ') . $message;
+            if ($data !== null) {
+                $logMessage .= "\nData: " . print_r($data, true);
+            }
+            error_log($logMessage . "\n", 3, __DIR__ . '/listgenerator_debug.log');
+        }
+    }
 }
+
 ?>

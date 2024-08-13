@@ -35,6 +35,9 @@ function getUserDetails($userId, $db)
 
     <script>var smart_form_wp = 'smartform/'</script>
     <script src="smartform/js/smart_list.js"></script>
+    <script src="../../smartform2/js/listGenerator.js"></script>
+
+
     <style>
         body {
             //display: flex;
@@ -96,6 +99,7 @@ function getUserDetails($userId, $db)
         </a>
         <a class="item" href="#" data-page="home"><i class="home icon"></i>Home</a>
         <a class="item" href="#" data-page="trades"><i class="chart bar icon"></i>Trades</a>
+        <a class="item" href="#" data-page="trades2"><i class="chart bar icon"></i>Trades2</a>
         <a class="item" href="#" data-page="charts"><i class="chartline icon"></i>Charts</a>
         <a class="item" href="#" data-page="settings"><i class="settings icon"></i>Einstellungen</a>
         <a class="item" href="#" id="logout"><i class="sign out icon"></i>Logout</a>

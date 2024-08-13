@@ -98,6 +98,7 @@ $columns = [
         'formatter' => function ($value) {
             return "<span class='ui red text'>{$value}</span>";
         },
+        
         'allowHtml' => true
     ],
     [
@@ -155,7 +156,7 @@ $buttons = [
             function ($row) {
                 return $row['is_fully_sent'] == 0;
             }
-        ]
+        ],
     ],
     'clone' => [
         'icon' => 'copy',
@@ -186,7 +187,7 @@ foreach ($buttons as $id => $button) {
 }
 
 // Setzen der Spaltentitel für die Buttons
-$listGenerator->setButtonColumnTitle('left', '', 'center');
+$listGenerator->setButtonColumnTitle('left', '', 'left');
 $listGenerator->setButtonColumnTitle('right', '', 'right');
 
 function getAttachmentInfo($content_id)
