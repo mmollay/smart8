@@ -1,6 +1,26 @@
 <?
-include (__DIR__ . '/../../conmodules/faktura/f_config.phpfig.php');
-include (__DIR__ . '/functions.inc.php');
+include(__DIR__ . '/functions.inc.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$host = 'localhost';
+$username = 'smart';
+$password = 'Eiddswwenph21;';
+$dbname = 'ssi_faktura';
+
+$db = $connection = $GLOBALS['mysqli'] = mysqli_connect($host, $username, $password, $dbname);
+
+//Select the database
+if (!mysqli_select_db($db, $dbname)) {
+    die('Datenbankauswahl fehlgeschlagen: ' . mysqli_error($db));
+}
+
+
+return;
+exit;
+
+include(__DIR__ . '/../../modules/faktura/f_config.php');
+include(__DIR__ . '/functions.inc.php');
 // Aktuelles Jahr
 $year = date('Y');
 
@@ -8,8 +28,6 @@ if ($_SESSION['user_id'] == '40') {
     $db_faktura = "ssi_faktura";
 } else
     $db_faktura = "ssi_faktura" . $_SESSION['user_id'];
-
-
 
 // OEGT - Modus
 if (isset($_SESSION['user_id']) == '94' and isset($_SESSION['faktura_company_id']) == '30') {
@@ -159,7 +177,7 @@ if ($_SESSION['user_id'] == '65') {
 
 // OEGT 94
 if ($_SESSION['user_id'] == '94') {
-    include_once ('oegt/lang/de.inc.php');
+    include_once('oegt/lang/de.inc.php');
     $_SESSION['page_id'] = $page_id = 143;
     $show_menu['finance_output'] = false;
     $str_date_for_generate_pre = "01-11"; // Day-Month - Generierung ab dem 11ten Monat möglich

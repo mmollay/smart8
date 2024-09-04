@@ -1,10 +1,10 @@
-    <?php
+<?php
 session_start();
-include ('config.php'); // Stellen Sie sicher, dass Ihre config.php Datei die mysqli Verbindung herstellt
+include(__DIR__ . '/config.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = mysqli_real_escape_string($db, trim($_POST['username']));
-    $password = mysqli_real_escape_string($db, trim($_POST['password']));
+    $password = $_POST['password']; // Das vom Benutzer eingegebene Passwort (Klartext)
 
     $stmt = mysqli_prepare($db, "SELECT * FROM user2company WHERE user_name = ?");
     mysqli_stmt_bind_param($stmt, "s", $username);
@@ -12,43 +12,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = mysqli_stmt_get_result($stmt);
     $user = mysqli_fetch_assoc($result);
 
-    if (is_array($user)) {
-        // Überprüfen, ob das gespeicherte Passwort ein Hash ist
-        if (password_get_info($user['password'])['algoName'] === 'unknown') {
-            // Das Passwort liegt im Klartext vor
-            if ($password === $user['password']) {
-                // Passwort ist korrekt, jetzt hashen und in der Datenbank aktualisieren
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                $update_stmt = mysqli_prepare($db, "UPDATE user2company SET password = ? WHERE user_name = ?");
-                mysqli_stmt_bind_param($update_stmt, "ss", $hash, $username);
-                if (mysqli_stmt_execute($update_stmt)) {
-                    echo "Passwort wurde erfolgreich gehasht und aktualisiert.<br>";
-                } else {
-                    echo "Fehler beim Aktualisieren des Passworts.<br>";
-                }
-                mysqli_stmt_close($update_stmt);
+    if ($user) {
+        $stored_password = $user['password'];
+        $password_verified = false;
 
-                // Login erfolgreich
-                $_SESSION['client_id'] = $user['user_id'];
-                echo "Erfolg";
-            } else {
-                // Passwort ist falsch
-                echo "Fehler";
-            }
+        // Überprüfen, ob das gespeicherte Passwort ein bcrypt Hash ist
+        if (strpos($stored_password, '$2y$') === 0) {
+            // Es ist ein bcrypt Hash, verwende password_verify
+            $password_verified = password_verify($password, $stored_password);
         } else {
-            // Das Passwort ist bereits gehasht
-            if (password_verify($password, $user['password'])) {
-                // Login erfolgreich
-                $_SESSION['client_id'] = $user['user_id'];
-                echo "Erfolg";
-            } else {
-                // Passwort ist falsch
-                echo "Fehler";
+            // Es könnte ein Klartext-Passwort oder ein anderer Hash-Typ sein
+            $password_verified = ($password === $stored_password);
+        }
+
+        if ($password_verified) {
+            // Passwort ist korrekt
+            $_SESSION['client_id'] = $user['user_id'];
+
+            // Wenn es kein bcrypt Hash war, jetzt einen erstellen und in der DB aktualisieren
+            if (strpos($stored_password, '$2y$') !== 0) {
+                $new_hash = password_hash($password, PASSWORD_DEFAULT);
+                $update_stmt = mysqli_prepare($db, "UPDATE user2company SET password = ? WHERE user_name = ?");
+                mysqli_stmt_bind_param($update_stmt, "ss", $new_hash, $username);
+                mysqli_stmt_execute($update_stmt);
+                mysqli_stmt_close($update_stmt);
             }
+            echo "Erfolg";
+        } else {
+            // Passwort ist falsch
+            echo "Fehler";
         }
     } else {
         // Kein Benutzer gefunden
-        echo "Benutzer nicht gefunden.";
+        echo "Fehler";
     }
 
     mysqli_stmt_close($stmt);

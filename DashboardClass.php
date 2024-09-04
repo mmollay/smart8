@@ -1,6 +1,7 @@
 <?php
-include (__DIR__ . "/config.php");
+include(__DIR__ . "/config.php");
 
+$userId = 40;
 //Top-Leister generell
 $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 
@@ -13,8 +14,7 @@ $dashboard->addMenuItem('mainMenu', "main", "setting", $user, "", "User Einstell
 $dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sign red out icon", "Abmelden", "right");
 
 //$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
-$dashboard->addScript("../../../smartform/js/smart_list.js");
-
+//$dashboard->addScript("../../../smartform/js/smart_list.js");
 //$dashboard->addScript("../../../smartform/js/smart_form.js");
 $dashboard->addScript("../../smartform2/js/listGenerator.js");
 $dashboard->addScript("../../smartform2/js/formGenerator.js");
@@ -60,6 +60,29 @@ class Dashboard
         'duration' => 500,
         'easing' => 'easeInOutQuad'
     ];
+
+    private function checkActiveSession()
+    {
+
+        $userId = $this->userId;
+
+        if (!isset($userId)) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("SELECT user_id FROM user2company WHERE user_id = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            return false;
+        }
+
+        $row = $result->fetch_assoc();
+        return $row['user_id'];
+    }
+
 
     public function __construct($title, $db, $userId = null, $version = "1.0", $moduleName = "")
     {
@@ -437,6 +460,13 @@ class Dashboard
 
     public function render()
     {
+        if (!$this->checkActiveSession()) {
+            // Session is not active, redirect to login page
+            //header("Location: ../../login.php");
+
+            exit;
+        }
+
         $this->renderTemplate();
     }
 

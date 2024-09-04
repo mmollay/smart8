@@ -4,9 +4,10 @@ $title = "SSI Newsletter";    // Der Titel Ihres Moduls
 $moduleName = "newsletter";  // Der Name Ihres Moduls
 $version = "1.0.0";       // Die Version Ihres Moduls
 
-require (__DIR__ . "/../../DashboardClass.php");
+require(__DIR__ . "/../../DashboardClass.php");
 
 $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
+//$dashboard->addMenu('leftMenu', 'ui left fixed menu vertical', true);
 $dashboard->addMenuItem('leftMenu', "newsletter", "home", "Home", "home icon");
 
 //ABSENDER ICON
@@ -17,7 +18,7 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newslette
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", "file alternate icon");
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_logs", "Logs", "list icon");
 //Manueller Sendebutton für den Newsletter  
-$dashboard->addMenuItem('leftMenu', "", "", '<button class="ui blue labeled icon button" id="testSendEmail"><i class="paper small plane icon"></i>Absenden</button>', "");
+$dashboard->addMenuItem('leftMenu', "", "", '<button class="ui blue huge icon button" id="testSendEmail"><i class="paper small plane icon"></i></button>', "");
 
 $dashboard->addScript("js/form_after.js");
 $dashboard->addScript('js/send_emails.js');

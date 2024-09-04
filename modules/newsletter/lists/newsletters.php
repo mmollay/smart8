@@ -55,6 +55,8 @@ $query = "
 $listGenerator->setSearchableColumns(['s.first_name', 's.email', 'subject']);
 $listGenerator->setDatabase($db, $query, true);
 
+$listGenerator->addFilter('group_id', 'Gruppe', getAllGroups($db));
+
 // Button zum Erstellen eines neuen Newsletters
 $listGenerator->addExternalButton('new_newsletter', [
     'icon' => 'plus',
@@ -98,7 +100,7 @@ $columns = [
         'formatter' => function ($value) {
             return "<span class='ui red text'>{$value}</span>";
         },
-        
+
         'allowHtml' => true
     ],
     [

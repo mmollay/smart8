@@ -1,20 +1,7 @@
 <?php
 include __DIR__ . '/../../../smartform2/ListGenerator.php';
-include __DIR__ . '/../n_config.php';
+require __DIR__ . '/../n_config.php';
 
-// Funktion zum Abrufen aller Gruppen
-function getAllGroups($db)
-{
-    $groups = [];
-    $query = "SELECT id, name FROM groups ORDER BY name";
-    $stmt = $db->prepare($query);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $groups[$row['id']] = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
-    }
-    return $groups;
-}
 
 // ListGenerator Konfiguration
 $listConfig = [
@@ -32,8 +19,7 @@ $listConfig = [
     'celled' => true,
     'width' => '1200px',
     'tableClasses' => 'ui celled striped definition small compact table',
-    //'debug' => true,
-    'rememberFilters' => true,
+    'debug' => true,
 ];
 
 $listGenerator = new ListGenerator($listConfig);
@@ -66,6 +52,8 @@ $listGenerator->setSearchableColumns(['email', 'first_name', 'last_name', 'compa
 $listGenerator->setDatabase($db, $query, true);
 
 $listGenerator->addFilter('group_id', 'Gruppe', getAllGroups($db));
+$listGenerator->addFilter('last_name', 'Nachname', array('Mollay' => 'Mollay'));
+
 
 // Externe Buttons
 $listGenerator->addExternalButton('add', [

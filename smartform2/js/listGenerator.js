@@ -93,6 +93,22 @@ function reloadTable(contentId = null) {
 
 function setupEventHandlers(contentId) {
     let instance = listInstances[contentId];
+    let reloadTimeout;
+    let previousState = JSON.stringify(instance.state);
+
+    function scheduleReload() {
+        clearTimeout(reloadTimeout);
+        reloadTimeout = setTimeout(() => {
+            const currentState = JSON.stringify(instance.state);
+            if (currentState !== previousState) {
+                console.log('Zustand hat sich geändert, lade neu...');
+                reloadTable(contentId);
+                previousState = currentState;
+            } else {
+                console.log('Kein Neuladen nötig, Zustand unverändert');
+            }
+        }, 100);
+    }
 
     initializeGroupByDropdown();
 
@@ -125,14 +141,17 @@ function setupEventHandlers(contentId) {
     });
 
     // Suchfeld einrichten
+    // Suchfeld einrichten
     $(`#search_${contentId}`).off('input focus blur').on({
         'input': function () {
             instance.state.search = $(this).val();
             instance.state.page = 1;
-            reloadTable(contentId);
+            scheduleReload();
         },
         'focus': function () {
             instance.isSearchFocused = true;
+            // Schließe alle offenen Dropdowns
+            $(`#${contentId} .ui.dropdown`).dropdown('hide');
         },
         'blur': function () {
             instance.isSearchFocused = false;
@@ -147,22 +166,45 @@ function setupEventHandlers(contentId) {
         }
     });
 
-    // Filter-Dropdowns einrichten
-    let filterTimeout;
-
     $(`#${contentId} .ui.dropdown[id^="filter_${contentId}_"]`).each(function () {
-        $(this).dropdown({
-            fullTextSearch: $(this).data('full-text-search') || false,
-            allowAdditions: $(this).data('allow-additions') || false,
-            maxSelections: $(this).data('max-selections') || null,
-            onChange: function (value, text, $choice) {
-                const filterName = $(this).attr('id').replace(`filter_${contentId}_`, '');
+        const $dropdown = $(this);
+        const filterName = $dropdown.attr('id').replace(`filter_${contentId}_`, '');
+        const isMultiple = $dropdown.hasClass('multiple');
+
+        $dropdown.dropdown({
+            fullTextSearch: $dropdown.data('full-text-search') || false,
+            allowAdditions: $dropdown.data('allow-additions') || false,
+            maxSelections: $dropdown.data('max-selections') || null,
+            onChange: function (value, text, $selectedItem) {
+                console.log(`Dropdown geändert: ${filterName}, Wert: ${value}`);
                 instance.state.filters[filterName] = value;
                 instance.state.page = 1;
-                reloadTable(contentId);
+                scheduleReload();
+            },
+            onShow: function () {
+                if (isMultiple) {
+                    $dropdown.addClass('keep-open');
+                }
+            },
+            onHide: function () {
+                if (isMultiple && $dropdown.hasClass('keep-open')) {
+                    $dropdown.removeClass('keep-open');
+                    return false;
+                }
+                return true;
             }
         });
+
+        if (isMultiple) {
+            $dropdown.on('click', function (e) {
+                if ($(e.target).hasClass('delete')) {
+                    e.stopPropagation();
+                    $dropdown.removeClass('keep-open');
+                }
+            });
+        }
     });
+
 
     // Modal-Trigger einrichten
     $(`#${contentId} [data-modal]`).off('click').on('click', function () {

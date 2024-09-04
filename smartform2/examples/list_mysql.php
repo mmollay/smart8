@@ -40,10 +40,10 @@ if ($db->connect_error) {
     die("Verbindung fehlgeschlagen: " . $db->connect_error);
 }
 
-// Vereinfachte SQL-Abfrage
+// Optimierte SQL-Abfrage
 $query = "
     SELECT
-        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date,
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
         ud.city,
         d.name AS department_name,
         COUNT(DISTINCT up.project_id) AS project_count
@@ -62,7 +62,7 @@ $query = "
 $listGenerator->setSearchableColumns(['u.first_name', 'u.last_name', 'u.email', 'u.role', 'u.status', 'd.name', 'ud.city']);
 $listGenerator->setDatabase($db, $query, true);
 
-// Vereinfachte Gruppierungsoptionen
+// Gruppierungsoptionen
 $listGenerator->addGroupByOption('department_name', 'Abteilung');
 $listGenerator->addGroupByOption('role', 'Rolle');
 $listGenerator->addGroupByOption('status', 'Status');
@@ -72,42 +72,25 @@ if (isset($_GET['groupBy'])) {
     $listGenerator->setGroupBy($_GET['groupBy']);
 }
 
-// Vereinfachte Filter
+// Filter
 $listGenerator->addFilter('u.status', 'Status', ['Aktiv' => 'Aktiv', 'Inaktiv' => 'Inaktiv']);
 $listGenerator->addFilter('u.role', 'Rolle', ['Admin' => 'Admin', 'User' => 'User', 'Editor' => 'Editor']);
-$listGenerator->addFilter('d.name', 'Abteilung', ['IT' => 'IT', 'HR' => 'HR', 'Marketing' => 'Marketing']);
+$listGenerator->addFilter('d.name', 'Abteilung', ['IT' => 'IT', 'HR' => 'HR', 'Marketing' => 'Marketing', 'Finance' => 'Finance']);
 
+// Komplexe Filter
+$listGenerator->addFilter('salary_range', 'Gehaltsbereich', [
+    'salary < 50000' => 'Unter 50.000',
+    'salary >= 50000 AND salary < 70000' => '50.000 - 69.999',
+    'salary >= 70000' => '70.000 und mehr'
+], ['filterType' => 'complex']);
 
+$listGenerator->addFilter('hire_date_range', 'Einstellungszeitraum', [
+    'YEAR(hire_date) = YEAR(CURDATE())' => 'Dieses Jahr',
+    'YEAR(hire_date) = YEAR(CURDATE()) - 1' => 'Letztes Jahr',
+    'hire_date <= DATE_SUB(CURDATE(), INTERVAL 2 YEAR)' => 'Vor mehr als 2 Jahren'
+], ['filterType' => 'complex']);
 
-// Neuer Filter für Einstellungsmonat
-$listGenerator->addFilter('hire_date', 'Einstellungsmonat', [
-    '01' => 'Januar',
-    '02' => 'Februar',
-    '03' => 'März',
-    '04' => 'April',
-    '05' => 'Mai',
-    '06' => 'Juni',
-    '07' => 'Juli',
-    '08' => 'August',
-    '09' => 'September',
-    '10' => 'Oktober',
-    '11' => 'November',
-    '12' => 'Dezember'
-], [
-    'type' => 'dropdown',
-    'multiple' => true,
-    'placeholder' => 'Monate auswählen',
-    'searchable' => true,
-    'maxSelections' => 3,
-    'fullTextSearch' => true,
-    'allowAdditions' => false,
-    'customClass' => 'my-custom-dropdown',
-    'clearable' => true,
-    'where' => 'DATE_FORMAT(hire_date, "%m") IN (?)'
-]);
-
-
-// Spalten definieren mit einfachen Formatierungen
+// Spalten definieren
 $listGenerator->addColumn('id', 'ID');
 $listGenerator->addColumn('first_name', 'Vorname');
 $listGenerator->addColumn('last_name', 'Nachname');
@@ -121,134 +104,183 @@ $listGenerator->addColumn('status', 'Status', [
     'allowHtml' => true
 ]);
 $listGenerator->addColumn('department_name', 'Abteilung');
-$listGenerator->addColumn('project_count', 'Anzahl Projekte');
+$listGenerator->addColumn('project_count', 'Anzahl Projekte', [
+    'formatter' => 'number',
+    'align' => 'right',
+    'showTotal' => true,
+    // 'totalType' => 'sum', //avg
+    'totalLabel' => ''
+]);
 $listGenerator->addColumn('city', 'Stadt');
 $listGenerator->addColumn('hire_date', 'Einstelldatum', [
     'formatter' => function ($value) {
         return $value ? date('d.m.Y', strtotime($value)) : '';
     }
 ]);
+$listGenerator->addColumn('salary', 'Gehalt', [
+    'formatter' => 'euro',
+    'align' => 'right',
+    'showTotal' => true,
+    'totalType' => 'sum', //avg
+    'totalLabel' => 'Durchschnitt:'
+]);
 
-// Buttons definieren (unverändert)
+// Buttons definieren
 $listGenerator->addButton('edit', [
-    'label' => '',
     'icon' => 'edit',
     'position' => 'left',
-    'class' => 'ui blue tiny button',
-    'modalId' => 'editUser',
-    'group' => 'manage1',
-    'params' => ['id'],
-    'conditions' => [
-        function ($row) {
-            return $row['status'] === 'Aktiv';
-        },
-        function ($row) {
-            return in_array($row['role'], ['Admin', 'Editor']);
-        }
-    ],
-    'popup' => 'Benutzer bearbeiten'
-]);
-
-$listGenerator->addButton('deactivate', [
-    'label' => '',
-    'icon' => 'power off',
-    'class' => 'ui orange tiny button',
-    'position' => 'left',
-    'callback' => 'deactivateUser',
-    'params' => ['id'],
-    'conditions' => [
-        function ($row) {
-            return $row['status'] === 'Aktiv';
-        },
-        function ($row) {
-            return $row['role'] !== 'Admin';
-        }
-    ],
-    'popup' => 'Benutzer deaktivieren'
-]);
-
-$listGenerator->addButton('activate', [
-    'label' => '',
-    'icon' => 'power off',
-    'class' => 'ui green tiny button',
-    'position' => 'left',
-    'callback' => 'activateUser',
-    'params' => ['id'],
-    'conditions' => [
-        function ($row) {
-            return $row['status'] === 'Inaktiv';
-        }
-    ],
-    'popup' => 'Benutzer aktivieren'
+    'class' => 'blue mini',
+    'modalId' => 'modal_form_edit',
+    'popup' => 'Bearbeiten',
+    'params' => ['update_id' => 'id']
 ]);
 
 $listGenerator->addButton('delete', [
-    'label' => '',
     'icon' => 'trash',
-    'class' => 'ui red tiny button',
     'position' => 'right',
-    'callback' => 'deleteUser',
-    'params' => ['id'],
-    'confirmMessage' => 'Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?',
+    'class' => 'red mini',
+    'modalId' => 'modal_form_delete',
+    'popup' => 'Löschen',
+    'params' => ['delete_id' => 'id'],
+    'conditions' => [
+        function ($row) {
+            return $row['role'] !== 'Admin'; // Admins können nicht gelöscht werden
+        }
+    ]
+]);
+
+$listGenerator->addButton('activate', [
+    'icon' => 'check',
+    'position' => 'right',
+    'class' => 'green mini',
+    'popup' => 'Aktivieren',
+    'params' => ['user_id' => 'id'],
     'conditions' => [
         function ($row) {
             return $row['status'] === 'Inaktiv';
-        },
-        function ($row) {
-            return $row['project_count'] == 0;
         }
     ],
-    'popup' => 'Benutzer löschen'
+    'callback' => 'activateUser'
 ]);
 
-$listGenerator->addButton('viewProjects', [
-    'label' => '',
-    'icon' => 'folder open',
-    'class' => 'ui teal tiny button',
+$listGenerator->addButton('deactivate', [
+    'icon' => 'ban',
     'position' => 'right',
-    'modalId' => 'viewUserProjects',
-    'params' => ['id'],
+    'class' => 'orange mini',
+    'popup' => 'Deaktivieren',
+    'params' => ['user_id' => 'id'],
     'conditions' => [
         function ($row) {
-            return $row['project_count'] > 0;
+            return $row['status'] === 'Aktiv' && $row['role'] !== 'Admin';
         }
     ],
-    'popup' => 'Projekte anzeigen'
+    'callback' => 'deactivateUser'
 ]);
 
-// Setzen der Spaltentitel für die Buttons
-$listGenerator->setButtonColumnTitle('left', 'Aktionen', 'left');
-$listGenerator->setButtonColumnTitle('right', 'Weitere Aktionen', 'center');
+$listGenerator->addButton('reset_password', [
+    'icon' => 'key',
+    'position' => 'right',
+    'class' => 'teal mini',
+    'popup' => 'Passwort zurücksetzen',
+    'params' => ['user_id' => 'id'],
+    'callback' => 'resetPassword'
+]);
+
+$listGenerator->addButton('edit_permissions', [
+    'icon' => 'lock',
+    'position' => 'right',
+    'class' => 'purple mini',
+    'popup' => 'Berechtigungen bearbeiten',
+    'params' => ['user_id' => 'id'],
+    'modalId' => 'modal_edit_permissions'
+]);
+
+// Modals definieren
+$listGenerator->addModal('modal_form_edit', [
+    'title' => "<i class='icon edit'></i> Benutzer bearbeiten",
+    'class' => 'long',
+    'url' => 'form_edit.php'
+]);
+
+$listGenerator->addModal('modal_form_delete', [
+    'title' => "Benutzer entfernen",
+    'class' => 'small',
+    'url' => 'form_delete.php'
+]);
+
+$listGenerator->addModal('modal_edit_permissions', [
+    'title' => "<i class='icon lock'></i> Benutzerberechtigungen bearbeiten",
+    'class' => 'small',
+    'url' => 'form_edit_permissions.php'
+]);
 
 // Externe Buttons
-$listGenerator->addExternalButton('new_entry', [
+$listGenerator->addExternalButton('new_user', [
     'icon' => 'plus',
-    'class' => 'ui primary button',
-    'position' => 'inline',
-    'alignment' => 'right',
-    'title' => 'Neuer Eintrag'
-]);
-
-$listGenerator->addExternalButton('export_csv', [
-    'icon' => 'download',
-    'class' => 'ui secondary button',
+    'class' => 'ui blue circular button',
     'position' => 'top',
-    'alignment' => 'right',
-    'title' => 'CSV exportieren',
-    'callback' => 'exportToCsv'
+    'alignment' => 'left',
+    'title' => "Neuen Benutzer erstellen",
+    'modalId' => 'modal_form_new_user',
 ]);
 
-// Modal-Definitionen
-$listGenerator->addModal('editUser', [
-    'title' => 'Benutzer bearbeiten',
-    'content' => 'edit_user.php',
-    'size' => 'small',
+$listGenerator->addModal('modal_form_new_user', [
+    'title' => "<i class='icon plus'></i> Neuen Benutzer erstellen",
+    'class' => 'long',
+    'url' => 'form_new_user.php'
 ]);
 
-$listGenerator->addModal('viewUserProjects', [
-    'title' => 'Benutzerprojekte',
-    'content' => 'view_user_projects.php',
-    'size' => 'small',
-]);
-
+// Liste generieren und ausgeben
 echo $listGenerator->generateList();
+
+// Datenbankverbindung schließen
+if (isset($db)) {
+    $db->close();
+}
+?>
+
+<script>
+    function activateUser(params) {
+        $.ajax({
+            url: 'activate_user.php',
+            method: 'POST',
+            data: params,
+            success: function (response) {
+                alert('Benutzer wurde aktiviert');
+                location.reload(); // Seite neu laden, um Änderungen zu sehen
+            },
+            error: function () {
+                alert('Fehler beim Aktivieren des Benutzers');
+            }
+        });
+    }
+
+    function deactivateUser(params) {
+        $.ajax({
+            url: 'deactivate_user.php',
+            method: 'POST',
+            data: params,
+            success: function (response) {
+                alert('Benutzer wurde deaktiviert');
+                location.reload(); // Seite neu laden, um Änderungen zu sehen
+            },
+            error: function () {
+                alert('Fehler beim Deaktivieren des Benutzers');
+            }
+        });
+    }
+
+    function resetPassword(params) {
+        $.ajax({
+            url: 'reset_password.php',
+            method: 'POST',
+            data: params,
+            success: function (response) {
+                alert('Passwort wurde zurückgesetzt');
+            },
+            error: function () {
+                alert('Fehler beim Zurücksetzen des Passworts');
+            }
+        });
+    }
+</script>

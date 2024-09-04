@@ -36,10 +36,11 @@ $query = "
         gender, 
         comment
     FROM senders
+	
     GROUP BY id
 ";
 
-$listGenerator->setSearchableColumns(['full_name', 'email', 'company']);
+$listGenerator->setSearchableColumns(['first_name', 'last_name', 'email', 'company']);
 $listGenerator->setDatabase($db, $query, true);
 
 // Spalten definieren

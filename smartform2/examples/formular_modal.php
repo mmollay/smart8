@@ -1,6 +1,5 @@
 <?php
 require_once '../FormGenerator.php';
-
 $formGenerator = new FormGenerator();
 
 $formGenerator->setFormData([
@@ -13,11 +12,33 @@ $formGenerator->setFormData([
 ]);
 
 $formGenerator->addField([
+    'type' => 'tab',
+    'tabs' => [
+        '1' => 'Personal Information',
+        '2' => 'Contact Details',
+        '3' => 'Additional Information'
+    ],
+    'active' => '1'
+]);
+
+$formGenerator->addFieldGroup('adresse', [
+    ['type' => 'input', 'name' => 'strasse', 'label' => 'Straße', 'required' => true, 'placeholder' => 'Geben Sie Ihre Straße ein'],
+    ['type' => 'input', 'name' => 'hausnummer', 'label' => 'Hausnummer'],
+    ['type' => 'input', 'name' => 'plz', 'label' => 'PLZ'],
+    ['type' => 'input', 'name' => 'ort', 'label' => 'Ort']
+], [
+    'title' => 'Adressinformationen',
+    'wrapper' => 'ui red message'
+], '1');
+
+// Felder für den ersten Tab
+$formGenerator->addField([
     'type' => 'input',
     'name' => 'vorname',
     'label' => 'Vorname',
     'placeholder' => 'Geben Sie Ihren Vornamen ein',
-    'required' => true
+    'required' => true,
+    'tab' => '1'
 ]);
 
 $formGenerator->addField([
@@ -25,9 +46,29 @@ $formGenerator->addField([
     'name' => 'nachname',
     'label' => 'Nachname',
     'placeholder' => 'Geben Sie Ihren Nachnamen ein',
-    'required' => true
+    'required' => true,
+    'tab' => '1'
 ]);
 
+// Felder für den zweiten Tab
+$formGenerator->addField([
+    'type' => 'input',
+    'name' => 'email',
+    'label' => 'E-Mail',
+    'placeholder' => 'Geben Sie Ihre E-Mail-Adresse ein',
+    'required' => true,
+    'tab' => '2'
+]);
+
+$formGenerator->addField([
+    'type' => 'input',
+    'name' => 'telefon',
+    'label' => 'Telefon',
+    'placeholder' => 'Geben Sie Ihre Telefonnummer ein',
+    'tab' => '2'
+]);
+
+// Felder für den dritten Tab
 $formGenerator->addField([
     'type' => 'ckeditor5',
     'name' => 'text',
@@ -37,7 +78,8 @@ $formGenerator->addField([
     'config' => [
         'minHeight' => 200,
         'maxHeight' => 400
-    ]
+    ],
+    'tab' => '3'
 ]);
 
 $formGenerator->addButtonElement([
@@ -62,5 +104,7 @@ $formGenerator->addButtonElement([
 
 // Generiere das Formular
 echo $formGenerator->generateForm();
+
 // Generiere den JavaScript-Code
 echo $formGenerator->generateJS();
+?>

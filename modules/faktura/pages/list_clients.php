@@ -1,6 +1,7 @@
-<?
-//Parameter für Table
-include (__DIR__ . '/../../../../smartform/include_list.php');
+<div id='content_clients'></div>
 
-$array = call_list('../list/client.php', '../f_config.php');
-echo $array['html'] . $array['js'];
+<script>
+    $(document).ready(function () {
+        loadListGenerator('lists/clients.php', { saveState: false, contentId: 'content_clients', });
+    });
+</script>

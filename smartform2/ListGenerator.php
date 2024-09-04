@@ -1,6 +1,5 @@
 <?php
-//Aurichtung der Buttons in den Spalten
-//Externe Buttons positionierbar auch inline
+//mit Summenbildung
 class ListGenerator
 {
     private $config;
@@ -28,6 +27,15 @@ class ListGenerator
 
     private $groupBy = null;
     private $groupByOptions = [];
+
+    private $allowedOperators = ['=', '>', '<', '>=', '<=', 'LIKE', 'IN', 'BETWEEN', 'IS NULL', 'IS NOT NULL'];
+    private $allowedFunctions = ['DATE', 'YEAR', 'MONTH', 'DAY', 'CONCAT', 'UPPER', 'LOWER'];
+
+    private $totals = [];
+    private $totalTypes = [];
+    private $totalLabels = [];
+
+    private $hasWhereClause = false;
 
     public function setGroupBy($column)
     {
@@ -128,16 +136,19 @@ class ListGenerator
         $this->data = $data;
         $this->useDatabase = false;
     }
-
     public function setDatabase($db, $query, $useDatabase = true)
     {
         $this->db = $db;
         $this->query = $query;
         $this->useDatabase = $useDatabase;
 
+        // Prüfen, ob die Abfrage bereits eine WHERE-Klausel enthält
+        $this->hasWhereClause = (stripos($query, 'WHERE') !== false);
+
         $this->debugLog("Database set", [
             'query' => $query,
-            'useDatabase' => $useDatabase
+            'useDatabase' => $useDatabase,
+            'hasWhereClause' => $this->hasWhereClause
         ]);
     }
 
@@ -145,20 +156,75 @@ class ListGenerator
     {
         $this->searchableColumns = $columns;
     }
-
     public function addColumn($key, $label, $options = [])
     {
         $defaultOptions = [
             'allowHtml' => false,
-            'width' => '',  // Neue Option für die Spaltenbreite
-            'formatter' => null
+            'width' => '',
+            'formatter' => null,
+            'align' => 'left',
+            'showTotal' => false,
+            'totalType' => 'sum', // 'sum', 'avg', 'count', 'min', 'max'
+            'totalLabel' => '',
         ];
+
+        $options = array_merge($defaultOptions, $options);
+
+        if (is_string($options['formatter'])) {
+            $options['formatter'] = $this->getPredefinedFormatter($options['formatter']);
+        }
 
         $this->columns[$key] = [
             'label' => $label,
-            'options' => array_merge($defaultOptions, $options)
+            'options' => $options
         ];
+
+        if ($options['showTotal']) {
+            $this->totals[$key] = 0;
+            $this->totalTypes[$key] = $options['totalType'];
+            $this->totalLabels[$key] = $options['totalLabel'];
+        }
     }
+
+
+
+    private function getPredefinedFormatter($formatterName)
+    {
+        $predefinedFormatters = [
+            'euro' => function ($value) {
+                if ($value === null || $value === '')
+                    return '';
+                return number_format((float) $value, 2, ',', '.') . ' €';
+            },
+            'dollar' => function ($value) {
+                if ($value === null || $value === '')
+                    return '';
+                return '$' . number_format((float) $value, 2, '.', ',');
+            },
+            'percent' => function ($value) {
+                if ($value === null || $value === '')
+                    return '';
+                return number_format((float) $value, 2, ',', '.') . ' %';
+            },
+            'date' => function ($value) {
+                return $value ? date('d.m.Y', strtotime($value)) : '';
+            },
+            'datetime' => function ($value) {
+                return $value ? date('d.m.Y H:i', strtotime($value)) : '';
+            },
+            'boolean' => function ($value) {
+                return $value ? 'Ja' : 'Nein';
+            },
+            'number' => function ($value) {
+                if ($value === null || $value === '')
+                    return '';
+                return number_format((float) $value, 0, ',', '.');
+            },
+        ];
+
+        return $predefinedFormatters[$formatterName] ?? null;
+    }
+
 
     public function addFilter($key, $label, $options, $config = [])
     {
@@ -172,15 +238,17 @@ class ListGenerator
             'allowAdditions' => false,
             'customClass' => '',
             'clearable' => true,
-            'where' => "{$key} = ?"
+            'where' => null,
+            'parameterized' => false,
+            'filterType' => 'simple'  // Neuer Parameter zur Unterscheidung zwischen einfachen und komplexen Filtern
         ];
 
-        // Wenn $config ein String ist, nehmen wir an, es ist die WHERE-Bedingung
-        if (is_string($config)) {
-            $config = ['where' => $config];
-        }
-
         $finalConfig = array_merge($defaultConfig, $config);
+
+        // Wenn 'where' nicht gesetzt ist und es sich um einen einfachen Filter handelt
+        if ($finalConfig['where'] === null && $finalConfig['filterType'] === 'simple') {
+            $finalConfig['where'] = "$key = ?";
+        }
 
         $this->filters[$key] = [
             'label' => $label,
@@ -199,13 +267,38 @@ class ListGenerator
         if (!$this->useDatabase) {
             // Logik für nicht-Datenbank-Daten
             $data = $this->data;
+            $innerWhereConditions = [];
+            $params = [];
 
             // Filter anwenden
             foreach ($this->filters as $key => $filter) {
                 if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
                     $filterValue = $_GET['filters'][$key];
-                    $innerWhereConditions[] = $filter['config']['where'];
-                    $params[] = $filterValue;
+
+                    if (is_array($filterValue)) {
+                        // Behandlung von Mehrfachauswahlen
+                        $placeholders = implode(',', array_fill(0, count($filterValue), '?'));
+                        $whereCondition = str_replace('IN (?)', "IN ($placeholders)", $filter['config']['where']);
+                        $innerWhereConditions[] = $whereCondition;
+                        $params = array_merge($params, $filterValue);
+                    } else {
+                        if (isset($filter['options'][$filterValue]) && $filter['config']['where'] === null) {
+                            // Komplexe Abfrage
+                            if ($filter['config']['parameterized']) {
+                                list($condition, $queryParams) = $this->parseParameterizedQuery($filterValue, $_GET['filter_params'][$key] ?? []);
+                                $innerWhereConditions[] = $condition;
+                                $params = array_merge($params, $queryParams);
+                            } else {
+                                $innerWhereConditions[] = $this->validateComplexQuery($filterValue);
+                            }
+                        } else {
+                            // Einfache Abfrage
+                            $whereCondition = $filter['config']['where'] ?? "$key = ?";
+                            $innerWhereConditions[] = $whereCondition;
+                            $params[] = $filterValue;
+                        }
+                    }
+
                     $this->debugLog("Applied filter", ["key" => $key, "value" => $filterValue]);
                 }
             }
@@ -248,6 +341,9 @@ class ListGenerator
 
             $this->totalRows = $this->groupBy ? array_sum(array_map('count', $data)) : count($data);
 
+            // Summen berechnen
+            $this->calculateTotals($data);
+
             // Paginierung anwenden
             if (!$this->groupBy) {
                 $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
@@ -270,6 +366,8 @@ class ListGenerator
 
             return $data;
         } else {
+            $this->debugLog("Verwende Datenbankabfrage", ['query' => $this->query]);
+
             // Datenbanklogik
             $innerWhereConditions = [];
             $params = [];
@@ -279,9 +377,32 @@ class ListGenerator
             foreach ($this->filters as $key => $filter) {
                 if (isset($_GET['filters'][$key]) && $_GET['filters'][$key] !== '') {
                     $filterValue = $_GET['filters'][$key];
-                    $innerWhereConditions[] = $filter['config']['where'];
-                    $params[] = $filterValue;
-                    $this->debugLog("Applied filter", ["key" => $key, "value" => $filterValue]);
+
+                    if (is_array($filterValue)) {
+                        // Behandlung von Mehrfachauswahlen
+                        $placeholders = implode(',', array_fill(0, count($filterValue), '?'));
+                        $whereCondition = str_replace('IN (?)', "IN ($placeholders)", $filter['config']['where']);
+                        $innerWhereConditions[] = $whereCondition;
+                        $params = array_merge($params, $filterValue);
+                    } else {
+                        if ($filter['config']['filterType'] === 'simple') {
+                            // Einfache Abfrage
+                            $whereCondition = $filter['config']['where'];
+                            $innerWhereConditions[] = $whereCondition;
+                            $params[] = $filterValue;
+                        } else {
+                            // Komplexe Abfrage
+                            if ($filter['config']['parameterized']) {
+                                list($condition, $queryParams) = $this->parseParameterizedQuery($filterValue, $_GET['filter_params'][$key] ?? []);
+                                $innerWhereConditions[] = $condition;
+                                $params = array_merge($params, $queryParams);
+                            } else {
+                                $innerWhereConditions[] = $this->validateComplexQuery($filterValue);
+                            }
+                        }
+                    }
+
+                    $this->debugLog("Applied filter", ["key" => $key, "value" => $filterValue, "type" => $filter['config']['filterType']]);
                 }
             }
 
@@ -296,7 +417,8 @@ class ListGenerator
                 $this->debugLog("Applied search condition", $searchConditions);
             }
 
-            $innerWhereClause = $innerWhereConditions ? "WHERE " . implode(' AND ', $innerWhereConditions) : "";
+            $whereOrAnd = $this->hasWhereClause ? 'AND' : 'WHERE';
+            $innerWhereClause = $innerWhereConditions ? "$whereOrAnd " . implode(' AND ', $innerWhereConditions) : "";
 
             // Abfrage basierend auf GROUP BY Klausel modifizieren
             if ($hasGroupBy) {
@@ -349,6 +471,46 @@ class ListGenerator
 
             $sortDirection = $this->config['sortDirection'] === 'DESC' ? 'DESC' : 'ASC';
 
+            // Summen berechnen
+            $totalColumns = [];
+            foreach ($this->totals as $key => $total) {
+                switch ($this->totalTypes[$key]) {
+                    case 'sum':
+                        $totalColumns[] = "SUM({$key}) as total_{$key}";
+                        break;
+                    case 'avg':
+                        $totalColumns[] = "AVG({$key}) as total_{$key}";
+                        break;
+                    case 'count':
+                        $totalColumns[] = "COUNT({$key}) as total_{$key}";
+                        break;
+                    case 'min':
+                        $totalColumns[] = "MIN({$key}) as total_{$key}";
+                        break;
+                    case 'max':
+                        $totalColumns[] = "MAX({$key}) as total_{$key}";
+                        break;
+                }
+            }
+
+            if (!empty($totalColumns)) {
+                $totalQuery = "SELECT " . implode(", ", $totalColumns) . " FROM ({$modifiedQuery}) as subquery";
+                $stmt = $this->db->prepare($totalQuery);
+                if ($stmt) {
+                    if (!empty($params)) {
+                        $types = str_repeat('s', count($params));
+                        $stmt->bind_param($types, ...$params);
+                    }
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $totalRow = $result->fetch_assoc();
+                    foreach ($this->totals as $key => $total) {
+                        $this->totals[$key] = $totalRow["total_{$key}"] ?? 0;
+                    }
+                    $stmt->close();
+                }
+            }
+
             // Daten abrufen
             $offset = ($this->config['page'] - 1) * $this->config['itemsPerPage'];
 
@@ -377,7 +539,6 @@ class ListGenerator
                 if (!empty($params)) {
                     $stmt->bind_param($types, ...$params);
                 }
-
 
                 $stmt->execute();
                 $result = $stmt->get_result();
@@ -426,6 +587,51 @@ class ListGenerator
             $this->debugLog("Failed to prepare SQL statement", ['query' => $query]);
             return [];
         }
+    }
+    private function validateComplexQuery($query)
+    {
+        // Entfernen von Mehrfach-Leerzeichen und Trimmen
+        $query = preg_replace('/\s+/', ' ', trim($query));
+
+        // Überprüfen auf unerlaubte SQL-Schlüsselwörter
+        $disallowedKeywords = ['DELETE', 'DROP', 'TRUNCATE', 'INSERT', 'UPDATE', 'ALTER', '--'];
+        foreach ($disallowedKeywords as $keyword) {
+            if (stripos($query, $keyword) !== false) {
+                throw new Exception("Unerlaubtes SQL-Schlüsselwort gefunden: $keyword");
+            }
+        }
+
+        // Überprüfen der Operatoren und Funktionen
+        $tokens = preg_split('/\s+/', $query);
+        foreach ($tokens as $token) {
+            if (
+                in_array(strtoupper($token), $this->allowedOperators) ||
+                in_array(strtoupper($token), $this->allowedFunctions)
+            ) {
+                continue;
+            }
+            // Hier könnten weitere Überprüfungen hinzugefügt werden
+        }
+
+        return $query;
+    }
+
+    private function parseParameterizedQuery($query, $params)
+    {
+        $processedQuery = $query;
+        $queryParams = [];
+
+        // Ersetzen Sie Platzhalter wie :param mit ? und sammeln Sie die Parameterwerte
+        preg_match_all('/:(\w+)/', $query, $matches);
+        foreach ($matches[1] as $param) {
+            if (!isset($params[$param])) {
+                throw new Exception("Fehlender Parameter: $param");
+            }
+            $processedQuery = str_replace(":$param", '?', $processedQuery);
+            $queryParams[] = $params[$param];
+        }
+
+        return [$this->validateComplexQuery($processedQuery), $queryParams];
     }
 
     private function addGroupByToQuery($query, $groupBy)
@@ -513,7 +719,7 @@ class ListGenerator
         $icon = $button['icon'] ? "<i class='{$button['icon']} icon'></i>" : '';
         $attributes = $this->getButtonAttributes($button);
 
-        $html = "<button id='{$id}' class='{$button['class']}' {$attributes}>";
+        $html = "<button id='{$id}' class='ui {$button['class']} button' {$attributes}>";
         $html .= "{$icon}{$button['title']}</button>";
 
         return $html;
@@ -640,7 +846,7 @@ class ListGenerator
                 $buttonClass .= ' icon';
             }
 
-            $html .= "<button id='{$id}' {$attributes} class='" . htmlspecialchars($buttonClass, ENT_QUOTES, 'UTF-8') . "'>";
+            $html .= "<button id='{$id}' {$attributes} class='ui " . htmlspecialchars($buttonClass, ENT_QUOTES, 'UTF-8') . " button'>";
             if (!empty($button['icon'])) {
                 $html .= "<i class='" . htmlspecialchars($button['icon'], ENT_QUOTES, 'UTF-8') . " icon'></i>";
             }
@@ -677,7 +883,67 @@ class ListGenerator
         return true;
     }
 
+    private function calculateTotals($data)
+    {
+        foreach ($this->totals as $key => $total) {
+            $values = array_column($data, $key);
+            switch ($this->totalTypes[$key]) {
+                case 'sum':
+                    $this->totals[$key] = array_sum($values);
+                    break;
+                case 'avg':
+                    $this->totals[$key] = count($values) > 0 ? array_sum($values) / count($values) : 0;
+                    break;
+                case 'count':
+                    $this->totals[$key] = count($values);
+                    break;
+                case 'min':
+                    $this->totals[$key] = min($values);
+                    break;
+                case 'max':
+                    $this->totals[$key] = max($values);
+                    break;
+            }
+        }
+    }
 
+
+
+    private function generateTotalRow($position = 'header')
+    {
+        $html = "<tr class='active'>";
+        $isFirst = true;
+
+        // Berücksichtigung der linken Button-Spalte
+        if (isset($this->buttonColumnTitles['left'])) {
+            $html .= "<td></td>";
+        }
+
+        foreach ($this->columns as $key => $column) {
+            $align = $column['options']['align'];
+            if (isset($this->totals[$key])) {
+                $value = $this->formatColumnValue($this->totals[$key], $column, null);
+                $label = $this->totalLabels[$key];
+                $totalType = ucfirst($this->totalTypes[$key]);
+                if ($isFirst) {
+                    $html .= "<td class='{$align} aligned'><strong>{$label}</strong> {$value}</td>";
+                    $isFirst = false;
+                } else {
+                    $html .= "<td class='{$align} aligned'>{$value}</td>";
+                }
+            } else {
+                $html .= "<td></td>";
+            }
+        }
+
+        // Berücksichtigung der rechten Button-Spalte
+        if (isset($this->buttonColumnTitles['right'])) {
+            $html .= "<td></td>";
+        }
+
+        $html .= "</tr>";
+        return $html;
+    }
     public function generateList()
     {
         $this->saveFiltersToSession();
@@ -713,6 +979,14 @@ class ListGenerator
         } else {
             $html .= "<table class='{$tableClasses}'>";
             $html .= $this->generateTableHeader();
+
+            // Summenzeile am Anfang der Tabelle
+            // if ($this->hasTotals()) {
+            //     $html .= "<thead>";
+            //     $html .= $this->generateTotalRow('header');
+            //     $html .= "</thead>";
+            // }
+
             $html .= "<tbody>";
 
             if (empty($data) && $this->config['showNoDataMessage']) {
@@ -725,10 +999,18 @@ class ListGenerator
 
             $html .= "</tbody>";
 
+            // Summenzeile am Ende der Tabelle
+            if ($this->hasTotals()) {
+
+                $html .= $this->generateTotalRow('footer');
+
+            }
+            $html .= "<tfoot>";
             if ($this->config['showFooter']) {
                 $html .= $this->generateTableFooter($totalRows, $currentPage, $totalPages);
             }
 
+            $html .= "</tfoot>";
             $html .= "</table>";
         }
 
@@ -752,6 +1034,13 @@ class ListGenerator
             $html .= "<h3 class='ui header'>{$groupValue}</h3>";
             $html .= "<table class='{$this->buildTableClasses()}'>";
             $html .= $this->generateTableHeader();
+
+            if ($this->hasTotals()) {
+                $html .= "<thead>";
+                $html .= $this->generateTotalRow('header');
+                $html .= "</thead>";
+            }
+
             $html .= "<tbody>";
 
             foreach ($groupItems as $item) {
@@ -759,10 +1048,25 @@ class ListGenerator
             }
 
             $html .= "</tbody>";
+
+            if ($this->hasTotals()) {
+                $html .= "<tfoot>";
+                $html .= $this->generateTotalRow('footer');
+                $html .= "</tfoot>";
+            }
+
             $html .= "</table>";
         }
         return $html;
     }
+
+    private function hasTotals()
+    {
+        return !empty($this->totals);
+    }
+
+
+
 
     private function generateGroupByDropdown()
     {
@@ -904,31 +1208,6 @@ class ListGenerator
         return $html;
     }
 
-    private function generateRegularTable($data)
-    {
-        $html = "<table class='{$this->buildTableClasses()}'>";
-        $html .= $this->generateTableHeader();
-        $html .= "<tbody>";
-
-        if (empty($data) && $this->config['showNoDataMessage']) {
-            $html .= $this->generateNoDataMessage();
-        } else {
-            foreach ($data as $item) {
-                $html .= $this->generateTableRow($item);
-            }
-        }
-
-        $html .= "</tbody>";
-
-        if ($this->config['showFooter']) {
-            $html .= $this->generateTableFooter($this->totalRows, $this->config['page'], ceil($this->totalRows / $this->config['itemsPerPage']));
-        }
-
-        $html .= "</table>";
-
-        return $html;
-    }
-
 
     private function buildTableClasses()
     {
@@ -939,8 +1218,6 @@ class ListGenerator
             $classes[] = 'selectable';
         if ($this->config['celled'])
             $classes[] = 'celled';
-        if ($this->config['compact'])
-            $classes[] = 'compact';
         if ($this->config['color'])
             $classes[] = $this->config['color'];
         if ($this->config['size'])
@@ -952,10 +1229,12 @@ class ListGenerator
     {
         $html = "<thead class='{$this->config['headerClasses']}'><tr>";
 
+        // Linke Button-Spalte
         if (isset($this->buttonColumnTitles['left'])) {
             $html .= "<th>{$this->buttonColumnTitles['left']}</th>";
         }
 
+        // Datenspalten
         foreach ($this->columns as $key => $column) {
             $sortClass = $this->getSortClass($key);
             $sortIcon = $this->getSortIcon($key);
@@ -963,11 +1242,20 @@ class ListGenerator
             $html .= "<th class='sortable {$sortClass}' data-column='{$key}' style='{$width}'>{$column['label']} {$sortIcon}</th>";
         }
 
+        // Rechte Button-Spalte
         if (isset($this->buttonColumnTitles['right'])) {
             $html .= "<th>{$this->buttonColumnTitles['right']}</th>";
         }
 
-        $html .= "</tr></thead>";
+        $html .= "</tr>";
+
+        $html .= "</thead>";
+        // Summenzeile in der Kopfzeile, falls erforderlich
+        if ($this->hasTotals()) {
+            $html .= $this->generateTotalRow('header');
+        }
+
+
         return $html;
     }
 
@@ -999,7 +1287,8 @@ class ListGenerator
             $value = $item[$key] ?? '';
             $value = $this->formatColumnValue($value, $column, $item);
             $width = $column['options']['width'] ? "width: {$column['options']['width']};" : "";
-            $html .= "<td class='{$this->config['cellClasses']}' style='{$width}'>{$value}</td>";
+            $align = $column['options']['align'];
+            $html .= "<td class='{$this->config['cellClasses']} {$align} aligned' style='{$width}'>{$value}</td>";
         }
 
         if (isset($this->buttonColumnTitles['right'])) {
@@ -1048,7 +1337,7 @@ class ListGenerator
             [$totalRows, $currentPage, $totalPages],
             $this->config['footerTemplate']
         );
-        return "<tfoot><tr><td colspan='{$colspan}'>{$footerText}</td></tr></tfoot>";
+        return "<tr><td colspan='{$colspan}'>{$footerText}</td></tr>";
     }
     private function renderModals()
     {
@@ -1084,7 +1373,7 @@ class ListGenerator
             if ($data !== null) {
                 $logMessage .= "\nData: " . print_r($data, true);
             }
-            error_log($logMessage . "\n", 3, __DIR__ . '/listgenerator_debug.log');
+            file_put_contents(__DIR__ . '/listgenerator_debug.log', $logMessage . "\n", FILE_APPEND);
         }
     }
 }

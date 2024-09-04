@@ -1,3 +1,4 @@
+<!-- login.php -->
 <!DOCTYPE html>
 <html lang="de">
 
@@ -24,7 +25,6 @@
         .ui.teal.header,
         .ui.teal.button {
             background-color: #21ba45 !important;
-            /* Grünlicher Farbton */
             color: white !important;
         }
     </style>
@@ -32,69 +32,56 @@
 
 <body>
     <div class="ui raised very padded text container segment" style='width:100%'>
-        <h2 class="ui header" style="color: #21ba45;">Smart 8 Login</h2> <!-- Anpassung der Überschrift -->
+        <h2 class="ui header" style="color: #21ba45;">Smart 8 Login</h2>
         <form class="ui huge form" id="loginForm">
             <div class="field">
                 <label>Benutzername</label>
-                <div class="ui fluid input"> <!-- Fluid Input für volle Breite -->
-                    <input type="text" name="username" placeholder="Benutzername" autofocus
-                        value='<?= $_GET['username'] ?>'>
+                <div class="ui fluid input">
+                    <input type="text" value="office@ssi.at" name="username" id="username" placeholder="Benutzername"
+                        autofocus>
                 </div>
             </div>
             <div class="field">
                 <label>Passwort</label>
-                <div class="ui fluid input"> <!-- Fluid Input für volle Breite -->
-                    <input type="password" name="password" placeholder="Passwort">
+                <div class="ui fluid input">
+                    <input type="text" name="password" id="password" placeholder="Passwort" value='MCmaster21;'>
                 </div>
             </div>
             <button class="ui fluid huge teal button" type="submit">Login</button>
-            <!-- Fluid Button für volle Breite -->
         </form>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js"></script>
     <script>
         $(document).ready(function () {
-
-            // Überprüfen, ob der URL-Parameter 'error' den Wert 'not_logged_in' hat
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-
-            if (error === 'not_logged_in') {
-                // Toast-Nachricht anzeigen
-                $('body')
-                    .toast({
-                        class: 'error',
-                        message: 'Sie sind nicht eingeloggt. Bitte loggen Sie sich ein.'
-                    });
-            }
-
             $('#loginForm').submit(function (e) {
                 e.preventDefault();
-                // Hier AJAX-Anfrage einfügen
+
+                var username = $('#username').val();
+                var password = $('#password').val();
+
                 $.ajax({
                     type: "POST",
-                    url: "login2.php", // Pfad zu Ihrer PHP-Datei
-                    data: $(this).serialize(), // Daten des Formulars serialisieren und senden
+                    url: "login2.php",
+                    data: {
+                        username: username,
+                        password: password
+                    },
                     success: function (response) {
-                        // Überprüfen Sie die Antwort, die Ihr Server sendet
-                        // Angenommen, Ihr Server sendet einfach "Erfolg" bei erfolgreicher Anmeldung
                         if (response.trim() === "Erfolg") {
-                            window.location.href = 'modules/main/index.php'; // Weiterleitung zur sicheren Seite
+                            window.location.href = 'modules/main/index.php';
                         } else {
-                            $('body')
-                                .toast({
-                                    class: 'error',
-                                    message: 'Ungültiger Benutzername oder Passwort'
-                                });
+                            $('body').toast({
+                                class: 'error',
+                                message: 'Ungültiger Benutzername oder Passwort'
+                            });
                         }
                     },
                     error: function () {
-                        $('body')
-                            .toast({
-                                class: 'error',
-                                message: 'Ein Fehler ist aufgetreten.'
-                            });
+                        $('body').toast({
+                            class: 'error',
+                            message: 'Ein Fehler ist aufgetreten.'
+                        });
                     }
                 });
             });

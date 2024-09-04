@@ -1,13 +1,13 @@
 <?php
 //Column anlegen aber er liest noch nich die Daten ein 
+//Mit Tab unterstützung
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 class FormGenerator
 {
-    private static $initialized = false;
+
     private static $toastContainerAdded = false;
     private static $ckeditorConfigs = [];
-    private static $formCount = 0;
     private $hasCKEditor = false;
 
     private $formData = [];
@@ -24,6 +24,14 @@ class FormGenerator
 
     private $currentLayout = null;
     private $layoutFieldCount = 0;
+
+    private $values = [];
+
+    private $tabs = [];
+    private $currentTab = null;
+
+    private $tabFields = [];
+
 
 
     public function addButtonElement($buttons, $options = [])
@@ -65,58 +73,78 @@ class FormGenerator
         $options = $element['options'];
 
         $containerClass = 'field';
-        if ($options['alignment'] === 'center') {
-            $containerClass .= ' center aligned';
-        } elseif ($options['alignment'] === 'right') {
-            $containerClass .= ' right aligned';
-        }
-
-        $html = "<div class='{$containerClass}'>";
-
-        $buttonGroupClass = 'ui';
+        if ($options['layout'] === 'grouped')
+            $containerClass .= ' ui buttons';
         if ($options['layout'] === 'vertical')
-            $buttonGroupClass .= ' vertical';
-        if ($options['icon'])
-            $buttonGroupClass .= ' icon';
-        if ($options['labeled'])
-            $buttonGroupClass .= ' labeled icon';
+            $containerClass .= ' vertical';
         if ($options['fluid'])
-            $buttonGroupClass .= ' fluid';
-        if ($options['size'])
-            $buttonGroupClass .= ' ' . $options['size'];
-        if ($options['color'])
-            $buttonGroupClass .= ' ' . $options['color'];
-        if ($options['basic'])
-            $buttonGroupClass .= ' basic';
-        if ($options['compact'])
-            $buttonGroupClass .= ' compact';
-        if ($options['toggle'])
-            $buttonGroupClass .= ' toggle';
+            $containerClass .= ' fluid';
 
-        if (count($buttons) > 1 && in_array($options['layout'], ['grouped', 'vertical'])) {
-            $html .= "<div class='{$buttonGroupClass} buttons'>";
-        }
+        $html = "<div class='$containerClass' style='text-align: {$options['alignment']};'>";
 
-        foreach ($buttons as $index => $button) {
-            if ($options['layout'] === 'spaced' && $index > 0) {
-                $html .= "<span style='margin-right: {$options['spacing']};'></span>";
+        foreach ($buttons as $button) {
+            $type = $button['type'] ?? 'button';
+            $value = $button['value'] ?? '';
+            $icon = $button['icon'] ?? '';
+            $class = $button['class'] ?? 'ui button';
+            $onclick = $button['onclick'] ?? '';
+
+            // Füge globale Button-Optionen hinzu
+            if ($options['basic'])
+                $class .= ' basic';
+            if ($options['size'])
+                $class .= ' ' . $options['size'];
+            if ($options['color'])
+                $class .= ' ' . $options['color'];
+            if ($options['compact'])
+                $class .= ' compact';
+            if ($options['toggle'])
+                $class .= ' toggle';
+            if ($options['positive'])
+                $class .= ' positive';
+            if ($options['negative'])
+                $class .= ' negative';
+            if ($options['circular'])
+                $class .= ' circular';
+
+            $buttonAttributes = '';
+            if ($type === 'submit') {
+                $buttonAttributes .= ' type="submit"';
+            } else {
+                $buttonAttributes .= ' type="button"';
             }
 
-            $buttonClass = $this->getButtonClass($button, $options);
-            $button['class'] = $buttonClass;
-
-            if ($options['layout'] === 'inline' && $index > 0) {
-                $html .= "<span style='margin-right: {$options['spacing']};'></span>";
+            // Füge onclick-Attribut hinzu
+            if ($onclick) {
+                $buttonAttributes .= " onclick=\"$onclick\"";
+            } elseif ($type === 'close') {
+                // Automatisches Schließen für 'close'-Buttons ohne explizites onclick
+                $buttonAttributes .= " onclick=\"$('.ui.modal').modal('hide');\"";
             }
 
-            $html .= $this->generateButton($button);
+            $html .= "<button$buttonAttributes class=\"$class\">";
+
+            if ($options['icon'] || $icon) {
+                $iconClass = $icon ?: $options['icon'];
+                if ($options['labeled']) {
+                    $html .= "<i class='$iconClass icon'></i>";
+                    $html .= $value;
+                } else {
+                    $html .= "<i class='$iconClass icon'></i>" . ($value ? $value : '');
+                }
+            } else {
+                $html .= $value;
+            }
+
+            $html .= "</button>";
+
+            if ($options['layout'] === 'spaced' && !end($buttons) === $button) {
+                $html .= "<span style='margin-right: {$options['spacing']};'></span>";
+            }
         }
 
-        if (count($buttons) > 1 && in_array($options['layout'], ['grouped', 'vertical'])) {
-            $html .= "</div>";
-        }
+        $html .= "</div>";
 
-        $html .= "</div>\n";
         return $html;
     }
 
@@ -161,37 +189,6 @@ class FormGenerator
         return "<button type='{$type}' name='{$name}' class='{$class}'{$attributes}>{$buttonContent}</button>\n";
     }
 
-    private function getButtonClass($button, $groupOptions)
-    {
-        $class = isset($button['class']) ? $button['class'] : 'ui button';
-        if (!strpos($class, 'ui button')) {
-            $class .= ' ui button';
-        }
-
-        $additionalClasses = [
-            $groupOptions['size'],
-            $groupOptions['color'],
-            $groupOptions['basic'] ? 'basic' : '',
-            $groupOptions['icon'] && !$groupOptions['labeled'] ? 'icon' : '',
-            $groupOptions['labeled'] ? 'labeled icon' : '',
-            $button['animated'] ?? false ? 'animated' : '',
-            $groupOptions['fluid'] ? 'fluid' : '',
-            $groupOptions['compact'] ? 'compact' : '',
-            $groupOptions['toggle'] ? 'toggle' : '',
-            $button['positive'] ?? false ? 'positive' : '',
-            $button['negative'] ?? false ? 'negative' : '',
-            $button['circular'] ?? false ? 'circular' : '',
-        ];
-
-        $class .= ' ' . implode(' ', array_filter($additionalClasses));
-
-        return trim($class);
-    }
-    //Dieser Ansatz ermöglicht es Ihnen, Daten aus der Datenbank zu laden und sie den entsprechenden Formularfeldern zuzuweisen, auch wenn die Feldnamen nicht exakt mit den Spaltennamen in der Datenbank übereinstimmen.
-    // $mappings = [
-    //     'username' => 'user_name',
-    //     'email' => 'user_email'
-    // ];
 
     private function getBasePath()
     {
@@ -202,7 +199,7 @@ class FormGenerator
     }
 
 
-    public function loadValuesFromDatabase($db, $sql, $params = [], $mappings = [])
+    public function loadValuesFromDatabase($db, $sql, $params = [], $mappings = [], $additionalValues = [])
     {
         $stmt = $db->prepare($sql);
         if (!empty($params)) {
@@ -211,30 +208,42 @@ class FormGenerator
         }
         $stmt->execute();
         $result = $stmt->get_result();
-        $data = $result->fetch_assoc();
+        $this->values = $result->fetch_assoc();
 
-        if ($data) {
-            foreach ($this->fields as &$field) {
-                if (isset($field['name'])) {  // Prüfen, ob 'name' existiert
-                    $dbField = isset($mappings[$field['name']]) ? $mappings[$field['name']] : $field['name'];
-                    if (isset($data[$dbField])) {
-                        $field['value'] = $data[$dbField];
-                    }
+        if ($this->values) {
+            foreach ($mappings as $formField => $dbField) {
+                if (isset($this->values[$dbField])) {
+                    $this->values[$formField] = $this->values[$dbField];
                 }
             }
+
+            // Füge zusätzliche Werte hinzu
+            $this->values = array_merge($this->values, $additionalValues);
+
+            $this->setFieldValues($this->values);
         }
         $stmt->close();
     }
 
-    public function setFieldValues($values, $mappings = [])
+    public function setFieldValues($values)
     {
+        $this->values = array_merge($this->values, $values);
+
         foreach ($this->fields as &$field) {
-            $dbField = isset($mappings[$field['name']]) ? $mappings[$field['name']] : $field['name'];
-            if (isset($values[$dbField])) {
-                $field['value'] = $values[$dbField];
+            if (isset($field['name']) && isset($this->values[$field['name']])) {
+                $field['value'] = $this->values[$field['name']];
+            }
+
+            if ($field['type'] === 'grid') {
+                foreach ($field['fields'] as &$gridField) {
+                    if (isset($gridField['name']) && isset($this->values[$gridField['name']])) {
+                        $gridField['value'] = $this->values[$gridField['name']];
+                    }
+                }
             }
         }
     }
+
     public function __construct()
     {
         $this->language = 'en'; // Standardsprache auf Englisch setzen
@@ -272,33 +281,53 @@ class FormGenerator
         }
     }
 
+    public function addTab($tabId, $tabLabel)
+    {
+        $this->tabs[$tabId] = $tabLabel;
+    }
+
+    public function setCurrentTab($tabId)
+    {
+        $this->currentTab = $tabId;
+    }
+
+    private function handleTabField($field)
+    {
+        foreach ($field['tabs'] as $tabId => $tabLabel) {
+            $this->addTab($tabId, $tabLabel);
+        }
+        if (isset($field['active'])) {
+            $this->setCurrentTab($field['active']);
+        }
+    }
+
     public function addField($field)
     {
-        if ($field['type'] === 'grid') {
-            $this->processGridFields($field);
+        if ($field['type'] === 'tab') {
+            $this->handleTabField($field);
             return;
         }
 
-        if ($field['type'] === 'layout') {
-            if ($field['layout'] === 'begin') {
-                $this->currentLayout = [
-                    'columns' => $field['columns'],
-                    'fields' => []
-                ];
-            } elseif ($field['layout'] === 'end') {
-                $this->fields[] = $this->generateLayoutHTML($this->currentLayout);
-                $this->currentLayout = null;
-                $this->layoutFieldCount = 0;
-            }
-            return;
+        // If tabs are being used, assign the current tab to the field
+        if ($this->currentTab !== null && !isset($field['tab'])) {
+            $field['tab'] = $this->currentTab;
         }
 
         if (!isset($field['name'])) {
             $field['name'] = 'field_' . uniqid();
         }
 
+        if (isset($this->values[$field['name']])) {
+            $field['value'] = $this->values[$field['name']];
+        }
+
         if ($field['type'] === 'hidden') {
             $this->fields[] = $field;
+            return;
+        }
+
+        if ($field['type'] === 'grid') {
+            $this->addGridField($field);
             return;
         }
 
@@ -339,39 +368,32 @@ class FormGenerator
             $this->requiredFields[$field['name']] = $this->buildValidationRules($field);
         }
 
+        // Handle layout fields
         if ($this->currentLayout !== null) {
             $this->currentLayout['fields'][] = $field;
             $this->layoutFieldCount += $field['width'] ?? 1;
 
             if ($this->layoutFieldCount >= $this->currentLayout['columns']) {
-                $this->fields[] = $this->generateLayoutHTML($this->currentLayout);
+                $layoutField = $this->generateLayoutHTML($this->currentLayout);
+                $this->addFieldToAppropriateArray($layoutField);
                 $this->currentLayout = null;
                 $this->layoutFieldCount = 0;
             }
         } else {
-            $this->fields[] = $field;
+            $this->addFieldToAppropriateArray($field);
         }
     }
 
-    private function processGridFields($gridField)
+    private function addFieldToAppropriateArray($field)
     {
-        $gridHtml = "<div class='ui {$gridField['columns']} column grid'>";
-
-        foreach ($gridField['fields'] as $field) {
-            $columnWidth = $field['width'] ?? 16;
-            $gridHtml .= "<div class='{$columnWidth} wide column'>";
-
-            if (isset($this->loadedValues[$field['name']])) {
-                $field['value'] = $this->loadedValues[$field['name']];
+        if (isset($field['tab']) && isset($this->tabs[$field['tab']])) {
+            if (!isset($this->tabFields[$field['tab']])) {
+                $this->tabFields[$field['tab']] = [];
             }
-
-            $gridHtml .= $this->generateField($field);
-            $gridHtml .= "</div>";
+            $this->tabFields[$field['tab']][] = $field;
+        } else {
+            $this->fields[] = $field;
         }
-
-        $gridHtml .= "</div>";
-
-        $this->fields[] = ['type' => 'custom', 'html' => $gridHtml];
     }
 
     private function generateLayoutHTML($layout)
@@ -436,29 +458,64 @@ class FormGenerator
 
         return $rules;
     }
-
     public function generateForm()
     {
-        self::$formCount++;
+        $formId = $this->formData['id'];
+        $formHtml = "<form id='{$formId}' action='{$this->formData['action']}' method='{$this->formData['method']}' class='{$this->formData['class']}'>\n";
 
-        $formHtml = "<form id='{$this->formData['id']}' action='{$this->formData['action']}' method='{$this->formData['method']}' class='{$this->formData['class']}'>\n";
-
-        foreach ($this->fields as $field) {
-            if (is_string($field)) {
-                // Bereits generiertes Layout-HTML
-                $formHtml .= $field;
-            } elseif ($field['type'] === 'buttonElement') {
-                $formHtml .= $this->generateButtonElement($field);
-            } else {
-                $formHtml .= $this->generateField($field);
-            }
+        if (!empty($this->tabs)) {
+            $formHtml .= $this->generateTabs();
+            $formHtml .= $this->generateTabContent();
         }
+
+        // Fügen Sie immer die Felder aus $this->fields hinzu
+        $formHtml .= $this->generateFields($this->fields);
 
         $formHtml .= "</form>";
 
         $this->addToastContainerIfNeeded($formHtml);
 
         return $formHtml;
+    }
+
+    private function generateTabs()
+    {
+        $tabsHtml = "<div class='ui top attached tabular menu'>";
+        foreach ($this->tabs as $tabId => $tabLabel) {
+            $activeClass = ($tabId === $this->currentTab) ? 'active' : '';
+            $tabsHtml .= "<a class='item {$activeClass}' data-tab='{$tabId}'>{$tabLabel}</a>";
+        }
+        $tabsHtml .= "</div>";
+        return $tabsHtml;
+    }
+
+    private function generateFields($fields)
+    {
+        $fieldsHtml = "";
+        foreach ($fields as $field) {
+            if (is_string($field)) {
+                $fieldsHtml .= $field;
+            } elseif ($field['type'] === 'buttonElement') {
+                $fieldsHtml .= $this->generateButtonElement($field);
+            } else {
+                $fieldsHtml .= $this->generateField($field);
+            }
+        }
+        return $fieldsHtml;
+    }
+
+    private function generateTabContent()
+    {
+        $tabContentHtml = "";
+        foreach ($this->tabs as $tabId => $tabLabel) {
+            $activeClass = ($tabId === $this->currentTab) ? 'active' : '';
+            $tabContentHtml .= "<div class='ui bottom attached tab segment {$activeClass}' data-tab='{$tabId}'>";
+            if (isset($this->tabFields[$tabId])) {
+                $tabContentHtml .= $this->generateFields($this->tabFields[$tabId]);
+            }
+            $tabContentHtml .= "</div>";
+        }
+        return $tabContentHtml;
     }
 
     private function addToastContainerIfNeeded(&$formHtml)
@@ -568,13 +625,23 @@ class FormGenerator
     private function generateField($field, $inSplitGroup = false)
     {
 
+
+        if (isset($this->values[$field['name']])) {
+            $field['value'] = $this->values[$field['name']];
+        }
+
         $fieldType = $field['type'] ?? '';
         $label = $field['label'] ?? '';
         $placeholder = $field['placeholder'] ?? '';
         $value = $field['value'] ?? '';
+
         $fieldClass = $field['class'] ?? '';
         $width = !empty($field['width']) ? "wide {$field['width']}" : '';
         $required = !empty($field['required']) ? 'required' : '';
+
+        $tabAttribute = isset($field['tab']) ? "data-tab='{$field['tab']}'" : '';
+        $fieldHtml = $inSplitGroup ? "<div class='$width field {$required}' {$tabAttribute}>" : "<div class='field {$required}' {$tabAttribute}>";
+
 
         if ($fieldType === 'button') {
             $name = $field['name'] ?? 'button_' . uniqid();  // Generiere einen eindeutigen Namen, falls keiner angegeben ist
@@ -587,6 +654,10 @@ class FormGenerator
         $fieldHtml = $inSplitGroup ? "<div  class='$width field {$required}'>" : "<div class='field {$required}'>";
 
         switch ($fieldType) {
+            case 'grid':
+                return $this->generateGridField($field);
+            case 'gridColumn':
+                return $this->generateGridColumn($field);
             case 'hidden':
                 $fieldHtml = "<input type='hidden' name='{$field['name']}' value='" . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . "'>";
                 break;
@@ -655,8 +726,9 @@ class FormGenerator
                 $fieldHtml .= "<div class='default text'>" . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . "</div>";
                 $fieldHtml .= "<div class='menu'>";
 
-                foreach ($field['array'] as $value => $label) {
-                    $fieldHtml .= "<div class='item' data-value=\"" . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . "\">$label</div>";
+                foreach ($field['array'] as $optionValue => $optionLabel) {
+                    $selected = in_array($optionValue, $selectedValues) ? ' selected' : '';
+                    $fieldHtml .= "<div class='item{$selected}' data-value=\"" . htmlspecialchars($optionValue, ENT_QUOTES, 'UTF-8') . "\">{$optionLabel}</div>";
                 }
 
                 $fieldHtml .= "</div></div>";
@@ -776,8 +848,22 @@ class FormGenerator
             $js .= "<script src='{$basePath}/js/ckeditor-init.js'></script>\n";
         }
 
+        if (!empty($this->tabs)) {
+            $js .= "
+            <script>
+            
+            $(document).ready(function() {
+                $('.menu .item').tab();
+            });
+            </script>
+            ";
+        }
+
         if ($this->hasFileUploader) {
             //$basePathUploader = $basePath . "/uploader/";
+
+
+
 
             $js .= "
             <script>
@@ -866,4 +952,64 @@ class FormGenerator
         $relativePath = '/' . trim($relativePath, '/');
         return $relativePath . '/upload_image.php';
     }
+
+    private function addGridField($gridField)
+    {
+        if (!isset($gridField['columns']) || !isset($gridField['fields']) || !is_array($gridField['fields'])) {
+            throw new InvalidArgumentException("Grid field must have 'columns' and 'fields' array defined.");
+        }
+
+        $gridFields = [];
+        foreach ($gridField['fields'] as $field) {
+            if (!isset($field['width'])) {
+                throw new InvalidArgumentException("Each field in a grid must have a 'width' defined.");
+            }
+
+            $columnClass = $this->getColumnClass($field['width'], $gridField['columns']);
+
+
+            // Setze den Wert, falls vorhanden
+            if (isset($field['name']) && isset($this->values[$field['name']])) {
+                $field['value'] = $this->values[$field['name']];
+            }
+
+            $gridFields[] = [
+                'type' => 'gridColumn',
+                'class' => $columnClass,
+                'content' => $field
+            ];
+        }
+
+        $this->fields[] = [
+            'type' => 'grid',
+            'columns' => $gridField['columns'],
+            'fields' => $gridFields
+        ];
+    }
+
+    private function setFieldValue(&$field)
+    {
+        if (isset($field['name']) && isset($this->values[$field['name']])) {
+            $field['value'] = $this->values[$field['name']];
+        }
+    }
+
+    private function generateGridField($gridField)
+    {
+        $html = "<div class='ui {$gridField['columns']} column grid'>";
+        foreach ($gridField['fields'] as $field) {
+            $html .= $this->generateField($field);
+        }
+        $html .= "</div>";
+        return $html;
+    }
+
+    private function generateGridColumn($columnField)
+    {
+        $html = "<div class='{$columnField['class']} column'>";
+        $html .= $this->generateField($columnField['content']);
+        $html .= "</div>";
+        return $html;
+    }
+
 }
