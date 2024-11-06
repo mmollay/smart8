@@ -31,6 +31,7 @@ $listGenerator = new ListGenerator([
     'width' => '1200px',
     'filterClass' => 'ui message',
     'debug' => true,
+
 ]);
 
 // Datenbank-Verbindung

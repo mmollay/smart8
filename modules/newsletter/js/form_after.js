@@ -33,7 +33,7 @@ function afterFormSubmit(id, customTitle = 'Data has been saved') {
 	}
 }
 
-// Funktion zum Senden des Newsletters über AJAX Table Reload
+// In form_after.js
 function sendNewsletter(contentId) {
 	$.ajax({
 		url: 'ajax/send_newsletter.php',
@@ -51,6 +51,11 @@ function sendNewsletter(contentId) {
 					reloadTable();
 				} else {
 					console.warn('reloadTable function is not defined');
+				}
+
+				// Hier checkPendingEmails aufrufen
+				if (typeof checkPendingEmails === 'function') {
+					setTimeout(checkPendingEmails, 1000); // Kurze Verzögerung für DB-Update
 				}
 			} else {
 				showErrorToast(data.message || 'Unbekannter Fehler beim Senden des Newsletters.');

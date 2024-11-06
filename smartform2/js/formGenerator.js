@@ -13,7 +13,7 @@ function initializeForm(formId, formRules, responseType, successFunction) {
     $.each(formRules, function (fieldName, rules) {
         formValidationRules[fieldName] = { identifier: fieldName, rules: rules };
     });
-
+    
     form.off('submit');
 
     form.form({
@@ -209,16 +209,30 @@ function initializeDropdowns() {
     $('.ui.dropdown').each(function () {
         var $dropdown = $(this);
         var settingsAttr = $dropdown.attr('data-settings');
+        var onChangeAttr = $dropdown.attr('data-onchange');
         var settings = settingsAttr ? JSON.parse(settingsAttr) : {};
 
         // Stelle sicher, dass fullTextSearch und clearable korrekt gesetzt sind
         settings.fullTextSearch = settings.fullTextSearch !== false;
         settings.clearable = settings.clearable !== false;
 
+        // Füge das onChange-Event hinzu, wenn es definiert ist
+        if (onChangeAttr) {
+            settings.onChange = function (value, text, $selected) {
+                try {
+                    eval('(' + onChangeAttr + ')(value, text, $selected)');
+                } catch (error) {
+                    console.error('Error in onChange function:', error);
+                }
+            };
+        }
+
         console.log('Dropdown ID:', $dropdown.attr('id'));
         console.log('Final Settings:', settings);
+
         $dropdown.dropdown(settings);
 
+        // Füge ein zusätzliches change-Event für Logging hinzu
         $dropdown.on('change', function (event, data) {
             console.log('Dropdown changed:', {
                 id: $dropdown.attr('id'),
@@ -228,3 +242,4 @@ function initializeDropdowns() {
         });
     });
 }
+

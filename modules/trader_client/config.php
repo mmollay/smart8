@@ -3,7 +3,7 @@
 $currentFile = basename($_SERVER['PHP_SELF']);
 
 if ($currentFile !== "login2.php" && $currentFile !== "user_impersonation.php") {
-    include (__DIR__ . "/check_permission.php");
+    include(__DIR__ . "/check_permission.php");
 }
 
 $host = 'localhost';
@@ -19,10 +19,9 @@ if (!$db) {
     die("Verbindung fehlgeschlagen: " . mysqli_connect_error());
 }
 
-
 // Definieren Sie die Zeitfenster, die ausgeschlossen werden sollen
 $exclusionPeriods = [
-    ['start' => "2024-04-15", 'end' => "2024-04-19"],
+    ['start' => "2024-01-01", 'end' => "2024-05-31"],
     // Fügen Sie weitere Zeitfenster nach Bedarf hinzu
 ];
 

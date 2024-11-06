@@ -15,14 +15,11 @@ if (!mysqli_select_db($db, $dbname)) {
     die('Datenbankauswahl fehlgeschlagen: ' . mysqli_error($db));
 }
 
+$_SESSION['user_id'] = $_SESSION['faktura_company_id'] = '40';
 
-return;
-exit;
-
-include(__DIR__ . '/../../modules/faktura/f_config.php');
-include(__DIR__ . '/functions.inc.php');
 // Aktuelles Jahr
 $year = date('Y');
+
 
 if ($_SESSION['user_id'] == '40') {
     $db_faktura = "ssi_faktura";
@@ -159,7 +156,6 @@ for ($ii = date("Y"); $ii > 2011; $ii--) {
 /*
  * Userconfig
  */
-$_SESSION['user_id'] = $_SESSION['login_user_id'];
 
 if ($_SESSION['user_id'] == '40') {
     $show_menu['finance_status'] = true;

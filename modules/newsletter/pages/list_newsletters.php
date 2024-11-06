@@ -3,6 +3,6 @@
 <!-- <script src="../../smartform2/js/listGenerator.js"></script> -->
 <script>
     $(document).ready(function () {
-        loadListGenerator('lists/newsletters.php', { saveState: false, contentId: 'content_newsletters', });
+        loadListGenerator('lists/newsletters.php', { saveState: true, contentId: 'content_newsletters', });
     });
 </script>

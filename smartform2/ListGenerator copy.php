@@ -1,5 +1,5 @@
 <?php
-//mit Summenbildung AND WHERE Verknüpfung
+//mit Summenbildung
 class ListGenerator
 {
     private $config;
@@ -34,6 +34,8 @@ class ListGenerator
     private $totals = [];
     private $totalTypes = [];
     private $totalLabels = [];
+
+    private $hasWhereClause = false;
 
     public function setGroupBy($column)
     {
@@ -72,6 +74,7 @@ class ListGenerator
             'width' => '100%',
             'filterClass' => 'ui message',
             'rememberFilters' => true,
+            'allowHtml' => false,
         ];
 
         $this->config = array_merge($defaultConfig, $config);
@@ -134,16 +137,19 @@ class ListGenerator
         $this->data = $data;
         $this->useDatabase = false;
     }
-
     public function setDatabase($db, $query, $useDatabase = true)
     {
         $this->db = $db;
         $this->query = $query;
         $this->useDatabase = $useDatabase;
 
+        // Prüfen, ob die Abfrage bereits eine WHERE-Klausel enthält
+        $this->hasWhereClause = (stripos($query, 'WHERE') !== false);
+
         $this->debugLog("Database set", [
             'query' => $query,
-            'useDatabase' => $useDatabase
+            'useDatabase' => $useDatabase,
+            'hasWhereClause' => $this->hasWhereClause
         ]);
     }
 
@@ -154,9 +160,13 @@ class ListGenerator
     public function addColumn($key, $label, $options = [])
     {
         $defaultOptions = [
-            'allowHtml' => false,
-            'width' => '',
+            'allowHtml' => $this->config['allowHtml'],
+            'width' => 'auto',
+            'flex' => '',
+            'nowrap' => false,
+            'class' => '',
             'formatter' => null,
+            'replace' => null,
             'align' => 'left',
             'showTotal' => false,
             'totalType' => 'sum', // 'sum', 'avg', 'count', 'min', 'max'
@@ -189,17 +199,20 @@ class ListGenerator
             'euro' => function ($value) {
                 if ($value === null || $value === '')
                     return '';
-                return number_format((float) $value, 2, ',', '.') . ' €';
+                $formatted = number_format((float) $value, 2, ',', '.') . ' €';
+                return $value < 0 ? "<span style='color: red;'>{$formatted}</span>" : $formatted;
             },
             'dollar' => function ($value) {
                 if ($value === null || $value === '')
                     return '';
-                return '$' . number_format((float) $value, 2, '.', ',');
+                $formatted = '$' . number_format((float) $value, 2, '.', ',');
+                return $value < 0 ? "<span style='color: red;'>{$formatted}</span>" : $formatted;
             },
             'percent' => function ($value) {
                 if ($value === null || $value === '')
                     return '';
-                return number_format((float) $value, 2, ',', '.') . ' %';
+                $formatted = number_format((float) $value, 2, ',', '.') . ' %';
+                return $value < 0 ? "<span style='color: red;'>{$formatted}</span>" : $formatted;
             },
             'date' => function ($value) {
                 return $value ? date('d.m.Y', strtotime($value)) : '';
@@ -208,18 +221,46 @@ class ListGenerator
                 return $value ? date('d.m.Y H:i', strtotime($value)) : '';
             },
             'boolean' => function ($value) {
-                return $value ? 'Ja' : 'Nein';
+                return $value ? '<span style="color: green;">Ja</span>' : '<span style="color: red;">Nein</span>';
             },
             'number' => function ($value) {
                 if ($value === null || $value === '')
                     return '';
-                return number_format((float) $value, 0, ',', '.');
+                $formatted = number_format((float) $value, 0, ',', '.');
+                return $value < 0 ? "<span style='color: red;'>{$formatted}</span>" : $formatted;
             },
+            'number_color' => function ($value) {
+                if ($value === null || $value === '')
+                    return '';
+                $formatted = number_format((float) $value, 2, ',', '.');
+                $color = $value > 0 ? 'green' : ($value < 0 ? 'red' : 'black');
+                return "<span style='color: {$color};'>{$formatted}</span>";
+            },
+            'filesize' => function ($bytes) {
+                $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                $bytes = max($bytes, 0);
+                $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+                $pow = min($pow, count($units) - 1);
+                $bytes /= (1 << (10 * $pow));
+                return round($bytes, 2) . ' ' . $units[$pow];
+            },
+            'duration' => function ($seconds) {
+                if ($seconds < 60)
+                    return $seconds . ' Sek';
+                if ($seconds < 3600)
+                    return floor($seconds / 60) . ' Min ' . ($seconds % 60) . ' Sek';
+                return floor($seconds / 3600) . ' Std ' . floor(($seconds % 3600) / 60) . ' Min';
+            },
+            'phone' => function ($number) {
+                return preg_replace('/(\d{3})(\d{3})(\d{4})/', '($1) $2-$3', $number);
+            },
+            'truncate' => function ($string, $length = 50, $append = "...") {
+                return (strlen($string) > $length) ? substr($string, 0, $length - strlen($append)) . $append : $string;
+            }
         ];
 
         return $predefinedFormatters[$formatterName] ?? null;
     }
-
 
     public function addFilter($key, $label, $options, $config = [])
     {
@@ -361,7 +402,6 @@ class ListGenerator
 
             return $data;
         } else {
-
             $this->debugLog("Verwende Datenbankabfrage", ['query' => $this->query]);
 
             // Datenbanklogik
@@ -413,7 +453,8 @@ class ListGenerator
                 $this->debugLog("Applied search condition", $searchConditions);
             }
 
-            $innerWhereClause = $innerWhereConditions ? "WHERE " . implode(' AND ', $innerWhereConditions) : "";
+            $whereOrAnd = $this->hasWhereClause ? 'AND' : 'WHERE';
+            $innerWhereClause = $innerWhereConditions ? "$whereOrAnd " . implode(' AND ', $innerWhereConditions) : "";
 
             // Abfrage basierend auf GROUP BY Klausel modifizieren
             if ($hasGroupBy) {
@@ -751,10 +792,18 @@ class ListGenerator
             'title' => '',
             'content' => '',
             'size' => 'small',
-            'method' => 'POST'
+            'method' => 'POST',
+            'class' => ''
         ];
 
-        $this->modals[$id] = array_merge($defaultOptions, $options);
+        $options = array_merge($defaultOptions, $options);
+
+        // Wenn das Modal bereits existiert, überschreiben wir es komplett
+        if (isset($this->modals[$id])) {
+            $this->modals[$id] = $options;
+        } else {
+            $this->modals[$id] = $options;
+        }
     }
 
     public function addButton($id, $options)
@@ -857,14 +906,22 @@ class ListGenerator
     private function getButtonParams($button, $item)
     {
         $params = ['listId' => $this->config['listId'] ?? 'defaultListId'];
-        foreach ($button['params'] as $alias => $originalKey) {
-            if (is_numeric($alias)) {
-                $params[$originalKey] = $item[$originalKey] ?? '';
+        foreach ($button['params'] as $alias => $paramConfig) {
+            if (is_array($paramConfig) && isset($paramConfig['type'])) {
+                switch ($paramConfig['type']) {
+                    case 'fixed':
+                        $params[$alias] = $paramConfig['value'];
+                        break;
+                    // Hier können weitere Typen hinzugefügt werden
+                    default:
+                        // Behandeln Sie unbekannte Typen
+                        break;
+                }
             } else {
-                $params[$alias] = $item[$originalKey] ?? '';
+                // Bestehende Logik für dynamische Werte aus $item
+                $params[$alias] = $item[$paramConfig] ?? '';
             }
         }
-        error_log('Button params: ' . print_r($params, true)); // Debugging
         return $params;
     }
 
@@ -910,16 +967,15 @@ class ListGenerator
         $isFirst = true;
 
         // Berücksichtigung der linken Button-Spalte
-        if (isset($this->buttonColumnTitles['left'])) {
+        if (isset($this->buttonColumnTitles['left']) && $this->hasButtonsForPosition('left')) {
             $html .= "<td></td>";
         }
 
         foreach ($this->columns as $key => $column) {
-            $align = $column['options']['align'];
+            $align = $column['options']['align'] ?? 'left';
             if (isset($this->totals[$key])) {
                 $value = $this->formatColumnValue($this->totals[$key], $column, null);
-                $label = $this->totalLabels[$key];
-                $totalType = ucfirst($this->totalTypes[$key]);
+                $label = $this->totalLabels[$key] ?? '';
                 if ($isFirst) {
                     $html .= "<td class='{$align} aligned'><strong>{$label}</strong> {$value}</td>";
                     $isFirst = false;
@@ -932,17 +988,17 @@ class ListGenerator
         }
 
         // Berücksichtigung der rechten Button-Spalte
-        if (isset($this->buttonColumnTitles['right'])) {
+        if (isset($this->buttonColumnTitles['right']) && $this->hasButtonsForPosition('right')) {
             $html .= "<td></td>";
         }
 
         $html .= "</tr>";
         return $html;
     }
+
+
     public function generateList()
     {
-        $this->saveFiltersToSession();
-
         $data = $this->fetchData();
         $totalRows = $this->totalRows;
         $totalPages = ceil($totalRows / $this->config['itemsPerPage']);
@@ -955,6 +1011,7 @@ class ListGenerator
         // Render top external buttons
         $html .= $this->renderExternalButtons('top');
 
+        // Suchfeld und inline Buttons
         $html .= "<div class='ui grid'>";
         $html .= "<div class='six wide column'>";
         $html .= $this->generateSearchField();
@@ -966,48 +1023,34 @@ class ListGenerator
 
         $html .= $this->generateFilters();
 
-        // Gruppieren-Dropdown hinzufügen
-        $html .= $this->generateGroupByDropdown();
+        $html .= "<table class='{$tableClasses}'>";
+        $html .= $this->generateTableHeader();
 
-        if ($this->groupBy) {
-            $html .= $this->generateGroupedTable($data);
+        $html .= "<tbody>";
+        if (empty($data) && $this->config['showNoDataMessage']) {
+            $html .= $this->generateNoDataMessage();
         } else {
-            $html .= "<table class='{$tableClasses}'>";
-            $html .= $this->generateTableHeader();
-
-            // Summenzeile am Anfang der Tabelle
-            // if ($this->hasTotals()) {
-            //     $html .= "<thead>";
-            //     $html .= $this->generateTotalRow('header');
-            //     $html .= "</thead>";
-            // }
-
-            $html .= "<tbody>";
-
-            if (empty($data) && $this->config['showNoDataMessage']) {
-                $html .= $this->generateNoDataMessage();
-            } else {
-                foreach ($data as $item) {
-                    $html .= $this->generateTableRow($item);
-                }
+            foreach ($data as $item) {
+                $html .= $this->generateTableRow($item);
             }
-
-            $html .= "</tbody>";
-
-            // Summenzeile am Ende der Tabelle
-            if ($this->hasTotals()) {
-
-                $html .= $this->generateTotalRow('footer');
-
-            }
-            $html .= "<tfoot>";
-            if ($this->config['showFooter']) {
-                $html .= $this->generateTableFooter($totalRows, $currentPage, $totalPages);
-            }
-
-            $html .= "</tfoot>";
-            $html .= "</table>";
         }
+        $html .= "</tbody>";
+
+        // Fußzeile
+        if ($this->config['showFooter']) {
+            $html .= "<tfoot>";
+            $html .= $this->generateTableFooter($totalRows, $currentPage, $totalPages);
+            $html .= "</tfoot>";
+        }
+
+        // Summenzeile am Ende der Tabelle
+        if ($this->hasTotals()) {
+            $html .= "<tfoot>";
+            $html .= $this->generateTotalRow('footer');
+            $html .= "</tfoot>";
+        }
+
+        $html .= "</table>";
 
         if ($this->config['showPagination']) {
             $html .= $this->generatePagination($currentPage, $totalPages);
@@ -1059,9 +1102,6 @@ class ListGenerator
     {
         return !empty($this->totals);
     }
-
-
-
 
     private function generateGroupByDropdown()
     {
@@ -1220,12 +1260,23 @@ class ListGenerator
         return implode(' ', array_filter($classes));
     }
 
+    private function hasButtonsForPosition($position)
+    {
+        foreach ($this->buttons as $button) {
+            if ($button['position'] === $position) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     private function generateTableHeader()
     {
         $html = "<thead class='{$this->config['headerClasses']}'><tr>";
 
         // Linke Button-Spalte
-        if (isset($this->buttonColumnTitles['left'])) {
+        if (isset($this->buttonColumnTitles['left']) && $this->hasButtonsForPosition('left')) {
             $html .= "<th>{$this->buttonColumnTitles['left']}</th>";
         }
 
@@ -1238,20 +1289,36 @@ class ListGenerator
         }
 
         // Rechte Button-Spalte
-        if (isset($this->buttonColumnTitles['right'])) {
+        if (isset($this->buttonColumnTitles['right']) && $this->hasButtonsForPosition('right')) {
             $html .= "<th>{$this->buttonColumnTitles['right']}</th>";
         }
 
-        $html .= "</tr>";
+        $html .= "</tr></thead>";
 
-        $html .= "</thead>";
         // Summenzeile in der Kopfzeile, falls erforderlich
         if ($this->hasTotals()) {
             $html .= $this->generateTotalRow('header');
         }
 
-
         return $html;
+    }
+
+    private function getColumnStyle($options)
+    {
+        $style = [];
+        if (!empty($options['width'])) {
+            $style[] = "width: {$options['width']}";
+            $style[] = "max-width: {$options['width']}";
+        }
+        if (!empty($options['flex'])) {
+            $style[] = "flex: {$options['flex']}";
+        }
+        if ($options['nowrap'] ?? false) {
+            $style[] = "white-space: nowrap";
+            $style[] = "overflow: hidden";
+            $style[] = "text-overflow: ellipsis";
+        }
+        return implode('; ', $style);
     }
 
     private function getSortClass($key)
@@ -1273,7 +1340,7 @@ class ListGenerator
     {
         $html = "<tr class='{$this->config['rowClasses']}'>";
 
-        if (isset($this->buttonColumnTitles['left'])) {
+        if (isset($this->buttonColumnTitles['left']) && $this->hasButtonsForPosition('left')) {
             $alignment = $this->buttonColumnAlignments['left'];
             $html .= "<td class='button-column {$alignment} aligned'>" . $this->renderButtons($item, 'left') . "</td>";
         }
@@ -1281,12 +1348,13 @@ class ListGenerator
         foreach ($this->columns as $key => $column) {
             $value = $item[$key] ?? '';
             $value = $this->formatColumnValue($value, $column, $item);
-            $width = $column['options']['width'] ? "width: {$column['options']['width']};" : "";
-            $align = $column['options']['align'];
-            $html .= "<td class='{$this->config['cellClasses']} {$align} aligned' style='{$width}'>{$value}</td>";
+            $style = $this->getColumnStyle($column['options']);
+            $align = $column['options']['align'] ?? '';
+            $class = $this->config['cellClasses'] . ' ' . $align . ' aligned ' . ($column['options']['class'] ?? '');
+            $html .= "<td class='{$class}' style='{$style}'>{$value}</td>";
         }
 
-        if (isset($this->buttonColumnTitles['right'])) {
+        if (isset($this->buttonColumnTitles['right']) && $this->hasButtonsForPosition('right')) {
             $alignment = $this->buttonColumnAlignments['right'];
             $html .= "<td class='button-column {$alignment} aligned'>" . $this->renderButtons($item, 'right') . "</td>";
         }
@@ -1294,14 +1362,32 @@ class ListGenerator
         $html .= "</tr>";
         return $html;
     }
-
     private function formatColumnValue($value, $column, $item)
     {
-        if (isset($column['options']['formatter'])) {
-            $value = $column['options']['formatter']($value, $item);
+        // Zuerst die Ersetzungslogik anwenden
+        if (isset($column['options']['replace'])) {
+            $replaceOptions = $column['options']['replace'];
+            if (isset($replaceOptions[$value])) {
+                $value = $replaceOptions[$value];
+            } elseif (isset($replaceOptions['default'])) {
+                $value = $replaceOptions['default'];
+            }
         }
 
-        return $column['options']['allowHtml']
+        // Dann den vorhandenen Formatter anwenden (falls vorhanden)
+        if (isset($column['options']['formatter'])) {
+            if (is_string($column['options']['formatter'])) {
+                $formatter = $this->getPredefinedFormatter($column['options']['formatter']);
+                if ($formatter) {
+                    $value = $formatter($value, $item);
+                }
+            } elseif (is_callable($column['options']['formatter'])) {
+                $value = $column['options']['formatter']($value, $item);
+            }
+        }
+
+        // HTML erlauben oder escapen
+        return $column['options']['allowHtml'] ?? false
             ? $value
             : htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
     }
@@ -1340,7 +1426,8 @@ class ListGenerator
         foreach ($this->modals as $id => $modal) {
             $sizeClass = $this->getModalSizeClass($modal['size']);
             $method = $modal['method'];
-            $html .= "<div class='ui modal {$sizeClass}' id='{$id}' data-content-url='{$modal['content']}' data-method='{$method}'>";
+            $class = $modal['class'];
+            $html .= "<div class='ui modal {$sizeClass} {$class}' id='{$id}' data-content-url='{$modal['content']}' data-method='{$method}'>";
             $html .= "<i class='close icon'></i>";
             $html .= "<div class='header'>{$modal['title']}</div>";
             $html .= "<div class='content'>";
@@ -1352,13 +1439,11 @@ class ListGenerator
         }
         return $html;
     }
-
     private function getModalSizeClass($size)
     {
         $validSizes = ['mini', 'tiny', 'small', 'large', 'fullscreen'];
-        return in_array($size, $validSizes) ? $size : '';
+        return in_array($size, $validSizes) ? $size : 'small';
     }
-
 
 
     private function debugLog($message, $data = null)

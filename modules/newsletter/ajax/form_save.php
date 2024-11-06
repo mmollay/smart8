@@ -1,5 +1,5 @@
 <?php
-require_once (__DIR__ . '/../n_config.php');
+require_once(__DIR__ . '/../n_config.php');
 
 function handleDatabaseOperation($db, $operation, $table, $data, $id = null)
 {
@@ -34,7 +34,7 @@ function saveGroups($db, $table, $content_id, $group_ids)
 {
 	$group_ids = explode(',', $group_ids);
 
-	$id_column = $table === 'email_content_groups' ? 'email_content_id' : 'recipient_group_id';
+	$id_column = $table === 'email_content_groups' ? 'email_content_id' : 'recipient_id';
 
 	$stmt = $db->prepare("DELETE FROM $table WHERE $id_column = ?");
 	$stmt->bind_param("i", $content_id);

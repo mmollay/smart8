@@ -87,8 +87,20 @@
     <script>
         $(document).ready(function () {
             $('#openModalBtn').click(function () {
+
                 $('#modalContent').load('formular_modal.php', function () {
-                    $('#myModal').modal('show');
+                    $('#myModal').modal({
+                        closable: false,
+                        observeChanges: true,
+                        focus: false,
+                        onApprove: function () {
+                            return submitModalForm($modal, contentId);
+                        },
+                        onHidden: function () {
+                            //Modalinhalt leeren auch Größe zurücksetzen
+                            $modal.modal('refresh').find('.content').html('');
+                        }
+                    }).modal('show');
                 });
             });
 
@@ -99,5 +111,6 @@
         });
     </script>
 </body>
+s
 
 </html>

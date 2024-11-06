@@ -128,7 +128,7 @@ echo $formGenerator->generateForm();
 function getGroups($db)
 {
     $array_groups = [];
-    $sql = "SELECT g.id, g.name, COUNT(rg.recipient_group_id) as recipients_count
+    $sql = "SELECT g.id, g.name, COUNT(rg.recipient_id) as recipients_count
             FROM groups g
             LEFT JOIN recipient_group rg ON g.id = rg.group_id
             GROUP BY g.id, g.name
@@ -146,7 +146,7 @@ function getGroups($db)
 function getSelectedGroups($db, $recipient_id)
 {
     $selected_groups = [];
-    $sql = "SELECT group_id FROM recipient_group WHERE recipient_group_id = ?";
+    $sql = "SELECT group_id FROM recipient_group WHERE recipient_id = ?";
     $stmt = $db->prepare($sql);
     $stmt->bind_param("i", $recipient_id);
     $stmt->execute();

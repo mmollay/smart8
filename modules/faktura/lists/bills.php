@@ -227,13 +227,13 @@ foreach ($buttons as $id => $button) {
 
 // Modals definieren
 $modals = [
-    'modal_logbook' => ['title' => "<i class='icon edit'></i> Logbuch bearbeiten", 'url' => "form_logbook.php?update_id={id}"],
-    'modal_form_clone' => ['title' => "<i class='icon copy'></i> $str_button_name2 bearbeiten", 'class' => 'long', 'url' => 'form/f_bills.php?clone=1'],
-    'modal_form' => ['title' => 'Kunden bearbeiten', 'content' => 'form/f_clients.php', 'size' => 'large'],
-    'modal_form_new' => ['title' => "<i class='icon edit'></i> $str_button_name2 erstellen", 'url' => "form/f_bills.php?document=$document"],
-    'modal_form_delete' => ['title' => "$str_button_name2 entfernen", 'class' => 'small', 'url' => 'form_delete.php'],
-    'modal_form_send' => ['title' => "$str_button_name2 versenden", 'url' => 'form_send.php'],
-    'modal_form_print' => ['title' => 'War der Druckervorgang erfolgreich?', 'class' => 'small', 'url' => 'form_print.php?all=1'],
+    'modal_logbook' => ['title' => "<i class='icon edit'></i> Logbuch bearbeiten", 'content' => "form_logbook.php?update_id={id}"],
+    'modal_form_clone' => ['title' => "<i class='icon copy'></i> $str_button_name2 bearbeiten", 'class' => 'long', 'content' => 'form/f_bills.php?clone=1'],
+    'modal_form' => ['title' => 'Kunden bearbeiten', 'content' => 'form/f_bills.php', 'size' => 'large'],
+    'modal_form_new' => ['title' => "<i class='icon edit'></i> $str_button_name2 erstellen", 'content' => "form/f_bills.php?document=$document"],
+    'modal_form_delete' => ['title' => "$str_button_name2 entfernen", 'class' => 'small', 'content' => 'form_delete.php'],
+    'modal_form_send' => ['title' => "$str_button_name2 versenden", 'content' => 'form_send.php'],
+    'modal_form_print' => ['title' => 'War der Druckervorgang erfolgreich?', 'class' => 'small', 'content' => 'form_print.php?all=1'],
 ];
 
 foreach ($modals as $id => $modal) {

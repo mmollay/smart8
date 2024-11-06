@@ -1,9 +1,66 @@
-$(document).ready(function () {
-    $('#testSendEmail').on('click', function () {
-        var $button = $(this);
+function checkPendingEmails() {
+    $.ajax({
+        url: 'ajax/check_pending_emails.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.hasPendingEmails) {
+                if ($('#testSendEmail').length === 0) {
+                    $('.ui.left.fixed.menu').append(
+                        '<div class="item"><button class="ui blue icon button" id="testSendEmail">' +
+                        '<i class="paper plane icon"></i></button></div>'
+                    );
+                    initializeSendButton();
+                }
+            } else {
+                $('#testSendEmail').closest('.item').remove();
+            }
+        }
+    });
+}
 
-        // Button-Zustand ändern
-        $button.addClass('loading disabled').text('Wird ausgeführt...');
+function startEmailCheck(initialSendId) {
+    let checkInterval = setInterval(function () {
+        $.ajax({
+            url: 'ajax/check_sending_status.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (!response.isStillSending) {
+                    clearInterval(checkInterval);
+
+                    // Setze Button zurück
+                    const $button = $('#testSendEmail');
+                    const $icon = $button.find('i');
+                    $icon.removeClass('sync alternate spinning').addClass('paper plane');
+                    $button.removeClass('disabled');
+
+                    // Zeige Abschlussmeldung
+                    $('body').toast({
+                        title: 'E-Mail Versand abgeschlossen',
+                        message: 'Alle E-Mails wurden verarbeitet',
+                        class: 'success',
+                        showProgress: 'bottom',
+                        displayTime: 4000
+                    });
+
+                    // Aktualisiere UI
+                    reloadTable();
+                    checkPendingEmails();
+                }
+            }
+        });
+    }, 2000); // Prüfe alle 2 Sekunden
+}
+
+function initializeSendButton() {
+    $('#testSendEmail').off('click').on('click', function () {
+        var $button = $(this);
+        var $icon = $button.find('i');
+
+        // Button-Zustand ändern und rotierendes Icon anzeigen
+        $button.addClass('disabled');
+        $icon.removeClass('paper plane').addClass('sync alternate spinning');
 
         // AJAX-Aufruf zur Hintergrund-Ausführung
         $.ajax({
@@ -12,32 +69,54 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
-                    // Erfolgreiche Ausführung
-                    $button.removeClass('blue loading').addClass('green')
-                        .html('<i class="check icon"></i>Erfolgreich: ' + response.success_count + '/' + response.total_jobs);
+                    // Toast für Start des Versands
+                    $('body').toast({
+                        title: 'E-Mail Versand gestartet',
+                        message: response.total_jobs + ' E-Mails werden versendet',
+                        class: 'info',
+                        showProgress: 'bottom',
+                        displayTime: 4000
+                    });
 
-                    // Detaillierte Informationen in der Konsole ausgeben
-                    console.log('E-Mail-Versand abgeschlossen:', response);
+                    // Starte Überprüfung des Versandstatus
+                    startEmailCheck(response.send_id);
                 } else {
-                    // Fehler bei der Ausführung
-                    $button.removeClass('blue loading').addClass('red')
-                        .html('<i class="exclamation triangle icon"></i>Fehler aufgetreten');
+                    // Fehlerbehandlung
+                    $('body').toast({
+                        title: 'Fehler beim E-Mail Versand',
+                        message: 'Der Versand konnte nicht gestartet werden.',
+                        class: 'error',
+                        showProgress: 'bottom',
+                        displayTime: 4000
+                    });
+
+                    // Setze Button zurück
+                    $icon.removeClass('sync alternate spinning').addClass('paper plane');
+                    $button.removeClass('disabled');
                 }
-                reloadTable();
             },
             error: function () {
-                // Netzwerk- oder Server-Fehler
-                $button.removeClass('blue loading').addClass('red')
-                    .html('<i class="exclamation triangle icon"></i>Verbindungsfehler');
-            },
-            complete: function () {
-                // Button nach 5 Sekunden zurücksetzen
-                setTimeout(function () {
-                    $button.removeClass('green red disabled')
-                        .addClass('blue')
-                        .html('<i class="paper plane icon"></i>E-Mail Versand testen');
-                }, 5000);
+                // Verbindungsfehler
+                $('body').toast({
+                    title: 'Verbindungsfehler',
+                    message: 'Fehler bei der Verbindung zum Server',
+                    class: 'error',
+                    showProgress: 'bottom',
+                    displayTime: 4000
+                });
+
+                // Setze Button zurück
+                $icon.removeClass('sync alternate spinning').addClass('paper plane');
+                $button.removeClass('disabled');
             }
         });
     });
+}
+
+$(document).ready(function () {
+    // Prüfe alle 30 Sekunden auf neue E-Mails
+    setInterval(checkPendingEmails, 30000);
+
+    // Initialer Check
+    checkPendingEmails();
 });

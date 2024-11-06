@@ -50,6 +50,28 @@ $formGenerator->addField([
     'tab' => '1'
 ]);
 
+//uploader
+$formGenerator->addField([
+    'type' => 'uploader',
+    'name' => 'files',
+    'config' => array(
+        'MAX_FILE_SIZE' => 100 * 1024 * 1024, // 20 MB
+        'MAX_FOLDER_SIZE' => 10000 * 1024 * 1024,
+        'ALLOWED_FORMATS' => ['pdf', 'jpeg'],
+        'MAX_FILE_COUNT' => 10,
+        'UPLOAD_DIR' => '../uploads/',
+        'LANGUAGE' => 'de',
+        'dropZoneId' => 'drop-zone',
+        'fileInputId' => 'file-input',
+        'fileListId' => 'file-list',
+        'deleteAllButtonId' => 'delete-all',
+        'progressContainerId' => 'progress-container',
+        'progressBarId' => 'progress',
+        'showDeleteAllButton' => true,
+        'tab' => '1'
+    )
+]);
+
 // Felder für den zweiten Tab
 $formGenerator->addField([
     'type' => 'input',
@@ -66,6 +88,32 @@ $formGenerator->addField([
     'label' => 'Telefon',
     'placeholder' => 'Geben Sie Ihre Telefonnummer ein',
     'tab' => '2'
+]);
+
+$formGenerator->addField([
+    'type' => 'grid',
+    'columns' => 3,
+    'tab' => '2',
+    'fields' => [
+        [
+            'type' => 'input',
+            'name' => 'postal_code',
+            'label' => 'PLZ',
+            'width' => 1
+        ],
+        [
+            'type' => 'input',
+            'name' => 'city',
+            'label' => 'Stadt',
+            'width' => 1
+        ],
+        [
+            'type' => 'input',
+            'name' => 'country',
+            'label' => 'Land',
+            'width' => 1
+        ]
+    ]
 ]);
 
 // Felder für den dritten Tab
@@ -107,4 +155,5 @@ echo $formGenerator->generateForm();
 
 // Generiere den JavaScript-Code
 echo $formGenerator->generateJS();
+
 ?>

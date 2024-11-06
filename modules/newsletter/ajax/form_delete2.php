@@ -1,5 +1,5 @@
 <?php
-require_once (__DIR__ . '/../n_config.php');
+require_once(__DIR__ . '/../n_config.php');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die(json_encode(['success' => false, 'message' => 'Ungültige Anfragemethode']));
@@ -62,13 +62,21 @@ try {
             break;
 
         case 'newsletters':
-            // Lösche verknüpfte Einträge in email_logs und email_jobs
-            $stmt = $db->prepare("DELETE el FROM email_logs el 
-                                  JOIN email_jobs ej ON el.job_id = ej.id 
-                                  WHERE ej.content_id = ?");
+            // Lösche verknüpfte Einträge in email_tracking
+            $stmt = $db->prepare("DELETE et FROM email_tracking et 
+                                JOIN email_jobs ej ON et.job_id = ej.id 
+                                WHERE ej.content_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
+            // Lösche verknüpfte Einträge in email_logs
+            $stmt = $db->prepare("DELETE el FROM email_logs el 
+                                JOIN email_jobs ej ON el.job_id = ej.id 
+                                WHERE ej.content_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Lösche Einträge in email_jobs
             $stmt = $db->prepare("DELETE FROM email_jobs WHERE content_id = ?");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
@@ -78,7 +86,26 @@ try {
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
 
-            // Lösche den E-Mail-Inhalt
+            // Lösche Einträge in newsletter_attachments
+            $stmt = $db->prepare("DELETE FROM newsletter_attachments WHERE newsletter_id = ?");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            // Lösche die physischen Attachment-Dateien
+            //$upload_dir = __DIR__ . "/../../uploads/users/{$delete_id}/";
+            $upload_dir = "../../../uploads/users/{$delete_id}/";
+            if (file_exists($upload_dir)) {
+                $files = glob($upload_dir . '*');
+                foreach ($files as $file) {
+                    if (is_file($file)) {
+                        unlink($file);
+                    }
+                }
+                // Versuche das Verzeichnis zu löschen
+                rmdir($upload_dir);
+            }
+
+            // Lösche den Newsletter selbst
             $stmt = $db->prepare("DELETE FROM email_contents WHERE id = ? LIMIT 1");
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
@@ -92,6 +119,7 @@ try {
     echo json_encode(['success' => true, 'message' => 'Eintrag erfolgreich gelöscht']);
 } catch (Exception $e) {
     $db->rollback();
+    error_log("Fehler beim Löschen: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Fehler beim Löschen: ' . $e->getMessage()]);
 }
 ?>

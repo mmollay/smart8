@@ -16,6 +16,7 @@ $listGenerator = new ListGenerator([
     'selectable' => true,
     'celled' => true,
     'width' => '1200px',
+    'debug' => true,
 ]);
 
 // Datenbank-Abfrage
@@ -28,7 +29,7 @@ $query = "
     FROM 
         groups g
         LEFT JOIN recipient_group rg ON g.id = rg.group_id
-        LEFT JOIN recipients r ON rg.recipient_group_id = r.id
+        LEFT JOIN recipients r ON rg.group_id = r.id
     GROUP BY 
         g.id
 ";

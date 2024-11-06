@@ -395,7 +395,6 @@ class FormGenerator
             $this->addFieldToAppropriateArray($field);
         }
     }
-
     private function addFieldToAppropriateArray($field)
     {
         if (isset($field['tab']) && isset($this->tabs[$field['tab']])) {
@@ -720,6 +719,11 @@ class FormGenerator
 
     private function generateField($field, $inSplitGroup = false)
     {
+
+        if ($field['type'] === 'grid') {
+            return $this->generateGridField($field);
+        }
+
         if ($field['type'] === 'group') {
             return $this->generateGroupFields($field['fields']);
         }
@@ -810,6 +814,13 @@ class FormGenerator
                 $dropdownSettings['clearable'] = $dropdownSettings['clearable'] ?? true;
                 $dropdownSettings['multiple'] = $multiple;
 
+                // Behandle das onChange-Event separat
+                $onChangeFunction = '';
+                if (isset($dropdownSettings['onChange'])) {
+                    $onChangeFunction = $dropdownSettings['onChange'];
+                    unset($dropdownSettings['onChange']); // Entferne es aus den Einstellungen, die als JSON übergeben werden
+                }
+
                 $dropdownSettingsForJson = array_filter($dropdownSettings, function ($value) {
                     return !is_string($value) || !preg_match('/^function\s*\(/', $value);
                 });
@@ -821,7 +832,7 @@ class FormGenerator
                 $multipleClass = $multiple ? 'multiple' : '';
 
                 $fieldHtml .= "<label>{$label}</label>";
-                $fieldHtml .= "<div id='{$dropdownId}' class='ui fluid {$searchClass} {$clearableClass} {$multipleClass} selection dropdown {$fieldClass}' data-settings='{$dropdownSettingsJson}'>";
+                $fieldHtml .= "<div id='{$dropdownId}' class='ui fluid {$searchClass} {$clearableClass} {$multipleClass} selection dropdown {$fieldClass}' data-settings='{$dropdownSettingsJson}' data-onchange='" . htmlspecialchars($onChangeFunction, ENT_QUOTES, 'UTF-8') . "'>";
                 $fieldHtml .= "<input type='hidden' name='{$nameAttr}' value='" . implode(',', $selectedValues) . "'>";
                 $fieldHtml .= "<i class='dropdown icon'></i>";
                 $fieldHtml .= "<div class='default text'>" . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . "</div>";
@@ -856,6 +867,9 @@ class FormGenerator
                 return $fieldHtml;
             case 'content':
                 $fieldHtml .= "<div class='$fieldClass'>{$field['value']}</div>\n";
+                break;
+            case 'custom':
+                $fieldHtml .= $field['content'];
                 break;
             case 'uploader':
                 $config = $field['config'];
@@ -897,18 +911,57 @@ class FormGenerator
                 $fieldId = $field['id'] ?? $field['name'];
                 $fieldHtml .= "<label>{$label}</label>
                                    <div id='{$fieldId}-toolbar'></div>
-                                   <div id='{$fieldId}-container'>
+                                   <div id='{$fieldId}-container' style='border:solid #e5e5e5; border-width:0 1px 1px 1px; border-radius:0 0 3px 3px;'>
                                        <div id='{$fieldId}' class='ckeditor-content' data-name='{$field['name']}'>{$value}</div>
                                    </div>";
                 break;
             case 'html':
                 return $field['content'];
+            case 'table':
+                $fieldHtml .= $this->generateTableField($field);
+                break;
             default:
                 $fieldHtml .= "Unbekannter Feldtyp: {$fieldType}";
         }
 
         $fieldHtml .= "</div>\n";
         return $fieldHtml;
+    }
+
+    private function generateTableField($field)
+    {
+        $name = $field['name'];
+        $label = $field['label'];
+        $columns = $field['columns'];
+
+        $html = "<div class='field'>";
+        $html .= "<label>{$label}</label>";
+        $html .= "<table class='ui celled table' id='{$name}'>";
+
+        // Header
+        $html .= "<thead><tr>";
+        foreach ($columns as $columnName => $columnLabel) {
+            $html .= "<th>{$columnLabel}</th>";
+        }
+        $html .= "<th>Actions</th></tr></thead>";
+
+        // Body
+        $html .= "<tbody>";
+        // Hier könnten Sie vorhandene Daten einfügen, falls welche vorhanden sind
+        $html .= "</tbody>";
+
+        // Footer (für neue Einträge)
+        $html .= "<tfoot><tr>";
+        foreach ($columns as $columnName => $columnLabel) {
+            $html .= "<td><input type='text' name='{$name}[new][{$columnName}]' /></td>";
+        }
+        $html .= "<td><button type='button' class='ui button' onclick='addTableRow(\"{$name}\")'>Add</button></td>";
+        $html .= "</tr></tfoot>";
+
+        $html .= "</table>";
+        $html .= "</div>";
+
+        return $html;
     }
 
     private function generateGroupFields($fields)
@@ -967,7 +1020,6 @@ class FormGenerator
         if (!empty($this->tabs)) {
             $js .= "
             <script>
-            
             $(document).ready(function() {
                 $('.menu .item').tab();
             });
@@ -976,40 +1028,83 @@ class FormGenerator
         }
 
         if ($this->hasFileUploader) {
-            //$basePathUploader = $basePath . "/uploader/";
-
-
-
-
             $js .= "
             <script>
             (function() {
-                if (typeof FileUploader === 'undefined') {
-                    var script = document.createElement('script');
-                    script.src = '{$basePath}/js/fileUploader.js';
-                    script.onload = function() {
-                        initializeFileUploader('{$formId}');
+                // Globales Objekt für FileUploader-Management
+                if (!window.FileUploaderManager) {
+                    window.FileUploaderManager = {
+                        instances: {},
+                        configs: {},
+                        
+                        // Initialisiert oder aktualisiert eine Uploader-Instanz
+                        initOrUpdate: function(formId, config) {
+                            // Wenn eine alte Instanz existiert, diese zuerst bereinigen
+                            if (this.instances[formId]) {
+                                this.cleanup(formId);
+                            }
+                            
+                            // Konfiguration speichern
+                            this.configs[formId] = config;
+                            
+                            // Neue Instanz erstellen
+                            this.instances[formId] = new FileUploader(config);
+                            console.log('FileUploader initialized for form:', formId);
+                        },
+                        
+                        // Bereinigt eine Uploader-Instanz
+                        cleanup: function(formId) {
+                            if (this.instances[formId]) {
+                                // Event-Listener entfernen
+                                const instance = this.instances[formId];
+                                if (instance.dropZone) {
+                                    instance.dropZone.removeEventListener('dragover', instance.handleDragOver);
+                                    instance.dropZone.removeEventListener('dragleave', instance.handleDragLeave);
+                                    instance.dropZone.removeEventListener('drop', instance.handleDrop);
+                                    instance.dropZone.removeEventListener('click', instance.handleClick);
+                                }
+                                
+                                if (instance.fileInput) {
+                                    instance.fileInput.removeEventListener('change', instance.handleFileSelect);
+                                }
+                                
+                                // Instanz löschen
+                                delete this.instances[formId];
+                                console.log('FileUploader cleaned up for form:', formId);
+                            }
+                        }
                     };
-                    script.onerror = function() {
-                        console.error('Failed to load fileUploader.js');
-                    };
-                    document.head.appendChild(script);
-                } else {
-                    initializeFileUploader('{$formId}');
                 }
-    
-                function initializeFileUploader(formId) {
-                    if (typeof FileUploader !== 'undefined') {
-                        if (!window.fileUploaders) {
-                            window.fileUploaders = {};
-                        }
-                        if (!window.fileUploaders[formId]) {
-                            window.fileUploaders[formId] = new FileUploader(" . json_encode($this->fileUploaderConfig) . ");
-                        }
+                
+                // Funktion zum Laden und Initialisieren des FileUploaders
+                function loadAndInitializeFileUploader(formId, config) {
+                    if (typeof FileUploader === 'undefined') {
+                        // FileUploader-Skript laden wenn noch nicht vorhanden
+                        var script = document.createElement('script');
+                        script.src = '{$basePath}/js/fileUploader.js';
+                        script.onload = function() {
+                            window.FileUploaderManager.initOrUpdate(formId, config);
+                        };
+                        script.onerror = function() {
+                            console.error('Failed to load fileUploader.js');
+                        };
+                        document.head.appendChild(script);
                     } else {
-                        console.error('FileUploader is not defined after loading the script.');
+                        // FileUploader direkt initialisieren
+                        window.FileUploaderManager.initOrUpdate(formId, config);
                     }
                 }
+                
+                // Modal-Event-Listener für Cleanup
+                $('.ui.modal').on('hide', function() {
+                    const formId = $(this).find('form').attr('id');
+                    if (formId && window.FileUploaderManager) {
+                        window.FileUploaderManager.cleanup(formId);
+                    }
+                });
+                
+                // FileUploader initialisieren
+                loadAndInitializeFileUploader('" . $formId . "', " . json_encode($this->fileUploaderConfig) . ");
             })();
             </script>
             ";
@@ -1022,23 +1117,44 @@ class FormGenerator
             var formRules = {$rulesJson};
             var responseType = '{$responseType}';
             var successFunction = function(response) { {$successFunction} };
-            var uploadUrl = '{$uploadUrl}'; // Hier fügen wir die Upload-URL hinzu
+            var uploadUrl = '{$uploadUrl}';
     
             $(document).ready(function() {
                 initializeForm(formId, formRules, responseType, successFunction);
     
                 " . ($this->hasCKEditor ? "
                 $('.ckeditor-content').each(function() {
-                var editorId = $(this).attr('id');
-                var config = " . json_encode(self::$ckeditorConfigs) . "[editorId] || {};
-                initializeCKEditor(editorId, config, '" . $this->getUploadUrl() . "');
-            });
+                    var editorId = $(this).attr('id');
+                    var config = " . json_encode(self::$ckeditorConfigs) . "[editorId] || {};
+                    initializeCKEditor(editorId, config, '" . $this->getUploadUrl() . "');
+                });
                 " : "") . "
     
                 // Initialisiere Dropdowns
                 initializeDropdowns();
             });
         })(jQuery);
+    
+        function addTableRow(tableId) {
+            var table = document.getElementById(tableId);
+            var newRow = table.insertRow(-1);
+            var columns = table.rows[0].cells.length - 1; // -1 wegen der Aktionsspalte
+            
+            for (var i = 0; i < columns; i++) {
+                var cell = newRow.insertCell(i);
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.name = tableId + '[]' + table.rows[0].cells[i].innerText;
+                cell.appendChild(input);
+            }
+            
+            var actionCell = newRow.insertCell(-1);
+            var deleteButton = document.createElement('button');
+            deleteButton.innerHTML = 'Delete';
+            deleteButton.className = 'ui button red';
+            deleteButton.onclick = function() { table.deleteRow(newRow.rowIndex); };
+            actionCell.appendChild(deleteButton);
+        }
         </script>
         ";
 
@@ -1083,33 +1199,44 @@ class FormGenerator
 
             $columnClass = $this->getColumnClass($field['width'], $gridField['columns']);
 
-
             // Setze den Wert, falls vorhanden
             if (isset($field['name']) && isset($this->values[$field['name']])) {
                 $field['value'] = $this->values[$field['name']];
             }
 
+            // Füge das Tab-Attribut hinzu, wenn es im Grid-Feld definiert ist
+            if (isset($gridField['tab'])) {
+                $field['tab'] = $gridField['tab'];
+            }
+
             $gridFields[] = [
                 'type' => 'gridColumn',
                 'class' => $columnClass,
-                'content' => $field
+                'content' => $field,
+                'tab' => $field['tab'] ?? null
             ];
         }
 
-        $this->fields[] = [
+        $this->addFieldToAppropriateArray([
             'type' => 'grid',
             'columns' => $gridField['columns'],
-            'fields' => $gridFields
-        ];
+            'fields' => $gridFields,
+            'tab' => $gridField['tab'] ?? null
+        ]);
     }
+
 
     private function generateGridField($gridField)
     {
-        $html = "<div class='ui {$gridField['columns']} column grid'>";
+        $html = "<div class='ui form grid-container'>";
+        $html .= "<div class='ui {$gridField['columns']} column grid'>";
         foreach ($gridField['fields'] as $field) {
-            $html .= $this->generateField($field);
+            $html .= "<div class='{$field['class']} column'>";
+            $html .= $this->generateField($field['content'], true);
+            $html .= "</div>";
         }
         $html .= "</div>";
+        $html .= "</div><br>";
         return $html;
     }
 

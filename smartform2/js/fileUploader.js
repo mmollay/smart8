@@ -16,16 +16,16 @@ class FileUploader {
 
     triggerFileListChange() {
 
-        // if (typeof this.onFileListChange === 'function') {
-        alert('triggerFileListChange');
-        const fileList = this.filesToUpload.map(file => ({
-            name: file.split('/').pop(),
-            type: file.split('.').pop().toLowerCase(),
-            size: this.getFileSize(file.split('/').pop())
-        }));
-        this.onFileListChange(fileList);
+        if (typeof this.onFileListChange === 'function') {
 
-        // }
+            const fileList = this.filesToUpload.map(file => ({
+                name: file.split('/').pop(),
+                type: file.split('.').pop().toLowerCase(),
+                size: this.getFileSize(file.split('/').pop())
+            }));
+            this.onFileListChange(fileList);
+
+        }
     }
 
     // Fügen Sie diese neue Methode hinzu

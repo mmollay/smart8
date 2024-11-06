@@ -19,6 +19,6 @@ $dashboard->addMenuItem('leftMenu', "faktura", "list_elba", "Elba", "money yello
 // $dashboard->addMenuItem('rightMenu', "faktura", "list_clients1", "Kunden", "users icon");
 // $dashboard->enableJSForMenu('rightMenu');
 
-//$dashboard->addScript("js/automator.js");
+$dashboard->addScript("js/automator.js");
 
 $dashboard->render();

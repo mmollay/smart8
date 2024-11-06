@@ -61,18 +61,69 @@
     <script>
         $(document).ready(function () {
             $('#openModalBtn').click(function () {
-                $('#modalContent').load('formular_modal.php', function () {
-                    $('#myModal').modal('show');
+                const $modal = $('#myModal');
+                const $modalContent = $('#modalContent');
+
+                // Lade den Formularinhalt
+                $modalContent.load('formular_modal.php', function () {
+                    // Modal-Konfiguration
+                    $modal.modal({
+                        autofocus: false, // Verhindert automatischen Fokus
+                        allowMultiple: false, // Verhindert mehrfache Modal-Instanzen
+                        closable: true, // Erlaubt Schließen durch Klick außerhalb/ESC
+                        observeChanges: true,
+                        onHide: function () {
+                            // Bereinigung beim Schließen
+                            // cleanupModal($modal);
+                            return true;
+                        },
+
+                    }).modal('show');
                 });
             });
-
-            $('#showSimpleFormBtn').click(function () {
-                $('#simpleFormContainer').show();
-                $('#simpleFormContent').load('formular_simple.php');
-            });
         });
+
+        // Funktion zur Bereinigung des Modals
+        function cleanupModal($modal) {
+            const $modalContent = $modal.find('.content');
+
+            // Entferne alle Event-Listener
+            $modalContent.find('*').off();
+
+            // Entferne alle CKEditor-Instanzen falls vorhanden
+            if (window.editorInstances) {
+                Object.keys(window.editorInstances).forEach(formId => {
+                    Object.keys(window.editorInstances[formId]).forEach(editorId => {
+                        if (window.editorInstances[formId][editorId]) {
+                            window.editorInstances[formId][editorId].destroy();
+                            delete window.editorInstances[formId][editorId];
+                        }
+                    });
+                });
+            }
+
+            // Entferne Semantic UI Komponenten
+            $modalContent.find('.dropdown').dropdown('destroy');
+            $modalContent.find('.checkbox').checkbox('destroy');
+            $modalContent.find('.calendar').calendar('destroy');
+
+            // Leere den Modal-Inhalt
+            $modalContent.empty();
+
+            // Entferne dynamisch hinzugefügte Skripte und Styles
+            $('script[data-modal-script]').remove();
+            $('style[data-modal-style]').remove();
+
+            // Garbage Collection forcieren
+            if (window.gc) {
+                window.gc();
+            }
+        }
+
     </script>
+
     <script src="../js/listGenerator.js"></script>
+    
     <script>
         $(document).ready(function () {
             // Example: Load MySQL Benutzerliste

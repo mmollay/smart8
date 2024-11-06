@@ -6,9 +6,9 @@ include __DIR__ . '/../n_config.php';
 $listConfig = [
     'listId' => 'newsletters',
     'contentId' => 'content_newsletters',
-    'itemsPerPage' => 10,
-    'sortColumn' => $_GET['sort'] ?? 'ec.created_at',
-    'sortDirection' => strtoupper($_GET['sortDir'] ?? 'DESC'),
+    'itemsPerPage' => 20,
+    'sortColumn' => $_GET['sort'] ?? 'content_id',  // Standardsortierung nach content_id
+    'sortDirection' => strtoupper($_GET['sortDir'] ?? 'DESC'),  // Standardmäßig absteigend
     'page' => intval($_GET['page'] ?? 1),
     'search' => $_GET['search'] ?? '',
     'showNoDataMessage' => true,
@@ -29,6 +29,10 @@ $query = "
         s.email as sender_email, 
         ec.subject, 
         ec.send_status,
+        CASE 
+            WHEN ej.status IN ('success', 'delivered') THEN MAX(ej.created_at)
+            ELSE NULL 
+        END as send_date,
         COUNT(DISTINCT ej.recipient_id) as recipients_count,
         SUM(ej.status IN ('success', 'delivered')) as success_count,
         SUM(ej.status IN ('failed', 'bounce', 'blocked')) as failed_count,
@@ -76,7 +80,17 @@ $columns = [
     ['name' => 'subject', 'label' => '<i class="envelope icon"></i>Betreff'],
     ['name' => 'group_labels', 'label' => '<i class="tags icon"></i>Gruppen', 'allowHtml' => true],
     ['name' => 'recipients_count', 'label' => 'Empfänger'],
-
+    [
+        'name' => 'send_date',
+        'label' => '<i class="clock icon"></i>Gesendet am',
+        'formatter' => function ($value) {
+            if ($value) {
+                return date('d.m.Y H:i', strtotime($value));
+            }
+            return '<span class="ui grey text">Nicht gesendet</span>';
+        },
+        'allowHtml' => true
+    ],
     [
         'name' => 'attachments',
         'label' => '<i class="paperclip icon"></i>Anhänge',
@@ -175,11 +189,11 @@ $buttons = [
         'modalId' => 'modal_form_delete',
         'popup' => 'Löschen',
         'params' => ['delete_id' => 'content_id'],
-        'conditions' => [
-            function ($row) {
-                return $row['is_fully_sent'] == 0;
-            }
-        ]
+        // 'conditions' => [
+        //     function ($row) {
+        //         return $row['is_fully_sent'] == 0;
+        //     }
+        // ]
     ],
 ];
 

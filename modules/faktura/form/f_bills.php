@@ -160,8 +160,7 @@ $formGenerator->addButtonElement([
 echo $formGenerator->generateJS();
 echo $formGenerator->generateForm();
 
-function getNextBillNumber($mysqli, $year, $document, $company_id)
-{
+function getNextBillNumber($mysqli, $year, $document, $company_id) {
     $query = "SELECT MAX(bill_number) as max_bill_number FROM bills 
               WHERE DATE_FORMAT(date_create,'%Y') = ? 
               AND document = ? AND company_id = ?";

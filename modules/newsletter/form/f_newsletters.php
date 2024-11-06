@@ -1,6 +1,6 @@
 <?php
-include (__DIR__ . '/../n_config.php');
-include (__DIR__ . '/../../../smartform2/FormGenerator.php');
+include(__DIR__ . '/../n_config.php');
+include(__DIR__ . '/../../../smartform2/FormGenerator.php');
 
 //wenn $_POST['update_id'] nicht vorhanden ist, dann soll eine neue E-Mail erstellt werden
 //In der Datebenbank wird ein neuer Datensatz erstellt und die ID des neuen Datensatzes wird zurückgegeben
@@ -116,11 +116,14 @@ $formGenerator->addButtonElement([
         'type' => 'submit',
         'name' => 'submit',
         'value' => 'Speichern',
-        'class' => 'ui primary button'
+        'class' => 'ui primary button',
+        'success' => "showToast('Formular erfolgreich gesendet!', 'success'); $('.ui.modal').modal('hide');"
+
+
     ],
     [
-        'name' => 'cancel',
-        'value' => 'Abbrechen',
+        'name' => 'close',
+        'value' => 'Schließen',
         'class' => 'ui button',
         'onclick' => "$('.ui.modal').modal('hide');"
     ]
@@ -148,7 +151,7 @@ function getSenders($db)
 function getGroups($db)
 {
     $array_groups = array();
-    $sql = "SELECT g.id, g.name, g.color, COUNT(rg.recipient_group_id) as email_count 
+    $sql = "SELECT g.id, g.name, g.color, COUNT(rg.recipient_id) as email_count 
             FROM groups g
             LEFT JOIN recipient_group rg ON g.id = rg.group_id
             GROUP BY g.id

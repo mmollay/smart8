@@ -42,12 +42,11 @@ $query = "
         ), '<div class=\"ui mini compact label\">Keine Gruppen</div>') as group_labels
     FROM
         recipients r
-    LEFT JOIN recipient_group rg ON r.id = rg.recipient_group_id
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id  -- Diese Zeile wurde korrigiert
     LEFT JOIN groups g ON rg.group_id = g.id
     GROUP BY
         r.id
 ";
-
 $listGenerator->setSearchableColumns(['email', 'first_name', 'last_name', 'company', 'comment']);
 $listGenerator->setDatabase($db, $query, true);
 

@@ -18,8 +18,8 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newslette
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", "file alternate icon");
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_logs", "Logs", "list icon");
 //Manueller Sendebutton für den Newsletter  
-$dashboard->addMenuItem('leftMenu', "", "", '<button class="ui blue huge icon button" id="testSendEmail"><i class="paper small plane icon"></i></button>', "");
 
+$dashboard->addScript("js/newsletter-utils.js");  // Neue Utils-Datei
 $dashboard->addScript("js/form_after.js");
 $dashboard->addScript('js/send_emails.js');
 //$dashboard->addScript("../../smartform2/js/listGenerator.js");

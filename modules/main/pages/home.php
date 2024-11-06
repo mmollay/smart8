@@ -1,10 +1,12 @@
 <?php
-include (__DIR__ . '/../config.php');
+include(__DIR__ . '/../config.php');
 
 $set_module['faktura'] = true;
+$set_module['faktura2'] = true;
 $set_module['newsletter'] = true;
 $set_module['service'] = true;
 $set_module['trader'] = true;
+$set_module['trader2'] = true;
 
 // $set_module['userlist'] = true;
 // $set_module['setting'] = true;
@@ -19,8 +21,10 @@ $content .= "<div class='ui link cards centered'>";
 $modules = [
     'newsletter' => ["Newsletter", 'send outline', '', '../newsletter/', 'Versende wichtige Mail an deine Newsletterliste'],
     'faktura' => ["Faktura", 'book', '', '../faktura/', 'Deine Buchhaltung immer im Griff'],
+    'faktura2' => ["FakturaV2", 'book', '', '../faktura2/', 'Deine Buchhaltung immer im Griff'],
     'trader' => ["Trader", 'wallet', '', '../trader/', 'Make your mouney'],
-    // 'learning' => ["Learning", 'student', '', 'modules/learning/', 'Für Prüfungen üben'],
+    'trader2' => ["Trader2", 'wallet', '', '../trader2/', 'Make more mouney'],
+    //'learning' => ["Learning", 'student', '', 'modules/learning/', 'Für Prüfungen üben'],
     // 'kmlist' => ["KM-Liste", 'road', '', 'modules/km/', 'Jeder Kilometer zählt :)'],
     // 'map' => ["Fruit-Map", 'fruit-apple', '', 'modules/map/', 'Maps'],
     // 'userlist' => ["User/Domain", 'list', '', 'modules/userlist/', 'User/Domain und andere Übersichten'],
