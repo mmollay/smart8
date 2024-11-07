@@ -315,7 +315,7 @@ class ListGenerator
             'type' => 'dropdown',
             'multiple' => false,
             'placeholder' => 'Bitte auswählen',
-            'searchable' => false,
+            'searchable' => true,
             'maxSelections' => null,
             'fullTextSearch' => false,
             'allowAdditions' => false,
@@ -1193,17 +1193,18 @@ class ListGenerator
         }
 
         $filterClass = $this->config['filterClass'] ?? 'ui segment';
-
         $html = "<div class='{$filterClass}' style='margin-bottom: 20px;'>";
         $html .= "<div class='ui form'>";
         $html .= "<div class='ui stackable grid'>";
+
         foreach ($this->filters as $key => $filter) {
             $filterId = "filter_{$this->config['contentId']}_{$key}";
             $html .= "<div class='four wide column'>";
             $html .= "<div class='field'>";
             $html .= "<label>{$filter['label']}</label>";
 
-            $dropdownClass = 'ui fluid dropdown';
+            // Dropdown-Klassen mit selection
+            $dropdownClass = 'ui fluid selection dropdown';  // Hier wurde 'selection' hinzugefügt
             if ($filter['config']['searchable']) {
                 $dropdownClass .= ' search';
             }
@@ -1215,38 +1216,30 @@ class ListGenerator
             }
             $dropdownClass .= ' ' . $filter['config']['customClass'];
 
-            $html .= "<select class='{$dropdownClass}' name='{$filterId}' id='{$filterId}'";
-            if ($filter['config']['multiple']) {
-                $html .= " multiple='multiple'";
-            }
-            if ($filter['config']['maxSelections']) {
-                $html .= " data-max-selections='{$filter['config']['maxSelections']}'";
-            }
-            if ($filter['config']['fullTextSearch']) {
-                $html .= " data-full-text-search='true'";
-            }
-            if ($filter['config']['allowAdditions']) {
-                $html .= " data-allow-additions='true'";
-            }
-            $html .= ">";
+            // Dropdown Container
+            $html .= "<div class='{$dropdownClass}' id='{$filterId}'>";
+            $html .= "<input type='hidden' name='{$filterId}'>";
+            $html .= "<i class='dropdown icon'></i>";
+            $html .= "<div class='default text'>{$filter['config']['placeholder']}</div>";
+            $html .= "<div class='menu'>";
 
-            $html .= "<option value=''>{$filter['config']['placeholder']}</option>";
             foreach ($filter['options'] as $value => $label) {
-                $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'selected' : '';
-                $html .= "<option value='{$value}' {$selected}>{$label}</option>";
+                $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'active selected' : '';
+                $html .= "<div class='item {$selected}' data-value='{$value}'>{$label}</div>";
             }
-            $html .= "</select>";
-            $html .= "</div>";
-            $html .= "</div>";
+
+            $html .= "</div>"; // Ende menu
+            $html .= "</div>"; // Ende dropdown
+            $html .= "</div>"; // Ende field
+            $html .= "</div>"; // Ende column
         }
 
-        $html .= "</div>"; // Ende der Grid
-        $html .= "</div>"; // Ende der Form
-        $html .= "</div>"; // Ende des Segments
+        $html .= "</div>"; // Ende Grid
+        $html .= "</div>"; // Ende Form
+        $html .= "</div>"; // Ende Segment
 
         return $html;
     }
-
     private function generatePagination($currentPage, $totalPages)
     {
         $html = "<div class='ui pagination menu'>";

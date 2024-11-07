@@ -51,7 +51,7 @@ $listGenerator->setSearchableColumns(['email', 'first_name', 'last_name', 'compa
 $listGenerator->setDatabase($db, $query, true);
 
 $listGenerator->addFilter('group_id', 'Gruppe', getAllGroups($db));
-$listGenerator->addFilter('last_name', 'Nachname', array('Mollay' => 'Mollay'));
+//$listGenerator->addFilter('last_name', 'Nachname', array('Mollay' => 'Mollay'));
 
 
 // Externe Buttons
@@ -132,3 +132,5 @@ echo $listGenerator->generateList();
 if (isset($db)) {
     $db->close();
 }
+
+?>

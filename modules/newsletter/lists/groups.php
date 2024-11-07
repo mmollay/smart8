@@ -5,7 +5,7 @@ include __DIR__ . '/../n_config.php';
 $listGenerator = new ListGenerator([
     'listId' => 'groups',
     'contentId' => 'content_group',
-    'itemsPerPage' => 5,
+    'itemsPerPage' => 20,
     'sortColumn' => $_GET['sort'] ?? null,
     'sortDirection' => strtoupper($_GET['sortDir'] ?? 'ASC'),
     'page' => intval($_GET['page'] ?? 1),
@@ -24,12 +24,12 @@ $query = "
     SELECT 
         g.id as group_id, 
         CONCAT('<div class=\"ui ', g.color, ' compact empty mini circular label\"></div> ', g.name) as group_name, 
-        COUNT(r.id) as recipients_count, 
+        COUNT(DISTINCT r.id) as recipients_count, 
         g.created_at
     FROM 
         groups g
         LEFT JOIN recipient_group rg ON g.id = rg.group_id
-        LEFT JOIN recipients r ON rg.group_id = r.id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
     GROUP BY 
         g.id
 ";

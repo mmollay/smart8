@@ -15,16 +15,36 @@ if (!mysqli_select_db($db, $dbname)) {
     die('Datenbankauswahl fehlgeschlagen: ' . mysqli_error($db));
 }
 
-// Funktion zum Abrufen aller Gruppen
 function getAllGroups($db)
 {
     $groups = [];
-    $query = "SELECT id, name FROM groups ORDER BY name";
+    $query = "
+        SELECT 
+            g.id, 
+            g.name, 
+            g.color,
+            COUNT(DISTINCT rg.recipient_id) as recipient_count
+        FROM 
+            groups g
+            LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        GROUP BY 
+            g.id, g.name, g.color
+        ORDER BY 
+            g.name
+    ";
+
     $stmt = $db->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
+
     while ($row = $result->fetch_assoc()) {
-        $groups[$row['id']] = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
+        $groups[$row['id']] = sprintf(
+            '<i class="circle %s icon"></i> %s (%d)',
+            htmlspecialchars($row['color']),
+            htmlspecialchars($row['name']),
+            $row['recipient_count']
+        );
     }
+
     return $groups;
 }

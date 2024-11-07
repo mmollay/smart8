@@ -11,10 +11,12 @@ $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical',
 $dashboard->addMenuItem('leftMenu', "newsletter", "home", "Home", "home icon");
 
 //ABSENDER ICON
-$dashboard->addMenuItem('leftMenu', "newsletter", "list_senders", "Absender", "at icon");
+$dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Aussendungen", "newspaper icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_recipients", "Empfänger", "address card icon");
+$dashboard->addMenuItem('leftMenu', "newsletter", "import_recipients", "Empfänger importieren", "upload icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_groups", "Gruppen", "users icon");
-$dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newsletter", "newspaper icon");
+$dashboard->addMenuItem('leftMenu', "newsletter", "list_senders", "Absender", "at icon");
+//immportieren von Empfängern
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", "file alternate icon");
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_logs", "Logs", "list icon");
 //Manueller Sendebutton für den Newsletter  
