@@ -1,0 +1,29 @@
+/* css/common.css */
+.ui.segment .ui.buttons {
+    margin-bottom: 0.5em;
+}
+
+.ui.segment .ui.buttons button {
+    margin-right: 0.2em;
+}
+
+.ui.tiny.button {
+    text-align: left;
+    margin-bottom: 0.5em !important;
+    padding: 0.8em !important;
+}
+
+.ui.tiny.button .ui.mini.label {
+    float: right;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.preview-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 1em;
+}
+
+.ck-editor__editable {
+    min-height: 300px !important;
+}

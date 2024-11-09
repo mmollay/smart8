@@ -984,3 +984,201 @@ File upload error:
 [2024-11-06 13:02:01] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
 [2024-11-06 13:02:01] File received: WhatsApp Image 2023-12-05 at 11.07.52.jpeg
 [2024-11-06 13:02:01] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/620f32a73d3d80f865f1b12793cb6cbe.jpeg
+[2024-11-07 10:15:58] POST data: Array
+(
+    [ckEditorConfig] => ""
+)
+
+[2024-11-07 10:15:58] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => 20230212_113308.jpg
+            [full_path] => 20230212_113308.jpg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/phpc3PF7e
+            [error] => 0
+            [size] => 1571342
+        )
+
+)
+
+[2024-11-07 10:15:58] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 10:15:58] File received: 20230212_113308.jpg
+[2024-11-07 10:15:58] Invalid file type: jpg
+[2024-11-07 10:58:46] POST data: Array
+(
+    [ckEditorConfig] => ""
+)
+
+[2024-11-07 10:58:46] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => 20230212_113344.jpg
+            [full_path] => 20230212_113344.jpg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/php3H1cq0
+            [error] => 0
+            [size] => 944424
+        )
+
+)
+
+[2024-11-07 10:58:46] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 10:58:46] File received: 20230212_113344.jpg
+[2024-11-07 10:58:46] Invalid file type: jpg
+[2024-11-07 11:00:20] POST data: Array
+(
+    [ckEditorConfig] => "uploads/"
+)
+
+[2024-11-07 11:00:20] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => 20230212_113308.jpg
+            [full_path] => 20230212_113308.jpg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/phpq7h4yE
+            [error] => 0
+            [size] => 1571342
+        )
+
+)
+
+[2024-11-07 11:00:20] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 11:00:20] File received: 20230212_113308.jpg
+[2024-11-07 11:00:20] Invalid file type: jpg
+[2024-11-07 11:00:44] POST data: Array
+(
+    [ckEditorConfig] => "../uploads/"
+)
+
+[2024-11-07 11:00:44] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => 20230212_113329.jpg
+            [full_path] => 20230212_113329.jpg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/phpL1a6tj
+            [error] => 0
+            [size] => 849052
+        )
+
+)
+
+[2024-11-07 11:00:44] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 11:00:44] File received: 20230212_113329.jpg
+[2024-11-07 11:00:44] Invalid file type: jpg
+[2024-11-07 11:01:14] POST data: Array
+(
+    [ckEditorConfig] => "../uploads/"
+)
+
+[2024-11-07 11:01:14] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => 20230212_113329.jpg
+            [full_path] => 20230212_113329.jpg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/phpEBXrxW
+            [error] => 0
+            [size] => 849052
+        )
+
+)
+
+[2024-11-07 11:01:14] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 11:01:14] File received: 20230212_113329.jpg
+[2024-11-07 11:01:14] Invalid file type: jpg
+[2024-11-07 11:01:38] POST data: Array
+(
+    [ckEditorConfig] => "../uploads/"
+)
+
+[2024-11-07 11:01:38] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => 20230212_113339.jpg
+            [full_path] => 20230212_113339.jpg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/phpomdMNL
+            [error] => 0
+            [size] => 827137
+        )
+
+)
+
+[2024-11-07 11:01:38] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 11:01:38] File received: 20230212_113339.jpg
+[2024-11-07 11:01:38] Invalid file type: jpg
+[2024-11-07 11:02:02] POST data: Array
+(
+    [ckEditorConfig] => "../uploads/"
+)
+
+[2024-11-07 11:02:02] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => Bildschirmfoto 2024-09-10 um 06.59.11.png
+            [full_path] => Bildschirmfoto 2024-09-10 um 06.59.11.png
+            [type] => image/png
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/phps09cJZ
+            [error] => 0
+            [size] => 151254
+        )
+
+)
+
+[2024-11-07 11:02:03] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 11:02:03] File received: Bildschirmfoto 2024-09-10 um 06.59.11.png
+[2024-11-07 11:02:03] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/791ed39a3df4cac8dc41f68a80f04495.png
+[2024-11-07 11:04:08] POST data: Array
+(
+    [ckEditorConfig] => "../uploads/"
+)
+
+[2024-11-07 11:04:08] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => Bildschirmfoto 2024-09-10 um 06.59.11.png
+            [full_path] => Bildschirmfoto 2024-09-10 um 06.59.11.png
+            [type] => image/png
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/php80DiQY
+            [error] => 0
+            [size] => 151254
+        )
+
+)
+
+[2024-11-07 11:04:08] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-07 11:04:08] File received: Bildschirmfoto 2024-09-10 um 06.59.11.png
+[2024-11-07 11:04:08] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/6f1d1e4e9485365b944d36f29580d7e0.png
+[2024-11-09 20:31:45] POST data: Array
+(
+    [ckEditorConfig] => ""
+)
+
+[2024-11-09 20:31:45] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => WhatsApp Image 2024-11-05 at 08.32.29.jpeg
+            [full_path] => WhatsApp Image 2024-11-05 at 08.32.29.jpeg
+            [type] => image/jpeg
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/php9zNmMy
+            [error] => 0
+            [size] => 235788
+        )
+
+)
+
+[2024-11-09 20:31:45] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-09 20:31:45] File received: WhatsApp Image 2024-11-05 at 08.32.29.jpeg
+[2024-11-09 20:31:45] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/37096b1acb22fcf04ffe5e9183686f3d.jpeg

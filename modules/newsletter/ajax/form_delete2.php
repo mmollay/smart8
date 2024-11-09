@@ -110,6 +110,31 @@ try {
             $stmt->bind_param("i", $delete_id);
             $stmt->execute();
             break;
+        case 'templates':
+            // Prüfe zuerst, ob das Template in Verwendung ist
+            $stmt = $db->prepare("
+                    SELECT COUNT(*) as count 
+                    FROM email_contents 
+                    WHERE template_id = ?
+                ");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $usage = $result->fetch_assoc()['count'];
+
+            if ($usage > 0) {
+                throw new Exception("Template kann nicht gelöscht werden, da es in {$usage} Newsletter(n) verwendet wird");
+            }
+
+            // Lösche das Template
+            $stmt = $db->prepare("DELETE FROM email_templates WHERE id = ? LIMIT 1");
+            $stmt->bind_param("i", $delete_id);
+            $stmt->execute();
+
+            if ($stmt->affected_rows === 0) {
+                throw new Exception("Template nicht gefunden");
+            }
+            break;
 
         default:
             throw new Exception("Ungültige Liste angegeben");

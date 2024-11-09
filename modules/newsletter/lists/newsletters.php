@@ -152,21 +152,38 @@ foreach ($columns as $column) {
 $modals = [
     'modal_form_n' => ['title' => 'Newsletter bearbeiten', 'content' => 'form/f_newsletters.php', 'size' => 'large'],
     'modal_form_delete' => ['title' => 'Newsletter entfernen', 'content' => 'pages/form_delete.php', 'size' => 'small'],
+    'modal_preview' => [
+        'title' => 'Newsletter Vorschau',
+        'content' => 'pages/preview_newsletter.php',
+        'size' => 'large',
+    ]
 ];
 
 // Hinzufügen der Modals zum ListGenerator
 foreach ($modals as $id => $modal) {
     $listGenerator->addModal($id, $modal);
 }
-
-// Aktualisierte Definition der Aktions-Buttons
 $buttons = [
+    'preview' => [
+        'icon' => 'eye',
+        'position' => 'left',
+        'class' => 'ui blue mini button',
+        'modalId' => 'modal_preview',
+        'popup' => [
+            'content' => 'Newsletter-Vorschau anzeigen',
+            'position' => 'top left'
+        ],
+        'params' => ['content_id' => 'content_id']
+    ],
     'edit' => [
         'icon' => 'edit',
         'position' => 'left',
-        'class' => 'ui blue mini button',
+        'class' => 'ui green mini button',
         'modalId' => 'modal_form_n',
-        'popup' => 'Bearbeiten',
+        'popup' => [
+            'content' => 'Newsletter bearbeiten',
+            'position' => 'top left'
+        ],
         'params' => ['update_id' => 'content_id'],
         'conditions' => [
             function ($row) {
@@ -174,26 +191,43 @@ $buttons = [
             }
         ],
     ],
+    'test' => [
+        'icon' => 'paper plane outline',
+        'position' => 'left',
+        'class' => 'ui orange mini button',
+        'popup' => [
+            'content' => 'Test-E-Mail an hinterlegte Test-Adresse senden',
+            'position' => 'top left'
+        ],
+        'callback' => 'sendTestMail',
+        'params' => ['content_id' => 'content_id'],
+        'conditions' => [
+            function ($row) {
+                return $row['is_fully_sent'] == 0;
+            }
+        ]
+    ],
     'clone' => [
-        'icon' => 'copy',
+        'icon' => 'copy outline',
         'position' => 'left',
         'class' => 'ui teal mini button',
-        'popup' => 'Duplizieren',
+        'popup' => [
+            'content' => 'Newsletter duplizieren und bearbeiten',
+            'position' => 'top left'
+        ],
         'callback' => 'cloneNewsletter',
         'params' => ['content_id' => 'content_id']
     ],
     'delete' => [
-        'icon' => 'trash',
+        'icon' => 'trash alternate outline',
         'position' => 'right',
-        'class' => 'ui mini button',
+        'class' => 'ui red mini button',
         'modalId' => 'modal_form_delete',
-        'popup' => 'Löschen',
+        'popup' => [
+            'content' => 'Newsletter löschen',
+            'position' => 'top right'
+        ],
         'params' => ['delete_id' => 'content_id'],
-        // 'conditions' => [
-        //     function ($row) {
-        //         return $row['is_fully_sent'] == 0;
-        //     }
-        // ]
     ],
 ];
 
@@ -291,6 +325,58 @@ echo $listGenerator->generateList();
         });
     });
 </script>
+
+<script>
+    function sendTestMail(params) {
+
+        $.ajax({
+            url: 'ajax/send_test_mail.php',
+            method: 'POST',
+            data: { content_id: params.content_id },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    $('body').toast({
+                        message: data.message,
+                        class: 'success',
+                        showProgress: 'bottom'
+                    });
+                    if (typeof reloadTable === 'function') {
+                        reloadTable();
+                    }
+                } else {
+                    showErrorToast(data.message || 'Fehler beim Senden der Test-Mail');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX error:', status, error);
+                showErrorToast('Fehler beim Senden der Anfrage: ' + status);
+            }
+        });
+    }
+
+</script>
+
+<script>
+    function initializePreview(modal, trigger) {
+        const contentId = $(trigger).data('content-id');
+        const root = document.getElementById('email-preview-root');
+        // Importiere die Komponente aus dem richtigen Pfad
+        import('/components/EmailPreview.jsx')
+            .then(module => {
+                const Preview = React.createElement(module.default, { key: contentId });
+                ReactDOM.render(Preview, root);
+
+                // Nach dem Rendern die Daten laden
+                const previewInstance = root._reactRootContainer._internalRoot.current.child.stateNode;
+                previewInstance.loadPreview(contentId);
+            })
+            .catch(err => {
+                console.error('Error loading EmailPreview component:', err);
+                root.innerHTML = '<div class="ui error message">Error loading preview component</div>';
+            });
+    }
+</script>,
 
 <?php
 // Schließen der Datenbankverbindung

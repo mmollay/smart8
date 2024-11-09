@@ -1,21 +1,19 @@
-// newsletter-utils.js
-function checkPendingEmails() {
-    $.ajax({
-        url: 'ajax/check_pending_emails.php',
-        method: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            if (response.hasPendingEmails) {
-                if ($('#testSendEmail').length === 0) {
-                    $('.ui.left.fixed.menu').append(
-                        '<div class="item"><button class="ui blue icon button" id="testSendEmail">' +
-                        '<i class="paper small plane icon"></i></button></div>'
-                    );
-                    initializeSendButton();
-                }
-            } else {
-                $('#testSendEmail').closest('.item').remove();
-            }
-        }
-    });
+function insertPlaceholder(placeholder) {
+    const editor = document.querySelector('.ck-editor__editable').ckeditorInstance;
+    if (editor) {
+        editor.model.change(writer => {
+            const selection = editor.model.document.selection;
+            const range = selection.getFirstRange();
+
+            // Platzhalter einfügen
+            editor.model.insertContent(writer.createText(placeholder), range.start);
+
+            // Cursor direkt nach dem Platzhalter positionieren
+            const newPosition = range.start.getShiftedBy(placeholder.length);
+            writer.setSelection(newPosition);
+        });
+
+        // Fokus auf den Editor setzen
+        editor.editing.view.focus();
+    }
 }

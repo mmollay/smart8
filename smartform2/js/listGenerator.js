@@ -3,7 +3,6 @@ let listInstances = {};
 let autoReloadTimers = {};
 
 function loadListGenerator(url, customState = {}) {
-
     const contentId = customState.contentId || 'content';
     currentContentId = contentId; // Speichern der aktuellen ContentID
 
@@ -47,7 +46,6 @@ function loadListGenerator(url, customState = {}) {
             filters: instance.state.filters
         },
         success: function (response) {
-
             $(`#${contentId}`).html(response);
             setupEventHandlers(contentId);
             console.log(`AJAX-Anfrage erfolgreich für ${contentId}`);
@@ -255,7 +253,6 @@ function setupEventHandlers(contentId) {
                 $modal.modal({
                     closable: false,
                     observeChanges: true,
-                    autofocus: false,
                     onApprove: function () {
                         return submitModalForm($modal, contentId);
                     },

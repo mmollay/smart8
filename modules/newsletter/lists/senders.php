@@ -22,7 +22,7 @@ $listConfig = [
 
 $listGenerator = new ListGenerator($listConfig);
 
-// Korrigierte Datenbank-Abfrage mit CONCAT
+// Korrigierte Datenbank-Abfrage mit CONCAT und test_email
 $query = "
     SELECT 
         id, 
@@ -33,15 +33,26 @@ $query = "
             last_name
         ) AS full_name,
         company, 
-        email, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class=\"ui mini basic label\">',
+                    '<i class=\"envelope icon\"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class=\"ui mini grey label\">Nicht konfiguriert</div>'
+        END as formatted_test_email,
         gender, 
         comment
     FROM senders
-	
     GROUP BY id
 ";
 
-$listGenerator->setSearchableColumns(['first_name', 'last_name', 'email', 'company']);
+$listGenerator->setSearchableColumns(['first_name', 'last_name', 'email', 'test_email', 'company']);
 $listGenerator->setDatabase($db, $query, true);
 
 // Spalten definieren
@@ -49,11 +60,20 @@ $columns = [
 	['name' => 'full_name', 'label' => "<i class='user icon'></i>Name"],
 	['name' => 'company', 'label' => "<i class='building icon'></i>Firma"],
 	['name' => 'email', 'label' => "<i class='mail icon'></i>Absende-Email"],
+	[
+		'name' => 'formatted_test_email',
+		'label' => "<i class='paper plane icon'></i>Test-Email",
+		'allowHtml' => true,
+		'width' => '200px'
+	],
 	['name' => 'comment', 'label' => "Kommentar"],
 ];
 
 foreach ($columns as $column) {
-	$listGenerator->addColumn($column['name'], $column['label'], ['allowHtml' => true]);
+	$listGenerator->addColumn($column['name'], $column['label'], [
+		'allowHtml' => $column['allowHtml'] ?? false,
+		'width' => $column['width'] ?? null
+	]);
 }
 
 // Modals definieren
@@ -111,6 +131,30 @@ $listGenerator->setButtonColumnTitle('right', '', 'right');
 // Liste generieren und ausgeben
 echo $listGenerator->generateList();
 
+// Zusätzliches Styling für die Test-Email Labels
+?>
+<style>
+	.ui.mini.basic.label {
+		margin: 0;
+		padding: 4px 8px;
+		font-size: 0.85em;
+	}
+
+	.ui.mini.grey.label {
+		margin: 0;
+		padding: 4px 8px;
+		font-size: 0.85em;
+		background-color: #f5f5f5 !important;
+		color: #767676 !important;
+	}
+
+	.ui.mini.basic.label i.icon {
+		margin-right: 4px;
+		opacity: 0.8;
+	}
+</style>
+
+<?php
 // Datenbankverbindung schließen
 if (isset($db)) {
 	$db->close();

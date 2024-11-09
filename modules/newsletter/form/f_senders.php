@@ -78,6 +78,19 @@ $formGenerator->addField([
     'label' => 'Absende-Email'
 ]);
 
+
+$formGenerator->addField([
+    'type' => 'input',
+    'name' => 'test_email',
+    'label' => 'Test-Email für Newsletter',
+    'placeholder' => 'test@example.com',
+    'email' => true,
+    'width' => 'eight',
+    'value' => $data['test_email'] ?? '',
+    'error_message' => 'Bitte geben Sie eine gültige E-Mail-Adresse ein.'
+]);
+
+
 $formGenerator->addField([
     'type' => 'textarea',
     'name' => 'comment',

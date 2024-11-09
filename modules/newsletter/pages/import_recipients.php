@@ -99,9 +99,9 @@ $groups = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             $groups = getAllGroups($db);
                             foreach ($groups as $groupId => $groupHtml):
                                 ?>
-                                <div class="item" data-value="<?= htmlspecialchars($groupId) ?>">
-                                    <?= $groupHtml ?>
-                                </div>
+                                        <div class="item" data-value="<?= htmlspecialchars($groupId) ?>">
+                                            <?= $groupHtml ?>
+                                        </div>
                             <?php endforeach; ?>
                         </div>
                     </div>

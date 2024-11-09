@@ -1368,7 +1368,6 @@ class ListGenerator
             : '';
     }
 
-
     private function getSortIcon($key)
     {
         return $key === $this->config['sortColumn']

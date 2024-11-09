@@ -767,7 +767,7 @@ class FormGenerator
                 $fieldHtml = "<input type='hidden' name='{$field['name']}' value='" . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . "'>";
                 break;
             case 'input':
-                $fieldHtml .= "<label>{$label}</label><input type='text' name='{$field['name']}' placeholder='{$placeholder}' value='{$value}' class='{$fieldClass}'>";
+                $fieldHtml .= "<label>{$label}</label><input type='text' id='$id' name='{$field['name']}' placeholder='{$placeholder}' value='{$value}' class='{$fieldClass}'>";
                 break;
             case 'textarea':
                 $rows = $field['rows'] ?? 3;
@@ -845,6 +845,7 @@ class FormGenerator
 
                 $fieldHtml .= "</div></div>";
                 break;
+
             case 'slider':
                 $max = $field['max'] ?? 100;
                 $step = $field['step'] ?? 1;
@@ -869,8 +870,14 @@ class FormGenerator
                 $fieldHtml .= "<div class='$fieldClass'>{$field['value']}</div>\n";
                 break;
             case 'custom':
-                $fieldHtml .= $field['content'];
-                break;
+                $fieldHtml = '';
+                if (!empty($field['label'])) {
+                    $fieldHtml .= "<label>{$field['label']}</label>";
+                }
+                if (!empty($field['html'])) {
+                    $fieldHtml .= $field['html'];
+                }
+                return $fieldHtml;
             case 'uploader':
                 $config = $field['config'];
                 $uploadDirFieldName = $config['uploadDirFieldName'] ?? 'upload_dir';
@@ -910,16 +917,44 @@ class FormGenerator
             case 'ckeditor5':
                 $fieldId = $field['id'] ?? $field['name'];
                 $fieldHtml .= "<label>{$label}</label>
-                                   <div id='{$fieldId}-toolbar'></div>
-                                   <div id='{$fieldId}-container' style='border:solid #e5e5e5; border-width:0 1px 1px 1px; border-radius:0 0 3px 3px;'>
-                                       <div id='{$fieldId}' class='ckeditor-content' data-name='{$field['name']}'>{$value}</div>
-                                   </div>";
+                        <div id='{$fieldId}-toolbar'></div>
+                        <div id='{$fieldId}-container' style='border:solid #e5e5e5; border-width:0 1px 1px 1px; border-radius:0 0 3px 3px;'>
+                            <div id='{$fieldId}' class='ckeditor-content' data-name='{$field['name']}'>
+                                {$value}
+                            </div>
+                        </div>";
+
+                // CKEditor Konfiguration
+                if (!empty($field['config'])) {
+                    self::$ckeditorConfigs[$fieldId] = array_merge([
+                        'minHeight' => 300,
+                        'maxHeight' => 600,
+                        'placeholder' => 'Text eingeben...',
+                        'image' => [
+                            'upload' => [
+                                'types' => ['jpeg', 'jpg', 'png', 'gif'],
+                                'maxFileSize' => 5 * 1024 * 1024,
+                                'path' => 'uploads/'
+                            ]
+                        ]
+                    ], $field['config']);
+                }
                 break;
             case 'html':
                 return $field['content'];
             case 'table':
                 $fieldHtml .= $this->generateTableField($field);
                 break;
+            case 'segment':
+                $html = "<div class='{$field['class']}'>";
+                if (isset($field['fields']) && is_array($field['fields'])) {
+                    foreach ($field['fields'] as $subField) {
+                        $html .= $this->generateField($subField);
+                    }
+                }
+                $html .= "</div>";
+                return $html;
+
             default:
                 $fieldHtml .= "Unbekannter Feldtyp: {$fieldType}";
         }

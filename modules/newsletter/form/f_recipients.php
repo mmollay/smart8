@@ -31,7 +31,7 @@ $formGenerator->addField([
     'type' => 'dropdown',
     'name' => 'tags',
     'label' => 'Gruppen',
-    'array' => getGroups($db),
+    'array' => getAllGroups($db),
     'multiple' => true,
     'class' => 'search',
     'dropdownSettings' => [
@@ -125,23 +125,6 @@ if ($update_id) {
 echo $formGenerator->generateJS();
 echo $formGenerator->generateForm();
 
-function getGroups($db)
-{
-    $array_groups = [];
-    $sql = "SELECT g.id, g.name, COUNT(rg.recipient_id) as recipients_count
-            FROM groups g
-            LEFT JOIN recipient_group rg ON g.id = rg.group_id
-            GROUP BY g.id, g.name
-            ORDER BY g.name ASC";
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $array_groups[$row['id']] = $row['name'] . ' (' . $row['recipients_count'] . ' Empfänger)';
-    }
-    $stmt->close();
-    return $array_groups;
-}
 
 function getSelectedGroups($db, $recipient_id)
 {
