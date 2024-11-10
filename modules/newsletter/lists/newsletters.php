@@ -164,17 +164,6 @@ foreach ($modals as $id => $modal) {
     $listGenerator->addModal($id, $modal);
 }
 $buttons = [
-    'preview' => [
-        'icon' => 'eye',
-        'position' => 'left',
-        'class' => 'ui blue mini button',
-        'modalId' => 'modal_preview',
-        'popup' => [
-            'content' => 'Newsletter-Vorschau anzeigen',
-            'position' => 'top left'
-        ],
-        'params' => ['content_id' => 'content_id']
-    ],
     'edit' => [
         'icon' => 'edit',
         'position' => 'left',
@@ -190,6 +179,17 @@ $buttons = [
                 return $row['is_fully_sent'] == 0;
             }
         ],
+    ],
+    'preview' => [
+        'icon' => 'eye',
+        'position' => 'left',
+        'class' => 'ui blue mini button',
+        'modalId' => 'modal_preview',
+        'popup' => [
+            'content' => 'Newsletter-Vorschau anzeigen',
+            'position' => 'top left'
+        ],
+        'params' => ['content_id' => 'content_id']
     ],
     'test' => [
         'icon' => 'paper plane outline',

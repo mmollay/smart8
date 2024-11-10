@@ -22,7 +22,6 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", 
 //$dashboard->addMenuItem('leftMenu', "newsletter", "list_logs", "Logs", "list icon");
 //Manueller Sendebutton für den Newsletter  
 
-$dashboard->addScript("js/newsletter-utils.js");  // Neue Utils-Datei
 $dashboard->addScript("js/form_after.js");
 $dashboard->addScript('js/send_emails.js');
 //$dashboard->addScript("../../smartform2/js/listGenerator.js");

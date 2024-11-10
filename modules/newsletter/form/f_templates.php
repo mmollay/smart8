@@ -55,17 +55,23 @@ $formGenerator->addField([
 
 // Platzhalter Toolbar
 $formGenerator->addField([
-    'type' => 'html',
-    'content' => getPlaceholdersHTML()
+    'type' => 'custom',
+    'name' => 'placeholders',
+    'label' => 'Verfügbare Platzhalter',
+    'html' => getPlaceholdersHTML()
 ]);
 
-// Template Editor
+// Template Editor with proper configuration
 $formGenerator->addField([
     'type' => 'ckeditor5',
     'name' => 'html_content',
     'label' => 'Template-Inhalt',
-    'required' => true,
-    'config' => getEditorConfig()
+    //'required' => true,
+    'value' => '', // Default empty value
+    'config' => getEditorConfig(),
+    'attributes' => [
+        'id' => 'template_editor'
+    ]
 ]);
 
 // Buttons
@@ -90,45 +96,56 @@ $formGenerator->addButtonElement([
     ]
 ]);
 
+// Load existing template data if updating
 if ($update_id) {
     $sql = "SELECT * FROM email_templates WHERE id = ?";
-    $formGenerator->loadValuesFromDatabase($db, $sql, [$update_id]);
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $update_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $formGenerator->setFieldValues($row);
+    }
+    $stmt->close();
 }
 
 echo $formGenerator->generateJS();
 echo $formGenerator->generateForm();
 ?>
 
+<!-- Preview Modal -->
+<div class="ui large modal" id="previewModal">
+    <i class="close icon"></i>
+    <div class="header">Template Vorschau</div>
+    <div class="content">
+        <div id="previewContent" class="preview-container"></div>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">Schließen</div>
+    </div>
+</div>
+
 <script src="js/editor_utils.js"></script>
 
 <script>
+    $(document).ready(function () {
+        // Initialize modal
+        $('#previewModal').modal({
+            closable: false
+        });
+    });
+
     function insertPlaceholder(placeholder) {
         EditorUtils.insertPlaceholder(placeholder);
     }
 
-    function insertSnippet(type) {
-        const editor = document.querySelector('.ck-editor__editable').ckeditorInstance;
-        if (!editor) return;
-
-        let content = '';
-        switch (type) {
-            case 'text-abstand':
-                content = '<p style="margin: 15px 0;">&nbsp;</p>';
-                break;
-            case 'trennlinie':
-                content = '<hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">';
-                break;
-        }
-
-        editor.setData(editor.getData() + content);
-    }
-
     function previewTemplate() {
-        const editor = document.querySelector('.ck-editor__editable').ckeditorInstance;
-        const content = editor ? editor.getData() : '';
+        if (!window.templateEditor) return;
+
+        const content = window.templateEditor.getData();
         const subject = $('#subject').val();
 
-        // Preview Modal öffnen mit Beispieldaten
+        // Example data for preview
         const previewData = {
             anrede: 'Sehr geehrter Herr',
             titel: 'Dr.',
@@ -137,37 +154,28 @@ echo $formGenerator->generateForm();
             firma: 'Beispiel GmbH',
             email: 'max.mustermann@beispiel.de',
             datum: new Date().toLocaleDateString('de-DE'),
-            datum_lang: new Date().toLocaleDateString('de-DE', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }),
             uhrzeit: new Date().toLocaleTimeString('de-DE')
         };
 
         let previewContent = content;
         let previewSubject = subject;
 
-        // Platzhalter ersetzen
+        // Replace placeholders
         Object.entries(previewData).forEach(([key, value]) => {
             const regex = new RegExp(`{{${key}}}`, 'g');
             previewContent = previewContent.replace(regex, value);
             previewSubject = previewSubject.replace(regex, value);
         });
 
-        $('#previewModal').modal({
-            closable: false,
-            onShow: function () {
-                $('#previewContent').html(`
-                <div class="ui raised segment">
-                    <h3>${previewSubject || 'Kein Betreff'}</h3>
-                    <div class="ui divider"></div>
-                    ${previewContent || 'Kein Inhalt'}
-                </div>
-            `);
-            }
-        }).modal('show');
+        $('#previewContent').html(`
+        <div class="ui raised segment">
+            <h3>${previewSubject || 'Kein Betreff'}</h3>
+            <div class="ui divider"></div>
+            ${previewContent || 'Kein Inhalt'}
+        </div>
+    `);
+
+        $('#previewModal').modal('show');
     }
 
     function afterTemplateFormSubmit(response) {
@@ -181,26 +189,12 @@ echo $formGenerator->generateForm();
             showToast('Fehler beim Speichern: ' + response.message, 'error');
         }
     }
+
 </script>
 
 <style>
     .ck-editor__editable {
         min-height: 400px !important;
-    }
-
-    .ui.tiny.button {
-        text-align: left;
-        margin-bottom: 0.5em !important;
-        padding: 0.8em !important;
-    }
-
-    .ui.tiny.button .ui.mini.label {
-        float: right;
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .ui.vertical.buttons {
-        margin-top: 0.5em;
     }
 
     .preview-container {
@@ -211,5 +205,13 @@ echo $formGenerator->generateForm();
 
     .ui.segment {
         background: #f8f9fa;
+    }
+
+    .ui.tiny.buttons {
+        margin-bottom: 0.5em;
+    }
+
+    .ui.tiny.button {
+        margin-right: 0.2em !important;
     }
 </style>

@@ -107,7 +107,7 @@ $formGenerator->addField([
     'type' => 'ckeditor5',
     'name' => 'message',
     'label' => 'Nachricht',
-    'required' => true,
+    //'required' => true,
     'error_message' => 'Bitte geben Sie eine Nachricht ein',
     'config' => getEditorConfig()
 ]);
@@ -499,6 +499,7 @@ echo $formGenerator->generateForm();
             showToast('Fehler beim Speichern: ' + response.message, 'error');
         }
     }
+
 </script>
 
 <style>
