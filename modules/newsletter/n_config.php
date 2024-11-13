@@ -13,7 +13,6 @@ if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
     $uploadBasePath = "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/";
 }
 
-
 $host = 'localhost';
 $username = 'smart';
 $password = 'Eiddswwenph21;';
