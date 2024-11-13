@@ -8,7 +8,7 @@ $apiSecret = '55b277cd54eaa3f1d8188fdc76e06535';
 
 // In einer zentralen config.php oder ähnlich
 if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
-    $uploadBasePath = "/data/www/develop/smart8/uploads/users/";
+    $uploadBasePath = "/data/www/develop/uploads/users/";
 } else {
     $uploadBasePath = "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/";
 }
