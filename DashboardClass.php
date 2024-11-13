@@ -2,6 +2,17 @@
 include(__DIR__ . "/config.php");
 
 $userId = 40;
+
+
+// In einer zentralen config.php oder ähnlich
+if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
+    define('WEB_ROOT', '');  // Produktionsserver
+} else {
+    define('WEB_ROOT', '/smart8');  // Lokale Entwicklung
+}
+
+define('SMARTFORM_PATH', WEB_ROOT . '/smartform2');
+
 //Top-Leister generell
 $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 
@@ -16,11 +27,10 @@ $dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sig
 //$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 //$dashboard->addScript("../../../smartform/js/smart_list.js");
 //$dashboard->addScript("../../../smartform/js/smart_form.js");
-$smartformPath = $dashboard->getBasePath();
 
-$dashboard->addScript($smartformPath . "/smartform2/js/listGenerator.js");
-$dashboard->addScript($smartformPath . "/smartform2/js/formGenerator.js");
-$dashboard->addScript($smartformPath . "/smartform2/js/ckeditor-init.js");
+$dashboard->addScript(SMARTFORM_PATH . "/js/listGenerator.js");
+$dashboard->addScript(SMARTFORM_PATH . "/js/formGenerator.js");
+$dashboard->addScript(SMARTFORM_PATH . "/js/ckeditor-init.js");
 
 
 //$dashboard->addScript("alert('test');", true);  //Inline-Script
@@ -40,6 +50,7 @@ $dashboard->configureSidebar([
 
 class Dashboard
 {
+    private $webRoot = '';
     private $jsEnabledMenus = [];
     private $menus = [];
     private $topMenuItems = [];
@@ -56,6 +67,22 @@ class Dashboard
     private $sidebarClass = 'ui vertical labeled icon sidebar menu';
     private $sidebarVisibleOnInit = false;
     private $menuClass = 'ui green top massive fixed menu';
+
+    public function __construct($title, $db, $userId = null, $version = "1.0", $moduleName = "")
+    {
+        // Bestimme den Web-Root basierend auf dem Server
+        if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
+            $this->webRoot = '';  // Root-Pfad für Produktion
+        } else {
+            $this->webRoot = '/smart8';  // Root-Pfad für lokale Entwicklung
+        }
+
+        $this->pageTitle = $title;
+        $this->db = $db;
+        $this->userId = $userId;
+        $this->version = $version;
+        $this->moduleName = $moduleName;
+    }
 
     private $sidebarConfig = [
         'transition' => 'overlay',
@@ -89,14 +116,7 @@ class Dashboard
     }
 
 
-    public function __construct($title, $db, $userId = null, $version = "1.0", $moduleName = "")
-    {
-        $this->pageTitle = $title;
-        $this->db = $db;
-        $this->userId = $userId;
-        $this->version = $version;
-        $this->moduleName = $moduleName;
-    }
+
 
     public function addMenu($menuId, $menuClass = 'ui compact menu', $toggleButton = false)
     {
@@ -114,25 +134,10 @@ class Dashboard
         }
     }
 
-    public function getBasePath()
-    {
-        $classDir = dirname((new ReflectionClass($this))->getFileName());
-        $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $classDir);
-        $relativePath = '/' . trim($relativePath, '/');
-        return $relativePath;
-    }
-
-    private function getSmartformPath()
-    {
-        // Gehe zwei Verzeichnisse zurück und füge smartform2 hinzu
-        return dirname(dirname($this->getBasePath())) . '/smartform2';
-    }
-
     // Existierende addScript Methode erweitern oder neue Methode erstellen
     public function addSmartformScript($scriptName)
     {
-        $smartformPath = $this->getSmartformPath();
-        $this->addScript($smartformPath . "/js/" . $scriptName);
+        $this->addScript(SMARTFORM_PATH . "/js/" . $scriptName);
     }
 
     public function addMenuItem($menuId, $module, $page, $name, $icon, $popup = '', $position = 'left', $class = '', $isDefault = false)
