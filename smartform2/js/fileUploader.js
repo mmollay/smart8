@@ -3,7 +3,7 @@ class FileUploader {
     constructor(config) {
         this.config = config;
         this.translations = config.translations;
-        this.basePath = config.basePath || '';
+        this.basePath = '../../smartform2/uploader/';
         this.uploadDir = config.UPLOAD_DIR || '../uploads/'; // Verwenden Sie das übergebene UPLOAD_DIR
         this.filesToUpload = [];
         this.initStyles();
@@ -12,6 +12,7 @@ class FileUploader {
         this.bindEvents();
         this.loadFileList();
         this.onFileListChange = config.onFileListChange;
+
     }
 
     triggerFileListChange() {
