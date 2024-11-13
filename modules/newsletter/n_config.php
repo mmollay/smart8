@@ -14,7 +14,6 @@ if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
 }
 
 
-
 $host = 'localhost';
 $username = 'smart';
 $password = 'Eiddswwenph21;';
@@ -22,9 +21,9 @@ $dbname = 'ssi_newsletter';
 
 $db = $connection = $GLOBALS['mysqli'] = mysqli_connect($host, $username, $password, $dbname);
 
-//Select the database
-if (!mysqli_select_db($db, $dbname)) {
-    die('Datenbankauswahl fehlgeschlagen: ' . mysqli_error($db));
+// Select the database
+if (!$db->select_db($dbname)) {
+    die('Datenbankauswahl fehlgeschlagen: ' . $db->error);
 }
 
 // Standardisierte Platzhalter für das gesamte System
