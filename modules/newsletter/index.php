@@ -25,6 +25,7 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", 
 $dashboard->addScript("js/form_after.js");
 $dashboard->addScript('js/send_emails.js');
 //$dashboard->addScript("../../smartform2/js/listGenerator.js");
+//$dashboard->addScript("../../smartform2/js/formGenerator.js");
 //$dashboard->addScript("../../../smartform/ckeditor5/ckeditor.js");
 //$dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/35.0.1/classic/ckeditor.js");
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js");

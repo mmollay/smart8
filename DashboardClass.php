@@ -16,8 +16,12 @@ $dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sig
 //$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 //$dashboard->addScript("../../../smartform/js/smart_list.js");
 //$dashboard->addScript("../../../smartform/js/smart_form.js");
-$dashboard->addScript("../../smartform2/js/listGenerator.js");
-$dashboard->addScript("../../smartform2/js/formGenerator.js");
+$smartformPath = $dashboard->getBasePath();
+
+$dashboard->addScript($smartformPath . "/smartform2/js/listGenerator.js");
+$dashboard->addScript($smartformPath . "/smartform2/js/formGenerator.js");
+$dashboard->addScript($smartformPath . "/smartform2/js/ckeditor-init.js");
+
 //$dashboard->addScript("alert('test');", true);  //Inline-Script
 
 $dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
@@ -107,6 +111,27 @@ class Dashboard
                 'toggleButton' => $toggleButton
             ];
         }
+    }
+
+    public function getBasePath()
+    {
+        $classDir = dirname((new ReflectionClass($this))->getFileName());
+        $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $classDir);
+        $relativePath = '/' . trim($relativePath, '/');
+        return $relativePath;
+    }
+
+    private function getSmartformPath()
+    {
+        // Gehe zwei Verzeichnisse zurück und füge smartform2 hinzu
+        return dirname(dirname($this->getBasePath())) . '/smartform2';
+    }
+
+    // Existierende addScript Methode erweitern oder neue Methode erstellen
+    public function addSmartformScript($scriptName)
+    {
+        $smartformPath = $this->getSmartformPath();
+        $this->addScript($smartformPath . "/js/" . $scriptName);
     }
 
     public function addMenuItem($menuId, $module, $page, $name, $icon, $popup = '', $position = 'left', $class = '', $isDefault = false)
