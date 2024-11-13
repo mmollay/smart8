@@ -31,6 +31,7 @@ $dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sig
 $dashboard->addScript(SMARTFORM_PATH . "/js/listGenerator.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/formGenerator.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/ckeditor-init.js");
+$dashboard->addScript(SMARTFORM_PATH . "/js/fileUploader.js");
 
 
 //$dashboard->addScript("alert('test');", true);  //Inline-Script

@@ -1058,7 +1058,6 @@ class FormGenerator
             </script>
             ";
         }
-
         if ($this->hasFileUploader) {
             $js .= "
             <script>
@@ -1108,25 +1107,6 @@ class FormGenerator
                     };
                 }
                 
-                // Funktion zum Laden und Initialisieren des FileUploaders
-                function loadAndInitializeFileUploader(formId, config) {
-                    if (typeof FileUploader === 'undefined') {
-                        // FileUploader-Skript laden wenn noch nicht vorhanden
-                        var script = document.createElement('script');
-                        script.src = '{$basePath}/js/fileUploader.js';
-                        script.onload = function() {
-                            window.FileUploaderManager.initOrUpdate(formId, config);
-                        };
-                        script.onerror = function() {
-                            console.error('Failed to load fileUploader.js');
-                        };
-                        document.head.appendChild(script);
-                    } else {
-                        // FileUploader direkt initialisieren
-                        window.FileUploaderManager.initOrUpdate(formId, config);
-                    }
-                }
-                
                 // Modal-Event-Listener für Cleanup
                 $('.ui.modal').on('hide', function() {
                     const formId = $(this).find('form').attr('id');
@@ -1135,8 +1115,8 @@ class FormGenerator
                     }
                 });
                 
-                // FileUploader initialisieren
-                loadAndInitializeFileUploader('" . $formId . "', " . json_encode($this->fileUploaderConfig) . ");
+                // FileUploader direkt initialisieren
+                window.FileUploaderManager.initOrUpdate('" . $formId . "', " . json_encode($this->fileUploaderConfig) . ");
             })();
             </script>
             ";
