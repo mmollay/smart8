@@ -2,9 +2,7 @@
 require_once(__DIR__ . '/../n_config.php');
 
 // Hole alle verfügbaren Gruppen für das Dropdown
-$stmt = $db->prepare("SELECT id, name, color FROM groups ORDER BY name");
-$stmt->execute();
-$groups = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$groups = getAllGroups($db);
 ?>
 <div class="ui container">
     <div class="ui attached message">
@@ -99,9 +97,9 @@ $groups = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                             $groups = getAllGroups($db);
                             foreach ($groups as $groupId => $groupHtml):
                                 ?>
-                                            <div class="item" data-value="<?= htmlspecialchars($groupId) ?>">
-                                                <?= $groupHtml ?>
-                                            </div>
+                                <div class="item" data-value="<?= htmlspecialchars($groupId) ?>">
+                                    <?= $groupHtml ?>
+                                </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
