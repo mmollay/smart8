@@ -22,6 +22,7 @@ $dashboard->addScript($smartformPath . "/smartform2/js/listGenerator.js");
 $dashboard->addScript($smartformPath . "/smartform2/js/formGenerator.js");
 $dashboard->addScript($smartformPath . "/smartform2/js/ckeditor-init.js");
 
+
 //$dashboard->addScript("alert('test');", true);  //Inline-Script
 
 $dashboard->setSidebarClass('ui left vertical pointing menu'); //Menü immer sichtbar 
