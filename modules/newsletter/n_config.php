@@ -22,8 +22,12 @@ $dbname = 'ssi_newsletter';
 $db = $connection = $GLOBALS['mysqli'] = mysqli_connect($host, $username, $password, $dbname);
 
 // Select the database
-if (!$db->select_db($dbname)) {
-    die('Datenbankauswahl fehlgeschlagen: ' . $db->error);
+try {
+    if (!$db->select_db($dbname)) {
+        throw new Exception('Datenbankauswahl fehlgeschlagen: ' . $db->error);
+    }
+} catch (Exception $e) {
+    die($e->getMessage());
 }
 
 // Standardisierte Platzhalter für das gesamte System
