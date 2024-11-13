@@ -153,6 +153,8 @@ function getRecipientsList($db)
         }
     }
 
+    
+
     function showExamplePreview() {
         const exampleData = {
             anrede: 'Sehr geehrter Herr',

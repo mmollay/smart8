@@ -87,7 +87,8 @@ $formGenerator->addField([
 $formGenerator->addField([
     'type' => 'input',
     'name' => 'email',
-    'label' => 'Empfänger-Email'
+    'label' => 'Empfänger-Email',
+    'required' => true
 ]);
 
 $formGenerator->addField([

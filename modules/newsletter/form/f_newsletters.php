@@ -248,16 +248,6 @@ echo $formGenerator->generateForm();
     </div>
 </div>
 
-<!-- Preview modal -->
-<div class="ui large modal" id="previewModal">
-    <div class="header">Vorschau mit Platzhaltern</div>
-    <div class="content">
-        <div id="previewContent"></div>
-    </div>
-    <div class="actions">
-        <div class="ui deny button">Schließen</div>
-    </div>
-</div>
 <script src="js/editor_utils.js"></script>
 <script>
     $(document).ready(function () {
@@ -272,13 +262,7 @@ echo $formGenerator->generateForm();
             allowMultiple: true,  // Erlaubt mehrere Modals
             closable: false,
         });
-
-
     });
-
-    function insertPlaceholder(placeholder) {
-        EditorUtils.insertPlaceholder(placeholder);
-    }
 
     function loadTemplate(templateId) {
         if (!templateId) return;
@@ -424,46 +408,6 @@ echo $formGenerator->generateForm();
                 }
             }
         });
-    }
-
-    function previewWithPlaceholders() {
-        const editor = document.querySelector('.ck-editor__editable').ckeditorInstance;
-        if (!editor) return;
-
-        const content = editor.getData();
-        const subject = $('#subject').val();
-
-        // Example placeholder values
-        const placeholders = {
-            'anrede': 'Sehr geehrter Herr',
-            'titel': 'Dr.',
-            'vorname': 'Max',
-            'nachname': 'Mustermann',
-            'firma': 'Musterfirma GmbH',
-            'email': 'max.mustermann@example.com',
-            'datum': new Date().toLocaleDateString('de-DE'),
-            'uhrzeit': new Date().toLocaleTimeString('de-DE')
-        };
-
-        let previewContent = content;
-        let previewSubject = subject;
-
-        // Replace placeholders
-        Object.entries(placeholders).forEach(([key, value]) => {
-            const regex = new RegExp(`{{${key}}}`, 'g');
-            previewContent = previewContent.replace(regex, value);
-            previewSubject = previewSubject.replace(regex, value);
-        });
-
-        $('#previewContent').html(`
-        <div class="ui raised segment">
-            <h3>${previewSubject}</h3>
-            <div class="ui divider"></div>
-            ${previewContent}
-        </div>
-    `);
-
-        $('#previewModal').modal('show');
     }
 
     function updateFileListInDatabase(fileList) {

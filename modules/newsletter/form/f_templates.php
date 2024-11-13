@@ -86,7 +86,7 @@ $formGenerator->addButtonElement([
         'name' => 'preview',
         'value' => 'Vorschau',
         'class' => 'ui secondary button',
-        'onclick' => 'previewTemplate()'
+        'onclick' => 'EditorUtils.previewWithPlaceholders()'
     ],
     [
         'name' => 'close',
@@ -113,18 +113,6 @@ echo $formGenerator->generateJS();
 echo $formGenerator->generateForm();
 ?>
 
-<!-- Preview Modal -->
-<div class="ui large modal" id="previewModal">
-    <i class="close icon"></i>
-    <div class="header">Template Vorschau</div>
-    <div class="content">
-        <div id="previewContent" class="preview-container"></div>
-    </div>
-    <div class="actions">
-        <div class="ui deny button">Schließen</div>
-    </div>
-</div>
-
 <script src="js/editor_utils.js"></script>
 
 <script>
@@ -134,49 +122,6 @@ echo $formGenerator->generateForm();
             closable: false
         });
     });
-
-    function insertPlaceholder(placeholder) {
-        EditorUtils.insertPlaceholder(placeholder);
-    }
-
-    function previewTemplate() {
-        if (!window.templateEditor) return;
-
-        const content = window.templateEditor.getData();
-        const subject = $('#subject').val();
-
-        // Example data for preview
-        const previewData = {
-            anrede: 'Sehr geehrter Herr',
-            titel: 'Dr.',
-            vorname: 'Max',
-            nachname: 'Mustermann',
-            firma: 'Beispiel GmbH',
-            email: 'max.mustermann@beispiel.de',
-            datum: new Date().toLocaleDateString('de-DE'),
-            uhrzeit: new Date().toLocaleTimeString('de-DE')
-        };
-
-        let previewContent = content;
-        let previewSubject = subject;
-
-        // Replace placeholders
-        Object.entries(previewData).forEach(([key, value]) => {
-            const regex = new RegExp(`{{${key}}}`, 'g');
-            previewContent = previewContent.replace(regex, value);
-            previewSubject = previewSubject.replace(regex, value);
-        });
-
-        $('#previewContent').html(`
-        <div class="ui raised segment">
-            <h3>${previewSubject || 'Kein Betreff'}</h3>
-            <div class="ui divider"></div>
-            ${previewContent || 'Kein Inhalt'}
-        </div>
-    `);
-
-        $('#previewModal').modal('show');
-    }
 
     function afterTemplateFormSubmit(response) {
         if (response.success) {

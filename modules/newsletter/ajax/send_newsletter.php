@@ -4,7 +4,12 @@ header('Content-Type: application/json');
 
 function sendJsonResponse($status, $message)
 {
-    echo json_encode(['status' => $status, 'message' => $message]);
+    // Konvertiere den Status in ein success-Boolean für die JavaScript-Seite
+    $response = [
+        'success' => ($status === 'success'),  // true wenn success, false wenn error
+        'message' => $message
+    ];
+    echo json_encode($response);
     exit;
 }
 
@@ -61,7 +66,12 @@ try {
     }
 
     // Log-Einträge für den Start des Versandprozesses
-    $stmt = $db->prepare("INSERT INTO email_logs (job_id, status, response) SELECT id, 'send', 'Versand gestartet' FROM email_jobs WHERE content_id = ?");
+    $stmt = $db->prepare("
+        INSERT INTO email_logs (job_id, status, response) 
+        SELECT id, 'send', 'Versand gestartet' 
+        FROM email_jobs 
+        WHERE content_id = ?
+    ");
     $stmt->bind_param("i", $content_id);
     $stmt->execute();
     $stmt->close();

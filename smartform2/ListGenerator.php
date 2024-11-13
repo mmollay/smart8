@@ -4,6 +4,8 @@ ini_set('display_errors', 1);
 //mit Summenbildung
 class ListGenerator
 {
+
+    private $filterMappings = [];
     private $debugEnabled = false;
     private $debugLogFile = null;
     private $config;
@@ -97,6 +99,8 @@ class ListGenerator
         }
 
     }
+
+
 
     private function initializeDebug()
     {
@@ -1240,6 +1244,7 @@ class ListGenerator
 
         return $html;
     }
+
     private function generatePagination($currentPage, $totalPages)
     {
         $html = "<div class='ui pagination menu'>";

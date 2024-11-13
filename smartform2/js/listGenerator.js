@@ -18,7 +18,6 @@ function loadListGenerator(url, customState = {}) {
                 saveState: true,
                 contentId: contentId,
                 autoReloadInterval: customState.autoReloadInterval || 0 // Fügen Sie dies hinzu
-
             }
         };
     }
@@ -166,9 +165,15 @@ function setupEventHandlers(contentId) {
         }
     });
 
+    // Filter-Dropdowns einrichten
     $(`#${contentId} .ui.dropdown[id^="filter_${contentId}_"]`).each(function () {
         const $dropdown = $(this);
-        const filterName = $dropdown.attr('id').replace(`filter_${contentId}_`, '');
+        // Extrahiere den Filter-Namen aus der ID und entferne eventuelle Tabellen-Präfixe
+        const fullFilterName = $dropdown.attr('id').replace(`filter_${contentId}_`, '');
+        const filterName = fullFilterName.includes('.') ?
+            fullFilterName.split('.').pop() :
+            fullFilterName;
+
         const isMultiple = $dropdown.hasClass('multiple');
 
         $dropdown.dropdown({
@@ -176,8 +181,10 @@ function setupEventHandlers(contentId) {
             allowAdditions: $dropdown.data('allow-additions') || false,
             maxSelections: $dropdown.data('max-selections') || null,
             onChange: function (value, text, $selectedItem) {
-                console.log(`Dropdown geändert: ${filterName}, Wert: ${value}`);
-                instance.state.filters[filterName] = value;
+                console.log(`Dropdown geändert: ${filterName}, Wert: ${value}, Original Filter: ${fullFilterName}`);
+
+                // Speichere sowohl den Original-Filternamen als auch den Wert
+                instance.state.filters[fullFilterName] = value;
                 instance.state.page = 1;
                 scheduleReload();
             },
@@ -195,13 +202,9 @@ function setupEventHandlers(contentId) {
             }
         });
 
-        if (isMultiple) {
-            $dropdown.on('click', function (e) {
-                if ($(e.target).hasClass('delete')) {
-                    e.stopPropagation();
-                    $dropdown.removeClass('keep-open');
-                }
-            });
+        // Setze initial gespeicherte Werte
+        if (instance.state.filters[fullFilterName]) {
+            $dropdown.dropdown('set selected', instance.state.filters[fullFilterName]);
         }
     });
 
@@ -294,12 +297,17 @@ function setupEventHandlers(contentId) {
     });
 }
 
+// Funktion zum Wiederherstellen der Filter anpassen
 function restoreFilters(contentId) {
     let instance = listInstances[contentId];
     for (let filterName in instance.state.filters) {
+        // Berücksichtige den vollständigen Filternamen (mit Tabellenprefix)
         const $filter = $(`#filter_${contentId}_${filterName}`);
         if ($filter.length) {
-            $filter.dropdown('set selected', instance.state.filters[filterName]);
+            const value = instance.state.filters[filterName];
+            if (value !== undefined && value !== '') {
+                $filter.dropdown('set selected', value);
+            }
         }
     }
 }
