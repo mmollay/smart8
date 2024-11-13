@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../FormGenerator.php';
 $formGenerator = new FormGenerator();
 
+
 $submitTarget = 'process_form.php';
 
 $formGenerator->setFormData([
@@ -310,6 +311,7 @@ $formGenerator->addField([
         'ALLOWED_FORMATS' => ['pdf', 'jpeg'],
         'MAX_FILE_COUNT' => 10,
         'UPLOAD_DIR' => '../uploads/',
+        'basePath' => 'uploads/',
         'LANGUAGE' => 'de',
         'dropZoneId' => 'drop-zone',
         'fileInputId' => 'file-input',

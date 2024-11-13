@@ -13,6 +13,7 @@ if (!isset($_POST['update_id'])) {
 }
 
 $formGenerator = new FormGenerator();
+$formGenerator->setBasePath('../../smartform2/');
 
 $formGenerator->setFormData([
     'id' => 'form_edit',

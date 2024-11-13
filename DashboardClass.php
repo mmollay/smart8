@@ -5,10 +5,10 @@ $userId = 40;
 
 
 // In einer zentralen config.php oder ähnlich
-if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
-    define('WEB_ROOT', '');  // Produktionsserver
-} else {
+if ($_SERVER['SERVER_NAME'] === 'localhost') {
     define('WEB_ROOT', '/smart8');  // Lokale Entwicklung
+} else {
+    define('WEB_ROOT', '');  // Produktionsserver
 }
 
 define('SMARTFORM_PATH', WEB_ROOT . '/smartform2');

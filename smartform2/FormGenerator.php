@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 class FormGenerator
 {
-
+    private $customBasePath = null;
     private static $toastContainerAdded = false;
     private static $ckeditorConfigs = [];
     private $hasCKEditor = false;
@@ -189,10 +189,19 @@ class FormGenerator
         return "<button type='{$type}' name='{$name}' class='{$class}'{$attributes}>{$buttonContent}</button>\n";
     }
 
-
+    public function setBasePath($path)
+    {
+        $this->customBasePath = rtrim($path, '/');
+    }
 
     private function getBasePath()
     {
+        // Wenn ein benutzerdefinierter Pfad gesetzt wurde, verwende diesen
+        if ($this->customBasePath !== null) {
+            return $this->customBasePath;
+        }
+
+        // Ansonsten verwende die Standard-Logik
         $classDir = dirname((new ReflectionClass($this))->getFileName());
         $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $classDir);
         $relativePath = '/' . trim($relativePath, '/');
