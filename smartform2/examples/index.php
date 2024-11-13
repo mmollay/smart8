@@ -1,3 +1,13 @@
+<?
+// In config.php oder einer ähnlichen Konfigurationsdatei
+if ($_SERVER['SERVER_NAME'] === 'localhost') {
+    define('BASE_URL', '/smart8/smartform2');
+} else {
+    define('BASE_URL', '/smartform2');
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -122,8 +132,8 @@
 
     </script>
 
-    <script src="../js/listGenerator.js"></script>
-    
+    <script src="<?php echo BASE_URL; ?>/js/listGenerator.js"></script>
+
     <script>
         $(document).ready(function () {
             // Example: Load MySQL Benutzerliste

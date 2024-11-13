@@ -1047,7 +1047,7 @@ class FormGenerator
         $basePath = $this->getBasePath();
 
         $js = "<script src='{$basePath}/js/formGenerator.js'></script>\n";
-
+        echo $basePath;
         if ($this->hasCKEditor) {
             $js .= "<script src='{$basePath}/js/ckeditor-init.js'></script>\n";
         }
