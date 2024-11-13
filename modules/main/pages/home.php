@@ -1,5 +1,5 @@
 <?php
-include(__DIR__ . '/../config.php');
+include(__DIR__ . '/../../../config.php');
 
 $set_module['faktura'] = true;
 $set_module['faktura2'] = true;
