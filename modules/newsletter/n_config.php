@@ -83,13 +83,27 @@ function getAllGroups($db)
             groups g
             LEFT JOIN recipient_group rg ON g.id = rg.group_id
         GROUP BY 
-            g.id, g.name, g.color
+            g.id, 
+            g.name, 
+            g.color
         ORDER BY 
             g.name
     ";
 
+    // Fehlerbehandlung für prepare
     $stmt = $db->prepare($query);
-    $stmt->execute();
+    if ($stmt === false) {
+        error_log("Prepare failed: " . $db->error);
+        return [];  // Leeres Array zurückgeben im Fehlerfall
+    }
+
+    // Fehlerbehandlung für execute
+    if (!$stmt->execute()) {
+        error_log("Execute failed: " . $stmt->error);
+        $stmt->close();
+        return [];
+    }
+
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
@@ -101,6 +115,7 @@ function getAllGroups($db)
         );
     }
 
+    $stmt->close();
     return $groups;
 }
 
