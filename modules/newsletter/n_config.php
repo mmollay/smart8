@@ -7,10 +7,10 @@ $apiKey = '452e5eca1f98da426a9a3542d1726c96';
 $apiSecret = '55b277cd54eaa3f1d8188fdc76e06535';
 
 // In einer zentralen config.php oder ähnlich
-if ($_SERVER['SERVER_NAME'] === 'developsmart8.ssi.at') {
-    $uploadBasePath = "/data/www/develop/uploads/users/";
-} else {
+if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $uploadBasePath = "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/";
+} else {
+    $uploadBasePath = "/data/www/develop/uploads/users/";
 }
 
 $host = 'localhost';
