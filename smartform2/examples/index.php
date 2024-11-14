@@ -133,6 +133,11 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     </script>
 
     <script src="<?php echo BASE_URL; ?>/js/listGenerator.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/formGenerator.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/fileUploader.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/ckeditor-init.js"></script>
+
+
 
     <script>
         $(document).ready(function () {
