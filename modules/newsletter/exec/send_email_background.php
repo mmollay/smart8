@@ -1,11 +1,12 @@
 <?php
 ob_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require_once(__DIR__ . '/../n_config.php');
 require_once(__DIR__ . '/../classes/EmailService.php');
 require_once(__DIR__ . '/../classes/PlaceholderService.php');
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 
 // Script start time
 $start_time = microtime(true);
