@@ -13,6 +13,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
     $uploadBasePath = "/data/www/develop/uploads/users/";
 }
 
+
 $host = 'localhost';
 $username = 'smart';
 $password = 'Eiddswwenph21;';

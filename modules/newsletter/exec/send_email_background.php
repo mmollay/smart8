@@ -25,7 +25,7 @@ try {
         $db,
         $apiKey,
         $apiSecret,
-        uploadBasePath: $uploadBasePath
+        $uploadBasePath
     );
     $placeholderService = PlaceholderService::getInstance();
 
