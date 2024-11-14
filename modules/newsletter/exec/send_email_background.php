@@ -19,7 +19,6 @@ try {
     }
     $db->set_charset('utf8mb4');
 
-    echo $uploadBasePath;
     // Initialize Services
     $emailService = new EmailService(
         $db,
