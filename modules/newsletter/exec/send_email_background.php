@@ -7,7 +7,6 @@ require_once(__DIR__ . '/../classes/PlaceholderService.php');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 // Script start time
 $start_time = microtime(true);
 $log = [];
