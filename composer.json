@@ -1,5 +1,6 @@
 {
     "require": {
-        "mailjet/mailjet-apiv3-php": "^1.6"
+        "mailjet/mailjet-apiv3-php": "^1.6",
+        "phpoffice/phpspreadsheet": "^3.4"
     }
 }

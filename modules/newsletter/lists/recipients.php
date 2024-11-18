@@ -2,7 +2,6 @@
 include __DIR__ . '/../../../smartform2/ListGenerator.php';
 require __DIR__ . '/../n_config.php';
 
-
 // ListGenerator Konfiguration
 $listConfig = [
     'listId' => 'recipients',
@@ -24,8 +23,8 @@ $listConfig = [
 
 $listGenerator = new ListGenerator($listConfig);
 
-// Optimierte Datenbank-Abfrage
-$query = "
+// Basis-Query
+$baseQuery = "
     SELECT
         r.id,
         r.first_name,
@@ -35,24 +34,83 @@ $query = "
         r.gender,
         r.title,
         r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
         GROUP_CONCAT(DISTINCT g.id) as group_ids,
         IFNULL(GROUP_CONCAT(
             DISTINCT CONCAT('<div class=\"ui mini basic compact label ', g.color, '\">', g.name, '</div>')
             SEPARATOR ' '
-        ), '<div class=\"ui mini compact label\">Keine Gruppen</div>') as group_labels
-    FROM
-        recipients r
-    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id  -- Diese Zeile wurde korrigiert
+        ), '<div class=\"ui mini compact label\">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class=\"ui red mini label\" title=\"Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '\"><i class=\"user times icon\"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class=\"ui orange mini label\" title=\"Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '\"><i class=\"exclamation triangle icon\"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class=\"ui yellow mini label\" title=\"Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '\"><i class=\"exclamation circle icon\"></i>Soft Bounce</div>')
+            ELSE '<div class=\"ui green mini label\"><i class=\"user check icon\"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
     LEFT JOIN groups g ON rg.group_id = g.id
-    GROUP BY
-        r.id
 ";
+
+// Bedingungen basierend auf Filtern
+$where = [];
+$params = [];
+$types = "";
+
+// Status Filter
+if (isset($_GET['status']) && $_GET['status'] !== '') {
+    switch ($_GET['status']) {
+        case 'active':
+            $where[] = "r.unsubscribed = 0 AND r.bounce_status = 'none'";
+            break;
+        case 'unsubscribed':
+            $where[] = "r.unsubscribed = 1";
+            break;
+        case 'bounced_hard':
+            $where[] = "r.bounce_status = 'hard'";
+            break;
+        case 'bounced_soft':
+            $where[] = "r.bounce_status = 'soft'";
+            break;
+    }
+}
+
+// Gruppen Filter
+if (isset($_GET['group_id']) && $_GET['group_id'] !== '') {
+    $where[] = "g.id = ?";
+    $params[] = $_GET['group_id'];
+    $types .= "i";
+}
+
+// WHERE-Klausel zusammenbauen
+$whereClause = !empty($where) ? " WHERE " . implode(" AND ", $where) : "";
+
+// Vollständige Query
+$query = $baseQuery . $whereClause . " GROUP BY r.id";
+
 $listGenerator->setSearchableColumns(['email', 'first_name', 'last_name', 'company', 'comment']);
-$listGenerator->setDatabase($db, $query, true);
+$listGenerator->setDatabase($db, $query, true, $types, $params);
 
+// Filter
 $listGenerator->addFilter('group_id', 'Gruppe', getAllGroups($db));
-//$listGenerator->addFilter('last_name', 'Nachname', array('Mollay' => 'Mollay'));
 
+$listGenerator->addFilter('status', 'Status', [
+    'active' => '<i class="check circle green icon"></i>Aktiv',
+    'unsubscribed' => '<i class="times circle red icon"></i>Abgemeldet',
+    'bounced_hard' => '<i class="exclamation triangle orange icon"></i>Hard Bounce',
+    'bounced_soft' => '<i class="exclamation circle yellow icon"></i>Soft Bounce'
+]);
 
 // Externe Buttons
 $listGenerator->addExternalButton('add', [
@@ -65,12 +123,41 @@ $listGenerator->addExternalButton('add', [
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Empfänger hinzuzufügen']
 ]);
 
+
+// $listGenerator->addExport([
+//     'url' => 'ajax/export_recipients.php',
+//     'format' => 'xlsx',
+//     'fields' => ['id', 'name', 'email'],
+//     'title' => 'Excel Export',
+//     'popup' => ['content' => 'Als Excel exportieren'],
+//     'beforeExport' => 'function(params) {
+//         console.log("Export startet", params);
+//         return confirm("Export starten?");
+//     }',
+//     'afterExport' => 'function(params) {
+//         console.log("Export abgeschlossen", params);
+//     }'
+// ]);
+
+$listGenerator->addExport([
+    'url' => 'ajax/generic_export.php',
+    'format' => 'csv',
+    //'fields' => ['id', 'first_name', 'last_name'],
+    'title' => 'CSV Export',
+    'popup' => ['content' => 'Liste exportieren'],
+    'beforeExport' => 'function(params) {
+        return confirm("Möchten Sie die Liste exportieren?");
+    }'
+]);
+
+
 // Spalten definieren
 $columns = [
     ['name' => 'first_name', 'label' => "<i class='user icon'></i>Vorname"],
     ['name' => 'last_name', 'label' => "<i class='user icon'></i>Nachname"],
     ['name' => 'company', 'label' => "<i class='building icon'></i>Firma"],
     ['name' => 'email', 'label' => "<i class='mail icon'></i>Empfänger-Email"],
+    ['name' => 'status_label', 'label' => "<i class='check circle icon'></i>Status"],
     ['name' => 'group_labels', 'label' => "Gruppennamen"],
     ['name' => 'comment', 'label' => "Kommentar"],
 ];
@@ -121,6 +208,8 @@ foreach ($buttons as $id => $button) {
     $listGenerator->addButton($id, $button);
 }
 
+
+
 // Setzen der Spaltentitel und Ausrichtung für die Buttons
 $listGenerator->setButtonColumnTitle('left', '', 'center');
 $listGenerator->setButtonColumnTitle('right', '', 'right');
@@ -132,5 +221,3 @@ echo $listGenerator->generateList();
 if (isset($db)) {
     $db->close();
 }
-
-?>

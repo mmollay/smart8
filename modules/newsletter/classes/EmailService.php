@@ -204,4 +204,111 @@ class EmailService
             return false;
         }
     }
+
+    /**
+     * Verarbeitet Webhook-Events von Mailjet
+     */
+    public function handleMailjetEvent($event)
+    {
+        try {
+            $messageId = $event['MessageID'];
+            $customId = $event['CustomID'];
+            $email = $event['email'];
+            $eventType = $event['event'];
+
+            // Extrahiere job_id aus CustomID
+            preg_match('/job_(\d+)_/', $customId, $matches);
+            $jobId = $matches[1] ?? null;
+
+            if ($jobId) {
+                // Aktualisiere Job-Status
+                $stmt = $this->db->prepare("
+                    UPDATE email_jobs 
+                    SET status = ?,
+                        message_id = ?,
+                        updated_at = NOW()
+                    WHERE id = ?
+                ");
+                $stmt->bind_param("ssi", $eventType, $messageId, $jobId);
+                $stmt->execute();
+
+                // Logge Event
+                $stmt = $this->db->prepare("
+                    INSERT INTO status_log (
+                        event, 
+                        timestamp, 
+                        message_id, 
+                        email
+                    ) VALUES (?, NOW(), ?, ?)
+                ");
+                $stmt->bind_param("sss", $eventType, $messageId, $email);
+                $stmt->execute();
+
+                // Spezielle Event-Behandlung
+                $this->handleSpecialEvents($eventType, $email);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            error_log("Failed to handle Mailjet event: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Behandelt spezielle Mail-Events
+     */
+    private function handleSpecialEvents($eventType, $email)
+    {
+        switch ($eventType) {
+            case 'bounce':
+            case 'blocked':
+                $bounceType = ($eventType === 'bounce') ? 'hard' : 'soft';
+                $stmt = $this->db->prepare("
+                    UPDATE recipients 
+                    SET bounce_status = ?,
+                        last_bounce_at = NOW()
+                    WHERE email = ?
+                ");
+                $stmt->bind_param("ss", $bounceType, $email);
+                $stmt->execute();
+                break;
+
+            case 'spam':
+            case 'unsub':
+                $stmt = $this->db->prepare("
+                    UPDATE recipients 
+                    SET unsubscribed = 1,
+                        unsubscribed_at = NOW()
+                    WHERE email = ?
+                ");
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                break;
+        }
+    }
+
+    /**
+     * Prüft den Status einer E-Mail
+     */
+    public function checkEmailStatus($jobId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT 
+                ej.status,
+                ej.message_id,
+                ej.error_message,
+                ej.sent_at,
+                r.email,
+                r.bounce_status,
+                r.unsubscribed
+            FROM email_jobs ej
+            JOIN recipients r ON ej.recipient_id = r.id
+            WHERE ej.id = ?
+        ");
+        $stmt->bind_param("i", $jobId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
 }

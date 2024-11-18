@@ -1,35 +1,99 @@
 <?php
+/**
+ * Newsletter Versand Script
+ * Nutzbar sowohl als Cron-Job als auch für manuellen Versand
+ */
+
+// Verhindere direkte Ausgaben vor dem JSON-Response
 ob_start();
-require_once(__DIR__ . '/../n_config.php');
-require_once(__DIR__ . '/../classes/EmailService.php');
-require_once(__DIR__ . '/../classes/PlaceholderService.php');
 
+// Fehlerberichterstattung für Debugging
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0); // Keine Fehler direkt ausgeben
+ini_set('log_errors', 1);     // Fehler loggen
 
-// Script start time
-$start_time = microtime(true);
-$log = [];
+// Start time für Performance-Tracking
+$startTime = microtime(true);
+
+// Basis-Einstellungen
+set_time_limit(300); // 5 Minuten maximale Ausführungszeit
+ini_set('memory_limit', '256M');
+date_default_timezone_set('Europe/Vienna');
+
+// Erkennung ob Cron oder manueller Aufruf
+$isCron = php_sapi_name() === 'cli';
+
+// Response-Array für manuellen Aufruf
+$response = [
+    'success' => false,
+    'message' => '',
+    'statistics' => [],
+    'log' => []
+];
+
+// Pfade definieren
+define('BASE_PATH', dirname(__DIR__));
+$logDir = BASE_PATH . '/logs';
+$tmpDir = BASE_PATH . '/tmp';
+
+// Logging-Funktion
+function writeLog($message, $type = 'INFO')
+{
+    global $logDir, $isCron, $response;
+
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp][$type] $message";
+
+    // Für Cron in Datei schreiben
+    if ($isCron) {
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+        $logFile = $logDir . '/cron_' . date('Y-m-d') . '.log';
+        file_put_contents($logFile, $logMessage . "\n", FILE_APPEND);
+    }
+
+    // Für manuellen Aufruf ins Response-Array
+    $response['log'][] = $logMessage;
+}
+
+// Start des Scripts
+writeLog("Start des Newsletter-Versands");
 
 try {
-    // Initialize database connection
-    $db = new mysqli($host, $username, $password, $dbname);
-    if ($db->connect_error) {
-        throw new Exception("Database connection failed: " . $db->connect_error);
-    }
-    $db->set_charset('utf8mb4');
+    // Erforderliche Dateien einbinden
+    require_once(BASE_PATH . '/n_config.php');
+    require_once(BASE_PATH . '/classes/EmailService.php');
+    require_once(BASE_PATH . '/classes/PlaceholderService.php');
 
-    // Initialize Services
-    $emailService = new EmailService(
-        $db,
-        $apiKey,
-        $apiSecret,
-        $uploadBasePath
-    );
+    // Hole den aktuellsten aktiven Newsletter
+    $result = $db->query("
+        SELECT DISTINCT ec.id as content_id
+        FROM email_jobs ej
+        JOIN email_contents ec ON ej.content_id = ec.id
+        WHERE ej.status = 'pending'
+        ORDER BY ej.created_at DESC
+        LIMIT 1
+    ");
+
+    $activeNewsletter = $result->fetch_assoc();
+
+    if (!$activeNewsletter) {
+        $message = "Keine ausstehenden Newsletter gefunden";
+        writeLog($message);
+        $response['message'] = $message;
+        throw new Exception($message);
+    }
+
+    $content_id = $activeNewsletter['content_id'];
+    writeLog("Aktiver Newsletter gefunden: ID " . $content_id);
+
+    // Services initialisieren
+    $emailService = new EmailService($db, $apiKey, $apiSecret, $uploadBasePath);
     $placeholderService = PlaceholderService::getInstance();
 
-    // Search for pending jobs in the database
-    $result = $db->query("
+    // Ausstehende E-Mails abrufen
+    $stmt = $db->prepare("
         SELECT 
             ej.*,
             ec.subject,
@@ -50,26 +114,35 @@ try {
         JOIN senders s ON ej.sender_id = s.id
         JOIN recipients r ON ej.recipient_id = r.id
         WHERE ej.status = 'pending'
+        AND ej.content_id = ?
         ORDER BY ej.created_at ASC
-        LIMIT 10
+        LIMIT 50
     ");
 
-    $jobs = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->bind_param("i", $content_id);
+    $stmt->execute();
+    $jobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $totalJobs = count($jobs);
 
-    if ($totalJobs == 0) {
-        throw new Exception('No pending email jobs found');
-    }
+    writeLog("Gefunden: $totalJobs ausstehende E-Mails für Newsletter ID: $content_id");
 
-    $log[] = "Found {$totalJobs} pending email jobs";
+    if ($totalJobs === 0) {
+        $message = "Keine ausstehenden E-Mails gefunden";
+        writeLog($message);
+        $response['success'] = true;
+        $response['message'] = $message;
+        throw new Exception($message);
+    }
 
     $successCount = 0;
     $failCount = 0;
-    $processedJobs = [];
+    $errors = [];
 
     foreach ($jobs as $job) {
         try {
-            // Create placeholders for current recipient
+            writeLog("Verarbeite E-Mail für: " . $job['recipient_email']);
+
+            // Platzhalter für aktuellen Empfänger erstellen
             $recipientPlaceholders = $placeholderService->createPlaceholders([
                 'first_name' => $job['recipient_first_name'],
                 'last_name' => $job['recipient_last_name'],
@@ -79,11 +152,11 @@ try {
                 'title' => $job['recipient_title']
             ]);
 
-            // Replace placeholders in subject and message
+            // Platzhalter ersetzen
             $subject = $placeholderService->replacePlaceholders($job['subject'], $recipientPlaceholders);
             $message = $placeholderService->replacePlaceholders($job['message'], $recipientPlaceholders);
 
-            // Generate unsubscribe link
+            // Abmelde-Link hinzufügen
             $unsubscribeUrl = "https://" . $_SERVER['HTTP_HOST'] . "/unsubscribe.php?email=" .
                 urlencode($job['recipient_email']) . "&id=" . $job['id'];
             $unsubscribeLink = "<br><br><hr><p style='font-size: 12px; color: #666;'>
@@ -91,19 +164,18 @@ try {
                 können Sie sich hier <a href='{$unsubscribeUrl}'>abmelden</a>.</p>";
             $message .= $unsubscribeLink;
 
-            // Prepare sender data
+            // Absender- und Empfängerdaten vorbereiten
             $sender = [
                 'email' => $job['sender_email'],
                 'name' => $job['sender_name']
             ];
 
-            // Prepare recipient data
             $recipient = [
                 'email' => $job['recipient_email'],
                 'name' => "{$job['recipient_first_name']} {$job['recipient_last_name']}"
             ];
 
-            // Send email using EmailService
+            // E-Mail senden
             $result = $emailService->sendSingleEmail(
                 $job['content_id'],
                 $sender,
@@ -114,11 +186,11 @@ try {
             );
 
             if ($result['success']) {
-                // Update job status to 'send' instead of 'sent'
+                // Job-Status aktualisieren
                 $stmt = $db->prepare("
                     UPDATE email_jobs 
                     SET 
-                        status = 'send',          -- Changed from 'sent' to 'send'
+                        status = 'send',
                         sent_at = NOW(),
                         message_id = ?,
                         updated_at = NOW()
@@ -127,117 +199,111 @@ try {
                 $stmt->bind_param("si", $result['message_id'], $job['id']);
                 $stmt->execute();
 
-                // Log initial status
+                // Status loggen
                 $stmt = $db->prepare("
                     INSERT INTO status_log 
                     (event, timestamp, message_id, email) 
-                    VALUES ('send', NOW(), ?, ?)   -- Changed from 'sent' to 'send'
+                    VALUES ('send', NOW(), ?, ?)
                 ");
                 $stmt->bind_param("ss", $result['message_id'], $job['recipient_email']);
                 $stmt->execute();
 
                 $successCount++;
-                $log[] = "Successfully sent email to {$job['recipient_email']} (Job ID: {$job['id']})";
+                writeLog("E-Mail erfolgreich gesendet an: " . $job['recipient_email'], "SUCCESS");
             } else {
-                // Update job status to failed
-                $stmt = $db->prepare("
-                    UPDATE email_jobs 
-                    SET 
-                        status = 'failed',
-                        error_message = ?,
-                        updated_at = NOW()
-                    WHERE id = ?
-                ");
-                $errorMessage = substr($result['error'] ?? 'Unknown error', 0, 255);
-                $stmt->bind_param("si", $errorMessage, $job['id']);
-                $stmt->execute();
-
-                $failCount++;
-                $log[] = "Failed to send email to {$job['recipient_email']}: " . ($result['error'] ?? 'Unknown error') . " (Job ID: {$job['id']})";
+                throw new Exception($result['error'] ?? 'Unbekannter Fehler');
             }
 
-            $processedJobs[] = $job['id'];
+            // Kleine Pause zwischen E-Mails
+            usleep(100000); // 100ms
 
         } catch (Exception $e) {
             $failCount++;
-            $log[] = "Error processing job {$job['id']}: " . $e->getMessage();
+            $errorMessage = $e->getMessage();
+            $errors[] = "Fehler bei {$job['recipient_email']}: $errorMessage";
+            writeLog("Fehler beim Versand an {$job['recipient_email']}: $errorMessage", "ERROR");
 
-            // Update job status to failed
-            try {
-                $stmt = $db->prepare("
-                    UPDATE email_jobs 
-                    SET 
-                        status = 'failed',
-                        error_message = ?,
-                        updated_at = NOW()
-                    WHERE id = ?
-                ");
-                $errorMessage = substr($e->getMessage(), 0, 255);
-                $stmt->bind_param("si", $errorMessage, $job['id']);
-                $stmt->execute();
-            } catch (Exception $updateError) {
-                $log[] = "Failed to update error status for job {$job['id']}: " . $updateError->getMessage();
-            }
+            // Fehler in der Datenbank speichern
+            $stmt = $db->prepare("
+                UPDATE email_jobs 
+                SET 
+                    status = 'failed',
+                    error_message = ?,
+                    updated_at = NOW()
+                WHERE id = ?
+            ");
+            $errorMessageDb = substr($errorMessage, 0, 255);
+            $stmt->bind_param("si", $errorMessageDb, $job['id']);
+            $stmt->execute();
         }
     }
 
-    // Update newsletter status
-    foreach (array_unique(array_column($jobs, 'content_id')) as $contentId) {
-        $emailService->updateNewsletterStatus($contentId, 1);
-        $log[] = "Newsletter ID {$contentId} marked as sent";
+    // Newsletter-Status aktualisieren wenn alle Jobs abgearbeitet sind
+    $stmt = $db->prepare("
+        SELECT COUNT(*) as remaining
+        FROM email_jobs
+        WHERE content_id = ?
+        AND status = 'pending'
+    ");
+    $stmt->bind_param("i", $content_id);
+    $stmt->execute();
+    $remaining = $stmt->get_result()->fetch_assoc()['remaining'];
+
+    if ($remaining == 0) {
+        $stmt = $db->prepare("
+            UPDATE email_contents 
+            SET send_status = 1
+            WHERE id = ?
+        ");
+        $stmt->bind_param("i", $content_id);
+        $stmt->execute();
+        writeLog("Newsletter ID $content_id vollständig versendet");
     }
 
-    // Calculate timing and memory information
-    $end_time = microtime(true);
-    $duration = $end_time - $start_time;
-    $memoryUsage = memory_get_peak_usage(true);
+    writeLog("Versand abgeschlossen. Erfolge: $successCount, Fehler: $failCount");
 
-    // Prepare success response
-    $response = [
-        'success' => true,
-        'message' => 'Email sending completed',
-        'statistics' => [
-            'total_jobs' => $totalJobs,
-            'success_count' => $successCount,
-            'fail_count' => $failCount,
-            'processed_jobs' => $processedJobs,
-            'duration_seconds' => number_format($duration, 2),
-            'avg_time_per_mail' => $totalJobs > 0 ? number_format($duration / $totalJobs, 4) : 0,
-            'memory_usage' => formatBytes($memoryUsage),
-            'memory_limit' => ini_get('memory_limit')
-        ],
-        'log' => $log
+    // Response für manuellen Aufruf vorbereiten
+    $response['success'] = true;
+    $response['message'] = "Versand gestartet";
+    $response['statistics'] = [
+        'content_id' => $content_id,
+        'total_jobs' => $totalJobs,
+        'success_count' => $successCount,
+        'fail_count' => $failCount,
+        'duration_seconds' => number_format(microtime(true) - $startTime, 2)
     ];
 
 } catch (Exception $e) {
-    $response = [
-        'success' => false,
-        'message' => $e->getMessage(),
-        'log' => $log
-    ];
+    writeLog("Kritischer Fehler: " . $e->getMessage(), "CRITICAL");
+    if (!isset($response['message'])) {
+        $response['message'] = "Fehler: " . $e->getMessage();
+    }
+
+    // Admin benachrichtigen
+    if (isset($adminEmail)) {
+        mail(
+            $adminEmail,
+            'Kritischer Fehler im Newsletter-Versand',
+            "Fehler im Newsletter-Versand:\n\n" . $e->getMessage()
+        );
+    }
+
 } finally {
+    // Aufräumen
     if (isset($db) && $db instanceof mysqli) {
         $db->close();
     }
-}
 
-// Helper function to format memory usage
-function formatBytes($bytes, $precision = 2)
-{
-    $units = ['B', 'KB', 'MB', 'GB'];
-    $bytes = max($bytes, 0);
-    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-    $pow = min($pow, count($units) - 1);
-    $bytes /= pow(1024, $pow);
-    return round($bytes, $precision) . ' ' . $units[$pow];
-}
+    // Puffer leeren und Output kontrollieren
+    $output = ob_get_clean();
+    if (!empty($output)) {
+        // Wenn es unerwartete Ausgaben gab, diese loggen
+        error_log("Unerwartete Ausgabe vor JSON: " . $output);
+    }
 
-// Output buffering to prevent header issues
-$output = ob_get_clean();
-if (!empty($output)) {
-    $log[] = "Warning: Unexpected output: " . $output;
+    // Ausgabe für manuellen Aufruf
+    if (!$isCron) {
+        header('Content-Type: application/json');
+        echo json_encode($response, JSON_PRETTY_PRINT);
+    }
 }
-
-// Send JSON response
-header('Content-Type: application/json');
-echo json_encode($response, JSON_PRETTY_PRINT);

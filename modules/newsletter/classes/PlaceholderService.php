@@ -1,4 +1,4 @@
-<?
+<?php
 class PlaceholderService
 {
     private static ?PlaceholderService $instance = null;

@@ -2,35 +2,73 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//Key für Mailjet wird versentet in send_emails_background.php
+//Key für Mailjet wird verwendet in send_emails_background.php
 $apiKey = '452e5eca1f98da426a9a3542d1726c96';
 $apiSecret = '55b277cd54eaa3f1d8188fdc76e06535';
 
-// In einer zentralen config.php oder ähnlich
-if ($_SERVER['SERVER_NAME'] === 'localhost') {
+// Prüfe ob Script über CLI oder Web ausgeführt wird
+$isCliMode = php_sapi_name() === 'cli';
+
+// Setze Upload-Pfad basierend auf Ausführungsumgebung
+if ($isCliMode) {
     $uploadBasePath = "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/";
 } else {
-    $uploadBasePath = "/data/www/develop/uploads/users/";
+    $uploadBasePath = $_SERVER['SERVER_NAME'] === 'localhost'
+        ? "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/"
+        : "/data/www/develop/uploads/users/";
 }
 
+// Datenbank-Konfiguration
+$dbConfig = [
+    'host' => '127.0.0.1',  // IP statt 'localhost' verwenden
+    'port' => 3306,         // Standard MySQL Port
+    'username' => 'smart',
+    'password' => 'Eiddswwenph21;',
+    'dbname' => 'ssi_newsletter'
+];
 
-$host = 'localhost';
-$username = 'smart';
-$password = 'Eiddswwenph21;';
-$dbname = 'ssi_newsletter';
-
-$db = $connection = $GLOBALS['mysqli'] = mysqli_connect($host, $username, $password, $dbname);
-
-// Select the database
+// Verbindung mit Fehlerbehandlung aufbauen
 try {
-    if (!$db->select_db($dbname)) {
+    $mysqli = mysqli_init();
+
+    // Timeout-Einstellungen
+    $mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+
+    // Verbindung herstellen
+    if (
+        !$mysqli->real_connect(
+            $dbConfig['host'],
+            $dbConfig['username'],
+            $dbConfig['password'],
+            $dbConfig['dbname'],
+            $dbConfig['port']
+        )
+    ) {
+        throw new Exception('Datenbankverbindung fehlgeschlagen: ' . $mysqli->connect_error);
+    }
+
+    // Globale Variablen setzen
+    $db = $connection = $GLOBALS['mysqli'] = $mysqli;
+
+    // UTF-8 Zeichensatz setzen
+    $db->set_charset('utf8mb4');
+
+    // Überprüfe ob die Datenbank ausgewählt werden kann
+    if (!$db->select_db($dbConfig['dbname'])) {
         throw new Exception('Datenbankauswahl fehlgeschlagen: ' . $db->error);
     }
+
 } catch (Exception $e) {
-    die($e->getMessage());
+    $errorMsg = "Datenbank-Fehler: " . $e->getMessage() . "\n";
+    if ($isCliMode) {
+        fwrite(STDERR, $errorMsg);
+    } else {
+        error_log($errorMsg);
+    }
+    die($errorMsg);
 }
 
-// Standardisierte Platzhalter für das gesamte System
+// Rest of the existing functions remain the same
 function getDefaultPlaceholders($customEmail = null)
 {
     $now = new DateTime();
@@ -62,6 +100,7 @@ function getDefaultPlaceholders($customEmail = null)
         'wochentag' => $now->format('l')
     ];
 }
+
 
 // Funktion zum Ersetzen der Platzhalter im Text
 function replacePlaceholders($text, $customPlaceholders = [])

@@ -1,0 +1,132 @@
+[2024-11-15 07:27:26] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:27:26] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:27:26] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:27:26] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=143 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:27:26] DEBUG: Processor gestartet mit PID: 74979
+[2024-11-15 07:27:26] DEBUG: Queue-Processor gestartet mit PID: 74979
+[2024-11-15 07:27:28] DEBUG: Start-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"8","failed_emails":"0","is_completed":false,"percentage":80}
+[2024-11-15 07:27:30] DEBUG: End-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"16","failed_emails":"0","is_completed":false,"percentage":160}
+[2024-11-15 07:27:30] DEBUG: Status nach Fehlersimulation: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"16","failed_emails":"0","is_completed":false,"percentage":160}
+[2024-11-15 07:27:30] DEBUG: Starte Queue-Processor 0
+[2024-11-15 07:27:30] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:27:30] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log
+[2024-11-15 07:27:30] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=0 --content-id=143 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log 2>&1 & echo $!
+[2024-11-15 07:27:30] DEBUG: Processor gestartet mit PID: 74981
+[2024-11-15 07:27:30] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:27:30] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:27:30] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:27:30] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=143 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:27:30] DEBUG: Processor gestartet mit PID: 74983
+[2024-11-15 07:27:32] DEBUG: Process 74979 beendet
+[2024-11-15 07:27:32] DEBUG: Process 74981 beendet
+[2024-11-15 07:27:32] DEBUG: Process 74983 beendet
+[2024-11-15 07:27:49] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:27:49] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:27:49] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:27:49] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=144 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:27:49] DEBUG: Processor gestartet mit PID: 75003
+[2024-11-15 07:27:49] DEBUG: Queue-Processor gestartet mit PID: 75003
+[2024-11-15 07:27:51] DEBUG: Start-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"8","failed_emails":"0","is_completed":false,"percentage":80}
+[2024-11-15 07:27:53] DEBUG: End-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"16","failed_emails":"0","is_completed":false,"percentage":160}
+[2024-11-15 07:27:53] DEBUG: Status nach Fehlersimulation: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"16","failed_emails":"0","is_completed":false,"percentage":160}
+[2024-11-15 07:27:53] DEBUG: Starte Queue-Processor 0
+[2024-11-15 07:27:53] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:27:53] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log
+[2024-11-15 07:27:53] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=0 --content-id=144 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log 2>&1 & echo $!
+[2024-11-15 07:27:53] DEBUG: Processor gestartet mit PID: 75005
+[2024-11-15 07:27:53] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:27:53] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:27:53] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:27:53] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=144 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:27:53] DEBUG: Processor gestartet mit PID: 75007
+[2024-11-15 07:27:55] DEBUG: Process 75003 beendet
+[2024-11-15 07:27:55] DEBUG: Process 75005 beendet
+[2024-11-15 07:27:55] DEBUG: Process 75007 beendet
+[2024-11-15 07:30:33] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:30:33] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:30:33] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:30:33] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=145 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:30:33] DEBUG: Processor gestartet mit PID: 75162
+[2024-11-15 07:30:33] DEBUG: Queue-Processor gestartet mit PID: 75162
+[2024-11-15 07:30:35] DEBUG: Start-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"8","failed_emails":0,"actual_failed_emails":0,"is_completed":false,"percentage":80}
+[2024-11-15 07:30:37] DEBUG: End-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"15","failed_emails":0,"actual_failed_emails":0,"is_completed":false,"percentage":150}
+[2024-11-15 07:30:38] DEBUG: Starte Queue-Processor 0
+[2024-11-15 07:30:38] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:30:38] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log
+[2024-11-15 07:30:38] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=0 --content-id=145 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log 2>&1 & echo $!
+[2024-11-15 07:30:38] DEBUG: Processor gestartet mit PID: 75164
+[2024-11-15 07:30:38] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:30:38] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:30:38] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:30:38] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=145 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:30:38] DEBUG: Processor gestartet mit PID: 75166
+[2024-11-15 07:30:40] DEBUG: Process 75162 beendet
+[2024-11-15 07:30:40] DEBUG: Process 75164 beendet
+[2024-11-15 07:30:40] DEBUG: Process 75166 beendet
+[2024-11-15 07:31:09] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:31:09] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:31:09] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:31:09] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=146 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:31:09] DEBUG: Processor gestartet mit PID: 75193
+[2024-11-15 07:31:09] DEBUG: Queue-Processor gestartet mit PID: 75193
+[2024-11-15 07:31:11] DEBUG: Start-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"8","failed_emails":0,"actual_failed_emails":0,"is_completed":false,"percentage":80}
+[2024-11-15 07:31:13] DEBUG: End-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"16","failed_emails":0,"actual_failed_emails":0,"is_completed":false,"percentage":160}
+[2024-11-15 07:31:14] DEBUG: Starte Queue-Processor 0
+[2024-11-15 07:31:14] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:31:14] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log
+[2024-11-15 07:31:14] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=0 --content-id=146 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log 2>&1 & echo $!
+[2024-11-15 07:31:14] DEBUG: Processor gestartet mit PID: 75196
+[2024-11-15 07:31:14] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:31:14] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:31:14] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:31:14] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=146 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:31:14] DEBUG: Processor gestartet mit PID: 75198
+[2024-11-15 07:31:16] DEBUG: Process 75193 beendet
+[2024-11-15 07:31:16] DEBUG: Process 75196 beendet
+[2024-11-15 07:31:16] DEBUG: Process 75198 beendet
+[2024-11-15 07:32:17] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:32:17] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:32:17] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:32:17] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=147 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:32:17] DEBUG: Processor gestartet mit PID: 75274
+[2024-11-15 07:32:17] DEBUG: Queue-Processor gestartet mit PID: 75274
+[2024-11-15 07:32:19] DEBUG: Start-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"8","failed_emails":0,"actual_failed_emails":0,"is_completed":false,"percentage":80}
+[2024-11-15 07:32:21] DEBUG: End-Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"16","failed_emails":0,"actual_failed_emails":0,"is_completed":false,"percentage":160}
+[2024-11-15 07:32:22] DEBUG: Queue Items Status: {"total_items":10,"failed_items":"2","status_list":"pending,failed"}
+[2024-11-15 07:32:22] DEBUG: Email Jobs Status: {"total_jobs":5,"failed_jobs":"1"}
+[2024-11-15 07:32:22] DEBUG: Queue Manager Status: {"total_queues":2,"completed_queues":"0","failed_queues":"0","total_emails":"10","processed_emails":"20","failed_emails":2,"actual_failed_emails":2,"is_completed":false,"percentage":200}
+[2024-11-15 07:32:22] DEBUG: Starte Queue-Processor 0
+[2024-11-15 07:32:22] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:32:22] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log
+[2024-11-15 07:32:22] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=0 --content-id=147 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log 2>&1 & echo $!
+[2024-11-15 07:32:22] DEBUG: Processor gestartet mit PID: 75277
+[2024-11-15 07:32:22] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:32:22] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:32:22] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:32:22] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=147 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:32:22] DEBUG: Processor gestartet mit PID: 75279
+[2024-11-15 07:32:24] DEBUG: Process 75274 beendet
+[2024-11-15 07:32:24] DEBUG: Process 75277 beendet
+[2024-11-15 07:32:24] DEBUG: Process 75279 beendet
+[2024-11-15 07:35:55] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:35:55] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:35:55] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:35:55] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=148 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:35:55] DEBUG: Processor gestartet mit PID: 75434
+[2024-11-15 07:35:55] DEBUG: Queue-Processor gestartet mit PID: 75434
+[2024-11-15 07:35:57] DEBUG: Start-Status: {"total_queues":1,"completed_queues":"0","failed_queues":"0","total_emails":"5","processed_emails":"0","failed_emails":"0","is_completed":false,"percentage":0}
+[2024-11-15 07:35:59] DEBUG: End-Status: {"total_queues":1,"completed_queues":"0","failed_queues":"0","total_emails":"5","processed_emails":"0","failed_emails":"0","is_completed":false,"percentage":0}
+[2024-11-15 07:36:00] DEBUG: Queue Items Status: {"total_items":5,"failed_items":"1","status_list":"pending,failed"}
+[2024-11-15 07:36:00] DEBUG: Email Jobs Status: {"total_jobs":5,"failed_jobs":"1"}
+[2024-11-15 07:36:00] DEBUG: Queue Manager Status: {"total_queues":1,"completed_queues":"0","failed_queues":"0","total_emails":"5","processed_emails":"0","failed_emails":"1","is_completed":false,"percentage":0}
+[2024-11-15 07:36:00] DEBUG: Starte Queue-Processor 0
+[2024-11-15 07:36:00] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:36:00] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log
+[2024-11-15 07:36:00] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=0 --content-id=148 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_0.log 2>&1 & echo $!
+[2024-11-15 07:36:00] DEBUG: Processor gestartet mit PID: 75442
+[2024-11-15 07:36:00] DEBUG: Starte Queue-Processor 1
+[2024-11-15 07:36:00] DEBUG: Pfad: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php
+[2024-11-15 07:36:00] DEBUG: Log: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log
+[2024-11-15 07:36:00] DEBUG: Ausführe: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/process_queue.php --process-id=1 --content-id=148 > /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/logs/queue_process_1.log 2>&1 & echo $!
+[2024-11-15 07:36:00] DEBUG: Processor gestartet mit PID: 75444
+[2024-11-15 07:36:02] DEBUG: Process 75442 beendet

@@ -141,8 +141,18 @@ class Dashboard
         $this->addScript(SMARTFORM_PATH . "/js/" . $scriptName);
     }
 
-    public function addMenuItem($menuId, $module, $page, $name, $icon, $popup = '', $position = 'left', $class = '', $isDefault = false)
-    {
+    public function addMenuItem(
+        $menuId,
+        $module,
+        $page,
+        $name,
+        $icon,
+        $popup = '',
+        $position = 'left',
+        $class = '',
+        $isDefault = false,
+        $onClick = ''  // Neuer Parameter für Event-Handler
+    ) {
         if (isset($this->menus[$menuId])) {
             $this->menus[$menuId]['items'][] = [
                 'module' => $module,
@@ -152,7 +162,8 @@ class Dashboard
                 'popup' => $popup,
                 'position' => $position,
                 'isDefault' => $isDefault,
-                'class' => $class
+                'class' => $class,
+                'onClick' => $onClick  // Neues Feld
             ];
             if ($isDefault) {
                 $this->defaultPage = $page;
@@ -196,15 +207,25 @@ class Dashboard
             echo "</div>";
         }
     }
-
     private function renderMenuItem($item)
     {
-        $href = ($item['page'][0] === '/' || $item['page'][0] === '.') ? htmlspecialchars($item['page']) : '#';
+        // Wenn es ein Button mit onClick Handler ist, nutzen wir einen Button statt einem Link
+        if ($item['onClick']) {
+            $html = "<button {$addPopup} class='item " . htmlspecialchars($item['class']) . "' ";
+            $html .= "onclick='" . htmlspecialchars($item['onClick']) . "'>";
+            if (isset($item['icon']) && $item['icon'] !== '') {
+                $html .= "<i class='" . htmlspecialchars($item['icon']) . "'></i> ";
+            }
+            $html .= $item['name'] . '</button>' . "\n";
+            return $html;
+        }
+
+        // Normales Menü-Item als Link
         $dataPage = ($item['page'][0] === '/' || $item['page'][0] === '.') ? '' : htmlspecialchars($item['page']);
         $addId = $item['module'] ? '' : "id='" . htmlspecialchars($item['page']) . "'";
         $addPopup = $item['popup'] ? "data-content='" . htmlspecialchars($item['popup']) . "'" : '';
 
-        $html = "<a {$addPopup} class='item' {$addId} href='{$href}'";
+        $html = "<a {$addPopup} class='item " . htmlspecialchars($item['class']) . "' {$addId} href='#'";
         if ($dataPage !== '') {
             $html .= " data-page='{$dataPage}'";
         }
@@ -213,12 +234,13 @@ class Dashboard
         }
         $html .= '>';
         if (isset($item['icon']) && $item['icon'] !== '') {
-            $html .= "<i class='" . htmlspecialchars($item['icon']) . " icon'></i> ";
+            $html .= "<i class='" . htmlspecialchars($item['icon']) . "'></i> ";
         }
         $html .= $item['name'] . '</a>' . "\n";
 
         return $html;
     }
+
 
     public function configureSidebar(array $config)
     {

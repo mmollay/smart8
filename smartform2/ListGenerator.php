@@ -4,7 +4,9 @@ ini_set('display_errors', 1);
 //mit Summenbildung
 class ListGenerator
 {
+    private $exportConfig = null;
 
+    private $customScripts = [];
     private $filterMappings = [];
     private $debugEnabled = false;
     private $debugLogFile = null;
@@ -42,6 +44,160 @@ class ListGenerator
     private $totalLabels = [];
 
     private $hasWhereClause = false;
+
+
+    public function addExport($config)
+    {
+        $defaultConfig = [
+            'url' => 'ajax/export.php',
+            'icon' => 'download',
+            'buttonClass' => 'ui green circular button',
+            'position' => 'inline',
+            'alignment' => 'right',
+            'title' => 'Export!',
+            'popup' => ['content' => 'Liste exportieren'],
+            'format' => 'csv',
+            'fields' => null, // Optional: Spezifische Felder für den Export
+            'additionalParams' => [], // Zusätzliche Parameter für den Export
+            'beforeExport' => null, // Optional: JavaScript-Callback vor dem Export
+            'afterExport' => null   // Optional: JavaScript-Callback nach dem Export
+        ];
+
+        $this->exportConfig = array_merge($defaultConfig, $config);
+
+        // Füge das Export-Script hinzu
+        $this->addExportScript();
+
+        // Füge den Export-Button hinzu
+        $this->addExportButton();
+    }
+    private function addExportButton()
+    {
+        if (!$this->exportConfig)
+            return;
+
+        $config = $this->exportConfig;
+        $listId = $this->config['listId'];
+        $contentId = $this->config['contentId'];
+
+        // Basis-Konfiguration mit allen notwendigen Feldern
+        $jsConfigArray = [
+            'url' => $config['url'],
+            'format' => $config['format'],
+            'fields' => $config['fields'],
+            'sort' => $this->config['sortColumn'] ?? 'id',
+            'sortDir' => $this->config['sortDirection'] ?? 'ASC',
+            'additionalParams' => $config['additionalParams'] ?? []
+        ];
+
+        // Erstelle die JavaScript-Konfiguration
+        $jsConfig = json_encode($jsConfigArray, JSON_UNESCAPED_UNICODE);
+
+        // Erstelle den kompletten Konfigurationsstring mit Callbacks
+        $completeConfig = "Object.assign(" . $jsConfig . ", {";
+        if (!empty($config['beforeExport'])) {
+            $completeConfig .= "beforeExport: " . $config['beforeExport'] . ",";
+        }
+        if (!empty($config['afterExport'])) {
+            $completeConfig .= "afterExport: " . $config['afterExport'];
+        }
+        $completeConfig .= "})";
+
+        // Erstelle den onclick Handler
+        $onclickHandler = "executeListExport('" . $listId . "', '" . $contentId . "', " . $completeConfig . "); return false;";
+
+        $this->addExternalButton('export', [
+            'icon' => $config['icon'],
+            'class' => $config['buttonClass'],
+            'position' => $config['position'],
+            'alignment' => $config['alignment'],
+            'title' => $config['title'],
+            'popup' => $config['popup'],
+            'onclick' => $onclickHandler
+        ]);
+    }
+
+    private function addExportScript()
+    {
+        $script = <<<'JS'
+    function executeListExport(listId, contentId, config) {
+        try {
+            let filters = {};
+            $('#' + contentId + ' .ui.dropdown[id^="filter_"]').each(function() {
+                let filterId = $(this).attr('id');
+                let value = $(this).dropdown('get value');
+                if (value) {
+                    let filterName = filterId.replace('filter_' + contentId + '_', '');
+                    filters[filterName] = value;
+                }
+            });
+    
+            let search = $('#search_' + contentId).val();
+            
+            // Basis-Parameter
+            let params = {
+                listId: listId,
+                contentId: contentId,
+                filters: JSON.stringify(filters),
+                search: search,
+                sort: config.sort || '',
+                sortDir: config.sortDir || '',
+                format: config.format || 'csv'
+            };
+    
+            // Füge fields nur hinzu, wenn sie existieren
+            if (config.fields) {
+                params.fields = JSON.stringify(config.fields);
+            }
+            
+            // Füge zusätzliche Parameter hinzu
+            if (config.additionalParams) {
+                Object.assign(params, config.additionalParams);
+            }
+    
+            // Before-Export Callback
+            if (typeof config.beforeExport === 'function') {
+                let shouldContinue = config.beforeExport(params);
+                if (shouldContinue === false) {
+                    console.log('Export cancelled by beforeExport callback');
+                    return;
+                }
+            }
+    
+            let url = config.url;
+            let queryString = new URLSearchParams(Object.entries(params)).toString();
+            let downloadUrl = url + '?' + queryString;
+    
+            console.log('Export URL:', downloadUrl); // Debug-Ausgabe
+            
+            let link = document.createElement('a');
+            link.href = downloadUrl;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            
+            // Kurze Verzögerung vor dem Entfernen des Links und Aufruf des afterExport
+            setTimeout(() => {
+                document.body.removeChild(link);
+                // After-Export Callback
+                if (typeof config.afterExport === 'function') {
+                    config.afterExport(params);
+                }
+            }, 100);
+    
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('Fehler beim Export: ' + error.message);
+        }
+    }
+    JS;
+
+        $this->addScript($script, 'head');
+    }
+
+
+
+
 
     public function setGroupBy($column)
     {
@@ -137,7 +293,40 @@ class ListGenerator
         }
     }
 
+    public function addScript($script, $position = 'end')
+    {
+        if (!in_array($position, ['head', 'end'])) {
+            $position = 'end';
+        }
 
+        if (!isset($this->customScripts[$position])) {
+            $this->customScripts[$position] = [];
+        }
+
+        $this->customScripts[$position][] = $script;
+    }
+
+    private function renderCustomScripts()
+    {
+        $html = '';
+
+        // Head-Skripte
+        if (!empty($this->customScripts['head'])) {
+            $html .= "<script>";
+            $html .= implode("\n", $this->customScripts['head']);
+            $html .= "</script>";
+        }
+
+        // End-Skripte
+        if (!empty($this->customScripts['end'])) {
+            $html .= "<script>";
+            $html .= "$(document).ready(function() {";
+            $html .= implode("\n", $this->customScripts['end']);
+            $html .= "});</script>";
+        }
+
+        return $html;
+    }
 
     private function loadFiltersFromSession()
     {
@@ -757,6 +946,7 @@ class ListGenerator
             'title' => '',
             'modalId' => null,
             'callback' => null,
+            'onclick' => null,  // Hier ist der onclick Parameter
             'params' => [],
             'popup' => null
         ];
@@ -811,7 +1001,6 @@ class ListGenerator
 
         return $html;
     }
-
     private function getButtonAttributes($button, $params = [])
     {
         $attributes = '';
@@ -820,7 +1009,12 @@ class ListGenerator
             $attributes .= " data-modal='" . htmlspecialchars($button['modalId'], ENT_QUOTES, 'UTF-8') . "'";
         }
 
-        if (!empty($button['callback'])) {
+        // Hier die neue Logik für onclick
+        if (!empty($button['onclick'])) {
+            $attributes .= " onclick='" . htmlspecialchars($button['onclick'], ENT_QUOTES, 'UTF-8') . "'";
+        }
+        // Falls kein onclick, aber ein callback existiert
+        else if (!empty($button['callback'])) {
             $attributes .= " onclick='" . htmlspecialchars($button['callback'], ENT_QUOTES, 'UTF-8') . "(" . htmlspecialchars(json_encode($params), ENT_QUOTES, 'UTF-8') . ")'";
         }
 
@@ -1112,6 +1306,28 @@ class ListGenerator
 
         $html .= "</div>";
         $html .= $this->renderModals();
+
+        // Füge benutzerdefinierte Skripte hinzu
+        if (!empty($this->customScripts)) {
+            $html .= "<script>";
+
+            // Head-Skripte zuerst einfügen
+            if (!empty($this->customScripts['head'])) {
+                $html .= implode("\n", $this->customScripts['head']);
+            }
+
+            // Document Ready Event
+            $html .= "$(document).ready(function() {";
+
+            // End-Skripte einfügen
+            if (!empty($this->customScripts['end'])) {
+                $html .= implode("\n", $this->customScripts['end']);
+            }
+
+            $html .= "});</script>";
+        }
+
+        $html .= $this->renderCustomScripts();
 
         return $html;
     }

@@ -1,0 +1,26 @@
+# Erlaube Zugriff auf den Webhook
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Leite alle Anfragen an mailjet.php weiter
+    RewriteRule ^mailjet/?$ mailjet.php [L,QSA]
+    
+    # Blockiere direkte PHP-Datei-Zugriffe
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.php [NC]
+    RewriteRule ^ - [F]
+</IfModule>
+
+# Setze Sicherheitsheader
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Erlaube nur POST für mailjet.php
+<Files "mailjet.php">
+    <LimitExcept POST>
+        Require all denied
+    </LimitExcept>
+</Files>
+
