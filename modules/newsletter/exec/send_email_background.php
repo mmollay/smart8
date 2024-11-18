@@ -3,7 +3,6 @@
  * Newsletter Versand Script
  * Nutzbar sowohl als Cron-Job als auch für manuellen Versand
  */
-
 // Verhindere direkte Ausgaben vor dem JSON-Response
 ob_start();
 
