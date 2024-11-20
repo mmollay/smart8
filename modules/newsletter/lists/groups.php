@@ -48,6 +48,32 @@ $listGenerator->addExternalButton('add', [
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Eintrag hinzuzufügen']
 ]);
 
+$listGenerator->addExport([
+    'url' => 'ajax/generic_export.php',
+    'listId' => 'groups',
+    'format' => 'csv',
+    'fields' => [
+        'group_id',
+        'group_name',
+        'recipients_count',
+        'created_at'
+    ],
+    'title' => 'Gruppen Export',
+    'popup' => ['content' => 'Gruppenliste exportieren']
+]);
+
+
+// In groups.php
+$listGenerator->addExternalButton('export', [
+    'icon' => 'download',
+    'class' => 'ui green button',
+    'position' => 'top',
+    'alignment' => 'right',
+    'title' => 'CSV Export',
+    'onclick' => 'window.location.href="ajax/export.php?type=groups&format=csv"'
+]);
+
+
 // Spalten definieren
 $listGenerator->addColumn('group_id', 'ID');
 $listGenerator->addColumn('group_name', '<i class="users icon"></i>Gruppe', ['allowHtml' => true]);

@@ -82,11 +82,35 @@ $listGenerator->addFilter('send_status', 'Newsletter-Status', $newsletterStatus)
 $listGenerator->addExternalButton('new_newsletter', [
     'icon' => 'plus',
     'class' => 'ui primary button',
-    'position' => 'inline',
+    'position' => 'top',
+    'alignment' => 'right',
     'title' => 'Neuer Newsletter',
     'modalId' => 'modal_form_n',
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Newsletter anzulegen']
 ]);
+
+
+// $listGenerator->addExport([
+//     'url' => 'ajax/generic_export.php',
+//     'format' => 'csv',
+//     //'fields' => ['id', 'first_name', 'last_name'],
+//     'title' => 'CSV Export',
+//     'popup' => ['content' => 'Liste exportieren'],
+//     'beforeExport' => 'function(params) {
+//         return confirm("Möchten Sie die Liste exportieren?");
+//     }'
+// ]);
+
+
+$listGenerator->addExternalButton('export', [
+    'icon' => 'download',
+    'class' => 'ui green circular button',
+    'position' => 'top',
+    'alignment' => 'right',
+    'title' => 'CSV Export',
+    'onclick' => 'window.location.href="ajax/export.php?type=newsletters&format=csv"'
+]);
+
 
 // Definition der Spalten
 $columns = [

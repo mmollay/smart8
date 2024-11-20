@@ -124,6 +124,15 @@ $listGenerator->addExternalButton('add', [
 ]);
 
 
+$listGenerator->addExternalButton('export', [
+    'icon' => 'download',
+    'class' => 'ui green button',
+    'position' => 'inline',
+    'alignment' => 'right',
+    'title' => 'CSV Export',
+    'onclick' => 'window.location.href="ajax/export.php?type=recipients&format=csv"'
+]);
+
 // $listGenerator->addExport([
 //     'url' => 'ajax/export_recipients.php',
 //     'format' => 'xlsx',
@@ -139,16 +148,17 @@ $listGenerator->addExternalButton('add', [
 //     }'
 // ]);
 
-$listGenerator->addExport([
-    'url' => 'ajax/generic_export.php',
-    'format' => 'csv',
-    //'fields' => ['id', 'first_name', 'last_name'],
-    'title' => 'CSV Export',
-    'popup' => ['content' => 'Liste exportieren'],
-    'beforeExport' => 'function(params) {
-        return confirm("Möchten Sie die Liste exportieren?");
-    }'
-]);
+// $listGenerator->addExport([
+//     'url' => 'ajax/generic_export.php',
+//     'format' => 'csv',
+//     //'fields' => ['id', 'first_name', 'last_name'],
+//     'title' => 'CSV Export',
+//     'popup' => ['content' => 'Liste exportieren'],
+//     'beforeExport' => 'function(params) {
+//         return confirm("Möchten Sie die Liste exportieren?");
+//     }'
+// ]);
+
 
 
 // Spalten definieren

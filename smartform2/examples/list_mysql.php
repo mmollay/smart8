@@ -225,8 +225,20 @@ $listGenerator->addExternalButton('new_user', [
     'modalId' => 'modal_form_new_user',
 ]);
 
+
+
 // Export-Button hinzufügen
 $listGenerator->addExternalButton('export', [
+    'icon' => 'download',
+    'class' => 'ui green circular button',
+    'position' => 'top',
+    'alignment' => 'right',
+    'title' => "Als CSV exportieren",
+    'onclick' => "window.location.href='export.php?format=csv&listId=" . $listGenerator->getConfig()['listId'] . "'",
+]);
+
+// Export-Button hinzufügen
+$listGenerator->addExternalButton('export2', [
     'icon' => 'download',
     'class' => 'ui green circular button',
     'position' => 'top',
