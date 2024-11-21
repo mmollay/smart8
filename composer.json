@@ -1,5 +1,14 @@
 {
+    "name": "smart/smart8",
+    "description": "Smart System 8",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Smart\\": "src/"
+        }
+    },
     "require": {
+        "php": ">=7.4",
         "mailjet/mailjet-apiv3-php": "^1.6",
         "phpoffice/phpspreadsheet": "^3.4"
     }

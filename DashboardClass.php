@@ -1,9 +1,6 @@
 <?php
 include(__DIR__ . "/config.php");
 
-$userId = 40;
-
-
 // In einer zentralen config.php oder ähnlich
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
     define('WEB_ROOT', '/smart8');  // Lokale Entwicklung
@@ -19,10 +16,11 @@ $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 $user = $userDetails['firstname'] . " " . $userDetails['secondname'];
 
 $dashboard->addMenu('mainMenu', 'ui huge  top fixed menu', false);
-$dashboard->addMenuItem('mainMenu', "main", "../main/index.php", "", "tachometer alternate icon blue icon", "Dashboard");
+$dashboard->addMenuItem('mainMenu', "main", "../main/index.php", "", "tachometer alternate icon blue icon", "Dashboard", "left", "", false, "", true);
 $dashboard->addMenuItem('mainMenu', $moduleName, "home", $title, "building icon", "Startseite laden");
-$dashboard->addMenuItem('mainMenu', "main", "setting", $user, "", "User Einstellungen", "right");
-$dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sign red out icon", "Abmelden", "right");
+$dashboard->addMenuItem('mainMenu', "main", "settings", $user, "", "User Einstellungen", "right");
+//$dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sign red out icon", "Abmelden", "right");
+$dashboard->addMenuItem('mainMenu', "main", "../../auth/logout.php", "Abmelden", "sign red out icon", "Abmelden", "right", "", false, "", true);
 
 //$dashboard->addJSVar("smart_form_wp", "../../../smartform/");
 //$dashboard->addScript("../../../smartform/js/smart_list.js");
@@ -151,7 +149,8 @@ class Dashboard
         $position = 'left',
         $class = '',
         $isDefault = false,
-        $onClick = ''  // Neuer Parameter für Event-Handler
+        $onClick = '',
+        $isExternalLink = false  // Neuer Parameter
     ) {
         if (isset($this->menus[$menuId])) {
             $this->menus[$menuId]['items'][] = [
@@ -163,7 +162,8 @@ class Dashboard
                 'position' => $position,
                 'isDefault' => $isDefault,
                 'class' => $class,
-                'onClick' => $onClick  // Neues Feld
+                'onClick' => $onClick,
+                'isExternalLink' => $isExternalLink  // Neues Feld
             ];
             if ($isDefault) {
                 $this->defaultPage = $page;
@@ -220,6 +220,20 @@ class Dashboard
             return $html;
         }
 
+        // Für externe Links
+        if ($item['isExternalLink']) {
+            $html = "<a class='item " . htmlspecialchars($item['class']) . "' ";
+            if ($item['popup']) {
+                $html .= "data-content='" . htmlspecialchars($item['popup']) . "' ";
+            }
+            $html .= "href='" . htmlspecialchars($item['page']) . "'>";
+            if (isset($item['icon']) && $item['icon'] !== '') {
+                $html .= "<i class='" . htmlspecialchars($item['icon']) . "'></i> ";
+            }
+            $html .= $item['name'] . '</a>' . "\n";
+            return $html;
+        }
+
         // Normales Menü-Item als Link
         $dataPage = ($item['page'][0] === '/' || $item['page'][0] === '.') ? '' : htmlspecialchars($item['page']);
         $addId = $item['module'] ? '' : "id='" . htmlspecialchars($item['page']) . "'";
@@ -240,7 +254,6 @@ class Dashboard
 
         return $html;
     }
-
 
     public function configureSidebar(array $config)
     {
@@ -516,7 +529,7 @@ class Dashboard
     {
         if (!$this->checkActiveSession()) {
             // Session is not active, redirect to login page
-            //header("Location: ../../login.php");
+            header("Location: ../../auth/login.php");
 
             exit;
         }

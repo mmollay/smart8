@@ -27,6 +27,7 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\Translation\\' => 30,
             'Symfony\\Component\\Validator\\' => 28,
+            'Smart\\' => 6,
         ),
         'P' => 
         array (
@@ -75,6 +76,10 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         'Symfony\\Component\\Validator\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/validator',
+        ),
+        'Smart\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (
