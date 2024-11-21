@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$error) {
                 <p><?php echo htmlspecialchars($error); ?></p>
             </div>
             <div class="ui center aligned container" style="margin-top: 2em;">
-                <a href="login.php" class="ui button">
+                <a href="auth/login.php" class="ui button">
                     <i class="arrow left icon"></i>
                     Zurück zum Login
                 </a>

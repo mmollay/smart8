@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Back to Login Link -->
             <div class="back-to-login">
-                <a href="auth/login.php" class="ui basic button">
+                <a href="login.php" class="ui basic button">
                     <i class="arrow left icon"></i>
                     Zurück zum Login
                 </a>
