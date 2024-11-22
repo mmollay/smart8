@@ -1,7 +1,7 @@
 <?php
 return [
-    'host' => 'localhost',
-    'username' => 'smart',
-    'password' => 'Eiddswwenph21;',
-    'database' => 'ssi_company'     // Geändert von 'dbname' zu 'database'
+    'host' => $_ENV['DB_HOST'] ?? 'localhost',
+    'username' => $_ENV['DB_USERNAME'] ?? '',
+    'password' => $_ENV['DB_PASSWORD'] ?? '',
+    'database' => $_ENV['DB_DATABASE'] ?? ''
 ];

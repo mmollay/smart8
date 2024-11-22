@@ -3,7 +3,7 @@
 session_start();
 error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', 1);
-
+//test
 // Lade Datenbank-Konfiguration
 $dbConfig = require_once __DIR__ . '/database.php';
 

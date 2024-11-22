@@ -1,19 +1,19 @@
-<?
+<?php
 return [
     'mailjet' => [
-        'api_key' => '452e5eca1f98da426a9a3542d1726c96',
-        'api_secret' => '55b277cd54eaa3f1d8188fdc76e06535'
+        'api_key' => $_ENV['MAILJET_API_KEY'] ?? '',
+        'api_secret' => $_ENV['MAILJET_API_SECRET'] ?? ''
     ],
     'default_sender' => [
         'email' => 'office@ssi.at',
         'name' => 'SSI Office'
     ],
     'smtp' => [
-        'host' => '', // Falls später SMTP benötigt wird
+        'host' => $_ENV['SMTP_HOST'] ?? '',
         'port' => 587,
         'encryption' => 'tls',
-        'username' => '',
-        'password' => ''
+        'username' => $_ENV['SMTP_USERNAME'] ?? '',
+        'password' => $_ENV['SMTP_PASSWORD'] ?? ''
     ],
     'templates' => [
         'password_reset' => [

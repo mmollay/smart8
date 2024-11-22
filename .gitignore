@@ -1,3 +1,14 @@
 webhook.php
 webhook.log
 smart_users/
+.env
+.env.backup
+
+# Ignore local config files
+config/*.local.php
+
+# Ignore logs
+*.log
+
+/logs/*
+!logs/.gitkeep
