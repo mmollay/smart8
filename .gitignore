@@ -1,14 +1,20 @@
-webhook.php
-webhook.log
-smart_users/
+# Environment files
 .env
+.env.local
+.env.*.local
 .env.backup
 
-# Ignore local config files
-config/*.local.php
-
-# Ignore logs
-*.log
-
+# Logs
 /logs/*
 !logs/.gitkeep
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# System files
+.DS_Store
+Thumbs.db
+smart_users/
