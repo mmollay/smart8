@@ -1,3 +1,39 @@
+<?php
+require_once __DIR__ . '/../src/bootstrap.php';
+require_once __DIR__ . '/../src/Services/GoogleAuthService.php';
+
+// OAuth Konfiguration laden
+$config = require_once __DIR__ . '/../config/oauth_config.php';
+$googleAuthEnabled = false;
+
+try {
+    $googleAuth = new \Smart\Services\GoogleAuthService($db, $config['google']);
+    $googleAuthEnabled = true;
+} catch (\Exception $e) {
+    error_log("Google Auth nicht verfügbar: " . $e->getMessage());
+}
+
+// Prüfen ob bereits eingeloggt
+if (isset($_SESSION['client_id'])) {
+    header('Location: ../modules/main/index.php');
+    exit;
+}
+
+// Error Message aus URL
+$error = $_GET['error'] ?? '';
+$errorMessage = '';
+$successMessage = '';
+
+switch ($error) {
+    case 'google_auth_failed':
+        $errorMessage = 'Google Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.';
+        break;
+    case 'logout':
+        $successMessage = 'Sie wurden erfolgreich abgemeldet.';
+        break;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
