@@ -1,20 +1,25 @@
 <?php
 require_once __DIR__ . '/../src/bootstrap.php';
+require_once __DIR__ . '/../src/Core/Database.php';
+require_once __DIR__ . '/../src/Services/AuthService.php';
 
-// Nur für Development
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+use Smart\Core\Database;
+use Smart\Services\AuthService;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        // Datenbankverbindung erstellen
+        $dbConfig = require __DIR__ . '/../config/database.php';
+        $database = Database::getInstance($dbConfig);
+
+        // AuthService initialisieren
+        $auth = new AuthService($database);
+
         $username = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
         $remember = isset($_POST['remember']) && $_POST['remember'] === 'true';
 
-        if (!isset($auth)) {
-            throw new Exception('Auth service not available');
-        }
-
+        // Login durchführen
         $result = $auth->login($username, $password, $remember);
 
         // Header für JSON-Response setzen
@@ -38,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         echo json_encode([
             'success' => false,
-            'message' => 'Ein Fehler ist aufgetreten'
+            'message' => 'Ein Fehler ist aufgetreten',
+            'debug' => $e->getMessage()
         ]);
     }
     exit;
