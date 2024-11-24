@@ -1,3 +1,38 @@
+<?php
+require_once __DIR__ . '/../src/bootstrap.php';
+require_once __DIR__ . '/../src/Services/GoogleAuthService.php';
+
+// OAuth Konfiguration laden
+$config = require_once __DIR__ . '/../config/oauth_config.php';
+$googleAuthEnabled = false;
+
+try {
+    $googleAuth = new \Smart\Services\GoogleAuthService($db, $config['google']);
+    $googleAuthEnabled = true;
+} catch (\Exception $e) {
+    error_log("Google Auth nicht verfügbar: " . $e->getMessage());
+}
+
+// Prüfen ob bereits eingeloggt
+if (isset($_SESSION['client_id'])) {
+    header('Location: ../modules/main/index.php');
+    exit;
+}
+
+// Error Message aus URL
+$error = $_GET['error'] ?? '';
+$errorMessage = '';
+$successMessage = '';
+
+switch ($error) {
+    case 'google_auth_failed':
+        $errorMessage = 'Google Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.';
+        break;
+    case 'logout':
+        $successMessage = 'Sie wurden erfolgreich abgemeldet.';
+        break;
+}
+?>
 <!DOCTYPE html>
 <html lang="de">
 
@@ -59,12 +94,69 @@
             display: none;
             margin-bottom: 1em;
         }
+
+        .ui.google.button {
+            background-color: #db4437;
+            color: white;
+            margin-top: 1em;
+        }
+
+        .ui.google.button:hover {
+            background-color: #c53929;
+        }
+
+        .ui.horizontal.divider {
+            margin: 2em 0;
+            color: rgba(0, 0, 0, .6);
+        }
+
+        .success-message {
+            margin-bottom: 1em;
+        }
+
+        .ui.segment {
+            position: relative;
+        }
+
+        .loader-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
     </style>
 </head>
 
 <body>
     <div class="ui raised very padded text container segment" style="width:100%; max-width:450px;">
-        <h2 class="ui header" style="color: #21ba45;">Smart 8 Login</h2>
+        <h2 class="ui header" style="color: #21ba45;">
+            <i class="sign-in icon"></i>
+            <div class="content">
+                Smart 8 Login
+                <div class="sub header">Bitte melden Sie sich an</div>
+            </div>
+        </h2>
+
+        <?php if (!empty($errorMessage)): ?>
+            <div class="ui negative message">
+                <i class="close icon"></i>
+                <div class="header">Fehler</div>
+                <p><?php echo htmlspecialchars($errorMessage); ?></p>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($successMessage)): ?>
+            <div class="ui success message">
+                <i class="close icon"></i>
+                <p><?php echo htmlspecialchars($successMessage); ?></p>
+            </div>
+        <?php endif; ?>
 
         <div class="ui negative message error-message">
             <i class="close icon"></i>
@@ -75,31 +167,54 @@
         <form class="ui huge form" id="loginForm">
             <div class="field">
                 <label>Benutzername</label>
-                <div class="ui fluid input">
-                    <input type="text" name="username" id="username" placeholder="Benutzername" autofocus required>
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="username" id="username" placeholder="Benutzername oder E-Mail" autofocus
+                        required>
                 </div>
             </div>
+
             <div class="field">
                 <label>Passwort</label>
-                <div class="ui fluid input">
+                <div class="ui left icon input">
+                    <i class="lock icon"></i>
                     <input type="password" name="password" id="password" placeholder="Passwort" required>
                 </div>
             </div>
+
             <div class="forgot-password">
                 <a href="reset_password.php">Passwort vergessen?</a>
             </div>
+
             <div class="field remember-me">
                 <div class="ui checkbox">
                     <input type="checkbox" name="remember" id="remember">
                     <label>Angemeldet bleiben</label>
                 </div>
             </div>
+
             <div class="ui active centered inline loader" id="loading"></div>
-            <button class="ui fluid huge teal button" type="submit">
+
+            <button class="ui fluid huge teal submit button" type="submit">
                 <i class="sign-in icon"></i>
-                Login
+                Anmelden
             </button>
         </form>
+
+        <?php if ($googleAuthEnabled): ?>
+            <div class="ui horizontal divider">
+                oder
+            </div>
+
+            <a href="<?php echo htmlspecialchars($googleAuth->getAuthUrl()); ?>" class="ui fluid huge google button">
+                <i class="google icon"></i>
+                Mit Google anmelden
+            </a>
+        <?php endif; ?>
+
+        <div class="loader-container">
+            <div class="ui active massive loader"></div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js"></script>
@@ -138,7 +253,7 @@
                     dataType: 'json',
                     success: function (response) {
                         if (response.success) {
-                            window.location.href = response.redirect || 'modules/main/index.php';
+                            window.location.href = response.redirect || '../modules/main/index.php';
                         } else {
                             $('.error-text').text(response.message || 'Ungültige Anmeldedaten');
                             $errorMessage.show();
@@ -163,6 +278,17 @@
                     $('.error-message').hide();
                 }
             });
+
+            // Google Button Loading State
+            $('.google.button').on('click', function () {
+                $(this).addClass('loading disabled');
+                $('.loader-container').css('display', 'flex');
+            });
+
+            // Automatischer Fokus auf Username-Feld
+            setTimeout(function () {
+                $('#username').focus();
+            }, 100);
         });
     </script>
 </body>

@@ -1,123 +1,73 @@
 <?php
-// Basis-Autoloader und Fehlerbehandlung
-require_once __DIR__ . '/../vendor/autoload.php';
+// src/bootstrap.php
 
-// Logs-Verzeichnis erstellen falls nicht vorhanden
-$logDir = __DIR__ . '/../logs';
-if (!file_exists($logDir)) {
-    mkdir($logDir, 0777, true);
+// Fehlerreporting für Entwicklung
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Basis-Verzeichnis definieren
+define('BASE_PATH', realpath(__DIR__ . '/..'));
+
+// .env Datei laden
+if (file_exists(BASE_PATH . '/.env')) {
+    $envFile = file_get_contents(BASE_PATH . '/.env');
+    $lines = explode("\n", $envFile);
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (!empty($line) && strpos($line, '#') !== 0) {
+            list($key, $value) = explode('=', $line, 2) + [null, null];
+            if (!empty($key)) {
+                putenv(trim($key) . '=' . trim($value));
+                $_ENV[trim($key)] = trim($value);
+            }
+        }
+    }
 }
 
-// Logfile-Pfad definieren
-define('LOG_FILE', $logDir . '/error.log');
+// Autoloader für Klassen
+spl_autoload_register(function ($class) {
+    $baseDir = __DIR__ . '/..';
+    $class = str_replace(['Smart\\', '\\'], ['', '/'], $class);
+    $file = $baseDir . '/src/' . $class . '.php';
 
-// Prüfen ob Logfile beschreibbar ist
-if (!file_exists(LOG_FILE)) {
-    touch(LOG_FILE);
-    chmod(LOG_FILE, 0666);
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+
+// Session starten
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-// Services importieren
-use Smart\Core\Database;
-use Smart\Core\Session;
-use Smart\Services\AuthService;
+// Datenbank-Konfiguration
+$dbConfig = [
+    'host' => getenv('DB_HOST') ?: 'localhost',
+    'username' => getenv('DB_USERNAME') ?: 'root',
+    'password' => getenv('DB_PASSWORD') ?: '',
+    'database' => getenv('DB_DATABASE') ?: 'smart8'
+];
 
 try {
-    // Lade .env Datei
-    if (file_exists(__DIR__ . '/../.env')) {
-        $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-        $dotenv->load();
+    // Datenbankverbindung
+    $db = new mysqli(
+        $dbConfig['host'],
+        $dbConfig['username'],
+        $dbConfig['password'],
+        $dbConfig['database']
+    );
 
-        // Erforderliche Umgebungsvariablen prüfen
-        $dotenv->required([
-            'DB_HOST',
-            'DB_USERNAME',
-            'DB_PASSWORD',
-            'DB_DATABASE'
-        ]);
-    } else {
-        throw new Exception('.env Datei nicht gefunden');
+    if ($db->connect_error) {
+        throw new Exception("Verbindung fehlgeschlagen: " . $db->connect_error);
     }
 
-    // Konfigurationen laden
-    $dbConfig = [
-        'host' => $_ENV['DB_HOST'],
-        'username' => $_ENV['DB_USERNAME'],
-        'password' => $_ENV['DB_PASSWORD'],
-        'database' => $_ENV['DB_DATABASE']
-    ];
-
-    // Services initialisieren
-    $db = Database::getInstance($dbConfig);
-    $session = Session::getInstance($db);
-    $auth = new AuthService($db);
-
-    // Error Handler registrieren
-    set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-        if (!(error_reporting() & $errno)) {
-            return false;
-        }
-
-        $errorMessage = date('Y-m-d H:i:s') . " Error ($errno): $errstr in $errfile on line $errline\n";
-
-        // Prüfen ob Logdatei beschreibbar
-        if (is_writable(LOG_FILE)) {
-            error_log($errorMessage, 3, LOG_FILE);
-        }
-
-        if (in_array($errno, [E_ERROR, E_USER_ERROR])) {
-            die('Ein kritischer Fehler ist aufgetreten.');
-        }
-
-        return true;
-    });
-
-    // Exception Handler registrieren
-    set_exception_handler(function ($e) {
-        $errorMessage = date('Y-m-d H:i:s') . " Exception: " . $e->getMessage() .
-            " in " . $e->getFile() . " on line " . $e->getLine() . "\n";
-
-        // Prüfen ob Logdatei beschreibbar
-        if (is_writable(LOG_FILE)) {
-            error_log($errorMessage, 3, LOG_FILE);
-        }
-
-        if ($_ENV['APP_ENV'] ?? 'production' === 'development') {
-            echo "<h1>Fehler</h1>";
-            echo "<p>" . $e->getMessage() . "</p>";
-            echo "<pre>" . $e->getTraceAsString() . "</pre>";
-        } else {
-            die('Ein Fehler ist aufgetreten. Bitte kontaktieren Sie den Administrator.');
-        }
-    });
-
-    // Session Timeout prüfen
-    if ($session->isExpired()) {
-        $auth->logout();
-        header('Location: /auth/login.php');
-        exit;
-    }
-
+    $db->set_charset('utf8mb4');
 } catch (Exception $e) {
-    $errorMessage = "Bootstrap Error: " . $e->getMessage();
-
-    // Prüfen ob Logdatei beschreibbar
-    if (is_writable(LOG_FILE)) {
-        error_log($errorMessage, 3, LOG_FILE);
-    }
-
-    if ($_ENV['APP_ENV'] ?? 'production' === 'development') {
-        echo "Initialization Error: " . $e->getMessage();
-        echo "<pre>" . $e->getTraceAsString() . "</pre>";
-    } else {
-        die("Initialization Error");
-    }
+    error_log($e->getMessage());
+    die('Datenbankverbindung konnte nicht hergestellt werden. Bitte überprüfen Sie die Konfiguration.');
 }
 
-// Timezone setzen
-date_default_timezone_set('Europe/Vienna');
-
-// Basis-Konfiguration
-define('APP_ROOT', dirname(__DIR__));
-define('WEB_ROOT', ($_ENV['APP_ENV'] ?? 'production') === 'development' ? '/smart8' : '');
-define('SMARTFORM_PATH', WEB_ROOT . '/smartform2');
+// Debug-Ausgabe der Konfiguration wenn im Entwicklungsmodus
+if (getenv('APP_ENV') === 'development') {
+    error_log("DB Config: " . print_r($dbConfig, true));
+}
