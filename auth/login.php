@@ -134,11 +134,34 @@ switch ($error) {
 
         .version-info {
             text-align: center;
-            color: #666;
-            font-size: 0.8em;
-            margin-top: 1rem;
-            padding-top: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
             border-top: 1px solid #e9ecef;
+        }
+
+        .release-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: #666;
+            font-size: 0.9em;
+            gap: 0.5rem;
+        }
+
+        .version-number {
+            font-weight: 500;
+            color: #21ba45;
+        }
+
+        .changelog-link {
+            color: #666;
+            transition: color 0.2s ease;
+        }
+
+        .changelog-link:hover {
+            color: #21ba45;
         }
 
         .field label {
@@ -176,10 +199,8 @@ switch ($error) {
 </head>
 
 <body>
-
     <div class="login-container">
         <div class="logo-container">
-            <!-- Ersetzen Sie den src mit dem tatsächlichen Pfad zu Ihrem Logo -->
             <img src="../img/logo.png" alt="SSI Logo" />
         </div>
 
@@ -250,7 +271,13 @@ switch ($error) {
             <?php endif; ?>
 
             <div class="version-info">
-                Smart 8 v8.1.0
+                <div class="release-badge">
+                    <i class="code branch icon"></i>
+                    <span class="version-number">Smart 8 v8.1.0</span>
+                    <a href="#" id="showChangelog" class="changelog-link">
+                        <i class="info circle icon"></i>
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -309,6 +336,39 @@ switch ($error) {
                         $loading.hide();
                     }
                 });
+            });
+
+            $('#showChangelog').click(function (e) {
+                e.preventDefault();
+
+                const modal = `
+                    <div class="ui modal">
+                        <i class="close icon"></i>
+                        <div class="header">
+                            <i class="history icon"></i>
+                            Changelog - Smart 8
+                        </div>
+                        <div class="content">
+                            <div class="ui relaxed divided list">
+                                <div class="item">
+                                    <div class="content">
+                                        <div class="header">Version 8.1.0</div>
+                                        <div class="description">
+                                            <div class="ui bulleted list">
+                                                <div class="item">Neues Login System mit verbesserter Sicherheit</div>
+                                                <div class="item">Password Reset Funktionalität überarbeitet</div>
+                                                <div class="item">Google OAuth Integration</div>
+                                                <div class="item">Verbesserte Session Verwaltung</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $(modal).modal('show');
             });
 
             $(document).keyup(function (e) {
