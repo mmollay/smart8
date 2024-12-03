@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../src/bootstrap.php';
 require_once __DIR__ . '/../src/Services/GoogleAuthService.php';
-
+e
 // OAuth Konfiguration laden
 $config = require_once __DIR__ . '/../config/oauth_config.php';
 $googleAuthEnabled = false;
