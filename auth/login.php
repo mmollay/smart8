@@ -5,16 +5,18 @@ require_once __DIR__ . '/../src/Services/GoogleAuthService.php';
 // OAuth Konfiguration laden
 $config = require_once __DIR__ . '/../config/oauth_config.php';
 $googleAuthEnabled = false;
+$googleAuthUrl = '';
 
 try {
     $googleAuth = new \Smart\Services\GoogleAuthService($db, $config['google']);
     $googleAuthEnabled = true;
+    $googleAuthUrl = $googleAuth->getAuthUrl();
 } catch (\Exception $e) {
     error_log("Google Auth nicht verfügbar: " . $e->getMessage());
 }
 
 // Prüfen ob bereits eingeloggt
-if (isset($_SESSION['client_id'])) {
+if (isset($_SESSION['client_id']) and $_SESSION['client_id'] != '') {
     header('Location: ../modules/main/index.php');
     exit;
 }
@@ -33,7 +35,6 @@ switch ($error) {
         break;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="de">
 
@@ -78,122 +79,122 @@ switch ($error) {
             padding: 2rem;
         }
 
-        .ui.button,
-        .ui.input>input {
-            width: 100%;
+        .ui.button {
+            margin: 0.5em 0;
         }
 
         .ui.teal.button {
             background-color: #21ba45 !important;
             color: white !important;
-            transition: background-color 0.3s ease;
-        }
-
-        .ui.teal.button:hover {
-            background-color: #1ea83e !important;
-        }
-
-        .forgot-password {
-            text-align: right;
-            margin: -5px 0 15px;
-        }
-
-        .forgot-password a {
-            color: #666;
-            font-size: 0.9em;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-password a:hover {
-            color: #21ba45;
-        }
-
-        .ui.checkbox label {
-            color: #666;
-        }
-
-        .ui.input>input {
-            border-radius: 8px;
-        }
-
-        .ui.input>input:focus {
-            border-color: #21ba45;
         }
 
         .ui.google.button {
-            background-color: #db4437;
+            background-color: #4285f4;
             color: white;
+        }
+
+        .password-requirements {
+            font-size: 0.9em;
             margin-top: 1em;
-            transition: background-color 0.3s ease;
+            display: none;
         }
 
-        .ui.google.button:hover {
-            background-color: #c53929;
+        .password-requirements.visible {
+            display: block;
         }
 
-        .version-info {
+        .requirement {
+            margin: 0.3em 0;
+            color: #666;
+        }
+
+        .requirement.met {
+            color: #21ba45;
+        }
+
+        .requirement i {
+            margin-right: 0.5em;
+        }
+
+        .password-strength {
+            margin-top: 0.5em;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s ease;
+            background: #db2828;
+        }
+
+        .register-fields {
+            display: none;
+        }
+
+        .register-fields.visible {
+            display: block;
+        }
+
+        .divider-text {
+            position: relative;
             text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e9ecef;
+            margin: 1.5em 0;
         }
 
-        .release-badge {
-            display: inline-flex;
-            align-items: center;
-            background-color: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+        .divider-text::before,
+        .divider-text::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .divider-text::before {
+            left: 0;
+        }
+
+        .divider-text::after {
+            right: 0;
+        }
+
+        .divider-text span {
+            background: white;
+            padding: 0 1em;
             color: #666;
             font-size: 0.9em;
-            gap: 0.5rem;
         }
 
-        .version-number {
-            font-weight: 500;
-            color: #21ba45;
-        }
+        @keyframes shake {
 
-        .changelog-link {
-            color: #666;
-            transition: color 0.2s ease;
-        }
-
-        .changelog-link:hover {
-            color: #21ba45;
-        }
-
-        .field label {
-            color: #495057 !important;
-            font-weight: 500 !important;
-            margin-bottom: 0.5rem !important;
-        }
-
-        .ui.message {
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-            box-shadow: none;
-        }
-
-        .ui.horizontal.divider {
-            margin: 2em 0;
-            color: #666;
-        }
-
-        .loader-container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-        }
-
-        @media (max-width: 480px) {
-            .login-container {
-                margin: 10px;
+            0%,
+            100% {
+                transform: translateX(0);
             }
 
-            .form-container {
-                padding: 1.5rem;
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
             }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.6s cubic-bezier(.36, .07, .19, .97) both;
         }
     </style>
 </head>
@@ -220,19 +221,12 @@ switch ($error) {
                 </div>
             <?php endif; ?>
 
-            <div class="ui negative message error-message" style="display: none;">
-                <i class="close icon"></i>
-                <div class="header">Fehler</div>
-                <p class="error-text"></p>
-            </div>
-
-            <form class="ui large form" id="loginForm">
+            <form id="authForm" class="ui large form">
                 <div class="field">
-                    <label>Benutzername</label>
+                    <label>E-Mail</label>
                     <div class="ui left icon input">
                         <i class="user icon"></i>
-                        <input type="text" name="username" id="username" placeholder="Benutzername oder E-Mail"
-                            autofocus required>
+                        <input type="email" name="email" placeholder="E-Mail-Adresse" required>
                     </div>
                 </div>
 
@@ -240,151 +234,303 @@ switch ($error) {
                     <label>Passwort</label>
                     <div class="ui left icon input">
                         <i class="lock icon"></i>
-                        <input type="password" name="password" id="password" placeholder="Passwort" required>
+                        <input type="password" name="password" placeholder="Passwort" required>
                     </div>
                 </div>
 
-                <div class="forgot-password">
-                    <a href="reset_password.php">Passwort vergessen?</a>
+                <div class="register-fields">
+                    <div class="field">
+                        <label>Passwort bestätigen</label>
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="confirm_password" placeholder="Passwort bestätigen">
+                        </div>
+                    </div>
+
+                    <div class="password-requirements">
+                        <div class="password-strength">
+                            <div class="strength-bar"></div>
+                        </div>
+                        <div class="requirement" data-requirement="length">
+                            <i class="circle outline icon"></i>
+                            Mindestens 8 Zeichen
+                        </div>
+                        <div class="requirement" data-requirement="lowercase">
+                            <i class="circle outline icon"></i>
+                            Mindestens ein Kleinbuchstabe
+                        </div>
+                        <div class="requirement" data-requirement="uppercase">
+                            <i class="circle outline icon"></i>
+                            Mindestens ein Großbuchstabe
+                        </div>
+                        <div class="requirement" data-requirement="number">
+                            <i class="circle outline icon"></i>
+                            Mindestens eine Zahl
+                        </div>
+                        <div class="requirement" data-requirement="special">
+                            <i class="circle outline icon"></i>
+                            Mindestens ein Sonderzeichen
+                        </div>
+                    </div>
                 </div>
 
-                <div class="field">
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="remember" id="remember">
-                        <label>Angemeldet bleiben</label>
+                <div class="login-fields">
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="remember">
+                            <label>Angemeldet bleiben</label>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; margin-bottom: 1em;">
+                        <a href="reset_password.php" class="ui link">Passwort vergessen?</a>
                     </div>
                 </div>
 
                 <button class="ui fluid large teal submit button" type="submit">
                     <i class="sign-in icon"></i>
-                    Anmelden
+                    <span class="button-text">Anmelden</span>
                 </button>
-            </form>
 
-            <?php if ($googleAuthEnabled): ?>
-                <div class="ui horizontal divider">oder</div>
+                <button type="button" class="ui fluid large button toggle-auth-mode">
+                    <span class="button-text">Neu hier? Jetzt registrieren</span>
+                </button>
 
-                <a href="<?php echo htmlspecialchars($googleAuth->getAuthUrl()); ?>" class="ui fluid large google button">
-                    <i class="google icon"></i>
-                    Mit Google anmelden
-                </a>
-            <?php endif; ?>
+                <?php if ($googleAuthEnabled): ?>
+                    <div class="divider-text">
+                        <span>oder</span>
+                    </div>
 
-            <div class="version-info">
-                <div class="release-badge">
-                    <i class="code branch icon"></i>
-                    <span class="version-number">Smart 8 v8.1.0</span>
-                    <a href="#" id="showChangelog" class="changelog-link">
-                        <i class="info circle icon"></i>
+                    <a href="<?php echo htmlspecialchars($googleAuthUrl); ?>" class="ui fluid google button">
+                        <i class="google icon"></i>
+                        Mit Google anmelden
                     </a>
-                </div>
-            </div>
+                <?php endif; ?>
+            </form>
         </div>
 
-        <div class="loader-container" style="display: none;">
-            <div class="ui active massive loader"></div>
+        <div class="ui dimmer">
+            <div class="ui loader"></div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js"></script>
     <script>
         $(document).ready(function () {
+            let isRegistering = false;
+            const $form = $('#authForm');
+            const $registerFields = $('.register-fields');
+            const $loginFields = $('.login-fields');
+            const $passwordInput = $('input[name="password"]');
+            const $requirements = $('.requirement');
+            const $strengthBar = $('.strength-bar');
+            const $toggleButton = $('.toggle-auth-mode');
+            const $submitButton = $('.submit.button');
+
+            // UI Initialisierung
             $('.ui.checkbox').checkbox();
 
             $('.message .close').on('click', function () {
                 $(this).closest('.message').transition('fade');
             });
 
-            $('#loginForm').submit(function (e) {
-                e.preventDefault();
+            // Toggle zwischen Login und Registrierung
+            $toggleButton.click(function () {
+                isRegistering = !isRegistering;
+                $form.trigger('reset');
 
-                const $form = $(this);
-                const $submitButton = $form.find('button[type="submit"]');
-                const $loading = $('.loader-container');
-                const $errorMessage = $('.error-message');
-
-                $submitButton.addClass('loading disabled');
-                $loading.show();
-                $errorMessage.hide();
-
-                var formData = {
-                    username: $('#username').val().trim(),
-                    password: $('#password').val(),
-                    remember: $('#remember').is(':checked')
-                };
-
-                $.ajax({
-                    type: "POST",
-                    url: "login2.php",
-                    data: formData,
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response.success) {
-                            window.location.href = response.redirect || '../modules/main/index.php';
-                        } else {
-                            $('.error-text').text(response.message || 'Ungültige Anmeldedaten');
-                            $errorMessage.show();
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Login error:', error);
-                        $('.error-text').text('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
-                        $errorMessage.show();
-                    },
-                    complete: function () {
-                        $submitButton.removeClass('loading disabled');
-                        $loading.hide();
-                    }
-                });
-            });
-
-            $('#showChangelog').click(function (e) {
-                e.preventDefault();
-
-                const modal = `
-                    <div class="ui modal">
-                        <i class="close icon"></i>
-                        <div class="header">
-                            <i class="history icon"></i>
-                            Changelog - Smart 8
-                        </div>
-                        <div class="content">
-                            <div class="ui relaxed divided list">
-                                <div class="item">
-                                    <div class="content">
-                                        <div class="header">Version 8.1.0</div>
-                                        <div class="description">
-                                            <div class="ui bulleted list">
-                                                <div class="item">Neues Login System mit verbesserter Sicherheit</div>
-                                                <div class="item">Password Reset Funktionalität überarbeitet</div>
-                                                <div class="item">Google OAuth Integration</div>
-                                                <div class="item">Verbesserte Session Verwaltung</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                $(modal).modal('show');
-            });
-
-            $(document).keyup(function (e) {
-                if (e.key === "Escape") {
-                    $('.error-message').hide();
+                if (isRegistering) {
+                    $registerFields.slideDown();
+                    $loginFields.slideUp();
+                    $('.password-requirements').slideDown();
+                    $submitButton.find('.button-text').text('Registrieren');
+                    $toggleButton.find('.button-text').text('Zurück zum Login');
+                } else {
+                    $registerFields.slideUp();
+                    $loginFields.slideDown();
+                    $('.password-requirements').slideUp();
+                    $submitButton.find('.button-text').text('Anmelden');
+                    $toggleButton.find('.button-text').text('Neu hier? Jetzt registrieren');
                 }
             });
 
-            $('.google.button').on('click', function () {
-                $(this).addClass('loading disabled');
-                $('.loader-container').css('display', 'flex');
+            // Passwort-Validierung
+            function validatePassword(password) {
+                const requirements = {
+                    length: password.length >= 8,
+                    lowercase: /[a-z]/.test(password),
+                    uppercase: /[A-Z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[^A-Za-z0-9]/.test(password)
+                };
+
+                let score = 0;
+                Object.entries(requirements).forEach(([key, met]) => {
+                    const $req = $(`.requirement[data-requirement="${key}"]`);
+                    if (met) {
+                        $req.addClass('met').find('i').removeClass('circle outline').addClass('check circle');
+                        score++;
+                    } else {
+                        $req.removeClass('met').find('i').removeClass('check circle').addClass('circle outline');
+                    }
+                });
+
+                // Update Stärkebalken
+                const percentage = (score / 5) * 100;
+                $strengthBar.css('width', `${percentage}%`);
+
+                if (percentage <= 20) {
+                    $strengthBar.css('background-color', '#db2828'); // Rot
+                } else if (percentage <= 40) {
+                    $strengthBar.css('background-color', '#f2711c'); // Orange
+                } else if (percentage <= 60) {
+                    $strengthBar.css('background-color', '#fbbd08'); // Gelb
+                } else if (percentage <= 80) {
+                    $strengthBar.css('background-color', '#b5cc18'); // Olivgrün
+                } else {
+                    $strengthBar.css('background-color', '#21ba45'); // Grün
+                }
+
+                return score >= 3; // Mindestens 3 Anforderungen müssen erfüllt sein
+            }
+
+            // Echtzeit-Passwort-Validierung
+            $passwordInput.on('input', function () {
+                if (isRegistering) {
+                    const isValid = validatePassword($(this).val());
+                    $submitButton.prop('disabled', !isValid);
+                    if (!isValid) {
+                        $submitButton.addClass('disabled');
+                    } else {
+                        $submitButton.removeClass('disabled');
+                    }
+                }
             });
 
+            $form.on('submit', function (e) {
+                e.preventDefault();
+                const $submitButton = $(this).find('button[type="submit"]');
+                const endpoint = isRegistering ? 'register.php' : 'login2.php';
+
+                // Debug-Ausgabe
+                console.log('Form data:', $(this).serialize());
+
+                // UI-Feedback
+                $submitButton.addClass('loading disabled');
+
+                $.ajax({
+                    type: 'POST',
+                    url: endpoint,
+                    data: {
+                        email: $('input[name="email"]').val(),
+                        password: $('input[name="password"]').val(),
+                        confirm_password: $('input[name="confirm_password"]').val()
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log('Success:', response);
+                        if (response.success) {
+                            if (response.redirect) {
+                                window.location.href = response.redirect;
+                            }
+                        } else {
+                            showError(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Error details:', {
+                            status: xhr.status,
+                            responseText: xhr.responseText,
+                            error: error
+                        });
+                        showError('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+                    },
+                    complete: function () {
+                        $submitButton.removeClass('loading disabled');
+                    }
+                });
+            });
+            // Hilfsfunktion für Fehleranzeige
+            function showError(message) {
+                $('.error-message').remove();
+                $form.prepend(`
+            <div class="ui negative message error-message">
+                <i class="close icon"></i>
+                <div class="header">Fehler</div>
+                <p>${message}</p>
+            </div>
+        `);
+
+                // Shake-Animation für visuelles Feedback
+                $form.addClass('shake');
+                setTimeout(() => $form.removeClass('shake'), 600);
+
+                // Schließen-Button für Fehlermeldung
+                $('.error-message .close').on('click', function () {
+                    $(this).closest('.message').transition('fade');
+                });
+            }
+
+            // Google-Login-Button Handler
+            $('.google.button').on('click', function () {
+                $(this).addClass('loading disabled');
+                $('.ui.dimmer').css('display', 'flex');
+            });
+
+            // Autofokus auf Username-Feld
             setTimeout(function () {
-                $('#username').focus();
+                $('input[name="email"]').focus();
             }, 100);
+
+            // Escape Taste schließt Fehlermeldungen
+            $(document).keyup(function (e) {
+                if (e.key === "Escape") {
+                    $('.error-message').transition('fade');
+                }
+            });
+
+            // Password Sichtbarkeit Toggle
+            $('.toggle-password').on('click', function () {
+                const $input = $(this).prev('input');
+                const type = $input.attr('type') === 'password' ? 'text' : 'password';
+                $input.attr('type', type);
+                $(this).find('i').toggleClass('eye slash outline');
+            });
+
+            // Enter-Taste Submit
+            $form.find('input').keypress(function (e) {
+                if (e.which == 13) {
+                    $form.submit();
+                    return false;
+                }
+            });
+
+            // Form Reset bei Modus-Wechsel
+            function resetForm() {
+                $form[0].reset();
+                $('.error-message').remove();
+                $submitButton.removeClass('loading disabled');
+                $('.strength-bar').css('width', '0');
+                $('.requirement').removeClass('met')
+                    .find('i')
+                    .removeClass('check circle')
+                    .addClass('circle outline');
+            }
+
+            // Registrierungs-Modus Toggle mit Animation
+            function toggleMode() {
+                resetForm();
+                $form.transition('shake');
+
+                if (isRegistering) {
+                    $('.register-fields, .password-requirements').transition('slide down');
+                    $('.login-fields').transition('slide up');
+                } else {
+                    $('.register-fields, .password-requirements').transition('slide up');
+                    $('.login-fields').transition('slide down');
+                }
+            }
         });
     </script>
 </body>

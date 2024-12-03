@@ -1,6 +1,5 @@
 <?php
 include(__DIR__ . '/../../n_config.php');
-
 header('Content-Type: application/json');
 
 $update_id = $_POST['update_id'] ?? null;
@@ -19,39 +18,47 @@ if (empty($name) || empty($html_content)) {
 
 try {
     if ($update_id) {
+        // Prüfe ob das Template dem User gehört
+        $checkStmt = $db->prepare("SELECT id FROM email_templates WHERE id = ? AND user_id = ?");
+        $checkStmt->bind_param('ii', $update_id, $userId);
+        $checkStmt->execute();
+        if (!$checkStmt->get_result()->num_rows) {
+            throw new Exception('Keine Berechtigung zum Bearbeiten dieses Templates');
+        }
+
         // Update existierendes Template
         $stmt = $db->prepare("
-            UPDATE email_templates 
-            SET name = ?, 
-                description = ?, 
-                html_content = ?, 
+            UPDATE email_templates
+            SET name = ?,
+                description = ?,
+                html_content = ?,
                 subject = ?,
                 updated_at = NOW()
-            WHERE id = ?
+            WHERE id = ? AND user_id = ?
         ");
-
+        $stmt->bind_param(
+            'ssssii',
+            $name,
+            $description,
+            $html_content,
+            $subject,
+            $update_id,
+            $userId
+        );
+    } else {
+        // Neues Template erstellen
+        $stmt = $db->prepare("
+            INSERT INTO email_templates
+            (name, description, html_content, subject, created_at, user_id)
+            VALUES (?, ?, ?, ?, NOW(), ?)
+        ");
         $stmt->bind_param(
             'ssssi',
             $name,
             $description,
             $html_content,
             $subject,
-            $update_id
-        );
-    } else {
-        // Neues Template erstellen
-        $stmt = $db->prepare("
-            INSERT INTO email_templates 
-            (name, description, html_content, subject, created_at) 
-            VALUES (?, ?, ?, ?, NOW())
-        ");
-
-        $stmt->bind_param(
-            'ssss',
-            $name,
-            $description,
-            $html_content,
-            $subject
+            $userId
         );
     }
 

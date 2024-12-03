@@ -1,99 +1,99 @@
 <?php
-error_reporting(E_ALL);
+// Grundlegende Modul-Konfiguration
+error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', 1);
 
-//Key für Mailjet wird verwendet in send_emails_background.php
-$apiKey = '452e5eca1f98da426a9a3542d1726c96';
-$apiSecret = '55b277cd54eaa3f1d8188fdc76e06535';
-
-// Prüfe ob Script über CLI oder Web ausgeführt wird
-$isCliMode = php_sapi_name() === 'cli';
-
-// Setze Upload-Pfad basierend auf Ausführungsumgebung
-if ($isCliMode) {
-    $uploadBasePath = "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/";
-} else {
-    $uploadBasePath = $_SERVER['SERVER_NAME'] === 'localhost'
-        ? "/Applications/XAMPP/htdocs/smart/smart8/uploads/users/"
-        : "/data/www/develop/uploads/users/";
+if (php_sapi_name() !== 'cli') {
+    require_once(__DIR__ . '/../../config.php');
 }
 
-// Datenbank-Konfiguration
-$dbConfig = [
-    'host' => '127.0.0.1',  // IP statt 'localhost' verwenden
-    'port' => 3306,         // Standard MySQL Port
-    'username' => 'smart',
-    'password' => 'Eiddswwenph21;',
-    'dbname' => 'ssi_newsletter'
+// Laden der .env Datei
+if (file_exists(__DIR__ . '/../../.env')) {
+    $envContent = file_get_contents(__DIR__ . '/../../.env');
+    $lines = explode("\n", $envContent);
+    foreach ($lines as $line) {
+        if (empty(trim($line)) || strpos(trim($line), '#') === 0) {
+            continue;
+        }
+        list($name, $value) = explode('=', $line, 2);
+        $_ENV[trim($name)] = trim($value);
+    }
+}
+
+// APP_ROOT definieren
+if (!defined('APP_ROOT')) {
+    define('APP_ROOT', $_ENV['APP_ROOT'] ?? dirname(__DIR__));
+}
+
+// Newsletter-spezifische Datenbankkonfiguration
+$newsletterDbConfig = [
+    'host' => $_ENV['NEWSLETTER_DB_HOST'] ?? '127.0.0.1',
+    'port' => $_ENV['NEWSLETTER_DB_PORT'] ?? 3306,
+    'username' => $_ENV['NEWSLETTER_DB_USERNAME'] ?? 'root',
+    'password' => $_ENV['NEWSLETTER_DB_PASSWORD'] ?? '',
+    'dbname' => $_ENV['NEWSLETTER_DB_NAME'] ?? 'ssi_newsletter'
 ];
 
-// Verbindung mit Fehlerbehandlung aufbauen
+// E-Mail-Konfiguration für Mailjet
+$mailjetConfig = [
+    'api_key' => $_ENV['MAILJET_API_KEY'] ?? '',
+    'api_secret' => $_ENV['MAILJET_API_SECRET'] ?? ''
+];
+
+
+// Modul-spezifische Pfade
+$isCliMode = php_sapi_name() === 'cli';
+$uploadBasePath = $isCliMode || $_SERVER['SERVER_NAME'] === 'localhost'
+    ? $_ENV['APP_ROOT'] . '/uploads/users/'
+    : $_ENV['UPLOAD_PATH'];
+
 try {
-    $mysqli = mysqli_init();
+    // Initialisierung der Newsletter-Datenbankverbindung
+    $newsletterDb = mysqli_init();
+    $newsletterDb->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
 
-    // Timeout-Einstellungen
-    $mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, 10);
-
-    // Verbindung herstellen
     if (
-        !$mysqli->real_connect(
-            $dbConfig['host'],
-            $dbConfig['username'],
-            $dbConfig['password'],
-            $dbConfig['dbname'],
-            $dbConfig['port']
+        !$newsletterDb->real_connect(
+            $newsletterDbConfig['host'],
+            $newsletterDbConfig['username'],
+            $newsletterDbConfig['password'],
+            $newsletterDbConfig['dbname'],
+            $newsletterDbConfig['port']
         )
     ) {
-        throw new Exception('Datenbankverbindung fehlgeschlagen: ' . $mysqli->connect_error);
+        throw new Exception('Newsletter-Datenbankverbindung fehlgeschlagen: ' . $newsletterDb->connect_error);
     }
-
-    // Globale Variablen setzen
-    $db = $connection = $GLOBALS['mysqli'] = $mysqli;
 
     // UTF-8 Zeichensatz setzen
-    $db->set_charset('utf8mb4');
+    $newsletterDb->set_charset('utf8mb4');
 
-    // Überprüfe ob die Datenbank ausgewählt werden kann
-    if (!$db->select_db($dbConfig['dbname'])) {
-        throw new Exception('Datenbankauswahl fehlgeschlagen: ' . $db->error);
-    }
+    // Überschreiben der globalen Datenbankverbindung für das Newsletter-Modul
+    $db = $GLOBALS['mysqli'] = $GLOBALS['newsletter_db'] = $newsletterDb;
+    $connection = $newsletterDb;  // Für Legacy-Code-Kompatibilität
 
 } catch (Exception $e) {
-    $errorMsg = "Datenbank-Fehler: " . $e->getMessage() . "\n";
-    if ($isCliMode) {
-        fwrite(STDERR, $errorMsg);
-    } else {
-        error_log($errorMsg);
-    }
+    $errorMsg = "Newsletter-Datenbankfehler: " . $e->getMessage();
+    error_log($errorMsg);
     die($errorMsg);
 }
 
-// Rest of the existing functions remain the same
+// Hilfsfunktionen für das Newsletter-Modul
 function getDefaultPlaceholders($customEmail = null)
 {
     $now = new DateTime();
     return [
-        // Personendaten
         'vorname' => 'Max',
         'nachname' => 'Mustermann',
         'titel' => 'Dr.',
         'geschlecht' => 'Herr',
         'anrede' => 'Sehr geehrter Herr Dr. Mustermann',
-
-        // Firmendaten
         'firma' => 'Demo GmbH',
-        'company' => 'Demo GmbH', // Alias für Abwärtskompatibilität
-
-        // Kontaktdaten
+        'company' => 'Demo GmbH',
         'email' => $customEmail ?? 'max.mustermann@beispiel.de',
-
-        // Datums- und Zeitangaben (deutsch formatiert)
         'datum' => $now->format('d.m.Y'),
         'datum_lang' => $now->format('l, d. F Y'),
         'uhrzeit' => $now->format('H:i'),
         'uhrzeit_lang' => $now->format('H:i:s'),
-
-        // Zusätzliche Formatierungen
         'datum_kurz' => $now->format('d.m.y'),
         'monat' => $now->format('F'),
         'jahr' => $now->format('Y'),
@@ -101,17 +101,13 @@ function getDefaultPlaceholders($customEmail = null)
     ];
 }
 
-
-// Funktion zum Ersetzen der Platzhalter im Text
 function replacePlaceholders($text, $customPlaceholders = [])
 {
-    // Hole Standardplatzhalter und überschreibe sie mit benutzerdefinierten Werten
     $placeholders = array_merge(
         getDefaultPlaceholders($customPlaceholders['email'] ?? null),
         $customPlaceholders
     );
 
-    // Ersetze alle Platzhalter im Text
     foreach ($placeholders as $key => $value) {
         $text = str_replace('{{' . $key . '}}', $value, $text);
     }
@@ -121,6 +117,8 @@ function replacePlaceholders($text, $customPlaceholders = [])
 
 function getAllGroups($db)
 {
+    global $userId;
+
     $groups = [];
     $query = "
         SELECT 
@@ -131,6 +129,8 @@ function getAllGroups($db)
         FROM 
             groups g
             LEFT JOIN recipient_group rg ON g.id = rg.group_id
+            WHERE 
+            user_id = '$userId'
         GROUP BY 
             g.id, 
             g.name, 
@@ -139,22 +139,19 @@ function getAllGroups($db)
             g.name
     ";
 
-    // Fehlerbehandlung für prepare
     $stmt = $db->prepare($query);
-    if ($stmt === false) {
-        error_log("Prepare failed: " . $db->error);
-        return [];  // Leeres Array zurückgeben im Fehlerfall
+    if (!$stmt) {
+        error_log("Prepare fehlgeschlagen: " . $db->error);
+        return [];
     }
 
-    // Fehlerbehandlung für execute
     if (!$stmt->execute()) {
-        error_log("Execute failed: " . $stmt->error);
+        error_log("Execute fehlgeschlagen: " . $stmt->error);
         $stmt->close();
         return [];
     }
 
     $result = $stmt->get_result();
-
     while ($row = $result->fetch_assoc()) {
         $groups[$row['id']] = sprintf(
             '<i class="circle %s icon"></i> %s (%d)',
@@ -168,7 +165,7 @@ function getAllGroups($db)
     return $groups;
 }
 
-// Filter hinzufügen
+// Event-Typ-Definitionen
 $eventTypes = [
     'send' => '<i class="paper plane blue icon"></i> Versendet',
     'delivered' => '<i class="check circle green icon"></i> Zugestellt',

@@ -1,0 +1,415 @@
+modules
+├── example
+│   ├── ajax
+│   │   ├── form_delete2.php
+│   │   ├── form_edit2.php
+│   │   └── form_save.php
+│   ├── e_config.php
+│   ├── form
+│   │   └── f_groups.php
+│   ├── index.php
+│   ├── lists
+│   │   └── example.php
+│   └── pages
+│       ├── form_delete.php
+│       ├── form_edit.php
+│       └── list_example.php
+├── faktura
+│   ├── ajax
+│   │   ├── add_cart.php
+│   │   ├── call_client_values.php
+│   │   └── form_edit2.php
+│   ├── change_log.txt
+│   ├── elba
+│   │   ├── call_booking_earning.php
+│   │   ├── call_word_list.php
+│   │   ├── check_earning.php
+│   │   ├── delete_from_elba.php
+│   │   └── insert_inner_issues.php
+│   ├── f_config.php
+│   ├── form
+│   │   ├── f_bills.php
+│   │   └── f_clients.php
+│   ├── form_old
+│   │   ├── f_account.php
+│   │   ├── f_accountgroup.php
+│   │   ├── f_article.php
+│   │   ├── f_automator.php
+│   │   ├── f_client.php
+│   │   ├── f_earning.php
+│   │   ├── f_elba.php
+│   │   ├── f_group.php
+│   │   ├── f_issues.php
+│   │   └── f_option.php
+│   ├── functions.inc.php
+│   ├── img
+│   │   ├── article.png
+│   │   ├── client.png
+│   │   ├── earning.png
+│   │   ├── load.png
+│   │   ├── logo1.jpg
+│   │   └── outgoings.png
+│   ├── inc
+│   │   ├── add_new_issues_group.php
+│   │   ├── array_title.inc.php
+│   │   ├── call_account_id.php
+│   │   ├── call_filter.php
+│   │   ├── call_remind_list.php
+│   │   ├── call_search.php
+│   │   ├── fu_kontenplan.inc
+│   │   ├── gallery.inc.php
+│   │   ├── random_password.php
+│   │   ├── remind_back.php
+│   │   ├── remind_manually.php
+│   │   ├── save_client.php
+│   │   ├── save_logbook.php
+│   │   ├── search_account.php
+│   │   ├── search_list.php
+│   │   ├── sortable_issue_templates.php
+│   │   ├── sortable_templates.php
+│   │   └── text.inc.php
+│   ├── index.php
+│   ├── js
+│   │   ├── automator.js
+│   │   ├── elba.js
+│   │   ├── form_bill.js
+│   │   ├── form_client.js
+│   │   ├── form_group.js
+│   │   ├── form_import.js
+│   │   ├── form_issue_import.js
+│   │   ├── form_issues.js
+│   │   ├── form_options.js
+│   │   ├── list_bill.js
+│   │   ├── list_clientoegt.js
+│   │   ├── list_elba.js
+│   │   ├── list_finance.js
+│   │   ├── main.js
+│   │   └── send_form.js
+│   ├── list
+│   │   ├── account.php
+│   │   ├── accountgroups.php
+│   │   ├── article.php
+│   │   ├── automator.php
+│   │   ├── chart.php
+│   │   ├── client.php
+│   │   ├── client_oegt.php
+│   │   ├── earnings.php
+│   │   ├── elba.php
+│   │   ├── finance.php
+│   │   ├── group.php
+│   │   ├── issues.php
+│   │   └── options.php
+│   ├── lists
+│   │   ├── bills.php
+│   │   └── clients.php
+│   ├── pages
+│   │   ├── form_delete.php
+│   │   ├── form_edit.php
+│   │   ├── home.php
+│   │   ├── list_article.php
+│   │   ├── list_bills.php
+│   │   ├── list_clients.php
+│   │   ├── list_elba.php
+│   │   └── list_issues.php
+│   ├── pdf1.php
+│   └── pdf_generator.php
+├── faktura2
+│   ├── data
+│   │   └── get_article_data.php
+│   ├── f_config.php
+│   ├── form
+│   │   ├── f_accounts.php
+│   │   ├── f_articles.php
+│   │   ├── f_customers.php
+│   │   ├── f_delete.php
+│   │   ├── f_expenses.php
+│   │   ├── f_invoices.php
+│   │   └── f_suppliers.php
+│   ├── index.php
+│   ├── js
+│   │   ├── form.js
+│   │   └── invoice.js
+│   ├── lists
+│   │   ├── accounts.php
+│   │   ├── articles.php
+│   │   ├── customers.php
+│   │   ├── elba.php
+│   │   ├── expenses.php
+│   │   ├── invoices.php
+│   │   └── suppliers.php
+│   ├── pages
+│   │   ├── home.php
+│   │   ├── list_accounts.php
+│   │   ├── list_articles.php
+│   │   ├── list_customers.php
+│   │   ├── list_elba.php
+│   │   ├── list_expenses.php
+│   │   ├── list_invoices.php
+│   │   └── list_suppliers.php
+│   └── save
+│       ├── process_account_form.php
+│       ├── process_article_form.php
+│       ├── process_customer_form.php
+│       ├── process_delete.php
+│       ├── process_invoice_form.php
+│       └── process_supplier_form.php
+├── index.php
+├── main
+│   ├── ajax
+│   │   └── settings_save.php
+│   ├── index.php
+│   ├── js
+│   │   └── form_setting.js
+│   ├── list
+│   └── pages
+│       ├── home.php
+│       ├── settings.php
+│       └── users.php
+├── newsletter
+│   ├── ajax
+│   │   ├── check_group_name.php
+│   │   ├── check_newsletter_status.php
+│   │   ├── check_pending_emails.php
+│   │   ├── check_queue_progress.php
+│   │   ├── check_sending_status.php
+│   │   ├── clone_newsletter.php
+│   │   ├── create_group.php
+│   │   ├── delete_attachment_info.php
+│   │   ├── export.php
+│   │   ├── export_recipients.php
+│   │   ├── form_delete2.php
+│   │   ├── form_edit2.php
+│   │   ├── form_save.php
+│   │   ├── generic_export.php
+│   │   ├── get_attachment_info.php
+│   │   ├── process_import.php
+│   │   ├── save_attachment_info.php
+│   │   ├── send_newsletter.php
+│   │   ├── ssi_newsletter.sql
+│   │   ├── start_mass_mailer.php
+│   │   ├── template
+│   │   │   ├── delete.php
+│   │   │   ├── duplicate.php
+│   │   │   ├── get_preview_data.php
+│   │   │   ├── get_recipient_data.php
+│   │   │   ├── get_template.php
+│   │   │   ├── get_templates.php
+│   │   │   ├── save_template.php
+│   │   │   └── update_file_list.php
+│   │   ├── update_attachments.php
+│   │   └── update_filelist.php
+│   ├── classes
+│   │   ├── EmailQueueManager.php
+│   │   ├── EmailService.php
+│   │   ├── PlaceholderService.php
+│   │   ├── QueueProcessor.php
+│   │   ├── WebhookHandler.php
+│   │   ├── importers
+│   │   │   └── RecipientImporter.php
+│   │   └── logs
+│   ├── components
+│   │   ├── editor_config.php
+│   │   └── placeholders.php
+│   ├── config
+│   │   └── export_config.php
+│   ├── css
+│   │   ├── common.css
+│   │   └── import-recipients.css
+│   ├── database.txt
+│   ├── exec
+│   │   ├── mailjet_event_handler.php
+│   │   ├── process_queue.php
+│   │   ├── send_email_background copy.php
+│   │   ├── send_email_background.php
+│   │   ├── send_test_mail.php
+│   │   ├── test_mailjet_handler_direct.php
+│   │   ├── test_queue_manager.php
+│   │   ├── test_single_event.php
+│   │   └── test_status_transitions.php
+│   ├── form
+│   │   ├── f_groups.php
+│   │   ├── f_newsletters.php
+│   │   ├── f_recipients.php
+│   │   ├── f_senders.php
+│   │   ├── f_templates.php
+│   │   └── preview_template.php
+│   ├── import.txt
+│   ├── index.php
+│   ├── js
+│   │   ├── editor_utils.js
+│   │   ├── form_after.js
+│   │   ├── form_home.js
+│   │   ├── import-recipients.js
+│   │   ├── newsletter-utils.js
+│   │   └── send_emails.js
+│   ├── lists
+│   │   ├── groups.php
+│   │   ├── logs.php
+│   │   ├── newsletters.php
+│   │   ├── recipients copy.php
+│   │   ├── recipients.php
+│   │   ├── senders.php
+│   │   └── templates.php
+│   ├── logs
+│   │   └── error.log
+│   ├── n_config.php
+│   ├── pages
+│   │   ├── form_delete.php
+│   │   ├── form_edit.php
+│   │   ├── home.php
+│   │   ├── import_recipients.php
+│   │   ├── list_groups.php
+│   │   ├── list_logs.php
+│   │   ├── list_newsletters.php
+│   │   ├── list_recipients.php
+│   │   ├── list_senders.php
+│   │   ├── list_templates.php
+│   │   ├── preview_newsletter.php
+│   │   └── setting.php
+│   ├── test
+│   │   ├── INFO.txt
+│   │   ├── index.php
+│   │   ├── save_email_data.php
+│   │   ├── send_emails.php
+│   │   ├── send_emails_background.php
+│   │   └── webhook.php
+│   ├── tmp
+│   ├── unsubscribe.php
+│   └── webhooks
+│       ├── logs
+│       ├── mailjet.php
+│       └── webhooks
+├── service
+│   ├── Change_log.txt
+│   ├── ajax
+│   │   └── mysql_save.php
+│   ├── exec
+│   │   └── hack_cleaner.php
+│   ├── inc
+│   │   ├── apache_count_clients.php
+│   │   ├── change_user_id.php
+│   │   ├── function_fix_utf8.php
+│   │   ├── rm_eval.php
+│   │   ├── rm_index_hack.php
+│   │   └── rm_x_hack.php
+│   ├── index.php
+│   ├── js
+│   │   └── main.js
+│   ├── manuel
+│   │   ├── oegt_new_nr2021.php
+│   │   ├── transfer_site_option_old2smart_options.php
+│   │   ├── transfer_smart_domain2company_domain.php
+│   │   └── transfer_smart_user2company_user.php
+│   ├── pages
+│   │   ├── apache.php
+│   │   ├── dns.php
+│   │   ├── hacker.php
+│   │   └── home.php
+│   ├── terminal.php
+│   └── was ist zu tun
+├── trader
+│   ├── ajax
+│   │   ├── content_chart_data.php
+│   │   ├── form_edit2.php
+│   │   └── post.php
+│   ├── change_log.txt
+│   ├── exec
+│   │   ├── fetch_dax.php
+│   │   ├── fetch_orders.php
+│   │   ├── fetch_stock.php
+│   │   ├── generate_startey_fetch_to_orders.php
+│   │   ├── generate_token.php
+│   │   ├── orders.txt
+│   │   └── session_data.txt
+│   ├── form
+│   │   ├── f_account.php
+│   │   ├── f_broker.php
+│   │   ├── f_client.php
+│   │   ├── f_investment.php
+│   │   ├── f_orders.php
+│   │   ├── f_server.php
+│   │   └── f_strategy.php
+│   ├── functions.inc.php
+│   ├── inc
+│   │   ├── ema_form.php
+│   │   ├── getOpenPosition.php
+│   │   └── getServerInfo.php
+│   ├── index.php
+│   ├── js
+│   │   ├── form_after.js
+│   │   ├── form_broker.js
+│   │   ├── form_develop.js
+│   │   ├── form_home.js
+│   │   ├── form_server.js
+│   │   ├── form_setting.js
+│   │   ├── form_strategy.js
+│   │   ├── function_home.js
+│   │   └── main.js
+│   ├── list
+│   │   ├── broker.php
+│   │   ├── clients.php
+│   │   ├── investments.php
+│   │   ├── orderdetail.php
+│   │   ├── orders.php
+│   │   ├── servers.php
+│   │   └── strategy.php
+│   ├── pages
+│   │   ├── broker.php
+│   │   ├── chart.php
+│   │   ├── client.php
+│   │   ├── content_account.php
+│   │   ├── content_develop.php
+│   │   ├── content_home2.php
+│   │   ├── content_import.php
+│   │   ├── content_import2.php
+│   │   ├── content_profit.php
+│   │   ├── content_setting.php
+│   │   ├── form_delete.php
+│   │   ├── form_edit.php
+│   │   ├── form_send_strategy2server.php
+│   │   ├── home.php
+│   │   ├── investments.php
+│   │   ├── orders.php
+│   │   ├── server.php
+│   │   ├── strategy.php
+│   │   └── version.php
+│   └── t_config.php
+├── trader2
+│   ├── ajax
+│   ├── functions.inc.php
+│   ├── index.php
+│   ├── js
+│   ├── lists
+│   │   └── trades.php
+│   ├── pages
+│   │   ├── home.php
+│   │   └── list_trades.php
+│   └── t_config.php
+└── trader_client
+    ├── check_permission.php
+    ├── config.php
+    ├── db.txt
+    ├── functions.php
+    ├── index.php
+    ├── js
+    │   └── form_setting.js
+    ├── list
+    │   ├── home_array.php
+    │   ├── investment_array.php
+    │   └── trades_array.php
+    ├── listrs
+    │   └── trades2.php
+    ├── login.php
+    ├── login2.php
+    ├── logout.php
+    ├── pages
+    │   ├── chart_data.php
+    │   ├── charts.php
+    │   ├── home.php
+    │   ├── settings.php
+    │   ├── settings_save_data.php
+    │   ├── trades.php
+    │   └── trades2.php
+    └── user_impersonation.php
+
+74 directories, 339 files

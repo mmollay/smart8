@@ -3,26 +3,21 @@
  * Newsletter Versand Script
  * Nutzbar sowohl als Cron-Job als auch für manuellen Versand
  */
-// Verhindere direkte Ausgaben vor dem JSON-Response
 ob_start();
 
-// Fehlerberichterstattung für Debugging
 error_reporting(E_ALL);
-ini_set('display_errors', 0); // Keine Fehler direkt ausgeben
-ini_set('log_errors', 1);     // Fehler loggen
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
-// Start time für Performance-Tracking
 $startTime = microtime(true);
 
 // Basis-Einstellungen
-set_time_limit(300); // 5 Minuten maximale Ausführungszeit
+set_time_limit(300);
 ini_set('memory_limit', '256M');
 date_default_timezone_set('Europe/Vienna');
 
-// Erkennung ob Cron oder manueller Aufruf
 $isCron = php_sapi_name() === 'cli';
 
-// Response-Array für manuellen Aufruf
 $response = [
     'success' => false,
     'message' => '',
@@ -30,20 +25,16 @@ $response = [
     'log' => []
 ];
 
-// Pfade definieren
 define('BASE_PATH', dirname(__DIR__));
 $logDir = BASE_PATH . '/logs';
 $tmpDir = BASE_PATH . '/tmp';
 
-// Logging-Funktion
 function writeLog($message, $type = 'INFO')
 {
     global $logDir, $isCron, $response;
-
     $timestamp = date('Y-m-d H:i:s');
     $logMessage = "[$timestamp][$type] $message";
 
-    // Für Cron in Datei schreiben
     if ($isCron) {
         if (!is_dir($logDir)) {
             mkdir($logDir, 0755, true);
@@ -51,30 +42,34 @@ function writeLog($message, $type = 'INFO')
         $logFile = $logDir . '/cron_' . date('Y-m-d') . '.log';
         file_put_contents($logFile, $logMessage . "\n", FILE_APPEND);
     }
-
-    // Für manuellen Aufruf ins Response-Array
     $response['log'][] = $logMessage;
 }
 
-// Start des Scripts
 writeLog("Start des Newsletter-Versands");
 
 try {
-    // Erforderliche Dateien einbinden
     require_once(BASE_PATH . '/n_config.php');
     require_once(BASE_PATH . '/classes/EmailService.php');
     require_once(BASE_PATH . '/classes/PlaceholderService.php');
 
-    // Hole den aktuellsten aktiven Newsletter
-    $result = $db->query("
+    // API-Konfiguration prüfen
+    if (empty($mailjetConfig['api_key']) || empty($mailjetConfig['api_secret'])) {
+        throw new Exception('Mailjet API Konfiguration fehlt');
+    }
+
+    // Hole den aktuellsten aktiven Newsletter für den aktuellen User
+    $stmt = $db->prepare("
         SELECT DISTINCT ec.id as content_id
         FROM email_jobs ej
         JOIN email_contents ec ON ej.content_id = ec.id
         WHERE ej.status = 'pending'
+        AND ec.user_id = ?
         ORDER BY ej.created_at DESC
         LIMIT 1
     ");
-
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $activeNewsletter = $result->fetch_assoc();
 
     if (!$activeNewsletter) {
@@ -88,10 +83,15 @@ try {
     writeLog("Aktiver Newsletter gefunden: ID " . $content_id);
 
     // Services initialisieren
-    $emailService = new EmailService($db, $apiKey, $apiSecret, $uploadBasePath);
+    $emailService = new EmailService(
+        $db,
+        $mailjetConfig['api_key'],
+        $mailjetConfig['api_secret'],
+        $uploadBasePath
+    );
     $placeholderService = PlaceholderService::getInstance();
 
-    // Ausstehende E-Mails abrufen
+    // Ausstehende E-Mails für den aktuellen User abrufen
     $stmt = $db->prepare("
         SELECT 
             ej.*,
@@ -113,12 +113,15 @@ try {
         JOIN senders s ON ej.sender_id = s.id
         JOIN recipients r ON ej.recipient_id = r.id
         WHERE ej.status = 'pending'
-        AND ej.content_id = ?
+        AND ec.user_id = ?
+        AND ec.id = ?
+        AND s.user_id = ?
+        AND r.user_id = ?
         ORDER BY ej.created_at ASC
         LIMIT 50
     ");
 
-    $stmt->bind_param("i", $content_id);
+    $stmt->bind_param("iiii", $userId, $content_id, $userId, $userId);
     $stmt->execute();
     $jobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $totalJobs = count($jobs);
@@ -194,8 +197,9 @@ try {
                         message_id = ?,
                         updated_at = NOW()
                     WHERE id = ?
+                    AND content_id IN (SELECT id FROM email_contents WHERE user_id = ?)
                 ");
-                $stmt->bind_param("si", $result['message_id'], $job['id']);
+                $stmt->bind_param("sii", $result['message_id'], $job['id'], $userId);
                 $stmt->execute();
 
                 // Status loggen
@@ -213,8 +217,7 @@ try {
                 throw new Exception($result['error'] ?? 'Unbekannter Fehler');
             }
 
-            // Kleine Pause zwischen E-Mails
-            usleep(100000); // 100ms
+            usleep(100000); // 100ms Pause zwischen E-Mails
 
         } catch (Exception $e) {
             $failCount++;
@@ -230,9 +233,10 @@ try {
                     error_message = ?,
                     updated_at = NOW()
                 WHERE id = ?
+                AND content_id IN (SELECT id FROM email_contents WHERE user_id = ?)
             ");
             $errorMessageDb = substr($errorMessage, 0, 255);
-            $stmt->bind_param("si", $errorMessageDb, $job['id']);
+            $stmt->bind_param("sii", $errorMessageDb, $job['id'], $userId);
             $stmt->execute();
         }
     }
@@ -240,28 +244,30 @@ try {
     // Newsletter-Status aktualisieren wenn alle Jobs abgearbeitet sind
     $stmt = $db->prepare("
         SELECT COUNT(*) as remaining
-        FROM email_jobs
-        WHERE content_id = ?
-        AND status = 'pending'
+        FROM email_jobs ej
+        JOIN email_contents ec ON ej.content_id = ec.id
+        WHERE ec.id = ?
+        AND ec.user_id = ?
+        AND ej.status = 'pending'
     ");
-    $stmt->bind_param("i", $content_id);
+    $stmt->bind_param("ii", $content_id, $userId);
     $stmt->execute();
     $remaining = $stmt->get_result()->fetch_assoc()['remaining'];
 
     if ($remaining == 0) {
         $stmt = $db->prepare("
             UPDATE email_contents 
-            SET send_status = 1
+            SET send_status = 2
             WHERE id = ?
+            AND user_id = ?
         ");
-        $stmt->bind_param("i", $content_id);
+        $stmt->bind_param("ii", $content_id, $userId);
         $stmt->execute();
         writeLog("Newsletter ID $content_id vollständig versendet");
     }
 
     writeLog("Versand abgeschlossen. Erfolge: $successCount, Fehler: $failCount");
 
-    // Response für manuellen Aufruf vorbereiten
     $response['success'] = true;
     $response['message'] = "Versand gestartet";
     $response['statistics'] = [
@@ -278,7 +284,6 @@ try {
         $response['message'] = "Fehler: " . $e->getMessage();
     }
 
-    // Admin benachrichtigen
     if (isset($adminEmail)) {
         mail(
             $adminEmail,
@@ -286,21 +291,16 @@ try {
             "Fehler im Newsletter-Versand:\n\n" . $e->getMessage()
         );
     }
-
 } finally {
-    // Aufräumen
     if (isset($db) && $db instanceof mysqli) {
         $db->close();
     }
 
-    // Puffer leeren und Output kontrollieren
     $output = ob_get_clean();
     if (!empty($output)) {
-        // Wenn es unerwartete Ausgaben gab, diese loggen
         error_log("Unerwartete Ausgabe vor JSON: " . $output);
     }
 
-    // Ausgabe für manuellen Aufruf
     if (!$isCron) {
         header('Content-Type: application/json');
         echo json_encode($response, JSON_PRETTY_PRINT);

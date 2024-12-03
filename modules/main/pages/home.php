@@ -1,54 +1,84 @@
 <?php
-include(__DIR__ . '/../../../config.php');
+require_once(__DIR__ . '/../../../DashboardClass.php');
 
-$set_module['faktura'] = true;
-$set_module['faktura2'] = true;
-$set_module['newsletter'] = true;
-$set_module['service'] = true;
-$set_module['trader'] = true;
-$set_module['trader2'] = true;
+// Dashboard-Instanz erstellen
+$dashboard = new Dashboard($title, $db, $_SESSION['user_id'], '1.0.0', 'main');
 
-// $set_module['userlist'] = true;
-// $set_module['setting'] = true;
-
+// Content Header
 $content = "<div align='center'>
-    <img src='../../img/logo.png' alt='Logo' style='width: 200px; height: auto;'><br><br>
+   <img src='../../img/logo.png' alt='Logo' style='width: 200px; height: auto;'><br><br>
 </div>";
 
 $content .= "<div class='ui link cards centered'>";
 
-// Definition der Module
-$modules = [
-    'newsletter' => ["Newsletter", 'send outline', '', '../newsletter/', 'Versende wichtige Mail an deine Newsletterliste'],
-    'faktura' => ["Faktura", 'book', '', '../faktura/', 'Deine Buchhaltung immer im Griff'],
-    'faktura2' => ["FakturaV2", 'book', '', '../faktura2/', 'Deine Buchhaltung immer im Griff'],
-    'trader' => ["Trader", 'wallet', '', '../trader/', 'Make your mouney'],
-    'trader2' => ["Trader2", 'wallet', '', '../trader2/', 'Make more mouney'],
-    //'learning' => ["Learning", 'student', '', 'modules/learning/', 'Für Prüfungen üben'],
-    // 'kmlist' => ["KM-Liste", 'road', '', 'modules/km/', 'Jeder Kilometer zählt :)'],
-    // 'map' => ["Fruit-Map", 'fruit-apple', '', 'modules/map/', 'Maps'],
-    // 'userlist' => ["User/Domain", 'list', '', 'modules/userlist/', 'User/Domain und andere Übersichten'],
-    // 'setting' => ["Einstellungen", 'settings layout', '', 'modules/setting/', 'Registrierseite bearbeiten und andere Einstellungen'],
-    'service' => ["Service", 'configure', '', '../service/', 'Sicherheit, Reinigung, Überprüfungen'],
-    // 'paneon' => ["Paneon", 'blue dove', '', 'modules/paneon/', 'Paneon-Userverwaltung'],
-];
+if ($isSuperuser) {
+    // Load all active modules for superuser
+    $query = "
+        SELECT 
+            module_id,
+            name,
+            identifier,
+            description,
+            icon
+        FROM modules 
+        WHERE status = 1
+        ORDER BY menu_order, name
+    ";
 
-foreach ($modules as $module => $fields) {
-    if (isset($set_module[$module])) {
-        $content .= call_field_small(...$fields);
+    $result = $db->query($query);
+
+    while ($module = $result->fetch_assoc()) {
+        $content .= call_field_small(
+            $module['name'],
+            $module['icon'],
+            '',
+            '../' . $module['identifier'] . '/',
+            $module['description']
+        );
+    }
+} else {
+    // Load only assigned modules for regular users
+    $query = "
+        SELECT DISTINCT 
+            m.module_id,
+            m.name,
+            m.identifier,
+            m.description,
+            m.icon
+        FROM modules m
+        INNER JOIN user_modules um ON m.module_id = um.module_id
+        WHERE um.user_id = ? 
+        AND um.status = 1
+        AND m.status = 1
+        ORDER BY m.menu_order, m.name
+    ";
+
+    $stmt = $db->prepare($query);
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($module = $result->fetch_assoc()) {
+        $content .= call_field_small(
+            $module['name'],
+            $module['icon'],
+            '',
+            '../' . $module['identifier'] . '/',
+            $module['description']
+        );
     }
 }
 
 $content .= "</div><br>";
 
-// Modal hinzufügen
+// Modal für neue Webseite
 $content .= "<div class='ui modal new_page'>
-    <div class='header'>Neue Webseite anlegen</div>
-    <div class='content'></div>
-    <div class='actions'>
-        <div class='ui button green approve'><i class='icon checkmark'></i> Webseite erzeugen</div>
-        <div class='ui button deny'>Schließen</div>
-    </div>
+   <div class='header'>Neue Webseite anlegen</div>
+   <div class='content'></div>
+   <div class='actions'>
+       <div class='ui button green approve'><i class='icon checkmark'></i> Webseite erzeugen</div>
+       <div class='ui button deny'>Schließen</div>
+   </div>
 </div>";
 
 echo $content;

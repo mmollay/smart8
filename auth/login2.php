@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once __DIR__ . '/../src/bootstrap.php';
 require_once __DIR__ . '/../src/Core/Database.php';
 require_once __DIR__ . '/../src/Services/AuthService.php';
@@ -8,6 +11,9 @@ use Smart\Services\AuthService;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        // Debug-Ausgabe
+        error_log('POST data: ' . print_r($_POST, true));
+
         // Datenbankverbindung erstellen
         $dbConfig = require __DIR__ . '/../config/database.php';
         $database = Database::getInstance($dbConfig);
@@ -15,7 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // AuthService initialisieren
         $auth = new AuthService($database);
 
-        $username = $_POST['username'] ?? '';
+        // Beachte: Das Feld heißt 'email' im Formular, nicht 'username'
+        $username = $_POST['email'] ?? '';  // Geändert von 'username' zu 'email'
         $password = $_POST['password'] ?? '';
         $remember = isset($_POST['remember']) && $_POST['remember'] === 'true';
 
@@ -37,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'message' => $result['message'] ?? 'Ungültige Anmeldedaten'
             ]);
         }
-
     } catch (Exception $e) {
         error_log("Login error: " . $e->getMessage());
         header('Content-Type: application/json');

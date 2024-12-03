@@ -4,12 +4,18 @@ include(__DIR__ . '/../../../smartform2/FormGenerator.php');
 include(__DIR__ . '/../components/placeholders.php');
 include(__DIR__ . '/../components/editor_config.php');
 
+// Initial Newsletter erstellen oder prüfen
 if (!isset($_POST['update_id'])) {
-    $sql = "INSERT INTO email_contents (subject, message, sender_id) VALUES ('Neue Nachricht', 'Neuer Text', 1)";
+    $sql = "INSERT INTO email_contents (subject, message, sender_id, user_id) VALUES ('Neue Nachricht', 'Neuer Text', 1, '$userId')";
     $db->query($sql);
     $update_id = $db->insert_id;
 } else {
     $update_id = $_POST['update_id'];
+    // Prüfe ob der Newsletter dem User gehört
+    $check = $db->query("SELECT id FROM email_contents WHERE id = '$update_id' AND user_id = '$userId'");
+    if ($check->num_rows === 0) {
+        die("Keine Berechtigung");
+    }
 }
 
 $formGenerator = new FormGenerator();
@@ -70,7 +76,7 @@ $formGenerator->addField([
     'type' => 'dropdown',
     'name' => 'tags',
     'label' => 'Gruppen',
-    'array' => getGroups($db),
+    'array' => getAllGroups($db),
     'multiple' => true,
     'required' => true,
     'error_message' => 'Bitte mindestens eine Gruppe auswählen',
@@ -152,15 +158,16 @@ $formGenerator->addButtonElement([
 ]);
 
 if ($update_id) {
-    $sql = "SELECT * FROM email_contents WHERE id = ?";
-    $formGenerator->loadValuesFromDatabase($db, $sql, [$update_id]);
+    $sql = "SELECT * FROM email_contents WHERE id = '$update_id' AND user_id = '$userId'";
+    $formGenerator->loadValuesFromDatabase($db, $sql);
 }
 
 // Helper functions
 function getEmailTemplates($db)
 {
+    global $userId;
     $templates = array();
-    $sql = "SELECT id, name FROM email_templates ORDER BY name ASC";
+    $sql = "SELECT id, name FROM email_templates WHERE user_id = '$userId' ORDER BY name ASC";
     $result = $db->query($sql);
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -172,37 +179,41 @@ function getEmailTemplates($db)
 
 function getSenders($db)
 {
+    global $userId;
     $array_senders = array();
-    $sql = "SELECT id, first_name, last_name FROM senders where email != '' ORDER BY email ASC";
-    $result = $db->query($sql);
+    $sql = "SELECT id, first_name, last_name,email FROM senders WHERE email != '' AND user_id = ? ORDER BY email ASC";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $array_senders[$row['id']] = $row['first_name'] . ' ' . $row['last_name'];
+            $array_senders[$row['id']] = $row['first_name'] . ' ' . $row['last_name'] . ' (' . $row['email'] . ')';
         }
     }
     return $array_senders;
 }
 
-function getGroups($db)
-{
-    $array_groups = array();
-    $sql = "SELECT g.id, g.name, g.color, COUNT(rg.recipient_id) as email_count 
-            FROM groups g
-            LEFT JOIN recipient_group rg ON g.id = rg.group_id
-            GROUP BY g.id
-            ORDER BY g.name ASC";
+// function getGroups($db)
+// {
+//     $array_groups = array();
+//     $sql = "SELECT g.id, g.name, g.color, COUNT(rg.recipient_id) as email_count 
+//             FROM groups g
+//             LEFT JOIN recipient_group rg ON g.id = rg.group_id
+//             GROUP BY g.id
+//             ORDER BY g.name ASC";
 
-    $result = $db->query($sql);
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $color_class = $row['color'];
-            $email_count = $row['email_count'];
-            $array_groups[$row['id']] = '<div class="ui mini empty circular ' . $color_class . ' label"> </div>' .
-                $row['name'] . ' (' . $email_count . ')</b>';
-        }
-    }
-    return $array_groups;
-}
+//     $result = $db->query($sql);
+//     if ($result->num_rows > 0) {
+//         while ($row = $result->fetch_assoc()) {
+//             $color_class = $row['color'];
+//             $email_count = $row['email_count'];
+//             $array_groups[$row['id']] = '<div class="ui mini empty circular ' . $color_class . ' label"> </div>' .
+//                 $row['name'] . ' (' . $email_count . ')</b>';
+//         }
+//     }
+//     return $array_groups;
+// }
 
 function getSelectedEmailContentGroups($db, $email_content_id)
 {

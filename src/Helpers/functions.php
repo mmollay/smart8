@@ -1,4 +1,4 @@
-<?
+<?php
 function checkRememberMeToken($db)
 {
     if (!isset($_SESSION['client_id']) && isset($_COOKIE['remember_token'])) {

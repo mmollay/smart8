@@ -30,12 +30,16 @@ $query = "
         groups g
         LEFT JOIN recipient_group rg ON g.id = rg.group_id
         LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '$userId'
     GROUP BY 
         g.id
 ";
 
 $listGenerator->setSearchableColumns(['g.name']); // Ändern Sie 'group_name' zu 'g.name'
 $listGenerator->setDatabase($db, $query, true);
+
+
 
 // Externe Buttons
 $listGenerator->addExternalButton('add', [

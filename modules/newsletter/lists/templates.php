@@ -36,6 +36,8 @@ $query = "
         , 0) as usage_count
     FROM 
         email_templates t
+        WHERE 
+        t.user_id = '$userId'
 ";
 
 // Wenn eine Suche aktiv ist, wird diese in WHERE-Bedingungen umgewandelt

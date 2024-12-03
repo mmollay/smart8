@@ -1,6 +1,6 @@
 <?
-include (__DIR__ . '/../../../config.php');
-include (__DIR__ . '/../../../../smartform/include_form.php');
+include(__DIR__ . '/../../../config.php');
+include(__DIR__ . '/../../../../smartform/include_form.php');
 
 //Hedging Strategy
 $arr['form'] = array('action' => "ajax/settings_save.php", 'id' => 'form_setting', 'class' => 'center segment', 'width' => '800');
@@ -8,7 +8,7 @@ $arr['sql'] = array('query' => "SELECT *,firstname first_name, secondname last_n
 $arr['ajax'] = array('success' => "after_form_setting(data)", 'dataType' => "json");
 
 // Anpassungen für die Ausgabe der E-Mail-Adresse
-$arr['field']['email'] = array('type' => 'label', 'label' => 'E-Mail');
+$arr['field']['email'] = array('type' => 'label', 'label' => 'E-Mail', 'value' => $userDetails['user_name']);
 
 // Fortführung der Feldkonfiguration wie zuvor
 $arr['field']['first_name'] = array('type' => 'input', 'label' => 'Vorname', 'focus' => true);

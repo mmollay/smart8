@@ -1,23 +1,17 @@
 <?php
 // config.php
-
-// Basis-Einstellungen
 error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', 1);
 
-// Autoloader und Funktionen einbinden
 require_once __DIR__ . '/vendor/autoload.php';
 include(__DIR__ . "/src/Helpers/functions.php");
 
 try {
-    // .env Datei laden
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
 
-    // Datenbank-Konfiguration laden
     $dbConfig = require_once __DIR__ . '/config/database.php';
 
-    // Session starten
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -34,28 +28,90 @@ try {
         throw new Exception("Datenbankverbindung fehlgeschlagen: " . mysqli_connect_error());
     }
 
-    // Zeichensatz setzen
     mysqli_set_charset($db, 'utf8mb4');
 
-    // Basis-Konstanten definieren
     define('APP_ROOT', __DIR__);
     define('WEB_ROOT', $_ENV['APP_ENV'] === 'development' ? '/smart8' : '');
     define('SMARTFORM_PATH', WEB_ROOT . '/smartform2');
 
-    // Session und Benutzer-Authentifizierung
-    $userId = $_SESSION['client_id'] ?? null;
+    // Benutzer-Authentifizierung und Zugriffskontrolle
+    $userId = $_SESSION['user_id'] = $_SESSION['client_id'] ?? null;
+
     if (!$userId) {
         $userId = checkRememberMeToken($db) ? $_SESSION['client_id'] : null;
     }
 
-    // Benutzerdetails laden wenn authentifiziert
+    // Benutzerdetails laden
     $userDetails = $userId ? getUserDetails($userId, $db) : null;
+    $isSuperuser = $userDetails['superuser'] ?? false;
 
-    // Globale Variablen für Abwärtskompatibilität
+    // Modulzugriffssteuerung
+    function checkModuleAccess($moduleIdentifier)
+    {
+        global $db, $userId, $isSuperuser;
+
+        // Main-Modul ist immer verfügbar
+        if ($moduleIdentifier === 'main') {
+            return true;
+        }
+
+        if ($isSuperuser) {
+            return true;
+        }
+
+        if (!$userId) {
+            return false;
+        }
+
+        $query = "
+            SELECT 1 
+            FROM modules m
+            JOIN user_modules um ON m.module_id = um.module_id
+            WHERE m.identifier = ? 
+            AND um.user_id = ?
+            AND um.status = 1
+            AND m.status = 1
+            LIMIT 1
+        ";
+
+        $stmt = $db->prepare($query);
+        $stmt->bind_param('si', $moduleIdentifier, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        return $result->num_rows > 0;
+    }
+
+    // Automatische Zugriffsprüfung für das aktuelle Modul
+    function enforceModuleAccess()
+    {
+        $currentPath = $_SERVER['SCRIPT_NAME'];
+        $pathParts = explode('/', $currentPath);
+
+        // Suche nach dem Modulnamen im Pfad
+        $moduleIndex = array_search('modules', $pathParts);
+        if ($moduleIndex !== false && isset($pathParts[$moduleIndex + 1])) {
+            $currentModule = $pathParts[$moduleIndex + 1];
+
+            // Main-Modul ist immer verfügbar
+            if ($currentModule === 'main') {
+                return true;
+            }
+
+            if (!checkModuleAccess($currentModule)) {
+                // Weiterleitung zur Fehlerseite bei fehlendem Zugriff
+                header("Location: " . WEB_ROOT . "/auth/no_access.php");
+                exit;
+            }
+        }
+    }
+
+    // Führe die Zugriffsprüfung automatisch durch
+    enforceModuleAccess();
+
     $GLOBALS['connection'] = $db;
 
 } catch (Exception $e) {
-    // Fehlerbehandlung
     error_log("Konfigurationsfehler: " . $e->getMessage());
 
     if ($_ENV['APP_ENV'] === 'development') {
@@ -64,7 +120,6 @@ try {
         die("Ein Fehler ist aufgetreten. Bitte kontaktieren Sie den Administrator.");
     }
 }
-
 // Hilfsfunktionen
 
 /**
@@ -109,5 +164,6 @@ function shutdown(): void
     }
 }
 
+
 // Shutdown-Funktion registrieren
-register_shutdown_function('shutdown');
+//register_shutdown_function('shutdown');

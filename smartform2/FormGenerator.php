@@ -636,6 +636,7 @@ class FormGenerator
         $id = $field['id'] ?? $name;
         $label = $field['label'] ?? '';
         $checked = !empty($field['checked']) ? 'checked' : '';
+
         $fieldClass = $field['class'] ?? '';
         $style = $field['style'] ?? 'standard'; // standard, toggle, slider, radio, invisible
 
@@ -803,15 +804,21 @@ class FormGenerator
                                    </div>";
                 break;
             case 'checkbox':
+                if ($value) {
+                    $field['checked'] = true;
+                }
                 $fieldHtml .= $this->generateCheckbox($field);
                 break;
             case 'radio':
                 $fieldHtml .= $this->generateRadioButtons($field);
                 break;
             case 'grouped_checkbox':
+            case 'checkbox_group':
                 $fieldHtml .= $this->generateGroupedCheckboxes($field);
                 break;
             case 'dropdown':
+            case 'select':
+
                 $selectedValues = isset($field['value']) ? (is_array($field['value']) ? $field['value'] : [$field['value']]) : [];
                 $multiple = !empty($field['multiple']);
                 $nameAttr = $multiple ? "{$field['name']}[]" : $field['name'];
@@ -847,11 +854,15 @@ class FormGenerator
                 $fieldHtml .= "<div class='default text'>" . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . "</div>";
                 $fieldHtml .= "<div class='menu'>";
 
-                foreach ($field['array'] as $optionValue => $optionLabel) {
-                    $selected = in_array($optionValue, $selectedValues) ? ' selected' : '';
-                    $fieldHtml .= "<div class='item{$selected}' data-value=\"" . htmlspecialchars($optionValue, ENT_QUOTES, 'UTF-8') . "\">{$optionLabel}</div>";
-                }
+                if (!empty($field['options']))
+                    $field['array'] = $field['options'];
 
+                if ($field['array']) {
+                    foreach ($field['array'] as $optionValue => $optionLabel) {
+                        $selected = in_array($optionValue, $selectedValues) ? ' selected' : '';
+                        $fieldHtml .= "<div class='item{$selected}' data-value=\"" . htmlspecialchars($optionValue, ENT_QUOTES, 'UTF-8') . "\">{$optionLabel}</div>";
+                    }
+                }
                 $fieldHtml .= "</div></div>";
                 break;
 
@@ -949,6 +960,9 @@ class FormGenerator
                     ], $field['config']);
                 }
                 break;
+            case 'password':
+                $fieldHtml .= $this->generatePasswordField($field);
+                break;
             case 'html':
                 return $field['content'];
             case 'table':
@@ -970,6 +984,232 @@ class FormGenerator
 
         $fieldHtml .= "</div>\n";
         return $fieldHtml;
+    }
+
+    private function generatePasswordField($field)
+    {
+        $minLength = $field['minLength'] ?? 8;
+        $maxLength = $field['maxLength'] ?? '';
+        $minLengthAttr = $minLength ? "minlength='{$minLength}'" : '';
+        $maxLengthAttr = $maxLength ? "maxlength='{$maxLength}'" : '';
+        $required = !empty($field['required']) ? 'required' : '';
+        $placeholder = $field['placeholder'] ?? 'Passwort eingeben';
+        $fieldId = $field['name'] . '_' . uniqid(); // Nutze name statt id
+        $class = $field['class'] ?? ''; // Default leerer String
+        $label = $field['label'] ?? 'Passwort';
+
+        $html = "<label>{$label}</label>
+        <div class='ui action input'>
+            <input type='password' 
+                id='{$fieldId}' 
+                name='{$field['name']}' 
+                placeholder='{$placeholder}' 
+                {$minLengthAttr} 
+                {$maxLengthAttr} 
+                {$required} 
+                class='{$class}'>";
+
+        // Show/Hide Password Button mit Tooltip
+        $html .= "<button type='button' 
+                        class='ui icon button toggle-password' 
+                        onclick='togglePasswordVisibility(\"{$fieldId}\")' 
+                        data-tooltip='Passwort anzeigen/verbergen' 
+                        data-position='top right'>
+            <i class='eye icon'></i>
+        </button>";
+
+        $html .= "</div>";
+
+        // Passwort-Stärke Anzeige
+        $html .= "<div class='ui tiny progress' data-value='0' data-total='100' id='{$fieldId}_strength'>
+            <div class='bar'>
+                <div class='progress'></div>
+            </div>
+            <div class='label'>Passwort-Stärke: <span class='strength-text'>Nicht bewertet</span></div>
+        </div>";
+
+        // Passwort-Regeln anzeigen
+        $html .= "
+        <div class='ui small message password-rules'>
+            <div class='header'>Passwort-Anforderungen:</div>
+            <ul class='ui list'>
+                <li class='rule-length'>Mindestens {$minLength} Zeichen</li>
+                <li class='rule-uppercase'>Mindestens ein Großbuchstabe</li>
+                <li class='rule-lowercase'>Mindestens ein Kleinbuchstabe</li>
+                <li class='rule-number'>Mindestens eine Zahl</li>
+                <li class='rule-special'>Mindestens ein Sonderzeichen</li>
+            </ul>
+        </div>";
+
+        // JavaScript für die Passwort-Funktionalität
+        $html .= $this->getPasswordJS($fieldId, $minLength);
+
+        // CSS für die Passwort-Regeln
+        $html .= $this->getPasswordCSS();
+
+        return $html;
+    }
+
+    private function getPasswordJS($fieldId, $minLength)
+    {
+        return "
+        <script>
+        (function() {
+            function togglePasswordVisibility(fieldId) {
+                const field = document.getElementById(fieldId);
+                const button = field.nextElementSibling;
+                const icon = button.querySelector('i');
+                
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    icon.classList.remove('eye');
+                    icon.classList.add('eye', 'slash');
+                    button.setAttribute('data-tooltip', 'Passwort verbergen');
+                } else {
+                    field.type = 'password';
+                    icon.classList.remove('eye', 'slash');
+                    icon.classList.add('eye');
+                    button.setAttribute('data-tooltip', 'Passwort anzeigen');
+                }
+            }
+     
+            function calculatePasswordStrength(password) {
+                let strength = 0;
+                let feedback = '';
+     
+                // Mindestlänge
+                if (password.length >= {$minLength}) {
+                    strength += 20;
+                    feedback = 'Schwach';
+                }
+     
+                // Enthält Kleinbuchstaben
+                if (/[a-z]/.test(password)) {
+                    strength += 20;
+                    feedback = 'Mäßig';
+                }
+     
+                // Enthält Großbuchstaben
+                if (/[A-Z]/.test(password)) {
+                    strength += 20;
+                    feedback = 'Gut';
+                }
+     
+                // Enthält Zahlen
+                if (/\d/.test(password)) {
+                    strength += 20;
+                    feedback = 'Stark';
+                }
+     
+                // Enthält Sonderzeichen
+                if (/[^A-Za-z0-9]/.test(password)) {
+                    strength += 20;
+                    feedback = 'Sehr stark';
+                }
+     
+                return { strength, feedback };
+            }
+     
+            // Passwortfeld überwachen
+            const passwordField = document.getElementById('{$fieldId}');
+            if (passwordField) {
+                passwordField.addEventListener('input', function() {
+                    const password = this.value;
+                    const rules = this.closest('.field').querySelector('.password-rules');
+                    const strengthProgress = $('#{$fieldId}_strength');
+                    const strengthResult = calculatePasswordStrength(password);
+                    
+                    // Update Passwort-Stärke
+                    strengthProgress.progress({
+                        value: strengthResult.strength
+                    });
+                    strengthProgress.find('.strength-text').text(strengthResult.feedback);
+     
+                    // Farbe der Fortschrittsleiste anpassen
+                    const bar = strengthProgress.find('.bar');
+                    if (strengthResult.strength <= 20) {
+                        bar.css('background-color', '#DB2828'); // Rot
+                    } else if (strengthResult.strength <= 40) {
+                        bar.css('background-color', '#F2711C'); // Orange
+                    } else if (strengthResult.strength <= 60) {
+                        bar.css('background-color', '#FBBD08'); // Gelb
+                    } else if (strengthResult.strength <= 80) {
+                        bar.css('background-color', '#B5CC18'); // Olivgrün
+                    } else {
+                        bar.css('background-color', '#21BA45'); // Grün
+                    }
+                    
+                    // Update Regeln
+                    if (rules) {
+                        // Explizite Längenprüfung
+                        const lengthRule = rules.querySelector('.rule-length');
+                        if (password.length >= {$minLength}) {
+                            lengthRule.classList.add('green');
+                        } else {
+                            lengthRule.classList.remove('green');
+                        }
+                        
+                        // Andere Regeln prüfen
+                        rules.querySelector('.rule-uppercase').classList.toggle('green', /[A-Z]/.test(password));
+                        rules.querySelector('.rule-lowercase').classList.toggle('green', /[a-z]/.test(password));
+                        rules.querySelector('.rule-number').classList.toggle('green', /[0-9]/.test(password));
+                        rules.querySelector('.rule-special').classList.toggle('green', /[^A-Za-z0-9]/.test(password));
+                    }
+                });
+            }
+     
+            // Funktion global verfügbar machen
+            window.togglePasswordVisibility = togglePasswordVisibility;
+        })();
+        </script>";
+    }
+
+    private function getPasswordCSS()
+    {
+        return "
+        <style>
+        .password-rules .green {
+            color: #21ba45;
+        }
+        .password-rules .green:before {
+            content: '✓ ';
+        }
+        .ui.progress .bar {
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .password-rules .ui.list {
+            margin-top: 0.5em;
+        }
+        .password-rules .ui.list li {
+            margin-bottom: 0.3em;
+        }
+        </style>";
+    }
+
+    public function setFieldValue($fieldName, $value)
+    {
+        // Array für grouped_checkbox Felder
+        if (is_array($value)) {
+            $this->values[$fieldName] = $value;
+        } else {
+            $this->values[$fieldName] = (string) $value;
+        }
+
+        // Aktualisiere Werte in den bestehenden Feldern
+        foreach ($this->fields as &$field) {
+            if (isset($field['name']) && $field['name'] === $fieldName) {
+                $field['value'] = $value;
+            }
+        }
+
+        // Aktualisiere auch Werte in Tab-Feldern
+        foreach ($this->tabFields as &$tabFields) {
+            foreach ($tabFields as &$field) {
+                if (isset($field['name']) && $field['name'] === $fieldName) {
+                    $field['value'] = $value;
+                }
+            }
+        }
     }
 
     private function generateTableField($field)

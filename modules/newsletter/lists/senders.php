@@ -49,6 +49,8 @@ $query = "
         gender, 
         comment
     FROM senders
+
+	WHERE user_id = '$userId'
     GROUP BY id
 ";
 

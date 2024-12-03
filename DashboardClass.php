@@ -13,12 +13,16 @@ define('SMARTFORM_PATH', WEB_ROOT . '/smartform2');
 //Top-Leister generell
 $dashboard = new Dashboard($title, $db, $userId, $version, $moduleName);
 
-$user = $userDetails['firstname'] . " " . $userDetails['secondname'];
+if ($userDetails['firstname'] || $userDetails['secondname'])
+    $user = $userDetails['firstname'] . " " . $userDetails['secondname'];
+else
+    $user = $userDetails['user_name'];
 
 $dashboard->addMenu('mainMenu', 'ui huge  top fixed menu', false);
 $dashboard->addMenuItem('mainMenu', "main", "../main/index.php", "", "tachometer alternate icon blue icon", "Dashboard", "left", "", false, "", true);
+
 $dashboard->addMenuItem('mainMenu', $moduleName, "home", $title, "building icon", "Startseite laden");
-$dashboard->addMenuItem('mainMenu', "main", "settings", $user, "", "User Einstellungen", "right");
+$dashboard->addMenuItem('mainMenu', "main", "settings", $user, "", "User Einstellungen (" . $userDetails['user_name'] . ")", "right");
 //$dashboard->addMenuItem('mainMenu', "main", "../../logout.php", "Abmelden", "sign red out icon", "Abmelden", "right");
 $dashboard->addMenuItem('mainMenu', "main", "../../auth/logout.php", "Abmelden", "sign red out icon", "Abmelden", "right", "", false, "", true);
 
@@ -67,6 +71,8 @@ class Dashboard
     private $sidebarVisibleOnInit = false;
     private $menuClass = 'ui green top massive fixed menu';
 
+    private $userPermissions = [];
+
     public function __construct($title, $db, $userId = null, $version = "1.0", $moduleName = "")
     {
         // Bestimme den Web-Root basierend auf dem Server
@@ -81,6 +87,121 @@ class Dashboard
         $this->userId = $userId;
         $this->version = $version;
         $this->moduleName = $moduleName;
+
+        if ($userId) {
+            $this->loadUserPermissions($userId);
+        }
+    }
+
+    // In DashboardClass.php korrigieren:
+
+    private function loadUserPermissions($userId)
+    {
+        // Erst prüfen ob Benutzer Superuser ist
+        $stmt = $this->db->prepare("
+        SELECT superuser 
+        FROM user2company 
+        WHERE user_id = ?
+    ");
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            if ($row['superuser'] == 1) {
+                $this->userPermissions['is_superuser'] = true;
+                return;
+            }
+        }
+
+        // Vereinfachte Version für den Anfang
+        // Hier prüfen wir nur ob der User die Grundberechtigungen hat
+        $stmt = $this->db->prepare("
+        SELECT 
+            m.identifier as module_identifier,
+            um.status
+        FROM user_modules um
+        JOIN modules m ON m.module_id = um.module_id
+        WHERE um.user_id = ? 
+        AND um.status = 1
+    ");
+
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        while ($row = $result->fetch_assoc()) {
+            $moduleId = $row['module_identifier'];
+            // Standardberechtigungen setzen
+            $this->userPermissions[$moduleId] = ['view', 'edit', 'delete'];
+        }
+    }
+
+    // Die hasUserPermission Methode bleibt gleich
+    public function hasUserPermission($module, $permission)
+    {
+        // Superuser hat immer alle Rechte
+        if (isset($this->userPermissions['is_superuser'])) {
+            return true;
+        }
+
+        // Wenn noch keine Module zugewiesen sind, erstmal Standardrechte für 'main' setzen
+        if (empty($this->userPermissions)) {
+            $this->userPermissions['main'] = ['view', 'edit', 'delete'];
+        }
+
+        // Prüfen ob das Modul überhaupt zugewiesen ist
+        if (!isset($this->userPermissions[$module])) {
+            // Für das 'main' Modul immer true zurückgeben
+            if ($module === 'main') {
+                return true;
+            }
+            return false;
+        }
+
+        // Prüfen ob die spezifische Berechtigung vorhanden ist
+        return in_array($permission, $this->userPermissions[$module]);
+    }
+
+    /**
+     * Helper Methode um den aktuellen Berechtigungsstatus zu sehen
+     */
+    public function getCurrentPermissions()
+    {
+        return $this->userPermissions;
+    }
+
+    /**
+     * Gibt alle Berechtigungen eines Benutzers für ein Modul zurück
+     */
+    public function getUserModulePermissions($module)
+    {
+        if (isset($this->userPermissions['is_superuser'])) {
+            // Superuser hat alle verfügbaren Berechtigungen
+            $stmt = $this->db->prepare("
+                SELECT permission_key 
+                FROM module_permissions 
+                WHERE module_id = (SELECT module_id FROM modules WHERE identifier = ?)
+            ");
+            $stmt->bind_param('s', $module);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $permissions = [];
+            while ($row = $result->fetch_assoc()) {
+                $permissions[] = $row['permission_key'];
+            }
+            return $permissions;
+        }
+
+        return $this->userPermissions[$module] ?? [];
+    }
+
+    /**
+     * Prüft ob der Benutzer Superuser ist
+     */
+    public function isSuperUser()
+    {
+        return isset($this->userPermissions['is_superuser']);
     }
 
     private $sidebarConfig = [
@@ -536,5 +657,7 @@ class Dashboard
 
         $this->renderTemplate();
     }
+
+
 
 }

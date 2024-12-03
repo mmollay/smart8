@@ -49,12 +49,21 @@ class LogoutHandler
     private function clearRememberMeToken(): void
     {
         if ($this->userId) {
-            // Remember-Me Token aus der Datenbank entfernen
+            // Remember-Me Token aus der Datenbank entfernen - für beide Tabellen prüfen
             $stmt = $this->db->prepare("
-                UPDATE users 
-                SET remember_token = NULL, 
-                    remember_token_expires_at = NULL 
-                WHERE id = ?
+                UPDATE user_sessions 
+                SET token = NULL, 
+                    expires_at = NULL 
+                WHERE user_id = ?
+            ");
+            $stmt->bind_param("i", $this->userId);
+            $stmt->execute();
+
+            // Auch OAuth Token entfernen falls vorhanden
+            $stmt = $this->db->prepare("
+                UPDATE user2company 
+                SET google_id = NULL 
+                WHERE user_id = ?
             ");
             $stmt->bind_param("i", $this->userId);
             $stmt->execute();
@@ -122,7 +131,7 @@ class LogoutHandler
                     message,
                     created_at
                 ) VALUES (
-                    (SELECT email FROM users WHERE id = ?),
+                    (SELECT user_name FROM user2company WHERE user_id = ?),
                     ?,
                     ?,
                     ?,
@@ -154,7 +163,6 @@ if (
     !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
     strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
 ) {
-
     header('Content-Type: application/json');
     echo json_encode($result);
     exit;

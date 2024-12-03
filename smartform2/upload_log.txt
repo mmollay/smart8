@@ -1182,3 +1182,25 @@ File upload error:
 [2024-11-09 20:31:45] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
 [2024-11-09 20:31:45] File received: WhatsApp Image 2024-11-05 at 08.32.29.jpeg
 [2024-11-09 20:31:45] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/37096b1acb22fcf04ffe5e9183686f3d.jpeg
+[2024-11-26 23:24:01] POST data: Array
+(
+    [ckEditorConfig] => "uploads/"
+)
+
+[2024-11-26 23:24:01] FILES data: Array
+(
+    [upload] => Array
+        (
+            [name] => Bildschirmfoto 2024-11-26 um 21.14.20.png
+            [full_path] => Bildschirmfoto 2024-11-26 um 21.14.20.png
+            [type] => image/png
+            [tmp_name] => /Applications/XAMPP/xamppfiles/temp/php9CqTb1
+            [error] => 0
+            [size] => 397032
+        )
+
+)
+
+[2024-11-26 23:24:01] Base upload directory: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/
+[2024-11-26 23:24:01] File received: Bildschirmfoto 2024-11-26 um 21.14.20.png
+[2024-11-26 23:24:01] File uploaded successfully: /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/smartform2/uploads/59b689b8dc2437154add509d3b38a45d.png

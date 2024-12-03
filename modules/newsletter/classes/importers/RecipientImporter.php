@@ -2,6 +2,7 @@
 class RecipientImporter
 {
     private $db;
+    private $userId;
     private $allowedColumns = [
         'first_name' => 'Vorname',
         'last_name' => 'Nachname',
@@ -18,11 +19,26 @@ class RecipientImporter
 
     public function __construct($db)
     {
+        global $userId;
         $this->db = $db;
+        $this->userId = $userId;
     }
 
     public function processImport($file, $group_ids = [], $skipFirstRow = true, $delimiter = ',', $overwriteExisting = false)
     {
+        // Prüfe ob die Gruppen dem User gehören
+        if (!empty($group_ids)) {
+            $groupCheck = $this->db->prepare("SELECT COUNT(*) as count FROM groups WHERE id IN (" . implode(',', array_fill(0, count($group_ids), '?')) . ") AND user_id = ?");
+            $types = str_repeat('i', count($group_ids)) . 'i';
+            $params = array_merge($group_ids, [$this->userId]);
+            $groupCheck->bind_param($types, ...$params);
+            $groupCheck->execute();
+            $result = $groupCheck->get_result()->fetch_assoc();
+            if ($result['count'] != count($group_ids)) {
+                throw new Exception('Ungültige Gruppen ausgewählt');
+            }
+        }
+
         if (!is_uploaded_file($file['tmp_name'])) {
             throw new Exception('Keine Datei hochgeladen');
         }
@@ -99,6 +115,9 @@ class RecipientImporter
             }
         }
 
+        // Füge user_id hinzu
+        $recipientData['user_id'] = $this->userId;
+
         // Überprüfe ob mindestens E-Mail vorhanden ist
         if (empty($recipientData['email'])) {
             $this->errors[] = "Zeile übersprungen: Keine E-Mail-Adresse angegeben";
@@ -106,9 +125,9 @@ class RecipientImporter
             return;
         }
 
-        // Prüfe ob E-Mail bereits existiert
-        $stmt = $this->db->prepare("SELECT id FROM recipients WHERE email = ?");
-        $stmt->bind_param("s", $recipientData['email']);
+        // Prüfe ob E-Mail bereits existiert für diesen User
+        $stmt = $this->db->prepare("SELECT id FROM recipients WHERE email = ? AND user_id = ?");
+        $stmt->bind_param("si", $recipientData['email'], $this->userId);
         $stmt->execute();
         $result = $stmt->get_result();
         $existingUser = $result->fetch_assoc();
@@ -121,7 +140,7 @@ class RecipientImporter
                 $types = "";
 
                 foreach ($recipientData as $field => $value) {
-                    if ($field !== 'email') { // E-Mail nicht updaten, da sie als Identifier dient
+                    if ($field !== 'email' && $field !== 'user_id') { // E-Mail und user_id nicht updaten
                         $updateFields[] = "$field = ?";
                         $updateValues[] = $value;
                         $types .= "s";
@@ -129,22 +148,26 @@ class RecipientImporter
                 }
 
                 if (!empty($updateFields)) {
-                    $sql = "UPDATE recipients SET " . implode(', ', $updateFields) . " WHERE id = ?";
+                    $sql = "UPDATE recipients SET " . implode(', ', $updateFields) . " WHERE id = ? AND user_id = ?";
                     $stmt = $this->db->prepare($sql);
 
                     $updateValues[] = $existingUser['id'];
-                    $types .= "i";
+                    $updateValues[] = $this->userId;
+                    $types .= "ii";
 
                     $stmt->bind_param($types, ...$updateValues);
 
                     if ($stmt->execute()) {
                         $this->updated++;
 
-                        // Update Gruppen wenn gewünscht
                         if (!empty($group_ids)) {
                             // Lösche bestehende Gruppenzuordnungen
-                            $deleteStmt = $this->db->prepare("DELETE FROM recipient_group WHERE recipient_id = ?");
-                            $deleteStmt->bind_param("i", $existingUser['id']);
+                            $deleteStmt = $this->db->prepare("
+                                DELETE rg FROM recipient_group rg 
+                                JOIN groups g ON rg.group_id = g.id 
+                                WHERE rg.recipient_id = ? AND g.user_id = ?
+                            ");
+                            $deleteStmt->bind_param("ii", $existingUser['id'], $this->userId);
                             $deleteStmt->execute();
 
                             // Füge neue Gruppenzuordnungen hinzu
@@ -183,7 +206,6 @@ class RecipientImporter
         if ($stmt->execute()) {
             $recipient_id = $this->db->insert_id;
 
-            // Füge zu allen ausgewählten Gruppen hinzu
             if (!empty($group_ids)) {
                 $groupInsertStmt = $this->db->prepare(
                     "INSERT INTO recipient_group (recipient_id, group_id) VALUES (?, ?)"
@@ -202,4 +224,3 @@ class RecipientImporter
         }
     }
 }
-?>

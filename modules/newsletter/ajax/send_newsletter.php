@@ -40,6 +40,7 @@ try {
     $stmt->execute();
     $stmt->close();
 
+
     // Füge die Empfänger aus den Gruppen in die email_jobs-Tabelle ein
     $sql = "
         INSERT INTO email_jobs (content_id, sender_id, recipient_id, status)

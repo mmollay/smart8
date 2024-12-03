@@ -7,6 +7,14 @@ use \Mailjet\Resources;
 
 header('Content-Type: application/json');
 
+// Überprüfe API Credentials
+if (empty($mailjetConfig['api_key']) || empty($mailjetConfig['api_secret'])) {
+    die(json_encode([
+        'success' => false,
+        'message' => 'Mailjet API Konfiguration fehlt'
+    ]));
+}
+
 if (!isset($_POST['content_id'])) {
     die(json_encode(['success' => false, 'message' => 'Keine Newsletter-ID übermittelt']));
 }
@@ -14,10 +22,7 @@ if (!isset($_POST['content_id'])) {
 $content_id = intval($_POST['content_id']);
 
 try {
-    // Initialisiere Services mit Singleton Pattern
-    $placeholderService = PlaceholderService::getInstance();
-
-    // Hole Newsletter-Daten und Test-Email des Absenders
+    // Prüfe ob der Newsletter dem User gehört
     $stmt = $db->prepare("
         SELECT 
             ec.subject,
@@ -32,21 +37,26 @@ try {
             s.gender
         FROM email_contents ec
         JOIN senders s ON ec.sender_id = s.id
-        WHERE ec.id = ?
+        WHERE ec.id = ? 
+        AND ec.user_id = ?
+        AND s.user_id = ?
     ");
 
-    $stmt->bind_param("i", $content_id);
+    $stmt->bind_param("iii", $content_id, $userId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
 
     if (!$data) {
-        throw new Exception('Newsletter nicht gefunden');
+        throw new Exception('Newsletter nicht gefunden oder keine Berechtigung');
     }
 
     if (!$data['test_email']) {
         throw new Exception('Keine Test-Email-Adresse für diesen Absender konfiguriert');
     }
+
+    // Initialisiere PlaceholderService
+    $placeholderService = PlaceholderService::getInstance();
 
     // Erstelle Platzhalter für Test-Mail
     $placeholders = $placeholderService->createPlaceholders([
@@ -58,11 +68,8 @@ try {
         'title' => $data['title']
     ]);
 
-    // Ersetze Platzhalter im Betreff und der Nachricht
     $subject = $placeholderService->replacePlaceholders($data['subject'], $placeholders);
     $message = $placeholderService->replacePlaceholders($data['message'], $placeholders);
-
-    // Füge Debug-Informationen für Test-Mails hinzu
     $message = $placeholderService->addDebugInfo($message, $placeholders);
 
     // Hole Anhänge
@@ -104,15 +111,21 @@ try {
         'CustomID' => "test_mail_{$content_id}_" . time()
     ];
 
-    // Initialisiere Mailjet und sende E-Mail
-    $mj = new \Mailjet\Client($apiKey, $apiSecret, true, ['version' => 'v3.1']);
+    // Initialisiere Mailjet mit den Credentials aus der Config
+    $mj = new \Mailjet\Client(
+        $mailjetConfig['api_key'],
+        $mailjetConfig['api_secret'],
+        true,
+        ['version' => 'v3.1']
+    );
+
     $response = $mj->post(Resources::$Email, ['body' => ['Messages' => [$email]]]);
 
     if ($response->success()) {
         echo json_encode([
             'success' => true,
             'message' => 'Test-Mail wurde erfolgreich an ' . $data['test_email'] . ' gesendet',
-            'placeholders' => $placeholders // Für Debug-Zwecke
+            'placeholders' => $placeholders
         ]);
     } else {
         throw new Exception('Fehler beim Senden der Test-Mail: ' . json_encode($response->getBody()));

@@ -1,6 +1,5 @@
 <?php
 include(__DIR__ . '/../../n_config.php');
-
 header('Content-Type: application/json');
 
 $template_id = $_POST['template_id'] ?? null;
@@ -14,30 +13,30 @@ if (!$template_id) {
 }
 
 try {
-    // Original Template laden
-    $stmt = $db->prepare("SELECT name, description, html_content, subject FROM email_templates WHERE id = ?");
-    $stmt->bind_param('i', $template_id);
+    // Original Template laden und Berechtigung prüfen
+    $stmt = $db->prepare("SELECT name, description, html_content, subject FROM email_templates WHERE id = ? AND user_id = ?");
+    $stmt->bind_param('ii', $template_id, $userId);
     $stmt->execute();
     $template = $stmt->get_result()->fetch_assoc();
 
     if (!$template) {
-        throw new Exception('Template nicht gefunden');
+        throw new Exception('Template nicht gefunden oder keine Berechtigung');
     }
 
-    // Kopie erstellen
+    // Kopie erstellen mit user_id
     $stmt = $db->prepare("
-        INSERT INTO email_templates 
-        (name, description, html_content, subject, created_at) 
-        VALUES (?, ?, ?, ?, NOW())
+        INSERT INTO email_templates
+        (name, description, html_content, subject, created_at, user_id)
+        VALUES (?, ?, ?, ?, NOW(), ?)
     ");
-
     $copyName = $template['name'] . ' (Kopie)';
     $stmt->bind_param(
-        'ssss',
+        'ssssi',
         $copyName,
         $template['description'],
         $template['html_content'],
-        $template['subject']
+        $template['subject'],
+        $userId
     );
 
     if ($stmt->execute()) {

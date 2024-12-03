@@ -59,12 +59,15 @@ $query = "
         LEFT JOIN email_jobs ej ON ec.id = ej.content_id
         LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
         LEFT JOIN groups g ON ecg.group_id = g.id
+        WHERE 
+        ec.user_id = '$userId'
     GROUP BY 
         ec.id, 
         ec.subject,
         ec.send_status,
         sender_name,
         sender_email
+        
 ";
 
 $listGenerator->setSearchableColumns(['ec.subject', 's.first_name', 's.last_name', 's.email', 'g.name']);
@@ -134,7 +137,18 @@ $columns = [
     [
         'name' => 'subject',
         'label' => '<i class="envelope icon"></i>Betreff',
-        'allowHtml' => true
+        'formatter' => function ($value) {
+            $truncated = mb_strlen($value) > 30 ?
+                mb_substr($value, 0, 27) . '...' :
+                $value;
+            return sprintf(
+                '<div class="ui popup-hover" data-content="%s">%s</div>',
+                htmlspecialchars($value),
+                htmlspecialchars($truncated)
+            );
+        },
+        'allowHtml' => true,
+        'width' => '250px'
     ],
     [
         'name' => 'group_names',
@@ -357,7 +371,8 @@ $buttons = [
         'params' => ['update_id' => 'content_id'],
         'conditions' => [
             function ($row) {
-                return $row['is_fully_sent'] == 0;
+                // Newsletter ist bearbeitbar, wenn er noch nicht versendet wurde (send_status = 0)
+                return $row['send_status'] == 0;
             }
         ],
     ],

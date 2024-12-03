@@ -50,6 +50,25 @@ $formGenerator->addField([
     'tab' => '1'
 ]);
 
+$formGenerator->addField([
+    'type' => 'grouped_checkbox',
+    'name' => 'food_preferences',
+    'label' => 'Lebensmittelpräferenzen',
+    'options' => [
+        'Früchte' => [
+            'apple' => 'Apfel',
+            'orange' => 'Orange',
+            'pear' => 'Birne'
+        ],
+        'Gemüse' => [
+            'lettuce' => 'Salat',
+            'carrot' => 'Karotte',
+            'spinach' => 'Spinat'
+        ]
+    ],
+    'class' => 'custom-class' // Optional: zusätzliche CSS-Klasse
+]);
+
 //uploader
 $formGenerator->addField([
     'type' => 'uploader',

@@ -61,6 +61,7 @@ $baseQuery = "
     FROM recipients r
     LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
     LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '$userId'
 ";
 
 // Bedingungen basierend auf Filtern

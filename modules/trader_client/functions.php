@@ -57,7 +57,7 @@ function getUserDetails($userId)
     global $db; // Verwenden der globalen Datenbankverbindung
 
     // Die SQL-Abfrage vorbereiten
-    $stmt = $db->prepare("SELECT first_name, last_name FROM clients WHERE client_id = ?");
+    $stmt = $db->prepare("SELECT * FROM clients WHERE client_id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();

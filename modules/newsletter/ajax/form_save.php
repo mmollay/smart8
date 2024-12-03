@@ -3,6 +3,11 @@ require_once(__DIR__ . '/../n_config.php');
 
 function handleDatabaseOperation($db, $operation, $table, $data, $id = null)
 {
+	global $userId;
+
+	// Füge user_id zu den Daten hinzu
+	$data['user_id'] = $userId;
+
 	$columns = implode(", ", array_keys($data));
 	$placeholders = implode(", ", array_fill(0, count($data), "?"));
 	$types = str_repeat("s", count($data));
@@ -12,9 +17,10 @@ function handleDatabaseOperation($db, $operation, $table, $data, $id = null)
 		$sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
 	} else {
 		$set = implode(" = ?, ", array_keys($data)) . " = ?";
-		$sql = "UPDATE $table SET $set WHERE id = ?";
-		$types .= "i";
+		$sql = "UPDATE $table SET $set WHERE id = ? AND user_id = ?";
+		$types .= "ii";
 		$values[] = $id;
+		$values[] = $userId;
 	}
 
 	$stmt = $db->prepare($sql);
@@ -34,6 +40,8 @@ function handleDatabaseOperation($db, $operation, $table, $data, $id = null)
 
 function saveGroups($db, $table, $content_id, $group_ids)
 {
+	global $userId;
+
 	// Konvertiere group_ids zu Array, falls als String übergeben
 	if (!is_array($group_ids)) {
 		$group_ids = explode(',', $group_ids);
@@ -42,18 +50,27 @@ function saveGroups($db, $table, $content_id, $group_ids)
 	// Bestimme den korrekten Spaltenname basierend auf der Tabelle
 	$id_column = $table === 'email_content_groups' ? 'email_content_id' : 'recipient_id';
 
-	// Lösche existierende Verknüpfungen
-	$stmt = $db->prepare("DELETE FROM $table WHERE $id_column = ?");
-	$stmt->bind_param("i", $content_id);
+	// Lösche existierende Verknüpfungen, aber nur für Gruppen die dem User gehören
+	$stmt = $db->prepare("
+        DELETE t FROM $table t 
+        INNER JOIN groups g ON t.group_id = g.id 
+        WHERE t.$id_column = ? AND g.user_id = ?
+    ");
+	$stmt->bind_param("ii", $content_id, $userId);
 	$stmt->execute();
 	$stmt->close();
 
-	// Füge neue Verknüpfungen hinzu
+	// Füge neue Verknüpfungen hinzu, aber prüfe ob die Gruppen dem User gehören
 	if (!empty($group_ids)) {
-		$stmt = $db->prepare("INSERT INTO $table ($id_column, group_id) VALUES (?, ?)");
+		$stmt = $db->prepare("
+            INSERT INTO $table ($id_column, group_id)
+            SELECT ?, g.id 
+            FROM groups g 
+            WHERE g.id = ? AND g.user_id = ?
+        ");
 		foreach ($group_ids as $group_id) {
 			if (!empty($group_id)) {
-				$stmt->bind_param("ii", $content_id, $group_id);
+				$stmt->bind_param("iii", $content_id, $group_id, $userId);
 				$stmt->execute();
 			}
 		}
@@ -78,6 +95,22 @@ try {
 	$tags = isset($_POST['tags']) ? (is_array($_POST['tags']) ? $_POST['tags'] : explode(',', $_POST['tags'])) : [];
 	$group_ids = array_filter(array_map('intval', $tags));
 
+	// Bei UPDATE: Prüfe ob der Datensatz dem User gehört
+	if ($id) {
+		$check_sql = "SELECT id FROM $list_id WHERE id = ? AND user_id = ?";
+		if ($list_id === 'newsletters') {
+			$check_sql = "SELECT id FROM email_contents WHERE id = ? AND user_id = ?";
+		}
+
+		$stmt = $db->prepare($check_sql);
+		$stmt->bind_param("ii", $id, $userId);
+		$stmt->execute();
+		if ($stmt->get_result()->num_rows === 0) {
+			throw new Exception("Keine Berechtigung zum Bearbeiten dieses Eintrags");
+		}
+		$stmt->close();
+	}
+
 	switch ($list_id) {
 		case 'senders':
 			$data = [
@@ -91,7 +124,6 @@ try {
 				'comment' => sanitizeInput($_POST['comment'] ?? '')
 			];
 
-			// Entferne leere test_email
 			if (empty($data['test_email'])) {
 				unset($data['test_email']);
 			}
@@ -112,23 +144,31 @@ try {
 
 			$affected_id = handleDatabaseOperation($db, $operation, 'recipients', $data, $id);
 
-			// Speichere Gruppenzuordnungen für Empfänger
 			if (!empty($group_ids)) {
 				saveGroups($db, 'recipient_group', $affected_id, $group_ids);
 			}
 			break;
 
 		case 'newsletters':
+			// Prüfe ob der sender_id zum User gehört
+			$sender_id = intval($_POST['sender_id'] ?? 0);
+			$stmt = $db->prepare("SELECT id FROM senders WHERE id = ? AND user_id = ?");
+			$stmt->bind_param("ii", $sender_id, $userId);
+			$stmt->execute();
+			if ($stmt->get_result()->num_rows === 0) {
+				throw new Exception("Ungültiger Absender ausgewählt");
+			}
+			$stmt->close();
+
 			$data = [
-				'sender_id' => intval($_POST['sender_id'] ?? 0),
+				'sender_id' => $sender_id,
 				'subject' => sanitizeInput($_POST['subject'] ?? ''),
-				'message' => $_POST['message'] ?? '', // Nicht sanitieren, da es HTML enthalten kann
-				'send_status' => 0 // Setze den Standard-Status
+				'message' => $_POST['message'] ?? '',
+				'send_status' => 0
 			];
 
 			$affected_id = handleDatabaseOperation($db, $operation, 'email_contents', $data, $id);
 
-			// Speichere Gruppenzuordnungen für Newsletter
 			if (!empty($group_ids)) {
 				saveGroups($db, 'email_content_groups', $affected_id, $group_ids);
 			}
@@ -141,7 +181,7 @@ try {
 				'color' => sanitizeInput($_POST['color'] ?? '')
 			];
 
-			handleDatabaseOperation($db, $operation, 'groups', $data, $id);
+			$affected_id = handleDatabaseOperation($db, $operation, 'groups', $data, $id);
 			break;
 
 		default:

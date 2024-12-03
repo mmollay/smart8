@@ -2,110 +2,84 @@
 require_once __DIR__ . '/../FormGenerator.php';
 $formGenerator = new FormGenerator();
 
-$submitTarget = 'process_form.php';
-
+// Formular-Konfiguration
 $formGenerator->setFormData([
-    'id' => 'myForm',
-    'action' => $submitTarget,
+    'id' => 'editorForm',
+    'action' => 'process_form.php',
     'class' => 'ui form',
     'method' => 'POST',
-    'responseType' => 'normal',
-    'success' => "$('#show_data').html(response); showToast('Erfolgreich versendet', 'success');"
+    'responseType' => 'json',
+    'success' => "showToast('Formular erfolgreich gespeichert', 'success');"
 ]);
 
-$fields = [
-    [
-        'type' => 'ckeditor5',
-        'name' => 'description',
-        'label' => 'Beschreibung',
-        'value' => 'Hier Ihre Beschreibung eingeben...',
-        'required' => true,
-        'minLength' => 10,
-        'maxLength' => 1000,
-        'error_message' => 'Bitte geben Sie eine Beschreibung ein.',
-        'minLength_error' => 'Die Beschreibung muss mindestens 10 Zeichen lang sein.',
-        'maxLength_error' => 'Die Beschreibung darf höchstens 1000 Zeichen lang sein.',
-        'config' => [
-            'minHeight' => 300,
-            'maxHeight' => 300,
-            'toolbar' => [
-                'items' => [
-                    'heading',
-                    '|',
-                    'bold',
-                    'italic',
-                    'link',
-                    'bulletedList',
-                    'numberedList',
-                    '|',
-                    'imageUpload',
-                    'blockQuote',
-                    'insertTable',
-                    'undo',
-                    'redo'
-                ]
-            ],
-            'placeholder' => 'Geben Sie hier Ihre Beschreibung ein...',
-            'image' => [
-                'upload' => [
-                    'types' => ['jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff'],
-                    'maxFileSize' => 5 * 1024 * 1024, // 5 MB
-                    'path' => '../uploads/'
-                ]
-            ]
+// Gemeinsame Editor-Konfiguration
+$defaultEditorConfig = [
+    'toolbar' => [
+        'items' => [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'link',
+            'bulletedList',
+            'numberedList',
+            '|',
+            'blockQuote',
+            'insertTable',
+            'undo',
+            'redo'
         ]
-    ]
+    ],
+    'language' => 'de',
+    'placeholder' => 'Geben Sie hier Ihren Text ein...'
 ];
 
-//nochmal einen Editor
-$fields[] = [
+// Haupt-Editor mit Bildupload
+$formGenerator->addField([
     'type' => 'ckeditor5',
-    'name' => 'description2',
-    'label' => 'Beschreibung 2',
-    'value' => 'Hier Ihre Beschreibung eingeben...',
+    'name' => 'mainContent',
+    'label' => 'Hauptinhalt',
+    'value' => '',
     'required' => true,
     'minLength' => 10,
-    'maxLength' => 1000,
-    'error_message' => 'Bitte geben Sie eine Beschreibung ein.',
-    'minLength_error' => 'Die Beschreibung muss mindestens 10 Zeichen lang sein.',
-    'maxLength_error' => 'Die Beschreibung darf höchstens 1000 Zeichen lang sein.',
-    'config' => [
-        'minHeight' => 100,
-        'maxHeight' => 300,
-        'toolbar' => [
-            'items' => [
-                'heading',
-                '|',
-                'bold',
-                'italic',
-                'link',
-                'bulletedList',
-                'numberedList',
-                '|',
-
-                'blockQuote',
-                'insertTable',
-                'undo',
-                'redo'
+    'config' => array_merge($defaultEditorConfig, [
+        'minHeight' => 300,
+        'maxHeight' => 500,
+        'toolbar' => array_merge($defaultEditorConfig['toolbar']['items'], ['imageUpload']),
+        'image' => [
+            'upload' => [
+                'types' => ['jpeg', 'png', 'gif'],
+                'maxFileSize' => 5 * 1024 * 1024,
+                'path' => '../uploads/'
             ]
-        ],
-        'placeholder' => 'Geben Sie hier Ihre Beschreibung ein...',
-    ]
-];
+        ]
+    ])
+]);
 
-foreach ($fields as $field) {
-    $formGenerator->addField($field);
-}
+// Zusätzlicher Editor für Kurztext
+$formGenerator->addField([
+    'type' => 'ckeditor5',
+    'name' => 'shortContent',
+    'label' => 'Kurzbeschreibung',
+    'required' => true,
+    'config' => array_merge($defaultEditorConfig, [
+        'minHeight' => 150,
+        'maxHeight' => 300
+    ])
+]);
 
+//uploader
 $formGenerator->addField([
     'type' => 'uploader',
     'name' => 'files',
+    'tab' => 'dokumente',
     'config' => array(
-        'MAX_FILE_SIZE' => 100 * 1024 * 1024, // 100 MB
-        'MAX_FOLDER_SIZE' => 10000 * 1024 * 1024, // 10 GB
-        'ALLOWED_FORMATS' => ['pdf', 'jpeg', 'jpg', 'png', 'doc', 'docx'],
+        'MAX_FILE_SIZE' => 100 * 1024 * 1024, // 20 MB
+        'MAX_FOLDER_SIZE' => 10000 * 1024 * 1024,
+        'ALLOWED_FORMATS' => ['pdf', 'jpeg'],
         'MAX_FILE_COUNT' => 10,
         'UPLOAD_DIR' => '../uploads/',
+        'basePath' => 'uploads/',
         'LANGUAGE' => 'de',
         'dropZoneId' => 'drop-zone',
         'fileInputId' => 'file-input',
@@ -117,14 +91,26 @@ $formGenerator->addField([
     )
 ]);
 
-// Submit-Button
-$formGenerator->addField([
-    'type' => 'button',
-    'buttonType' => 'submit',
-    'name' => 'submit',
-    'value' => 'Absenden',
-    'icon' => 'paper plane',
-    'color' => 'primary',
+// Formular-Buttons
+$formGenerator->addButtonElement([
+    [
+        'type' => 'submit',
+        'name' => 'submit',
+        'value' => 'Speichern',
+        'icon' => 'save',
+        'class' => 'ui primary button'
+    ],
+    [
+        'type' => 'button',
+        'name' => 'reset',
+        'value' => 'Zurücksetzen',
+        'icon' => 'undo',
+        'class' => 'ui secondary button',
+        'onclick' => 'resetForm()'
+    ]
+], [
+    'layout' => 'grouped',
+    'alignment' => 'right'
 ]);
 ?>
 
@@ -134,21 +120,53 @@ $formGenerator->addField([
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CKEditor Beispiel</title>
+    <title>Rich Text Editor Demo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
     <?= $formGenerator->generateCSS() ?>
+    <style>
+        .ui.container {
+            padding: 2em 0;
+        }
+
+        .editor-container {
+            margin-bottom: 2em;
+        }
+
+        .ui.segment {
+            box-shadow: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="ui container" style="padding-top: 50px;">
-        <h1 class="ui header">CKEditor Beispiel</h1>
-        <?= $formGenerator->generateForm() ?>
+    <div class="ui container">
+        <div class="ui segment">
+            <h1 class="ui header">
+                <i class="edit outline icon"></i>
+                <div class="content">
+                    Rich Text Editor Demo
+                    <div class="sub header">Demonstration der CKEditor-Integration mit Datei-Upload</div>
+                </div>
+            </h1>
+
+            <div class="ui info message">
+                <div class="header">Über diese Demo</div>
+                <p>Diese Seite demonstriert die Integration des CKEditor 5 mit verschiedenen Konfigurationen.
+                    Der Haupteditor unterstützt Bildupload, während der zweite Editor für einfachere Texteingaben
+                    optimiert ist.</p>
+            </div>
+
+            <?= $formGenerator->generateForm() ?>
+        </div>
     </div>
-    <div id=show_data></div>
+
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/translations/de.js"></script>
+    <script src="../js/fileUploader.js"></script>
+    <script src="../js/formGenerator.js"></script>
+    <script src="../js/ckeditor-init.js"></script>
     <?= $formGenerator->generateJS() ?>
 </body>
 
