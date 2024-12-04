@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.0',
+    'version' => '1.1.1',
     'changelog' => [
         '1.1.0' => [
             'date' => '2024-12-04',
