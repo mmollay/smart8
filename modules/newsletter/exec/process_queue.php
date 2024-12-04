@@ -30,25 +30,26 @@ $placeholderService = PlaceholderService::getInstance();
 function processNewsletter($db, $emailService, $placeholderService, $contentId)
 {
     $stmt = $db->prepare("
-        SELECT ej.*, 
-               ec.subject, 
-               ec.message,
-               s.email as sender_email,
-               s.first_name as sender_first_name,
-               s.last_name as sender_last_name,
-               r.email as recipient_email,
-               r.first_name as recipient_first_name,
-               r.last_name as recipient_last_name,
-               r.gender as recipient_gender,
-               r.title as recipient_title,
-               r.company as recipient_company
-        FROM email_jobs ej
-        JOIN email_contents ec ON ej.content_id = ec.id
-        JOIN senders s ON ej.sender_id = s.id
-        JOIN recipients r ON ej.recipient_id = r.id
-        WHERE ej.content_id = ? 
-        AND ej.status = 'pending'
-    ");
+    SELECT ej.*, 
+           ec.subject, 
+           ec.message,
+           s.email as sender_email,
+           s.first_name as sender_first_name,
+           s.last_name as sender_last_name,
+           r.email as recipient_email,
+           r.first_name as recipient_first_name,
+           r.last_name as recipient_last_name,
+           r.gender as recipient_gender,
+           r.title as recipient_title,
+           r.company as recipient_company
+    FROM email_jobs ej
+    JOIN email_contents ec ON ej.content_id = ec.id
+    JOIN senders s ON ej.sender_id = s.id
+    JOIN recipients r ON ej.recipient_id = r.id
+    WHERE ej.content_id = ? 
+    AND ej.status = 'pending'
+    AND r.unsubscribed = 0  -- Nur nicht abgemeldete Empfänger
+");
 
     $stmt->bind_param("i", $contentId);
     $stmt->execute();

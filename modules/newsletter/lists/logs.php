@@ -2,7 +2,7 @@
 include __DIR__ . '/../../../smartform2/ListGenerator.php';
 include __DIR__ . '/../n_config.php';
 
-// Am Anfang der logs.php
+// Content ID prüfen
 $content_id = isset($_GET['content_id']) ? intval($_GET['content_id']) :
     (isset($_POST['content_id']) ? intval($_POST['content_id']) : 0);
 
@@ -14,21 +14,25 @@ if ($content_id === 0) {
     exit;
 }
 
-// Überprüfe zuerst, ob der Newsletter existiert
+// Newsletter-Details mit erweiterten Statistiken laden
 $stmt = $db->prepare("
     SELECT 
         subject,
         created_at,
-        (SELECT COUNT(DISTINCT recipient_id) FROM email_jobs WHERE content_id = email_contents.id) as total_recipients
+        (SELECT COUNT(DISTINCT recipient_id) FROM email_jobs WHERE content_id = email_contents.id) as total_recipients,
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('send', 'delivered')) as sent_count,
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'open') as opened_count,
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'click') as clicked_count,
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('failed', 'bounce', 'blocked', 'spam')) as error_count
     FROM email_contents 
-    WHERE id = ?
+    WHERE id = ? AND user_id = ?
 ");
 
 if (!$stmt) {
     die("Prepare failed: " . $db->error);
 }
 
-$stmt->bind_param("i", $content_id);
+$stmt->bind_param("ii", $content_id, $userId);
 $stmt->execute();
 $newsletter = $stmt->get_result()->fetch_assoc();
 
@@ -40,7 +44,7 @@ if (!$newsletter) {
     exit;
 }
 
-// Konfiguration des ListGenerators für Logs
+// ListGenerator Konfiguration
 $listConfig = [
     'listId' => 'newsletter_logs',
     'contentId' => 'content_logs',
@@ -63,7 +67,7 @@ $listGenerator = new ListGenerator($listConfig);
 $query = "
     SELECT 
         sl.id,
-        sl.event as event,  -- Expliziter Alias
+        sl.event as event,
         sl.timestamp,
         sl.email,
         COALESCE(r.first_name, '') as first_name,
@@ -82,7 +86,7 @@ $query = "
         ej.content_id = {$content_id}
         AND sl.id IS NOT NULL
     GROUP BY 
-        sl.id, 
+        sl.id,
         sl.event,
         sl.timestamp,
         sl.email,
@@ -96,8 +100,44 @@ $query = "
 
 $listGenerator->setSearchableColumns(['sl.email', 'r.first_name', 'r.last_name', 'r.company']);
 $listGenerator->setDatabase($db, $query, true);
-
 $listGenerator->addFilter('sl.event', 'Ereignis', $eventTypes);
+
+// Header mit Newsletter-Informationen und Statistiken
+echo "
+<div class='ui segments'>
+    <div class='ui blue segment'>
+        <h4 class='ui header'>
+            <i class='history icon'></i>
+            <div class='content'>
+                Versandprotokoll: " . htmlspecialchars($newsletter['subject']) . "
+                <div class='sub header'>
+                    Erstellt am: " . date('d.m.Y H:i', strtotime($newsletter['created_at'])) . " | 
+                    Empfänger: " . number_format($newsletter['total_recipients'], 0, ',', '.') . "
+                </div>
+            </div>
+        </h4>
+    </div>
+    <div class='ui attached segment'>
+        <div class='ui tiny statistics'>
+            <div class='statistic'>
+                <div class='value'><i class='paper plane icon'></i> " . number_format($newsletter['sent_count'], 0, ',', '.') . "</div>
+                <div class='label'>Gesendet</div>
+            </div>
+            <div class='statistic'>
+                <div class='value'><i class='eye icon'></i> " . number_format($newsletter['opened_count'], 0, ',', '.') . "</div>
+                <div class='label'>Geöffnet</div>
+            </div>
+            <div class='statistic'>
+                <div class='value'><i class='mouse pointer icon'></i> " . number_format($newsletter['clicked_count'], 0, ',', '.') . "</div>
+                <div class='label'>Geklickt</div>
+            </div>
+            <div class='statistic' " . ($newsletter['error_count'] > 0 ? "style='color: #db2828;'" : "") . ">
+                <div class='value'><i class='exclamation circle icon'></i> " . number_format($newsletter['error_count'], 0, ',', '.') . "</div>
+                <div class='label'>Fehler</div>
+            </div>
+        </div>
+    </div>
+</div>";
 
 // Spaltendefinitionen
 $columns = [
@@ -112,33 +152,8 @@ $columns = [
     [
         'name' => 'event',
         'label' => '<i class="event icon"></i>Ereignis',
-        'formatter' => function ($value, $row) {
-            $icons = [
-                'send' => 'paper plane blue',
-                'delivered' => 'check circle green',
-                'open' => 'eye blue',
-                'click' => 'mouse pointer blue',
-                'bounce' => 'exclamation circle red',
-                'failed' => 'times circle red',
-                'blocked' => 'ban red',
-                'spam' => 'warning sign orange'
-            ];
-
-            $labels = [
-                'send' => 'Versendet',
-                'delivered' => 'Zugestellt',
-                'open' => 'Geöffnet',
-                'click' => 'Angeklickt',
-                'bounce' => 'Zurückgewiesen',
-                'failed' => 'Fehlgeschlagen',
-                'blocked' => 'Blockiert',
-                'spam' => 'Als Spam markiert'
-            ];
-
-            $icon = $icons[$value] ?? 'question';
-            $label = $labels[$value] ?? $value;
-
-            return "<i class='{$icon} icon'></i> {$label}";
+        'formatter' => function ($value, $row) use ($eventTypes) {
+            return $eventTypes[$value] ?? $value;
         },
         'allowHtml' => true
     ],
@@ -174,7 +189,6 @@ $columns = [
         'formatter' => function ($value, $row) {
             $html = "<div class='ui small labels'>";
 
-            // Aktueller Status
             $statusColors = [
                 'send' => 'blue',
                 'delivered' => 'green',
@@ -190,14 +204,12 @@ $columns = [
             $color = $statusColors[$currentStatus] ?? 'grey';
             $html .= "<div class='ui {$color} label'>" . ucfirst($currentStatus) . "</div>";
 
-            // Interaktionen
             if ($row['total_interactions'] > 0) {
                 $html .= "<div class='ui teal label'>{$row['total_interactions']} Interaktionen</div>";
             }
 
             $html .= "</div>";
 
-            // Fehlermeldung falls vorhanden
             if (!empty($row['error_message'])) {
                 $html .= "<div class='ui negative tiny message'>" . htmlspecialchars($row['error_message']) . "</div>";
             }
@@ -213,36 +225,45 @@ foreach ($columns as $column) {
     $listGenerator->addColumn($column['name'], $column['label'], $column);
 }
 
-// Header mit Newsletter-Informationen
-echo "
-<div class='ui blue segment'>
-    <h4 class='ui header'>
-        <i class='history icon'></i>
-        <div class='content'>
-            Versandprotokoll: " . htmlspecialchars($newsletter['subject']) . "
-            <div class='sub header'>
-                Erstellt am: " . date('d.m.Y H:i', strtotime($newsletter['created_at'])) . " | 
-                Empfänger: " . number_format($newsletter['total_recipients'], 0, ',', '.') . "
-            </div>
-        </div>
-    </h4>
-</div>";
-
 // Liste generieren
 echo $listGenerator->generateList();
 
-// Schließen der Datenbankverbindung
+// Datenbankverbindung schließen
 if (isset($db)) {
     $db->close();
 }
 ?>
 
+<style>
+    .ui.tiny.statistics {
+        margin: 0;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .ui.tiny.statistics .statistic {
+        margin: 0;
+        min-width: 120px;
+    }
+
+    .ui.tiny.statistics .statistic .value {
+        font-size: 1.5em !important;
+    }
+
+    .ui.tiny.statistics .statistic .label {
+        font-size: 0.9em;
+    }
+</style>
+
 <script>
     $(document).ready(function () {
         // Initialisiere Semantic UI Komponenten
         $('.ui.popup').popup();
+        $('.ui.statistic').popup({
+            position: 'top center'
+        });
 
-        // Aktualisiere die Liste automatisch alle 30 Sekunden wenn der Newsletter noch versendet wird
+        // Auto-Refresh für laufende Versände
         function checkSendStatus() {
             $.ajax({
                 url: 'ajax/check_newsletter_status.php',

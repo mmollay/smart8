@@ -73,6 +73,15 @@ class Dashboard
 
     private $userPermissions = [];
 
+    private $footerContent = '';
+
+    // Neue Methode zum Hinzufügen von Footer-Inhalten
+    public function addFooterContent($content)
+    {
+        $this->footerContent .= $content;
+    }
+
+
     public function __construct($title, $db, $userId = null, $version = "1.0", $moduleName = "")
     {
         // Bestimme den Web-Root basierend auf dem Server
@@ -628,9 +637,15 @@ class Dashboard
         }
         echo "    \n<div class=\"pusher\">\n";
         echo "            <div id=\"pageContent\"></div>\n";
-        echo "        <div align=\"center\">\n";
-        echo "            <br><div class=\"ui label basic\">Version " . htmlspecialchars($this->version) . "</div>\n";
+
+        // Dezenter Footer
+        echo "        <div align=\"center\" >\n";
+        echo $this->footerContent;
+        if (!$this->footerContent) {
+            echo "           <div class='ui label'> Version " . htmlspecialchars($this->version) . "</div>\n";
+        }
         echo "        </div>\n";
+
         echo "    </div>\n";
         echo "    <script src=\"../../js/main.js\"></script>\n";
 

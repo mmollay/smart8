@@ -43,19 +43,23 @@ try {
 
     // Füge die Empfänger aus den Gruppen in die email_jobs-Tabelle ein
     $sql = "
-        INSERT INTO email_jobs (content_id, sender_id, recipient_id, status)
-        SELECT DISTINCT ec.id, ec.sender_id, rg.recipient_id, 'pending'
-        FROM email_contents ec
-        JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
-        JOIN recipient_group rg ON ecg.group_id = rg.group_id
-        WHERE ec.id = ?
-        AND NOT EXISTS (
-            SELECT 1 FROM email_jobs ej
-            WHERE ej.content_id = ec.id
-            AND ej.sender_id = ec.sender_id
-            AND ej.recipient_id = rg.recipient_id
-        )
-    ";
+    INSERT INTO email_jobs (content_id, sender_id, recipient_id, status)
+    SELECT DISTINCT ec.id, ec.sender_id, rg.recipient_id, 'pending'
+    FROM email_contents ec
+    JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+    JOIN recipient_group rg ON ecg.group_id = rg.group_id
+    JOIN recipients r ON rg.recipient_id = r.id
+    WHERE ec.id = ?
+    AND r.unsubscribed = 0  -- Nur nicht abgemeldete Empfänger
+    AND NOT EXISTS (
+        SELECT 1 FROM email_jobs ej
+        WHERE ej.content_id = ec.id
+        AND ej.sender_id = ec.sender_id
+        AND ej.recipient_id = rg.recipient_id
+    )
+";
+
+
     $stmt = $db->prepare($sql);
     $stmt->bind_param("i", $content_id);
     $stmt->execute();

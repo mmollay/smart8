@@ -33,15 +33,17 @@ try {
     // BatchManager initialisieren
     $batchManager = new BatchManager($db, BASE_PATH . '/logs');
     $batchManager->setBatchSize(50)         // 50 Emails pro Batch
-        ->setMaxProcesses(4);       // 4 parallele Prozesse
+        ->setMaxProcesses(4);               // 4 parallele Prozesse
 
     // Hole alle aktiven Newsletter
     $stmt = $db->prepare("
         SELECT DISTINCT ec.id, ec.subject
         FROM email_contents ec
         JOIN email_jobs ej ON ec.id = ej.content_id
+        JOIN recipients r ON ej.recipient_id = r.id
         WHERE ej.status = 'pending'
-        AND ec.send_status = 1  -- 1 = Versand gestartet
+        AND ec.send_status = 1              -- 1 = Versand gestartet
+        AND r.unsubscribed = 0              -- Nur nicht abgemeldete Empfänger
         ORDER BY ec.created_at ASC
     ");
 
@@ -63,9 +65,11 @@ try {
         // Hole Gesamtanzahl der pending Jobs für diesen Newsletter
         $stmt = $db->prepare("
             SELECT COUNT(*) as total 
-            FROM email_jobs 
-            WHERE content_id = ? 
-            AND status = 'pending'
+            FROM email_jobs ej
+            JOIN recipients r ON ej.recipient_id = r.id
+            WHERE ej.content_id = ? 
+            AND ej.status = 'pending'
+            AND r.unsubscribed = 0          -- Nur nicht abgemeldete Empfänger
         ");
         $stmt->bind_param("i", $contentId);
         $stmt->execute();
@@ -78,13 +82,36 @@ try {
             // Prüfe ob neue Prozesse gestartet werden können
             if ($batchManager->checkProcesses()) {
                 // Hole nächsten Batch
-                $batch = $batchManager->getNewBatch($contentId);
+                $stmt = $db->prepare("
+                    SELECT ej.id 
+                    FROM email_jobs ej
+                    JOIN recipients r ON ej.recipient_id = r.id
+                    WHERE ej.content_id = ? 
+                    AND ej.status = 'pending'
+                    AND r.unsubscribed = 0   -- Nur nicht abgemeldete Empfänger
+                    LIMIT ?
+                ");
+                $batchSize = $batchManager->getBatchSize();
+                $stmt->bind_param("ii", $contentId, $batchSize);
+                $stmt->execute();
+                $batch = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
                 if (empty($batch)) {
                     break;
                 }
 
+                // Markiere Jobs als in Bearbeitung
+                $jobIds = array_column($batch, 'id');
+                $jobIdList = implode(',', $jobIds);
+                $db->query("
+                    UPDATE email_jobs 
+                    SET status = 'processing',
+                        updated_at = NOW() 
+                    WHERE id IN ($jobIdList)
+                ");
+
                 // Starte Batch-Prozess
-                $pid = $batchManager->startBatchProcess($contentId, $batch);
+                $pid = $batchManager->startBatchProcess($contentId, $jobIds);
                 if ($pid) {
                     writeLog("Batch-Prozess gestartet für Newsletter $contentId mit PID: $pid");
                     $totalJobs -= count($batch);
@@ -93,14 +120,19 @@ try {
 
             // Warte kurz bevor der nächste Batch gestartet wird
             sleep(2);
+
+            // Überprüfe auf abgebrochene oder fehlgeschlagene Prozesse
+            $batchManager->checkAndResetStaleProcesses();
         }
 
         // Prüfe ob Newsletter komplett verarbeitet wurde
         $stmt = $db->prepare("
             SELECT COUNT(*) as remaining 
-            FROM email_jobs 
-            WHERE content_id = ? 
-            AND status = 'pending'
+            FROM email_jobs ej
+            JOIN recipients r ON ej.recipient_id = r.id
+            WHERE ej.content_id = ? 
+            AND ej.status IN ('pending', 'processing')
+            AND r.unsubscribed = 0           -- Nur nicht abgemeldete Empfänger
         ");
         $stmt->bind_param("i", $contentId);
         $stmt->execute();
@@ -117,6 +149,24 @@ try {
             $stmt->bind_param("i", $contentId);
             $stmt->execute();
             writeLog("Newsletter $contentId vollständig verarbeitet");
+
+            // Erstelle Zusammenfassungs-Log
+            $stmt = $db->prepare("
+                SELECT 
+                    COUNT(CASE WHEN ej.status = 'send' THEN 1 END) as sent,
+                    COUNT(CASE WHEN ej.status = 'failed' THEN 1 END) as failed,
+                    COUNT(CASE WHEN ej.status = 'skipped' THEN 1 END) as skipped
+                FROM email_jobs ej
+                WHERE ej.content_id = ?
+            ");
+            $stmt->bind_param("i", $contentId);
+            $stmt->execute();
+            $stats = $stmt->get_result()->fetch_assoc();
+
+            writeLog("Newsletter $contentId Statistik: " .
+                "Gesendet: {$stats['sent']}, " .
+                "Fehlgeschlagen: {$stats['failed']}, " .
+                "Übersprungen: {$stats['skipped']}");
         }
     }
 

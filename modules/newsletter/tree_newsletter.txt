@@ -1,118 +1,136 @@
-.
-├── ajax
-│   ├── check_group_name.php
-│   ├── check_newsletter_status.php
-│   ├── check_pending_emails.php
-│   ├── check_queue_progress.php
-│   ├── check_sending_status.php
-│   ├── clone_newsletter.php
-│   ├── create_group.php
-│   ├── delete_attachment_info.php
-│   ├── export.php
-│   ├── export_recipients.php
-│   ├── form_delete2.php
-│   ├── form_edit2.php
-│   ├── form_save.php
-│   ├── generic_export.php
-│   ├── get_attachment_info.php
-│   ├── process_import.php
-│   ├── save_attachment_info.php
-│   ├── send_newsletter.php
-│   ├── ssi_newsletter.sql
-│   ├── start_mass_mailer.php
-│   ├── template
-│   │   ├── delete.php
-│   │   ├── duplicate.php
-│   │   ├── get_preview_data.php
-│   │   ├── get_recipient_data.php
-│   │   ├── get_template.php
-│   │   ├── get_templates.php
-│   │   ├── save_template.php
-│   │   └── update_file_list.php
-│   ├── update_attachments.php
-│   └── update_filelist.php
-├── classes
-│   ├── EmailQueueManager.php
-│   ├── EmailService.php
-│   ├── PlaceholderService.php
-│   ├── QueueProcessor.php
-│   ├── WebhookHandler.php
-│   ├── importers
-│   │   └── RecipientImporter.php
-│   └── logs
-├── components
-│   ├── editor_config.php
-│   └── placeholders.php
-├── config
-│   └── export_config.php
-├── css
-│   ├── common.css
-│   └── import-recipients.css
-├── database.txt
-├── exec
-│   ├── mailjet_event_handler.php
-│   ├── process_queue.php
-│   ├── send_email_background copy.php
-│   ├── send_email_background.php
-│   ├── send_test_mail.php
-│   ├── test_mailjet_handler_direct.php
-│   ├── test_queue_manager.php
-│   ├── test_single_event.php
-│   └── test_status_transitions.php
-├── form
-│   ├── f_groups.php
-│   ├── f_newsletters.php
-│   ├── f_recipients.php
-│   ├── f_senders.php
-│   ├── f_templates.php
-│   └── preview_template.php
-├── import.txt
+ajax
+├── check_group_name.php
+├── check_newsletter_status.php
+├── check_pending_emails.php
+├── check_queue_progress.php
+├── check_sending_status.php
+├── clone_newsletter.php
+├── create_group.php
+├── delete_attachment_info.php
+├── export.php
+├── export_recipients.php
+├── form_delete2.php
+├── form_edit2.php
+├── form_save.php
+├── generic_export.php
+├── get_attachment_info.php
+├── process_import.php
+├── save_attachment_info.php
+├── send_newsletter.php
+├── ssi_newsletter.sql
+├── start_mass_mailer.php
+├── template
+│   ├── delete.php
+│   ├── duplicate.php
+│   ├── get_preview_data.php
+│   ├── get_recipient_data.php
+│   ├── get_template.php
+│   ├── get_templates.php
+│   ├── save_template.php
+│   └── update_file_list.php
+├── update_attachments.php
+└── update_filelist.php
+classes
+├── BatchManager.php
+├── EmailQueueManager.php
+├── EmailService.php
+├── PlaceholderService.php
+├── QueueProcessor.php
+├── WebhookHandler.php
+├── importers
+│   └── RecipientImporter.php
+└── logs
+components
+├── editor_config.php
+└── placeholders.php
+config
+└── export_config.php
+css
+├── common.css
+└── import-recipients.css
+database.txt  [error opening dir]
+exec
+├── cron_controller.php
+├── mailjet_event_handler.php
+├── process_batch.php
+├── process_queue copy.php
+├── process_queue.php
+├── send_email_background.php
+├── send_test_mail.php
+├── test_mailjet_handler_direct.php
+├── test_queue_manager.php
+├── test_single_event.php
+├── test_status_transitions.php
+└── test_webhook.php
+export
+form
+├── f_groups.php
+├── f_newsletters.php
+├── f_recipients.php
+├── f_senders.php
+├── f_templates.php
+└── preview_template.php
+import.txt  [error opening dir]
+index.php  [error opening dir]
+js
+├── editor_utils.js
+├── form_after.js
+├── form_home.js
+├── import-recipients.js
+├── newsletter-utils.js
+└── send_emails.js
+lists
+├── groups.php
+├── logs.php
+├── newsletters.php
+├── recipients.php
+├── senders.php
+└── templates.php
+logs
+├── batch_187_1733226109.log
+├── batch_187_1733226462.log
+├── batch_188_1733226688.log
+├── batch_189_1733227061.log
+├── batch_189_1733227273.log
+├── batch_189_1733227294.log
+├── batch_190_1733227317.log
+├── batch_190_1733227357.log
+├── batch_190_1733227560.log
+├── batch_192_1733232423.log
+├── batch_error.log
+├── batch_process.log
+├── cron.log
+├── cron_controller.log
+├── cron_error.log
+├── error.log
+└── mailjet_webhook.log
+n_config.php  [error opening dir]
+pages
+├── form_delete.php
+├── form_edit.php
+├── home.php
+├── import_recipients.php
+├── list_groups.php
+├── list_logs.php
+├── list_newsletters.php
+├── list_recipients.php
+├── list_senders.php
+├── list_templates.php
+├── preview_newsletter.php
+└── setting.php
+test
+├── INFO.txt
 ├── index.php
-├── js
-│   ├── editor_utils.js
-│   ├── form_after.js
-│   ├── form_home.js
-│   ├── import-recipients.js
-│   ├── newsletter-utils.js
-│   └── send_emails.js
-├── lists
-│   ├── groups.php
-│   ├── logs.php
-│   ├── newsletters.php
-│   ├── recipients copy.php
-│   ├── recipients.php
-│   ├── senders.php
-│   └── templates.php
+├── save_email_data.php
+├── send_emails.php
+├── send_emails_background.php
+└── webhook.php
+tmp
+tree_newsletter.txt  [error opening dir]
+unsubscribe.php  [error opening dir]
+webhooks
 ├── logs
-│   └── error.log
-├── n_config.php
-├── pages
-│   ├── form_delete.php
-│   ├── form_edit.php
-│   ├── home.php
-│   ├── import_recipients.php
-│   ├── list_groups.php
-│   ├── list_logs.php
-│   ├── list_newsletters.php
-│   ├── list_recipients.php
-│   ├── list_senders.php
-│   ├── list_templates.php
-│   ├── preview_newsletter.php
-│   └── setting.php
-├── test
-│   ├── INFO.txt
-│   ├── index.php
-│   ├── save_email_data.php
-│   ├── send_emails.php
-│   ├── send_emails_background.php
-│   └── webhook.php
-├── tmp
-├── tree_newsletter.php
-├── tree_newsletter.txt
-├── unsubscribe.php
+├── mailjet.php
 └── webhooks
-    ├── logs
-    ├── mailjet.php
-    └── webhooks
 
-20 directories, 96 files
+18 directories, 114 files

@@ -130,22 +130,23 @@ function replacePlaceholders($text, $customPlaceholders = [])
 function getAllGroups($db)
 {
     global $userId;
-
     $groups = [];
+
     $query = "
         SELECT 
-            g.id, 
-            g.name, 
+            g.id,
+            g.name,
             g.color,
-            COUNT(DISTINCT rg.recipient_id) as recipient_count
+            COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN rg.recipient_id END) as recipient_count
         FROM 
             groups g
             LEFT JOIN recipient_group rg ON g.id = rg.group_id
-            WHERE 
-            user_id = '$userId'
+            LEFT JOIN recipients r ON rg.recipient_id = r.id
+        WHERE 
+            g.user_id = ?
         GROUP BY 
-            g.id, 
-            g.name, 
+            g.id,
+            g.name,
             g.color
         ORDER BY 
             g.name
@@ -156,6 +157,9 @@ function getAllGroups($db)
         error_log("Prepare fehlgeschlagen: " . $db->error);
         return [];
     }
+
+    // Bind Parameter für bessere Sicherheit
+    $stmt->bind_param("s", $userId);
 
     if (!$stmt->execute()) {
         error_log("Execute fehlgeschlagen: " . $stmt->error);
