@@ -12,13 +12,11 @@ if (!defined('ALLOW_WEBHOOK') && php_sapi_name() !== 'cli') {
         exit;
     }
 }
-
 if (php_sapi_name() !== 'cli') {
     if (!defined('ALLOW_WEBHOOK')) {
         require_once(__DIR__ . '/../../config.php');
     }
 }
-
 // Laden der .env Datei
 if (file_exists(__DIR__ . '/../../.env')) {
     $envContent = file_get_contents(__DIR__ . '/../../.env');
