@@ -31,7 +31,9 @@ try {
     mysqli_set_charset($db, 'utf8mb4');
 
     define('APP_ROOT', __DIR__);
-    define('WEB_ROOT', $_ENV['APP_ENV'] === 'development' ? '/smart8' : '');
+    //define('WEB_ROOT', $_ENV['APP_ENV'] === 'development' ? '/smart8' : '');
+    define('WEB_ROOT', $_ENV['WEB_ROOT']);
+
     define('SMARTFORM_PATH', WEB_ROOT . '/smartform2');
 
     // Benutzer-Authentifizierung und Zugriffskontrolle

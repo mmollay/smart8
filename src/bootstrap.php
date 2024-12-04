@@ -52,6 +52,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
 // Datenbank-Konfiguration
 $dbConfig = [
     'host' => env('DB_HOST', 'localhost'),
