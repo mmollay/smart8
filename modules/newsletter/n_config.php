@@ -3,8 +3,20 @@
 error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', 1);
 
+// Am Anfang von n_config.php
+if (!defined('ALLOW_WEBHOOK') && php_sapi_name() !== 'cli') {
+    // Normale Session-Prüfung nur wenn kein Webhook
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: /auth/no_access.php');
+        exit;
+    }
+}
+
 if (php_sapi_name() !== 'cli') {
-    require_once(__DIR__ . '/../../config.php');
+    if (!defined('ALLOW_WEBHOOK')) {
+        require_once(__DIR__ . '/../../config.php');
+    }
 }
 
 // Laden der .env Datei

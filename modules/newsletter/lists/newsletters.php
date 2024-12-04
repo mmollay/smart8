@@ -413,11 +413,11 @@ $buttons = [
             'position' => 'top left'
         ],
         'params' => ['content_id' => 'content_id'],
-        'conditions' => [
-            function ($row) {
-                return $row['send_status'] == 1;
-            }
-        ]
+        // 'conditions' => [
+        //     function ($row) {
+        //         return $row['send_status'] == 1;
+        //     }
+        // ]
     ],
     'clone' => [
         'icon' => 'copy outline',
