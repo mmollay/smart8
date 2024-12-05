@@ -1561,7 +1561,7 @@ class FormGenerator
             return $relativePath . '/upload_image.php';
         } else {
             // Für Produktionsserver
-            return '/smart8/smartform2/upload_image.php';
+            return '/smartform2/upload_image.php';
         }
     }
 
