@@ -1,6 +1,8 @@
 <?php
-function getEditorConfig()
+function getEditorConfig($userId, $update_id)
 {
+
+
     return [
         'minHeight' => 300,
         'maxHeight' => 600,
@@ -9,7 +11,7 @@ function getEditorConfig()
             'upload' => [
                 'types' => ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp', 'tiff'],
                 'maxFileSize' => 5 * 1024 * 1024,
-                'path' => '../uploads/'
+                'path' => "/users/$userId/newsletters/$update_id/"
             ]
         ],
         'toolbar' => [

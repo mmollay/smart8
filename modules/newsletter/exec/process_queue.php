@@ -81,6 +81,7 @@ function processNewsletter($db, $emailService, $placeholderService, $contentId)
 
         // Ersetze Platzhalter in Betreff und Nachricht
         $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
+        $message = makeUrlsAbsolute($job['message'], $_SERVER['HTTP_HOST']);
         $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
 
         // Füge Abmelde-Link hinzu
@@ -211,4 +212,31 @@ if ($contentId) {
     echo "\nVerarbeitung abgeschlossen.\n";
     echo "Newsletter verarbeitet: $newsletterCount\n";
     echo "Gesamt E-Mails gesendet: $totalCount\n";
+}
+
+function makeUrlsAbsolute($content, $baseUrl)
+{
+    $baseUrl = rtrim($baseUrl, '/');
+
+    // Array von Mustern und ihren Attributen
+    $patterns = [
+        // Bilder
+        ['pattern' => '/src="(\/users\/[^"]+)"/i', 'attr' => 'src'],
+        // Links
+        ['pattern' => '/href="(\/users\/[^"]+)"/i', 'attr' => 'href'],
+        // Weitere Muster nach Bedarf...
+    ];
+
+    foreach ($patterns as $p) {
+        $content = preg_replace_callback(
+            $p['pattern'],
+            function ($matches) use ($baseUrl) {
+                $relativePath = $matches[1];
+                return $p['attr'] . '="' . $baseUrl . $relativePath . '"';
+            },
+            $content
+        );
+    }
+    echo $content;
+    return $content;
 }

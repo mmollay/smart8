@@ -200,12 +200,35 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
             )
         ];
 
+
+        // Korrekte Basis-URL aus Konfiguration
+        $APP_URL = $_ENV['APP_URL'] ?? 'https://newsletter.ssi.at'; // Fallback hinzufügen
+
+        // Platzhalter ersetzen und URLs anpassen
+        try {
+            $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
+
+            $message = $job['message'];
+            $message = $placeholderService->replacePlaceholders($message, $placeholders);
+            $message = makeUrlsAbsolute($message, $APP_URL);
+
+            writeLog("URLs in der Nachricht erfolgreich ersetzt", 'INFO', $batchLogFile);
+        } catch (Exception $e) {
+            writeLog("Fehler beim Verarbeiten der Nachricht: " . $e->getMessage(), 'ERROR', $batchLogFile);
+            throw $e;
+        }
+
         // Platzhalter ersetzen
         $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
-        $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
+
+        $message = $job['message'];
+        $message = $placeholderService->replacePlaceholders($message, $placeholders);
+        $message = makeUrlsAbsolute($message, $APP_URL);
+
+
 
         // Abmelde-Link hinzufügen
-        $unsubscribeUrl = $_ENV['APP_URL'] . "/modules/newsletter/unsubscribe.php?email=" .
+        $unsubscribeUrl = $APP_URL . "/modules/newsletter/unsubscribe.php?email=" .
             urlencode($job['recipient_email']) . "&id=" . $job['id'];
         $unsubscribeLink = "<br><br><hr><p style='font-size: 12px; color: #666;'>
             Falls Sie keine weiteren E-Mails erhalten möchten, 
@@ -349,4 +372,32 @@ function getAnrede($gender, $title, $firstName, $lastName)
     $anrede .= ' ' . $lastName;
 
     return $anrede;
+}
+
+function makeUrlsAbsolute($content, $baseUrl)
+{
+    global $batchLogFile;
+    $baseUrl = rtrim($baseUrl, '/');
+
+    writeLog("Starte URL-Ersetzung mit Basis-URL: $baseUrl", 'INFO', $batchLogFile);
+
+    $patterns = [
+        ['pattern' => '/(src\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'src'],
+        ['pattern' => '/(href\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'href'],
+    ];
+
+    foreach ($patterns as $p) {
+        $content = preg_replace_callback(
+            $p['pattern'],
+            function ($matches) use ($baseUrl, $batchLogFile) {
+                $oldUrl = $matches[2];
+                $newUrl = $baseUrl . $oldUrl;
+                writeLog("Ersetze URL: $oldUrl -> $newUrl", 'DEBUG', $batchLogFile);
+                return $matches[1] . '"' . $newUrl . '"';
+            },
+            $content
+        );
+    }
+
+    return $content;
 }

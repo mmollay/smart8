@@ -30,8 +30,8 @@ $dashboard->addMenuItem('mainMenu', "main", "../../auth/logout.php", "Abmelden",
 //$dashboard->addScript("../../../smartform/js/smart_list.js");
 //$dashboard->addScript("../../../smartform/js/smart_form.js");
 
-$dashboard->addScript(SMARTFORM_PATH . "/js/listGenerator.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/formGenerator.js");
+$dashboard->addScript(SMARTFORM_PATH . "/js/listGenerator.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/ckeditor-init.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/fileUploader.js");
 
@@ -619,27 +619,95 @@ class Dashboard
             echo "    <link rel=\"stylesheet\" href=\"" . htmlspecialchars($style) . "\">\n";
         }
         echo "    <link rel=\"stylesheet\" href=\"../../css/basis.css\">\n";
+
+        // Styles für stabile Sidebar-Breite
+        echo "    <style>\n";
+        echo "        body { overflow-x: hidden; }\n";
+        echo "        .ui.sidebar { width: 260px !important; overflow-y: auto; }\n";
+        echo "        .ui.visible.sidebar ~ .pusher { transform: translate3d(260px, 0, 0) !important; }\n";
+        echo "        .dimmed.pusher { overflow: visible !important; }\n";
+        echo "        .ui.modal { transform: translateZ(0); }\n";
+        echo "        #pageContent { transition: margin 0.3s ease; min-height: calc(100vh - 60px); }\n";
+        echo "        .fixed.menu { z-index: 999; }\n";
+        echo "        .ui.modal { z-index: 1001; }\n";
+        echo "        .ui.dimmer { z-index: 1000; }\n";
+        echo "    </style>\n";
+
         echo "    <script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>\n";
         echo "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js\"></script>\n";
+
         $this->renderJSVars();
         foreach ($this->scripts as $script) {
             echo "    <script src=\"" . htmlspecialchars($script) . "\"></script>\n";
         }
         foreach ($this->inlineScripts as $inlineScript) {
-            echo "<script>{$inlineScript}</script>\n";
+            echo "    <script>{$inlineScript}</script>\n";
         }
 
+        // JavaScript für stabilere Modal- und Sidebar-Interaktion
+        echo "<script>
+            $(document).ready(function() {
+                let originalBodyPadding;
+                let originalSidebarPosition;
+                
+                // Modal-Handler
+                $(document).on('show.modal', function() {
+                    originalBodyPadding = $('body').css('padding-right');
+                    originalSidebarPosition = $('.ui.sidebar').css('transform');
+                    
+                    // Verhindere das Springen durch das Scrollbar-Entfernen
+                    $('body').css({
+                        'padding-right': (window.innerWidth - document.documentElement.clientWidth) + 'px'
+                    });
+                    
+                    // Fixiere die Sidebar-Position
+                    if($('.ui.sidebar').hasClass('visible')) {
+                        $('.ui.sidebar').css('transform', originalSidebarPosition);
+                    }
+                });
+    
+                $(document).on('hide.modal', function() {
+                    // Stelle Original-Padding wieder her
+                    $('body').css('padding-right', originalBodyPadding);
+                    
+                    // Stelle Sidebar-Position wieder her
+                    if($('.ui.sidebar').hasClass('visible')) {
+                        $('.ui.sidebar').css('transform', originalSidebarPosition);
+                    }
+                });
+    
+                // Verbesserte Sidebar-Initialisierung
+                $('.ui.sidebar').sidebar({
+                    context: $('body'),
+                    dimPage: false,
+                    onVisible: function() {
+                        $(this).css('position', 'fixed');
+                    },
+                    onShow: function() {
+                        $('body').addClass('sidebar-visible');
+                    },
+                    onHide: function() {
+                        $('body').removeClass('sidebar-visible');
+                    }
+                });
+            });
+        </script>";
 
         echo "</head>\n";
         echo "<body>\n";
+
+        // Wrapper für bessere Struktur
+        echo "<div class=\"ui wrapper\">\n";
+
         foreach (array_keys($this->menus) as $menuId) {
             $this->renderMenu($menuId);
         }
-        echo "    \n<div class=\"pusher\">\n";
-        echo "            <div id=\"pageContent\"></div>\n";
 
-        // Dezenter Footer
-        echo "        <div align=\"center\" >\n";
+        echo "    <div class=\"pusher\">\n";
+        echo "        <div id=\"pageContent\"></div>\n";
+
+        // Footer
+        echo "        <div class=\"ui container footer\" align=\"center\">\n";
         echo $this->footerContent;
         if (!$this->footerContent) {
             echo "           <div class='ui label'> Version " . htmlspecialchars($this->version) . "</div>\n";
@@ -647,6 +715,8 @@ class Dashboard
         echo "        </div>\n";
 
         echo "    </div>\n";
+        echo "</div>\n";
+
         echo "    <script src=\"../../js/main.js\"></script>\n";
 
         foreach (array_keys($this->menus) as $menuId) {

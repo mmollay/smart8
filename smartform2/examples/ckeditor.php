@@ -50,7 +50,7 @@ $formGenerator->addField([
             'upload' => [
                 'types' => ['jpeg', 'png', 'gif'],
                 'maxFileSize' => 5 * 1024 * 1024,
-                'path' => '../uploads/'
+                'path' => '../../test/'
             ]
         ]
     ])

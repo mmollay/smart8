@@ -16,7 +16,7 @@ $listConfig = [
     'striped' => true,
     'selectable' => true,
     'celled' => true,
-    'width' => '1400px',
+    'width' => '1500px',
     'tableClasses' => 'ui celled striped definition small compact table'
 ];
 
@@ -120,10 +120,11 @@ $columns = [
     [
         'name' => 'content_id',
         'label' => 'ID',
-        'width' => '50px'
+        'width' => '60px'
     ],
     [
         'name' => 'sender_name',
+        'width' => '200px',
         'label' => '<i class="user icon"></i>Absender',
         'formatter' => function ($value, $row) {
             return sprintf(
@@ -194,10 +195,10 @@ $columns = [
         'name' => 'attachments',
         'label' => '<i class="paperclip icon"></i>Anhänge',
         'formatter' => function ($value, $row) {
-            return "<span class='attachment-info' data-content-id='{$row['content_id']}'>Wird geladen...</span>";
+            return "<span class='attachment-info' data-content-id='{$row['content_id']}'></span>";
         },
         'allowHtml' => true,
-        'width' => '150px'
+        'width' => '160px'
     ],
     [
         'name' => 'delivery_stats',

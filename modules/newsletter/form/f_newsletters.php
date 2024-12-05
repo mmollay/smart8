@@ -18,8 +18,19 @@ if (!isset($_POST['update_id'])) {
     }
 }
 
+
 $formGenerator = new FormGenerator();
-$formGenerator->setBasePath('../../smartform2/');
+
+// Tabs für bessere Übersichtlichkeit
+$formGenerator->addField([
+    'type' => 'tab',
+    'tabs' => [
+        'basis' => 'Grundeinstellungen',
+        'anhang' => 'Anhänge',
+        'vorlagen' => 'Template-Verwaltung'
+    ],
+    'active' => 'basis'
+]);
 
 $formGenerator->setFormData([
     'id' => 'form_edit',
@@ -47,6 +58,7 @@ $formGenerator->addField([
 $formGenerator->addField([
     'type' => 'segment',
     'class' => 'ui segment',
+    'tab' => 'vorlagen',
     'fields' => [
         [
             'type' => 'dropdown',
@@ -69,13 +81,25 @@ $formGenerator->addField([
     ]
 ]);
 
-
+$formGenerator->addField([
+    'type' => 'dropdown',
+    'name' => 'sender_id',
+    'tab' => 'basis',
+    'leftLabel' => 'Von',
+    'leftLabelClass' => 'ui label fixed-width-label',  // Zusätzliche Klasse
+    'array' => getSenders($db),
+    'required' => true,
+    'error_message' => 'Bitte Absender auswählen',
+    'placeholder' => '--Absender wählen--'
+]);
 
 // Existing fields
 $formGenerator->addField([
     'type' => 'dropdown',
+    'tab' => 'basis',
     'name' => 'tags',
-    'label' => 'Gruppen',
+    'leftLabel' => 'An ',
+    'leftLabelClass' => 'ui label fixed-width-label',
     'array' => getAllGroups($db),
     'multiple' => true,
     'required' => true,
@@ -85,19 +109,12 @@ $formGenerator->addField([
 ]);
 
 $formGenerator->addField([
-    'type' => 'dropdown',
-    'name' => 'sender_id',
-    'label' => 'Absender',
-    'array' => getSenders($db),
-    'required' => true,
-    'error_message' => 'Bitte Absender auswählen',
-    'placeholder' => '--Absender wählen--'
-]);
-
-$formGenerator->addField([
     'type' => 'input',
     'name' => 'subject',
-    'label' => 'Betreff',
+    'tab' => 'basis',
+    'placeholder' => 'Betreff eingeben...',
+    'leftLabel' => 'Betreff',
+    'leftLabelClass' => 'ui label fixed-width-label',  // Die gleiche Klasse
     'required' => true,
     'error_message' => 'Bitte geben Sie einen Betreff ein'
 ]);
@@ -106,29 +123,32 @@ $formGenerator->addField([
 $formGenerator->addField([
     'type' => 'custom',
     'name' => 'placeholders',
-    'label' => 'Verfügbare Platzhalter',
+    'tab' => 'basis',
+    //'label' => 'Verfügbare Platzhalter',
     'html' => getPlaceholdersHTML()
 ]);
 
 $formGenerator->addField([
     'type' => 'ckeditor5',
     'name' => 'message',
-    'label' => 'Nachricht',
+    'tab' => 'basis',
+    //'label' => 'Nachricht',
     //'required' => true,
     'error_message' => 'Bitte geben Sie eine Nachricht ein',
-    'config' => getEditorConfig()
+    'config' => getEditorConfig($_SESSION['user_id'], $update_id)
 ]);
 
 // File uploader
 $formGenerator->addField([
     'type' => 'uploader',
+    'tab' => 'anhang',
     'name' => 'files',
     'config' => array(
         'MAX_FILE_SIZE' => 10 * 1024 * 1024,
         'MAX_FOLDER_SIZE' => 10000 * 1024 * 1024,
         'ALLOWED_FORMATS' => ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif', 'txt', 'zip', 'wav'],
         'MAX_FILE_COUNT' => 10,
-        'UPLOAD_DIR' => "../../uploads/users/$update_id/",
+        'UPLOAD_DIR' => "../../../users/$userId/newsletters/$update_id/",
         'LANGUAGE' => 'de',
         'dropZoneId' => 'drop-zone',
         'fileInputId' => 'file-input',
@@ -137,7 +157,7 @@ $formGenerator->addField([
         'progressContainerId' => 'progress-container',
         'progressBarId' => 'progress',
         'showDeleteAllButton' => true,
-        'onFileListChange' => 'updateFileListInDatabase',
+        //'onFileListChange' => "updateFileListInDatabase",
     )
 ]);
 
@@ -194,26 +214,6 @@ function getSenders($db)
     return $array_senders;
 }
 
-// function getGroups($db)
-// {
-//     $array_groups = array();
-//     $sql = "SELECT g.id, g.name, g.color, COUNT(rg.recipient_id) as email_count 
-//             FROM groups g
-//             LEFT JOIN recipient_group rg ON g.id = rg.group_id
-//             GROUP BY g.id
-//             ORDER BY g.name ASC";
-
-//     $result = $db->query($sql);
-//     if ($result->num_rows > 0) {
-//         while ($row = $result->fetch_assoc()) {
-//             $color_class = $row['color'];
-//             $email_count = $row['email_count'];
-//             $array_groups[$row['id']] = '<div class="ui mini empty circular ' . $color_class . ' label"> </div>' .
-//                 $row['name'] . ' (' . $email_count . ')</b>';
-//         }
-//     }
-//     return $array_groups;
-// }
 
 function getSelectedEmailContentGroups($db, $email_content_id)
 {
@@ -259,204 +259,7 @@ echo $formGenerator->generateForm();
         <div class="ui loader"></div>
     </div>
 </div>
-
-<script src="js/editor_utils.js"></script>
-<script>
-    $(document).ready(function () {
-        // Haupt-Modal konfigurieren (das mit dem Formular)
-        $('#modal_form_n').modal({
-            allowMultiple: true,  // Erlaubt mehrere Modals
-            closable: false
-        });
-
-        // Template-Modal separat konfigurieren
-        $('#saveTemplateModal').modal({
-            allowMultiple: true,  // Erlaubt mehrere Modals
-            closable: false,
-        });
-    });
-
-    function loadTemplate(templateId) {
-        if (!templateId) return;
-
-        $.ajax({
-            url: 'ajax/template/get_template.php',
-            method: 'POST',
-            data: { template_id: templateId },
-            dataType: 'json',
-            success: function (response) {
-                console.log('Template Response:', response); // Debug-Ausgabe
-
-                if (response.success) {
-                    const editor = document.querySelector('.ck-editor__editable').ckeditorInstance;
-                    if (editor && response.data.html_content) {
-                        editor.setData(response.data.html_content);
-                    }
-
-                    if (response.data.subject) {
-                        $('#subject').val(response.data.subject);
-                    }
-
-                    showToast('Template wurde geladen', 'success');
-                } else {
-                    console.error('Template Ladefehler:', response.message);
-                    showToast('Fehler beim Laden des Templates: ' + response.message, 'error');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Error:', {
-                    status: status,
-                    error: error,
-                    response: xhr.responseText
-                });
-                showToast('Fehler beim Laden des Templates', 'error');
-            }
-        });
-    }
-
-    function saveAsTemplate() {
-        // Template-Modal öffnen, ohne das Haupt-Modal zu schließen
-        $('#saveTemplateModal')
-            .modal({
-                allowMultiple: true,
-                onApprove: function () {
-                    return saveTemplate();
-                }
-            })
-            .modal('show');
-    }
-
-    function saveTemplate() {
-        const name = $('#templateName').val();
-        const description = $('#templateDescription').val();
-        const editor = document.querySelector('.ck-editor__editable').ckeditorInstance;
-        // Hole den Betreff aus dem Hauptformular
-        const subject = $('#subject').val();
-
-
-        // Hole den Content aus dem Editor
-        const content = editor ? editor.getData() : '';
-
-        // Debug-Ausgaben
-        console.log('Speichere Template mit folgenden Werten:', {
-            name: name,
-            description: description,
-            html_content: content,
-            subject: subject
-        });
-
-        if (!name) {
-            showToast('Bitte geben Sie einen Template-Namen ein', 'error');
-            return false;
-        }
-
-        // Modal in Loading-Zustand versetzen
-        $('#saveTemplateModal').addClass('loading');
-
-        // AJAX-Request
-        $.ajax({
-            url: 'ajax/template/save_template.php',
-            method: 'POST',
-            data: {
-                name: name,
-                description: description,
-                html_content: content,
-                subject: subject // Stelle sicher, dass der subject mitgesendet wird
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    $('#saveTemplateModal')
-                        .modal('hide')
-                        .removeClass('loading');
-
-                    showToast('Template wurde gespeichert', 'success');
-
-                    // Template Dropdown aktualisieren
-                    refreshTemplateDropdown();
-
-                    // Template-Modal-Felder zurücksetzen
-                    $('#templateName').val('');
-                    $('#templateDescription').val('');
-                } else {
-                    $('#saveTemplateModal').removeClass('loading');
-                    showToast('Fehler beim Speichern des Templates: ' + response.message, 'error');
-                }
-            },
-            error: function (xhr, status, error) {
-                $('#saveTemplateModal').removeClass('loading');
-                console.error('AJAX Error:', {
-                    status: status,
-                    error: error,
-                    response: xhr.responseText
-                });
-                showToast('Fehler beim Speichern des Templates: ' + error, 'error');
-            }
-        });
-
-        return false;
-    }
-
-    // Funktion zum Aktualisieren der Template-Dropdown
-    function refreshTemplateDropdown() {
-        $.ajax({
-            url: 'ajax/template/get_templates.php',
-            method: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    const $dropdown = $('select[name="template_id"]');
-                    const currentValue = $dropdown.val();
-
-                    $dropdown.empty();
-                    $dropdown.append('<option value="">--Template auswählen--</option>');
-
-                    response.templates.forEach(template => {
-                        $dropdown.append(new Option(template.name, template.id));
-                    });
-
-                    // Dropdown aktualisieren
-                    $dropdown.dropdown('refresh');
-                }
-            }
-        });
-    }
-
-    function updateFileListInDatabase(fileList) {
-        const formData = new FormData();
-        formData.append('action', 'updateFileList');
-        formData.append('update_id', <?php echo json_encode($update_id); ?>);
-        formData.append('fileList', JSON.stringify(fileList));
-
-        fetch('ajax/template/update_file_list.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Dateiliste aktualisiert');
-                } else {
-                    console.error('Fehler beim Aktualisieren der Dateiliste:', data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Fehler beim Senden der Anfrage:', error);
-            });
-    }
-
-    function afterFormSubmit(response) {
-        if (response.success) {
-            showToast('Newsletter gespeichert', 'success');
-            if (typeof reloadTable === 'function') {
-                reloadTable();
-            }
-        } else {
-            showToast('Fehler beim Speichern: ' + response.message, 'error');
-        }
-    }
-
-</script>
+<script src="js/f_newsletter.js"></script>
 
 <style>
     .ui.segment .ui.buttons {
@@ -473,6 +276,10 @@ echo $formGenerator->generateForm();
     }
 
     .ck-editor__editable {
-        min-height: 300px;
+        min-height: 250px;
+    }
+
+    .fixed-width-label {
+        min-width: 50px !important;
     }
 </style>

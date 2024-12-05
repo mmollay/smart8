@@ -357,10 +357,19 @@ class FormGenerator
         }
 
         if ($field['type'] === 'ckeditor5') {
-            $field['id'] = $this->generateUniqueId($field['name']);
+            $field['id'] = $field['name'];
             $this->hasCKEditor = true;
             if (!empty($field['config'])) {
+                // Stelle sicher, dass die komplette Upload-Konfiguration erhalten bleibt
                 self::$ckeditorConfigs[$field['name']] = $field['config'];
+
+                // Wenn image.upload konfiguriert ist, behalte diese Konfiguration bei
+                if (!empty($field['config']['image']['upload'])) {
+                    self::$ckeditorConfigs[$field['name']]['image']['upload'] = $field['config']['image']['upload'];
+                }
+
+                // Debug-Ausgabe
+                error_log("CKEditor config for {$field['name']}: " . print_r(self::$ckeditorConfigs[$field['name']], true));
             }
         }
 
@@ -777,7 +786,79 @@ class FormGenerator
                 $fieldHtml = "<input type='hidden' name='{$field['name']}' value='" . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . "'>";
                 break;
             case 'input':
-                $fieldHtml .= "<label>{$label}</label><input type='text' id='$id' name='{$field['name']}' placeholder='{$placeholder}' value='{$value}' class='{$fieldClass}'>";
+                $label = $field['label'] ?? '';
+                $labelPosition = $field['labelPosition'] ?? 'above'; // Default position
+                $labelClass = $field['labelClass'] ?? ''; // Label classes
+
+                // New additions
+                $leftLabel = $field['leftLabel'] ?? null;
+                $rightLabel = $field['rightLabel'] ?? null;
+                $leftLabelClass = $field['leftLabelClass'] ?? 'ui label';
+                $rightLabelClass = $field['rightLabelClass'] ?? 'ui basic label';
+                $iconLeft = $field['iconLeft'] ?? null;
+                $iconRight = $field['iconRight'] ?? null;
+
+                // Different HTML structures based on configuration
+                if ($labelPosition === 'above' && !$leftLabel && !$rightLabel) {
+                    // Traditional top label
+                    $fieldHtml .= "<label>{$label}</label>
+                                      <input type='text' 
+                                        id='$id' 
+                                        name='{$field['name']}' 
+                                        placeholder='{$placeholder}' 
+                                        value='{$value}' 
+                                        class='{$fieldClass}'>";
+                } else {
+                    // Start building labeled input
+                    $inputClasses = ['ui'];
+                    $hasLeftContent = ($leftLabel || $iconLeft);
+                    $hasRightContent = ($rightLabel || $iconRight);
+
+                    if ($hasLeftContent)
+                        $inputClasses[] = 'labeled';
+                    if ($hasRightContent)
+                        $inputClasses[] = 'right labeled';
+                    if ($iconLeft)
+                        $inputClasses[] = 'left icon';
+                    if ($iconRight)
+                        $inputClasses[] = 'right icon';
+
+                    $inputClasses[] = 'input';
+
+                    $fieldHtml .= "<div class='" . implode(' ', $inputClasses) . "'>";
+
+                    // Left content
+                    if ($leftLabel) {
+                        $fieldHtml .= "<div class='{$leftLabelClass}'>";
+                        if ($iconLeft) {
+                            $fieldHtml .= "<i class='{$iconLeft} icon'></i>";
+                        }
+                        $fieldHtml .= $leftLabel . "</div>";
+                    } elseif ($iconLeft) {
+                        $fieldHtml .= "<i class='{$iconLeft} icon'></i>";
+                    }
+
+                    // Input field
+                    $fieldHtml .= "<input type='text' 
+                            id='$id' 
+                            name='{$field['name']}' 
+                            placeholder='{$placeholder}' 
+                            value='{$value}' 
+                            class='{$fieldClass}'>";
+
+                    // Right content
+                    if ($rightLabel) {
+                        $fieldHtml .= "<div class='{$rightLabelClass}'>";
+                        if ($iconRight) {
+                            $fieldHtml .= "<i class='{$iconRight} icon'></i>";
+                        }
+                        $fieldHtml .= $rightLabel . "</div>";
+                    } elseif ($iconRight) {
+                        $fieldHtml .= "<i class='{$iconRight} icon'></i>";
+                    }
+
+                    $fieldHtml .= "</div>";
+                }
                 break;
             case 'textarea':
                 $rows = $field['rows'] ?? 3;
@@ -818,44 +899,61 @@ class FormGenerator
                 break;
             case 'dropdown':
             case 'select':
-
                 $selectedValues = isset($field['value']) ? (is_array($field['value']) ? $field['value'] : [$field['value']]) : [];
                 $multiple = !empty($field['multiple']);
                 $nameAttr = $multiple ? "{$field['name']}[]" : $field['name'];
                 $placeholder = $field['placeholder'] ?? '';
                 $dropdownSettings = $field['dropdownSettings'] ?? [];
 
-                // Setze Standardwerte
+                // Set default settings
                 $dropdownSettings['fullTextSearch'] = $dropdownSettings['fullTextSearch'] ?? true;
                 $dropdownSettings['clearable'] = $dropdownSettings['clearable'] ?? true;
                 $dropdownSettings['multiple'] = $multiple;
 
-                // Behandle das onChange-Event separat
+                // Handle onChange event separately
                 $onChangeFunction = '';
                 if (isset($dropdownSettings['onChange'])) {
                     $onChangeFunction = $dropdownSettings['onChange'];
-                    unset($dropdownSettings['onChange']); // Entferne es aus den Einstellungen, die als JSON übergeben werden
+                    unset($dropdownSettings['onChange']);
                 }
 
-                $dropdownSettingsForJson = array_filter($dropdownSettings, function ($value) {
-                    return !is_string($value) || !preg_match('/^function\s*\(/', $value);
-                });
-                $dropdownSettingsJson = htmlspecialchars(json_encode($dropdownSettingsForJson), ENT_QUOTES, 'UTF-8');
-
+                $dropdownSettingsJson = htmlspecialchars(json_encode($dropdownSettings), ENT_QUOTES, 'UTF-8');
                 $dropdownId = $field['name'];
                 $searchClass = $dropdownSettings['fullTextSearch'] ? 'search' : '';
                 $clearableClass = $dropdownSettings['clearable'] ? 'clearable' : '';
                 $multipleClass = $multiple ? 'multiple' : '';
 
-                $fieldHtml .= "<label>{$label}</label>";
+                // Check for left/right labels
+                $hasLeftLabel = isset($field['leftLabel']);
+                $hasRightLabel = isset($field['rightLabel']);
+
+                // Start building the HTML
+                if ($hasLeftLabel || $hasRightLabel) {
+                    $fieldHtml .= "<div class='field'>";
+                    if (isset($field['label'])) {
+                        $fieldHtml .= "<label>{$field['label']}</label>";
+                    }
+                    $fieldHtml .= "<div class='ui " . ($hasLeftLabel ? 'labeled' : '') . " " . ($hasRightLabel ? 'right labeled' : '') . " input'>";
+
+                    // Add left label if exists
+                    if ($hasLeftLabel) {
+                        $leftLabelClass = $field['leftLabelClass'] ?? 'ui label';
+                        $fieldHtml .= "<div class='{$leftLabelClass}'>{$field['leftLabel']}</div>";
+                    }
+                } else {
+                    $fieldHtml .= "<label>{$field['label']}</label>";
+                }
+
+                // Main dropdown
                 $fieldHtml .= "<div id='{$dropdownId}' class='ui fluid {$searchClass} {$clearableClass} {$multipleClass} selection dropdown {$fieldClass}' data-settings='{$dropdownSettingsJson}' data-onchange='" . htmlspecialchars($onChangeFunction, ENT_QUOTES, 'UTF-8') . "'>";
                 $fieldHtml .= "<input type='hidden' name='{$nameAttr}' value='" . implode(',', $selectedValues) . "'>";
                 $fieldHtml .= "<i class='dropdown icon'></i>";
                 $fieldHtml .= "<div class='default text'>" . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . "</div>";
                 $fieldHtml .= "<div class='menu'>";
 
-                if (!empty($field['options']))
+                if (!empty($field['options'])) {
                     $field['array'] = $field['options'];
+                }
 
                 if ($field['array']) {
                     foreach ($field['array'] as $optionValue => $optionLabel) {
@@ -864,6 +962,18 @@ class FormGenerator
                     }
                 }
                 $fieldHtml .= "</div></div>";
+
+                // Add right label if exists
+                if ($hasRightLabel) {
+                    $rightLabelClass = $field['rightLabelClass'] ?? 'ui basic label';
+                    $fieldHtml .= "<div class='{$rightLabelClass}'>{$field['rightLabel']}</div>";
+                }
+
+                // Close wrapping divs if we had labels
+                if ($hasLeftLabel || $hasRightLabel) {
+                    $fieldHtml .= "</div></div>";
+                }
+
                 break;
 
             case 'slider':
@@ -1443,7 +1553,16 @@ class FormGenerator
         $classDir = dirname((new ReflectionClass($this))->getFileName());
         $relativePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $classDir);
         $relativePath = '/' . trim($relativePath, '/');
-        return $relativePath . '/upload_image.php';
+
+        // Prüfe ob localhost
+        $isLocalhost = in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1']);
+
+        if ($isLocalhost) {
+            return $relativePath . '/upload_image.php';
+        } else {
+            // Für Produktionsserver
+            return '/smart8/smartform2/upload_image.php';
+        }
     }
 
     private function addGridField($gridField)

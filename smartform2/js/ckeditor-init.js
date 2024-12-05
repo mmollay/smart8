@@ -110,7 +110,8 @@ function initializeCKEditor(editorId, config, uploadUrl) {
             editorContainer.addClass('editor-container');
 
             editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
-                return new UploadAdapter(loader, uploadUrl, config.image && config.image.upload && config.image.upload.path || '');
+                console.log('Upload config:', config.image.upload);
+                return new UploadAdapter(loader, uploadUrl, config.image.upload);
             };
 
             var adjustHeight = function () {
@@ -153,7 +154,14 @@ UploadAdapter.prototype.upload = function () {
         .then(file => new Promise((resolve, reject) => {
             const data = new FormData();
             data.append('upload', file);
-            data.append('ckEditorConfig', JSON.stringify(this.config));
+
+            // Nur die ursprüngliche Konfiguration senden
+            const cleanConfig = {
+                types: this.config.types,
+                maxFileSize: this.config.maxFileSize,
+                path: this.config.path
+            };
+            data.append('ckEditorConfig', JSON.stringify(cleanConfig));
 
             fetch(this.uploadUrl, {
                 method: 'POST',
@@ -167,9 +175,7 @@ UploadAdapter.prototype.upload = function () {
                         reject(result.error);
                     }
                 })
-                .catch(error => {
-                    reject(error);
-                });
+                .catch(error => reject(error));
         }));
 };
 
