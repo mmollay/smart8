@@ -30,6 +30,8 @@ require_once BASE_PATH . '/classes/BatchManager.php';
  * @param string $type Log-Level (INFO, WARNING, ERROR, CRITICAL)
  * @param bool $includeMemory Ob Memory-Informationen geloggt werden sollen
  */
+
+ 
 function writeLog($message, $type = 'INFO', $includeMemory = false)
 {
     static $startTime;

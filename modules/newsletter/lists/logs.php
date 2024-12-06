@@ -2,7 +2,6 @@
 include __DIR__ . '/../../../smartform2/ListGenerator.php';
 include __DIR__ . '/../n_config.php';
 
-// Content ID prüfen
 $content_id = isset($_GET['content_id']) ? intval($_GET['content_id']) :
     (isset($_POST['content_id']) ? intval($_POST['content_id']) : 0);
 
@@ -14,7 +13,7 @@ if ($content_id === 0) {
     exit;
 }
 
-// Newsletter-Details mit erweiterten Statistiken laden
+// Newsletter-Details laden
 $stmt = $db->prepare("
     SELECT 
         subject,
@@ -26,11 +25,8 @@ $stmt = $db->prepare("
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('failed', 'bounce', 'blocked', 'spam')) as error_count
     FROM email_contents 
     WHERE id = ? AND user_id = ?
+  
 ");
-
-if (!$stmt) {
-    die("Prepare failed: " . $db->error);
-}
 
 $stmt->bind_param("ii", $content_id, $userId);
 $stmt->execute();
@@ -44,8 +40,8 @@ if (!$newsletter) {
     exit;
 }
 
-// ListGenerator Konfiguration
-$listConfig = [
+// ListGenerator Config
+$listGenerator = new ListGenerator([
     'listId' => 'newsletter_logs',
     'contentId' => 'content_logs',
     'itemsPerPage' => 50,
@@ -59,50 +55,36 @@ $listConfig = [
     'selectable' => false,
     'celled' => true,
     'tableClasses' => 'ui celled striped small compact table'
-];
+]);
 
-$listGenerator = new ListGenerator($listConfig);
-
-// Query für die Log-Daten
+// Überarbeitete Query für die Log-Daten
 $query = "
     SELECT 
-        sl.id,
-        sl.event as event,
-        sl.timestamp,
-        sl.email,
+        ej.id,
+        ej.status as event,
+        COALESCE(ej.sent_at, ej.created_at) as timestamp,
+        r.email,
         COALESCE(r.first_name, '') as first_name,
         COALESCE(r.last_name, '') as last_name,
         COALESCE(ej.error_message, '') as error_message,
         COALESCE(r.company, '') as company,
         COALESCE(r.id, 0) as recipient_id,
-        COALESCE(ej.status, '') as current_status,
-        COUNT(DISTINCT sl2.id) as total_interactions
+        ej.status as current_status,
+        (SELECT COUNT(*) FROM status_log sl WHERE sl.message_id = ej.message_id AND sl.event IN ('open', 'click')) as total_interactions
     FROM 
         email_jobs ej
-        LEFT JOIN status_log sl ON ej.message_id = sl.message_id
-        LEFT JOIN status_log sl2 ON sl.message_id = sl2.message_id AND sl2.event IN ('open', 'click')
         LEFT JOIN recipients r ON ej.recipient_id = r.id
     WHERE 
-        ej.content_id = {$content_id}
-        AND sl.id IS NOT NULL
+        ej.content_id = {$content_id} AND ej.id IS NOT NULL
     GROUP BY 
-        sl.id,
-        sl.event,
-        sl.timestamp,
-        sl.email,
-        r.first_name,
-        r.last_name,
-        ej.error_message,
-        r.company,
-        r.id,
-        ej.status
+    ej.id
 ";
 
-$listGenerator->setSearchableColumns(['sl.email', 'r.first_name', 'r.last_name', 'r.company']);
+$listGenerator->setSearchableColumns(['r.email', 'r.first_name', 'r.last_name', 'r.company']);
 $listGenerator->setDatabase($db, $query, true);
-$listGenerator->addFilter('sl.event', 'Ereignis', $eventTypes);
+$listGenerator->addFilter('ej.status', 'Status', $eventTypes);
 
-// Header mit Newsletter-Informationen und Statistiken
+// Header mit Newsletter-Informationen
 echo "
 <div class='ui segments'>
     <div class='ui blue segment'>
@@ -197,7 +179,8 @@ $columns = [
                 'blocked' => 'red',
                 'spam' => 'orange',
                 'open' => 'teal',
-                'click' => 'teal'
+                'click' => 'teal',
+                'processing' => 'yellow'
             ];
 
             $currentStatus = $row['current_status'] ?: 'unknown';
@@ -220,15 +203,12 @@ $columns = [
     ]
 ];
 
-// Spalten zum ListGenerator hinzufügen
 foreach ($columns as $column) {
     $listGenerator->addColumn($column['name'], $column['label'], $column);
 }
 
-// Liste generieren
 echo $listGenerator->generateList();
 
-// Datenbankverbindung schließen
 if (isset($db)) {
     $db->close();
 }
@@ -257,13 +237,11 @@ if (isset($db)) {
 
 <script>
     $(document).ready(function () {
-        // Initialisiere Semantic UI Komponenten
         $('.ui.popup').popup();
         $('.ui.statistic').popup({
             position: 'top center'
         });
 
-        // Auto-Refresh für laufende Versände
         function checkSendStatus() {
             $.ajax({
                 url: 'ajax/check_newsletter_status.php',

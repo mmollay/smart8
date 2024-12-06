@@ -2,7 +2,6 @@
 function getEditorConfig($userId, $update_id)
 {
 
-
     return [
         'minHeight' => 300,
         'maxHeight' => 600,

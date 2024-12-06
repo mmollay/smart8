@@ -185,19 +185,23 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
 
         // Platzhalter erstellen
         $placeholders = [
-            'vorname' => $job['recipient_first_name'],
-            'nachname' => $job['recipient_last_name'],
-            'email' => $job['recipient_email'],
-            'firma' => $job['recipient_company'],
-            'company' => $job['recipient_company'],
-            'geschlecht' => $job['recipient_gender'],
-            'titel' => $job['recipient_title'],
-            'anrede' => getAnrede(
+            'anrede_formell' => getAnredeFormal(
                 $job['recipient_gender'],
                 $job['recipient_title'],
                 $job['recipient_first_name'],
                 $job['recipient_last_name']
-            )
+            ),
+            'anrede_persoenlich' => getAnredePersonal(
+                $job['recipient_gender'],
+                $job['recipient_first_name']
+            ),
+            'titel' => $job['recipient_title'],
+            'vorname' => $job['recipient_first_name'],
+            'nachname' => $job['recipient_last_name'],
+            'firma' => $job['recipient_company'],
+            'email' => $job['recipient_email'],
+            'datum' => date('d.m.Y'),
+            'uhrzeit' => date('H:i')
         ];
 
 
@@ -400,4 +404,34 @@ function makeUrlsAbsolute($content, $baseUrl)
     }
 
     return $content;
+}
+
+function getAnredeFormal($gender, $title, $firstName, $lastName)
+{
+    $anrede = 'Sehr ';
+
+    if ($gender === 'female') {
+        $anrede .= 'geehrte' . ($title ? ' Frau ' . $title : ' Frau');
+    } else if ($gender === 'male') {
+        $anrede .= 'geehrter' . ($title ? ' Herr ' . $title : ' Herr');
+    } else {
+        $anrede .= 'geehrte Damen und Herren';
+        return $anrede;
+    }
+
+    return $anrede . ' ' . $lastName;
+}
+
+function getAnredePersonal($gender, $firstName)
+{
+    if (!$firstName)
+        return 'Hallo';
+
+    if ($gender === 'female') {
+        return 'Liebe ' . $firstName;
+    } else if ($gender === 'male') {
+        return 'Lieber ' . $firstName;
+    }
+
+    return 'Hallo ' . $firstName;
 }

@@ -18,7 +18,29 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", 
 
 if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
     $dashboard->addMenuItem('leftMenu', "newsletter", "list_packages", "User Pakete", "box icon");
+    //Button zum Absenden anstossen
 }
+
+if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
+    $button_exec = '<button onclick="startCron()" class="ui tiny primary button"><i class="play icon"></i>Versand starten</button>';
+    $dashboard->addMenuItem('leftMenu', "", "", $button_exec, "");
+
+    $dashboard->addScript("
+        function startCron() {
+            $.ajax({
+                url: 'ajax/start_cron.php',
+                method: 'POST',
+                dataType: 'json',
+                success: function(response) {
+                    $('body').toast({
+                        message: response.message || 'Newsletter-Versand wurde gestartet',
+                        class: response.success ? 'success' : 'error'
+                    });
+                }
+            });
+        }", true);
+}
+
 
 // Hole Paketinformationen
 $packageInfo = getUserPackageInfo($userId);
@@ -47,12 +69,13 @@ if ($packageInfo) {
     <script>$(document).ready(function () {$(".ui.progress").progress(); });</script>';
 }
 
-$dashboard->addMenuItem('leftMenu', "newsletter", "", "$package", "");
+$dashboard->addMenuItem('leftMenu', "", "", "$package", "");
 
 //$dashboard->addScript('js/send_emails.js');
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js");
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/translations/de.js");
 $dashboard->addScript("js/form_after.js");
+$dashboard->addScript("js/cron-control.js");
 
 $dashboard->render();
 

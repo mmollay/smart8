@@ -3,8 +3,9 @@ function getPlaceholdersHTML()
 {
     $placeholders = [
         // Empfänger-bezogene Platzhalter
-        ['key' => 'anrede', 'tooltip' => 'Automatische Anrede (z.B. "Sehr geehrter Herr Dr. Mustermann")'],
-        ['key' => 'titel', 'tooltip' => 'Akademischer Titel (z.B. "Dr.")'],
+        ['key' => 'anrede_formell', 'tooltip' => "Formelle Anrede (z.B. Sehr geehrter Herr Dr. Mustermann / Sehr geehrte Frau Dr. Mustermann / Sehr geehrte Damen und Herren)"],
+        ['key' => 'anrede_persoenlich', 'tooltip' => "Persönliche Anrede (Lieber Thomas / Liebe Maria / Hallo wenn kein Geschlecht angegeben)"],
+        ['key' => 'titel', 'tooltip' => 'Akademischer Titel (z.B. Dr., Prof.)'],
         ['key' => 'vorname', 'tooltip' => 'Vorname des Empfängers'],
         ['key' => 'nachname', 'tooltip' => 'Nachname des Empfängers'],
         ['key' => 'firma', 'tooltip' => 'Firmenname des Empfängers'],

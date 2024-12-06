@@ -1,0 +1,118 @@
+Script wurde aufgerufen: 2024-12-06 16:49:23
+Script wurde aufgerufen: 2024-12-06 16:52:37
+Script wurde aufgerufen: 2024-12-06 16:52:53
+Script wurde aufgerufen: 2024-12-06 16:53:13
+Script wurde aufgerufen: 2024-12-06 16:54:03
+Versuche Command: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec/cron_controller.php
+Output: Array
+(
+)
+
+Return: 127
+Versuche Command: php /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec/cron_controller.php
+Output: Array
+(
+)
+
+Return: 127
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/Applications/XAMPP/xamppfiles/bin/php /../exec/cron_controller.php
+Output: Array
+(
+)
+
+Return: 1
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && php cron_controller.php
+Output: Array
+(
+)
+
+Return: 127
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: export PATH=/Applications/XAMPP/xamppfiles/bin:/usr/local/bin:/usr/bin:/bin && cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php 2>&1
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: export PATH=/Applications/XAMPP/xamppfiles/bin:/usr/local/bin:/usr/bin:/bin && cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && /Applications/XAMPP/xamppfiles/bin/php cron_controller.php 2>&1
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: export PATH=/Applications/XAMPP/xamppfiles/bin:/usr/local/bin:/usr/bin:/bin && cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && php cron_controller.php 2>&1
+Output: Array
+(
+)
+
+Return: 0
+Versuche Command: export  cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && php cron_controller.php 2>&1
+Output: Array
+(
+)
+
+Return: 1
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && php cron_controller.php 2>&1
+Output: Array
+(
+    [0] => sh: php: command not found
+)
+
+Return: 127
+Versuche Command: cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && php cron_controller.php 
+Output: Array
+(
+)
+
+Return: 127
+Versuche Command: export PATH=/Applications/XAMPP/xamppfiles/bin:/usr/local/bin:/usr/bin:/bin && cd /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/ajax/../exec && php cron_controller.php 2>&1
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0

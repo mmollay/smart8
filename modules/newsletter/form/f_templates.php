@@ -34,14 +34,14 @@ $formGenerator->addField([
             'label' => 'Template Name',
             'required' => true,
             'focus' => true,
-            'width' => 10
+            'width' => 8
         ],
         [
             'type' => 'input',
             'name' => 'subject',
             'label' => 'Standard-Betreff',
             'placeholder' => 'Standard-Betreff für dieses Template',
-            'width' => 6
+            'width' => 8
         ]
     ]
 ]);
@@ -53,11 +53,12 @@ $formGenerator->addField([
     'rows' => 2
 ]);
 
-// Platzhalter Toolbar
+// Placeholder buttons
 $formGenerator->addField([
     'type' => 'custom',
     'name' => 'placeholders',
-    'label' => 'Verfügbare Platzhalter',
+    'tab' => 'basis',
+    //'label' => 'Verfügbare Platzhalter',
     'html' => getPlaceholdersHTML()
 ]);
 
@@ -65,10 +66,9 @@ $formGenerator->addField([
 $formGenerator->addField([
     'type' => 'ckeditor5',
     'name' => 'html_content',
-    'label' => 'Template-Inhalt',
     //'required' => true,
     'value' => '', // Default empty value
-    'config' => getEditorConfig(),
+    'config' => getEditorConfig($_SESSION['user_id'], $update_id),
     'attributes' => [
         'id' => 'template_editor'
     ]
@@ -113,7 +113,7 @@ echo $formGenerator->generateJS();
 echo $formGenerator->generateForm();
 ?>
 
-<script src="js/editor_utils.js"></script>
+<script src="js/f_newsletter.js"></script>
 
 <script>
     $(document).ready(function () {
