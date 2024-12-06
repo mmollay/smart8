@@ -262,24 +262,5 @@ echo $formGenerator->generateForm();
 <script src="js/f_newsletter.js"></script>
 
 <style>
-    .ui.segment .ui.buttons {
-        margin-bottom: 0.5em;
-    }
 
-    .ui.segment .ui.buttons button {
-        margin-right: 0.2em;
-    }
-
-    #previewContent {
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-
-    .ck-editor__editable {
-        min-height: 250px;
-    }
-
-    .fixed-width-label {
-        min-width: 50px !important;
-    }
 </style>

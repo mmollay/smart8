@@ -90,7 +90,7 @@ $listGenerator->addExternalButton('new_newsletter', [
     'position' => 'top',
     'alignment' => 'right',
     'title' => 'Neuer Newsletter',
-    'modalId' => 'modal_form_n',
+    'modalId' => 'modal_edit',
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Newsletter anzulegen']
 ]);
 
@@ -369,7 +369,7 @@ $buttons = [
         'icon' => 'edit',
         'position' => 'left',
         'class' => 'ui green mini button',
-        'modalId' => 'modal_form_n',
+        'modalId' => 'modal_edit',
         'popup' => [
             'content' => 'Newsletter bearbeiten',
             'position' => 'top left'
@@ -444,10 +444,10 @@ $buttons = [
 ];
 
 $modals = [
-    'modal_form_n' => [
+    'modal_edit' => [
         'title' => 'Newsletter bearbeiten',
         'content' => 'form/f_newsletters.php',
-        'size' => 'large'
+        'class' => 'large'
     ],
     'modal_form_delete' => [
         'title' => 'Newsletter entfernen',
@@ -485,285 +485,32 @@ foreach ($modals as $id => $modal) {
 $listGenerator->setButtonColumnTitle('left', '', 'left');
 $listGenerator->setButtonColumnTitle('right', '', 'right');
 
+//$listGenerator->addScript('alert("Hallo");', 'head');
+//$listGenerator->addScript("js/newsletter-namespace.js", 'end', true);
+
 echo $listGenerator->generateList();
 
 if (isset($db)) {
     $db->close();
 }
 ?>
+<!-- Dann unsere Attachment-Funktionalität -->
+<script src="js/newsletter-attachment.js"></script>
 
 <script>
-    $(document).ready(function () {
-        // Basis-Initialisierungen
+    // Die Komponenten-Initialisierung
+    function initializeComponents() {
         $('.ui.popup').popup();
         $('.ui.tooltip').popup();
         $('.ui.label').popup();
-
-        // Progress Bars initialisieren
         $('.ui.progress').progress({
             precision: 1,
             showActivity: false
         });
+    }
 
-        // Aktualisiere die Attachment-Informationen
-        $('.attachment-info').each(function () {
-            var $this = $(this);
-            var contentId = $this.data('content-id');
-            updateAttachmentInfo(contentId, $this);
-        });
-
-        // Update-Funktion für aktive Newsletter und Statistiken
-        function updateNewsletterData() {
-            $('.ui.progress:not(.success)').each(function () {
-                var $progress = $(this);
-                var contentId = $progress.data('content-id');
-                if (contentId) {
-                    checkProgress(contentId, $progress);
-                }
-            });
-        }
-
-        // Starte Updates falls aktive Newsletter vorhanden sind
-        if ($('.ui.progress:not(.success)').length > 0) {
-            updateNewsletterData();
-            setInterval(updateNewsletterData, 5000);
-        }
+    // Wenn das Dokument geladen ist
+    $(document).ready(function () {
+        initializeComponents();
     });
-
-    function updateDeliveryStats(contentId, $statsContainer) {
-        $.ajax({
-            url: 'ajax/get_delivery_stats.php',
-            method: 'GET',
-            data: { content_id: contentId },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    let stats = [];
-                    const total = response.total_recipients;
-
-                    // Versand-Statistik
-                    if (response.sent_count > 0) {
-                        const sent_percent = Math.min(100, Math.round((response.sent_count / total) * 100));
-                        stats.push(`
-                        <div class="ui tiny gray label" data-tooltip="Versendet">
-                            <i class="check icon"></i> ${sent_percent}% (${response.sent_count})
-                        </div>
-                    `);
-                    }
-
-                    // Öffnungs-Statistik
-                    const total_opened = response.opened_count + response.clicked_count;
-                    if (total_opened > 0) {
-                        const open_percent = Math.min(100, Math.round((total_opened / total) * 100));
-                        stats.push(`
-                        <div class="ui tiny blue label" data-tooltip="Newsletter geöffnet (inkl. Klicks)">
-                            <i class="eye icon"></i> ${open_percent}% (${total_opened})
-                        </div>
-                    `);
-                    }
-
-                    // Klick-Statistik
-                    if (response.clicked_count > 0) {
-                        const click_percent = Math.min(100, Math.round((response.clicked_count / total) * 100));
-                        stats.push(`
-                        <div class="ui tiny teal label" data-tooltip="Links angeklickt">
-                            <i class="mouse pointer icon"></i> ${click_percent}% (${response.clicked_count})
-                        </div>
-                    `);
-                    }
-
-                    // Abmeldungs-Statistik
-                    if (response.unsub_count > 0) {
-                        const unsub_percent = Math.min(100, Math.round((response.unsub_count / total) * 100));
-                        stats.push(`
-                        <div class="ui tiny orange label" data-tooltip="Abgemeldet">
-                            <i class="user times icon"></i> ${unsub_percent}% (${response.unsub_count})
-                        </div>
-                    `);
-                    }
-
-                    // Fehler-Statistik
-                    if (response.failed_count > 0) {
-                        const failed_percent = Math.min(100, Math.round((response.failed_count / total) * 100));
-                        stats.push(`
-                        <div class="ui tiny red label" data-tooltip="Fehler oder Bounces">
-                            <i class="exclamation triangle icon"></i> ${failed_percent}% (${response.failed_count})
-                        </div>
-                    `);
-                    }
-
-                    // HTML aktualisieren und Popups neu initialisieren
-                    $statsContainer.html(
-                        stats.length > 0
-                            ? '<div class="ui labels">' + stats.join(' ') + '</div>'
-                            : '<span class="ui grey text">Keine Statistiken verfügbar</span>'
-                    );
-
-                    $statsContainer.find('.ui.label').popup();
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Statistik-Update fehlgeschlagen:', {
-                    contentId: contentId,
-                    status: status,
-                    error: error
-                });
-            }
-        });
-    }
-
-    function checkProgress(contentId, $progress) {
-        $.ajax({
-            url: 'ajax/check_sending_status.php',
-            method: 'GET',
-            data: { content_id: contentId },
-            dataType: 'json',
-            success: function (response) {
-                console.log('Progress Response:', response);
-
-                if (response.success && response.total > 0) {
-                    var percent = Math.round((response.sent / response.total) * 100);
-
-                    // Progress Bar aktualisieren
-                    var $bar = $progress.find('.bar');
-                    var $label = $progress.find('.label');
-
-                    $bar.css('width', percent + '%');
-                    $label.text(response.sent + ' von ' + response.total + ' versendet');
-                    $progress.attr('data-percent', percent);
-
-                    // Statistik aktualisieren
-                    var $statsContainer = $(`div[data-stats-id="${contentId}"]`);
-                    if ($statsContainer.length) {
-                        updateDeliveryStats(contentId, $statsContainer);
-                    }
-
-                    if (percent >= 100) {
-                        $progress.addClass('success');
-                        setTimeout(function () {
-                            reloadTable();
-                        }, 1000);
-                    }
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Progress-Check fehlgeschlagen:', {
-                    contentId: contentId,
-                    status: status,
-                    error: error
-                });
-            }
-        });
-    }
-
-    function updateAttachmentInfo(contentId, $container) {
-        $.ajax({
-            url: 'ajax/get_attachment_info.php',
-            data: { content_id: contentId },
-            success: function (response) {
-                if (response.count > 0) {
-                    $container
-                        .html(response.count + ' Datei(en) (' + response.size + ' MB)')
-                        .removeClass('grey red')
-                        .addClass('ui blue text');
-                } else {
-                    $container
-                        .html('Keine Anhänge')
-                        .removeClass('blue red')
-                        .addClass('ui grey text');
-                }
-            },
-            error: function () {
-                $container
-                    .html('Fehler beim Laden')
-                    .removeClass('blue grey')
-                    .addClass('ui red text');
-            }
-        });
-    }
-
-    // Hilfsfunktionen für Benutzerinteraktionen
-    function cloneNewsletter(params) {
-        $.ajax({
-            url: 'ajax/clone_newsletter.php',
-            method: 'POST',
-            data: { content_id: params.content_id },
-            dataType: 'json',
-            success: function (data) {
-                if (data.status === 'success') {
-                    showSuccessToast(data.message || 'Newsletter erfolgreich dupliziert');
-                    reloadTable();
-                } else {
-                    showErrorToast(data.message || 'Fehler beim Duplizieren des Newsletters');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Fehler:', status, error);
-                showErrorToast('Fehler beim Senden der Anfrage: ' + status);
-            }
-        });
-    }
-
-    function sendTestMail(params) {
-        $.ajax({
-            url: 'exec/send_test_mail.php',
-            method: 'POST',
-            data: { content_id: params.content_id },
-            dataType: 'json',
-            success: function (data) {
-                if (data.success) {
-                    showSuccessToast(data.message || 'Test-Mail wurde gesendet');
-                    reloadTable();
-                } else {
-                    showErrorToast(data.message || 'Fehler beim Senden der Test-Mail');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('AJAX Fehler:', status, error);
-                showErrorToast('Fehler beim Senden der Anfrage: ' + status);
-            }
-        });
-    }
-
-    function sendNewsletter(id) {
-        if (confirm('Möchten Sie diesen Newsletter jetzt versenden?')) {
-            $.ajax({
-                url: 'ajax/send_newsletter.php',
-                method: 'POST',
-                data: { content_id: id },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success === true) {
-                        showSuccessToast(response.message || 'Newsletter wird versendet');
-                        setTimeout(reloadTable, 2100);
-                    } else {
-                        showErrorToast(response.message || 'Fehler beim Versenden');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Fehler:', { xhr: xhr, status: status, error: error });
-                    showErrorToast('Verbindungsfehler: ' + error);
-                }
-            });
-        }
-    }
-
-    // Toast-Funktionen
-    function showSuccessToast(message) {
-        $('body').toast({
-            class: 'success',
-            message: message,
-            showProgress: 'bottom',
-            displayTime: 2000
-        });
-    }
-
-    function showErrorToast(message) {
-        $('body').toast({
-            class: 'error',
-            message: message,
-            showProgress: 'bottom',
-            displayTime: 2000
-        });
-    }
 </script>

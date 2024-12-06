@@ -293,7 +293,7 @@ class ListGenerator
         }
     }
 
-    public function addScript($script, $position = 'end')
+    public function addScript($script, $position = 'end', $isSrc = false)
     {
         if (!in_array($position, ['head', 'end'])) {
             $position = 'end';
@@ -303,7 +303,10 @@ class ListGenerator
             $this->customScripts[$position] = [];
         }
 
-        $this->customScripts[$position][] = $script;
+        $this->customScripts[$position][] = [
+            'content' => $script,
+            'isSrc' => $isSrc
+        ];
     }
 
     private function renderCustomScripts()
@@ -312,21 +315,29 @@ class ListGenerator
 
         // Head-Skripte
         if (!empty($this->customScripts['head'])) {
-            $html .= "<script>";
-            $html .= implode("\n", $this->customScripts['head']);
-            $html .= "</script>";
+            foreach ($this->customScripts['head'] as $scriptData) {
+                if ($scriptData['isSrc']) {
+                    $html .= "<script src=\"{$scriptData['content']}\"></script>";
+                } else {
+                    $html .= "<script>{$scriptData['content']}</script>";
+                }
+            }
         }
 
         // End-Skripte
         if (!empty($this->customScripts['end'])) {
-            $html .= "<script>";
-            $html .= "$(document).ready(function() {";
-            $html .= implode("\n", $this->customScripts['end']);
-            $html .= "});</script>";
+            foreach ($this->customScripts['end'] as $scriptData) {
+                if ($scriptData['isSrc']) {
+                    $html .= "<script src=\"{$scriptData['content']}\"></script>";
+                } else {
+                    $html .= "<script>{$scriptData['content']}</script>";
+                }
+            }
         }
 
         return $html;
     }
+
 
     private function loadFiltersFromSession()
     {
@@ -1303,32 +1314,9 @@ class ListGenerator
 
         // Render bottom external buttons
         $html .= $this->renderExternalButtons('bottom');
-
+        $html .= $this->renderCustomScripts();
         $html .= "</div>";
         $html .= $this->renderModals();
-
-        // Füge benutzerdefinierte Skripte hinzu
-        if (!empty($this->customScripts)) {
-            $html .= "<script>";
-
-            // Head-Skripte zuerst einfügen
-            if (!empty($this->customScripts['head'])) {
-                $html .= implode("\n", $this->customScripts['head']);
-            }
-
-            // Document Ready Event
-            $html .= "$(document).ready(function() {";
-
-            // End-Skripte einfügen
-            if (!empty($this->customScripts['end'])) {
-                $html .= implode("\n", $this->customScripts['end']);
-            }
-
-            $html .= "});</script>";
-        }
-
-        $html .= $this->renderCustomScripts();
-
         return $html;
     }
 
