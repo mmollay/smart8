@@ -210,61 +210,64 @@ $columns = [
         'label' => '<i class="chart bar icon"></i>Zustellstatistik',
         'formatter' => function ($value, $row) {
             $total = (int) $row['total_recipients'];
-            if ($total === 0)
+            if ($total === 0) {
                 return '<span class="ui grey text">Keine Empfänger</span>';
+            }
 
             $stats = [];
 
-            // Zuerst Klicks berechnen
+            // Basis-Zahlen
             $clicked = (int) $row['clicked_count'];
+            $opened = (int) $row['opened_count'];
+            $sent = (int) $row['sent_count'];
+            $failed = (int) $row['failed_count'];
 
-            // Öffnungen inkl. Klicks
-            $opened = (int) $row['opened_count'] + $clicked;
+            // Öffnungen inkl. Klicks berechnen
+            $total_opened = $opened + $clicked;
 
-            // Versand inkl. Öffnungen und Klicks
-            $sent = (int) $row['sent_count'] + $opened + $clicked;
-
-            // Statistiken anzeigen
+            // Versand-Statistik
             if ($sent > 0) {
-                $sent_percent = round(($sent / $total) * 100);
+                $sent_percent = min(100, round(($sent / $total) * 100));
                 $stats[] = sprintf(
                     '<div class="ui tiny green label" data-tooltip="Versendet">
-                       <i class="check icon"></i> %d%% (%d)
-                   </div>',
+                        <i class="check icon"></i> %d%% (%d)
+                    </div>',
                     $sent_percent,
                     $sent
                 );
             }
 
-            if ($opened > 0) {
-                $percent = round(($opened / $total) * 100);
+            // Öffnungs-Statistik (inkl. Klicks)
+            if ($total_opened > 0) {
+                $percent = min(100, round(($total_opened / $total) * 100));
                 $stats[] = sprintf(
-                    '<div class="ui tiny blue label" data-tooltip="Newsletter geöffnet">
-                       <i class="eye icon"></i> %d%% (%d)
-                   </div>',
+                    '<div class="ui tiny blue label" data-tooltip="Newsletter geöffnet (inkl. Klicks)">
+                        <i class="eye icon"></i> %d%% (%d)
+                    </div>',
                     $percent,
-                    $opened
+                    $total_opened
                 );
             }
 
+            // Klick-Statistik (als Teilmenge der Öffnungen)
             if ($clicked > 0) {
-                $percent = round(($clicked / $total) * 100);
+                $percent = min(100, round(($clicked / $total) * 100));
                 $stats[] = sprintf(
                     '<div class="ui tiny teal label" data-tooltip="Links angeklickt">
-                       <i class="mouse pointer icon"></i> %d%% (%d)
-                   </div>',
+                        <i class="mouse pointer icon"></i> %d%% (%d)
+                    </div>',
                     $percent,
                     $clicked
                 );
             }
 
-            $failed = (int) $row['failed_count'];
+            // Fehler-Statistik
             if ($failed > 0) {
-                $percent = round(($failed / $total) * 100);
+                $percent = min(100, round(($failed / $total) * 100));
                 $stats[] = sprintf(
                     '<div class="ui tiny red label" data-tooltip="Fehler oder Bounces">
-                       <i class="exclamation triangle icon"></i> %d%% (%d)
-                   </div>',
+                        <i class="exclamation triangle icon"></i> %d%% (%d)
+                    </div>',
                     $percent,
                     $failed
                 );
