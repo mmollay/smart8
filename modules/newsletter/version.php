@@ -1,7 +1,16 @@
 <?php
 return [
-    'version' => '1.1.2',
+    'version' => '1.1.3',
     'changelog' => [
+        '1.1.3' => [
+            'date' => '2025-01-15',
+            'changes' => [
+                'Behoben' => [
+                    'Fehler beim Versand von Newslettern an Gruppen behoben',
+                    'Fehler bei der Anzeige von Empfängern in Gruppen behoben'
+                ]
+            ]
+        ],
         '1.1.0' => [
             'date' => '2024-12-04',
             'changes' => [
