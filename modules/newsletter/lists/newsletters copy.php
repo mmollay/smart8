@@ -16,7 +16,7 @@ $listConfig = [
     'striped' => true,
     'selectable' => true,
     'celled' => true,
-
+    'width' => '1500px',
     'tableClasses' => 'ui celled striped definition small compact table'
 ];
 
@@ -88,7 +88,7 @@ $listGenerator->addExternalButton('new_newsletter', [
     'position' => 'top',
     'alignment' => 'right',
     'title' => 'Neuer Newsletter',
-    'modalId' => 'modal_edit',
+    'modalId' => 'modal_form_n',
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Newsletter anzulegen']
 ]);
 
@@ -364,7 +364,7 @@ $buttons = [
         'icon' => 'edit',
         'position' => 'left',
         'class' => 'ui green mini button',
-        'modalId' => 'modal_edit',
+        'modalId' => 'modal_form_n',
         'popup' => [
             'content' => 'Newsletter bearbeiten',
             'position' => 'top left'
@@ -446,7 +446,7 @@ $buttons = [
 
 // Definition der Modals
 $modals = [
-    'modal_edit' => [
+    'modal_form_n' => [
         'title' => 'Newsletter bearbeiten',
         'content' => 'form/f_newsletters.php',
         'class' => 'large'

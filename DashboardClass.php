@@ -622,15 +622,7 @@ class Dashboard
 
         // Styles für stabile Sidebar-Breite
         echo "    <style>\n";
-        echo "        body { overflow-x: hidden; }\n";
-        echo "        .ui.sidebar { width: 260px !important; overflow-y: auto; }\n";
-        echo "        .ui.visible.sidebar ~ .pusher { transform: translate3d(260px, 0, 0) !important; }\n";
-        echo "        .dimmed.pusher { overflow: visible !important; }\n";
-        echo "        .ui.modal { transform: translateZ(0); }\n";
-        echo "        #pageContent { transition: margin 0.3s ease; min-height: calc(100vh - 60px); }\n";
-        echo "        .fixed.menu { z-index: 999; }\n";
-        echo "        .ui.modal { z-index: 1001; }\n";
-        echo "        .ui.dimmer { z-index: 1000; }\n";
+
         echo "    </style>\n";
 
         echo "    <script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>\n";

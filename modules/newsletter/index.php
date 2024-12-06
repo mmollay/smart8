@@ -6,6 +6,9 @@ $version = $versions['version'];
 
 require(__DIR__ . "/../../DashboardClass.php");
 
+//zum testen
+$_SESSION['superuser'] = 1;
+
 $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
 $dashboard->addMenuItem('leftMenu', "newsletter", "home", "Home", "home icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newsletter", "newspaper icon");
@@ -15,10 +18,19 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_groups", "Gruppen", "use
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_senders", "Absender", "at icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", "file alternate icon");
 
+
+if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
+    $dashboard->addMenuItem('leftMenu', "newsletter", "list_packages", "User Pakete", "box icon");
+}
+
+
+
 //$dashboard->addScript('js/send_emails.js');
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js");
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/translations/de.js");
 $dashboard->addScript("js/form_after.js");
+
+
 
 //require(__DIR__ . "/changelog_modal.php");
 // $dashboard->addFooterContent('
@@ -27,4 +39,91 @@ $dashboard->addScript("js/form_after.js");
 //         v' . $versions['version'] . ' - Changelog
 //     </button>
 // ');
+
+
+// In index.php nach dem leftMenu
+
+// Hole Paketinformationen
+$packageInfo = getUserPackageInfo($userId);
+
+if ($packageInfo) {
+    // Farbklasse basierend auf Nutzung bestimmen
+    $colorClass = 'green';
+    if ($packageInfo['usage_percent'] > 70) {
+        $colorClass = 'red';
+    } elseif ($packageInfo['usage_percent'] > 40) {
+        $colorClass = 'yellow';
+    }
+
+    $package = '
+    <br>
+    <div class="ui message">
+        <div class="ui header">
+            ' . ucfirst($packageInfo['package_type']) . '-Paket:<br>
+        </div>
+        ' . $packageInfo['emails_remaining_formatted'] . ' von ' . $packageInfo['emails_limit_formatted'] . '<br>E-Mails verfügbar
+    
+        <div class="ui tiny ' . $colorClass . ' progress" data-percent="' . $packageInfo['usage_percent'] . '">
+            <div class="bar"></div>
+        </div>
+    </div>
+    <script>$(document).ready(function () {$(".ui.progress").progress(); });</script>';
+}
+
+$dashboard->addMenuItem('leftMenu', "newsletter", "", "$package", "");
 $dashboard->render();
+
+
+function getUserPackageInfo($userId)
+{
+
+    global $db;
+
+    $sql = "
+    SELECT 
+        nup.package_type,
+        nup.emails_limit,
+        nup.emails_sent,
+        (nup.emails_limit - nup.emails_sent) as emails_remaining,
+        DATE_FORMAT(nup.valid_until, '%d.%m.%Y') as valid_until_formatted,
+        (SELECT COUNT(*) 
+         FROM ssi_newsletter.email_jobs ej 
+         JOIN ssi_newsletter.email_contents ec ON ej.content_id = ec.id 
+         WHERE ec.user_id = ? 
+         AND ej.status IN ('send', 'delivered', 'open', 'click')
+        ) as total_emails_sent
+    FROM ssi_company2.newsletter_user_packages nup
+    WHERE nup.user_id = ?
+    AND nup.valid_until IS NULL
+    LIMIT 1";
+
+    try {
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ii", $userId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $packageInfo = $result->fetch_assoc();
+
+        if ($packageInfo) {
+            // Formatiere die Zahlen für die Anzeige
+            $packageInfo['emails_limit_formatted'] = number_format($packageInfo['emails_limit'], 0, ',', '.'); // Gesamtlimit
+            $packageInfo['emails_sent_formatted'] = number_format($packageInfo['emails_sent'], 0, ',', '.'); // Im aktuellen Paket gesendet
+            $packageInfo['total_emails_sent_formatted'] = number_format($packageInfo['total_emails_sent'], 0, ',', '.'); // Tatsächlich gesendet
+
+            // Berechne verbleibende E-Mails (Limit minus tatsächlich gesendet)
+            $packageInfo['emails_remaining'] = max(0, $packageInfo['emails_limit'] - $packageInfo['total_emails_sent']);
+            $packageInfo['emails_remaining_formatted'] = number_format($packageInfo['emails_remaining'], 0, ',', '.');
+
+            // Berechne Prozentsatz basierend auf tatsächlich versendeten E-Mails
+            $packageInfo['usage_percent'] = round(($packageInfo['total_emails_sent'] / $packageInfo['emails_limit']) * 100, 1);
+
+        }
+
+        return $packageInfo;
+    } catch (Exception $e) {
+        error_log("Fehler beim Laden der Paketinformationen: " . $e->getMessage());
+        return null;
+    }
+}
+?>

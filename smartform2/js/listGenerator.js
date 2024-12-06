@@ -256,6 +256,7 @@ function setupEventHandlers(contentId) {
                 $modal.modal({
                     closable: false,
                     observeChanges: true,
+                    closeIcon: false,
                     onApprove: function () {
                         return submitModalForm($modal, contentId);
                     },

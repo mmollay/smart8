@@ -645,9 +645,9 @@ class FormGenerator
         $id = $field['id'] ?? $name;
         $label = $field['label'] ?? '';
         $checked = !empty($field['checked']) ? 'checked' : '';
-
         $fieldClass = $field['class'] ?? '';
-        $style = $field['style'] ?? 'standard'; // standard, toggle, slider, radio, invisible
+        $style = $field['style'] ?? 'standard';
+        $description = $field['description'] ?? '';
 
         $checkboxClass = 'ui checkbox';
         switch ($style) {
@@ -662,10 +662,16 @@ class FormGenerator
                 break;
         }
 
+        // Label mit Info-Icon wenn description vorhanden
+        $labelHtml = $label;
+        if ($description) {
+            $labelHtml .= ' <span data-tooltip="' . htmlspecialchars($description) . '"><i class="question circle icon"></i></span>';
+        }
+
         return "
             <div class='{$checkboxClass}'>
                 <input type='checkbox' name='{$name}' id='{$id}' value='1' {$checked} class='{$fieldClass}'>
-                <label for='{$id}'>{$label}</label>
+                <label for='{$id}'>{$labelHtml}</label>
             </div>";
     }
 
