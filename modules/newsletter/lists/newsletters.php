@@ -219,7 +219,7 @@ $columns = [
             // Basis-Zahlen
             $clicked = (int) $row['clicked_count'];
             $opened = (int) $row['opened_count'];
-            $sent = (int) $row['sent_count'];
+            $sent = (int) $row['sent_count'] + ($opened - $clicked) + $clicked;
             $failed = (int) $row['failed_count'];
 
             // Öffnungen inkl. Klicks berechnen
