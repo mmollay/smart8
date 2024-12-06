@@ -211,11 +211,20 @@ $columns = [
         'formatter' => function ($value, $row) {
             $total = (int) $row['total_recipients'];
             if ($total === 0)
-                return '<span class="ui grey text">-</span>';
+                return '<span class="ui grey text">Keine Empfänger</span>';
 
             $stats = [];
 
-            $sent = (int) $row['sent_count'];
+            // Zuerst Klicks berechnen
+            $clicked = (int) $row['clicked_count'];
+
+            // Öffnungen inkl. Klicks
+            $opened = (int) $row['opened_count'] + $clicked;
+
+            // Versand inkl. Öffnungen und Klicks
+            $sent = (int) $row['sent_count'] + $opened + $clicked;
+
+            // Statistiken anzeigen
             if ($sent > 0) {
                 $sent_percent = round(($sent / $total) * 100);
                 $stats[] = sprintf(
@@ -227,7 +236,6 @@ $columns = [
                 );
             }
 
-            $opened = (int) $row['opened_count'];
             if ($opened > 0) {
                 $percent = round(($opened / $total) * 100);
                 $stats[] = sprintf(
@@ -239,7 +247,6 @@ $columns = [
                 );
             }
 
-            $clicked = (int) $row['clicked_count'];
             if ($clicked > 0) {
                 $percent = round(($clicked / $total) * 100);
                 $stats[] = sprintf(
@@ -260,18 +267,6 @@ $columns = [
                    </div>',
                     $percent,
                     $failed
-                );
-            }
-
-            $unsub = (int) $row['unsub_count'];
-            if ($unsub > 0) {
-                $percent = round(($unsub / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny orange label" data-tooltip="Abgemeldet">
-                       <i class="user times icon"></i> %d%% (%d)
-                   </div>',
-                    $percent,
-                    $unsub
                 );
             }
 
