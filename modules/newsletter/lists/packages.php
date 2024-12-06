@@ -22,7 +22,6 @@ $listConfig = [
     'selectable' => false,
     'celled' => true,
     'width' => '1200px',
-    'tableClasses' => 'ui celled striped definition small compact table',
 ];
 
 $listGenerator = new ListGenerator($listConfig);

@@ -15,9 +15,7 @@ $listConfig = [
     'noDataMessage' => 'Keine Newsletter gefunden.',
     'striped' => true,
     'selectable' => true,
-    'celled' => true,
-
-    'tableClasses' => 'ui celled striped definition small compact table'
+    'celled' => true
 ];
 
 $listGenerator = new ListGenerator($listConfig);

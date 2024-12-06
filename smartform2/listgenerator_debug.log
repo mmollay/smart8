@@ -14361,3 +14361,171 @@ Daten: Array
     [returnedRows] => 1
 )
 
+[2024-12-06 18:47:17] Debug-Logging initialisiert
+[2024-12-06 18:47:17] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        t.id as template_id,
+        t.name as template_name,
+        t.description,
+        t.subject,
+        LEFT(t.html_content, 150) as preview_content,
+        t.created_at,
+        t.updated_at,
+        COALESCE(
+            (SELECT COUNT(*) 
+            FROM email_contents 
+            WHERE template_id = t.id)
+        , 0) as usage_count
+    FROM 
+        email_templates t
+        WHERE 
+        t.user_id = '1317'
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:47:17] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => templates
+            [contentId] => content_templates
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Templates gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_templates
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:47:17] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        t.id as template_id,
+        t.name as template_name,
+        t.description,
+        t.subject,
+        LEFT(t.html_content, 150) as preview_content,
+        t.created_at,
+        t.updated_at,
+        COALESCE(
+            (SELECT COUNT(*) 
+            FROM email_contents 
+            WHERE template_id = t.id)
+        , 0) as usage_count
+    FROM 
+        email_templates t
+        WHERE 
+        t.user_id = '1317'
+
+)
+
+[2024-12-06 18:47:17] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        t.id as template_id,
+        t.name as template_name,
+        t.description,
+        t.subject,
+        LEFT(t.html_content, 150) as preview_content,
+        t.created_at,
+        t.updated_at,
+        COALESCE(
+            (SELECT COUNT(*) 
+            FROM email_contents 
+            WHERE template_id = t.id)
+        , 0) as usage_count
+    FROM 
+        email_templates t
+        WHERE 
+        t.user_id = '1317'
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:47:17] Total rows
+Daten: Array
+(
+    [count] => 2
+)
+
+[2024-12-06 18:47:17] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        t.id as template_id,
+        t.name as template_name,
+        t.description,
+        t.subject,
+        LEFT(t.html_content, 150) as preview_content,
+        t.created_at,
+        t.updated_at,
+        COALESCE(
+            (SELECT COUNT(*) 
+            FROM email_contents 
+            WHERE template_id = t.id)
+        , 0) as usage_count
+    FROM 
+        email_templates t
+        WHERE 
+        t.user_id = '1317'
+  ORDER BY template_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:47:17] Data fetched
+Daten: Array
+(
+    [totalRows] => 2
+    [returnedRows] => 2
+)
+
