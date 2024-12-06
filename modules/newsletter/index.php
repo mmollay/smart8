@@ -6,8 +6,6 @@ $version = $versions['version'];
 
 require(__DIR__ . "/../../DashboardClass.php");
 
-//$_SESSION['superuser'] = 0;
-
 $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
 $dashboard->addMenuItem('leftMenu', "newsletter", "home", "Home", "home icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newsletter", "newspaper icon");
@@ -51,19 +49,15 @@ if ($packageInfo) {
 
 $dashboard->addMenuItem('leftMenu', "newsletter", "", "$package", "");
 
-
 //$dashboard->addScript('js/send_emails.js');
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js");
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/translations/de.js");
 $dashboard->addScript("js/form_after.js");
 
-
 $dashboard->render();
-
 
 function getUserPackageInfo($userId)
 {
-
     global $db;
 
     $sql = "
