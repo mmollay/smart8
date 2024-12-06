@@ -295,36 +295,22 @@ $columns = [
             }
 
             $total = (int) $row['total_recipients'];
-            $successful = (int) $row['sent_count'] + (int) $row['opened_count'] + (int) $row['clicked_count'];
+            $clicked = (int) $row['clicked_count'];
+            $opened = (int) $row['opened_count'] + $clicked; // Geklickte zählen auch als geöffnet
+            $sent = (int) $row['sent_count'] + $opened + $clicked; // Geöffnete und geklickte zählen als versendet
             $failed = (int) $row['failed_count'];
 
             if ($failed >= $total) {
                 return "<span class='ui red text'><i class='times circle icon'></i> Versand fehlgeschlagen</span>";
             }
 
-            if ($successful > 0) {
-                $percent = round(($successful / $total) * 100);
-                if ($successful >= $total) {
-                    return "<div>
-                           <span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span>
-                       </div>";
-                }
-
-                if ($failed > 0) {
-                    return "<div>
-                           <span class='ui orange text'><i class='exclamation circle icon'></i> Teilweise versendet</span>
-                           <div class='ui tiny text'>
-                               $successful versendet, $failed fehlgeschlagen
-                           </div>
-                       </div>";
-                }
+            if ($sent >= $total) {
+                return "<div><span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span></div>";
             }
 
             return "<div>
                    <span class='ui yellow text'><i class='sync icon'></i> Versand läuft...</span>
-                   <div class='ui tiny text'>
-                       $successful von $total versendet
-                   </div>
+                   <div class='ui tiny text'>$sent von $total versendet</div>
                </div>";
         },
         'allowHtml' => true,
