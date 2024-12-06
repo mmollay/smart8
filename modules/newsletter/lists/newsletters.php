@@ -211,7 +211,7 @@ $columns = [
         'formatter' => function ($value, $row) {
             $total = (int) $row['total_recipients'];
             if ($total === 0)
-                return '<span class="ui grey text">Keine Empfänger</span>';
+                return '<span class="ui grey text">-</span>';
 
             $stats = [];
 
@@ -295,34 +295,26 @@ $columns = [
             }
 
             $total = (int) $row['total_recipients'];
-            $sent = (int) $row['sent_count'];
+            $successful = (int) $row['sent_count'] + (int) $row['opened_count'] + (int) $row['clicked_count'];
             $failed = (int) $row['failed_count'];
-
-            if ($sent >= $total) {
-                $details = [];
-                if ($row['sent_count'] > 0)
-                    $details[] = "{$row['sent_count']} versendet";
-                if ($row['opened_count'] > 0)
-                    $details[] = "{$row['opened_count']} geöffnet";
-                if ($row['clicked_count'] > 0)
-                    $details[] = "{$row['clicked_count']} geklickt";
-
-                return "<div>
-                       <span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span>
-                       <div class='ui tiny text'>" . implode(', ', $details) . "</div>
-                   </div>";
-            }
 
             if ($failed >= $total) {
                 return "<span class='ui red text'><i class='times circle icon'></i> Versand fehlgeschlagen</span>";
             }
 
-            if ($sent > 0) {
+            if ($successful > 0) {
+                $percent = round(($successful / $total) * 100);
+                if ($successful >= $total) {
+                    return "<div>
+                           <span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span>
+                       </div>";
+                }
+
                 if ($failed > 0) {
                     return "<div>
                            <span class='ui orange text'><i class='exclamation circle icon'></i> Teilweise versendet</span>
                            <div class='ui tiny text'>
-                               $sent versendet, $failed fehlgeschlagen
+                               $successful versendet, $failed fehlgeschlagen
                            </div>
                        </div>";
                 }
@@ -331,7 +323,7 @@ $columns = [
             return "<div>
                    <span class='ui yellow text'><i class='sync icon'></i> Versand läuft...</span>
                    <div class='ui tiny text'>
-                       $sent von $total versendet/interagiert
+                       $successful von $total versendet
                    </div>
                </div>";
         },
