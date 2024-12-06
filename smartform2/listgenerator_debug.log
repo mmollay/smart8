@@ -14529,3 +14529,3189 @@ Daten: Array
     [returnedRows] => 2
 )
 
+[2024-12-06 21:33:32] Debug-Logging initialisiert
+[2024-12-06 21:33:32] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:33:32] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:33:32] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:33:32] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:33:33] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:33:33] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:33:33] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:34:04] Debug-Logging initialisiert
+[2024-12-06 21:34:04] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:34:04] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:34:04] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:34:04] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:04] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:34:04] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:04] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:34:28] Debug-Logging initialisiert
+[2024-12-06 21:34:28] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:34:28] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:34:28] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:34:28] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:28] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:34:28] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:28] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:34:29] Debug-Logging initialisiert
+[2024-12-06 21:34:29] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:34:29] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:34:29] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:34:29] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:29] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:34:29] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:29] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:34:46] Debug-Logging initialisiert
+[2024-12-06 21:34:46] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:34:46] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:34:46] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:34:46] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:46] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:34:46] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:46] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:34:49] Debug-Logging initialisiert
+[2024-12-06 21:34:49] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:34:49] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:34:49] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:34:49] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:49] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:34:49] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:34:49] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:39:10] Debug-Logging initialisiert
+[2024-12-06 21:39:10] Database set
+Daten: Array
+(
+    [query] => 
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+   GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 21:39:10] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => newsletters
+            [contentId] => content_newsletters
+            [itemsPerPage] => 10
+            [sortColumn] => ec.id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => ec.id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_newsletters
+            [autoReloadInterval] => 20000
+        )
+
+)
+
+[2024-12-06 21:39:10] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+   GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+
+)
+
+[2024-12-06 21:39:10] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+    GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:39:10] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:39:10] Final SQL Query
+Daten: Array
+(
+    [query] => 
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+    GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+ ORDER BY content_id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:39:10] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:39:12] Debug-Logging initialisiert
+[2024-12-06 21:39:12] Database set
+Daten: Array
+(
+    [query] => 
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+   GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 21:39:12] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => newsletters
+            [contentId] => content_newsletters
+            [itemsPerPage] => 10
+            [sortColumn] => content_id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => content_id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_newsletters
+            [autoReloadInterval] => 20000
+        )
+
+)
+
+[2024-12-06 21:39:12] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+   GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+
+)
+
+[2024-12-06 21:39:12] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+    GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:39:12] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:39:12] Final SQL Query
+Daten: Array
+(
+    [query] => 
+   SELECT DISTINCT
+       ec.id as content_id,
+       ec.subject,
+       ec.send_status,
+       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+       s.email as sender_email,
+       MAX(ej.sent_at) as send_date,
+       (
+           SELECT COUNT(DISTINCT r.id)
+           FROM recipients r
+           JOIN recipient_group rg ON r.id = rg.recipient_id
+           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+           WHERE ecg.email_content_id = ec.id
+           AND r.unsubscribed = 0 
+           AND r.bounce_status != 'hard'
+       ) as potential_recipients,
+       COUNT(DISTINCT ej.recipient_id) as total_recipients,
+       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+       GROUP_CONCAT(DISTINCT g.id) as group_id,
+       CASE 
+           WHEN ec.send_status = 1 
+           AND COUNT(DISTINCT ej.recipient_id) > 0 
+           AND COUNT(DISTINCT ej.recipient_id) = 
+               SUM(CASE 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   THEN 1 
+                   ELSE 0 
+               END)
+           THEN 1 
+           ELSE 0 
+       END as is_fully_sent
+   FROM 
+       email_contents ec
+       LEFT JOIN senders s ON ec.sender_id = s.id
+       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+       LEFT JOIN groups g ON ecg.group_id = g.id
+   WHERE 
+       ec.user_id = '1317'
+    GROUP BY 
+       ec.id, 
+       ec.subject,
+       ec.send_status,
+       sender_name,
+       sender_email
+ ORDER BY content_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:39:12] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:39:59] Debug-Logging initialisiert
+[2024-12-06 21:39:59] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:39:59] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:39:59] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:39:59] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:39:59] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:39:59] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:39:59] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:40:06] Debug-Logging initialisiert
+[2024-12-06 21:40:06] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:40:06] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:40:06] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:40:06] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:06] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:40:06] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:06] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:40:08] Debug-Logging initialisiert
+[2024-12-06 21:40:08] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:40:08] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => first_name
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => first_name
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:40:08] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:40:08] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:08] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:40:08] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:08] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:40:08] Debug-Logging initialisiert
+[2024-12-06 21:40:08] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:40:08] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:40:08] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:40:08] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:08] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:40:08] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:08] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:40:46] Debug-Logging initialisiert
+[2024-12-06 21:40:46] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:40:46] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => u.id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => u.id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:40:46] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:40:46] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:46] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:40:46] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:46] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:40:51] Debug-Logging initialisiert
+[2024-12-06 21:40:51] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:40:51] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:40:51] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:40:51] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:51] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:40:51] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:51] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:40:59] Debug-Logging initialisiert
+[2024-12-06 21:40:59] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:40:59] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:40:59] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:40:59] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:59] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:40:59] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:40:59] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:41:37] Debug-Logging initialisiert
+[2024-12-06 21:41:37] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:41:37] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:41:37] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:41:37] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:41:37] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:41:37] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:41:37] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:42:31] Debug-Logging initialisiert
+[2024-12-06 21:42:31] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:42:31] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:42:31] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:42:31] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:42:31] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:42:31] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:42:31] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-06 21:42:32] Debug-Logging initialisiert
+[2024-12-06 21:42:32] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-06 21:42:32] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 21:42:32] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-06 21:42:32] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:42:32] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-06 21:42:32] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 21:42:32] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+

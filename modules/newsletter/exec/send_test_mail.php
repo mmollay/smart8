@@ -29,12 +29,11 @@ try {
             ec.message,
             s.test_email,
             s.email as sender_email,
-            s.first_name as first_name,
-            s.last_name as last_name,
-            CONCAT(s.first_name, ' ', s.last_name) as sender_name,
-            s.company,
-            s.title,
-            s.gender
+            s.first_name as sender_first_name,
+            s.last_name as sender_last_name,
+            s.company as sender_company,
+            s.title as sender_title,
+            s.gender as sender_gender
         FROM email_contents ec
         JOIN senders s ON ec.sender_id = s.id
         WHERE ec.id = ? 
@@ -58,23 +57,29 @@ try {
     // Initialisiere PlaceholderService
     $placeholderService = PlaceholderService::getInstance();
 
-    // Erstelle Platzhalter für Test-Mail
-    $placeholders = $placeholderService->createPlaceholders([
-        'first_name' => $data['first_name'],
-        'last_name' => $data['last_name'],
+    // Testempfänger-Daten für Platzhalter
+    $recipientData = [
+        'first_name' => $data['sender_first_name'],
+        'last_name' => $data['sender_last_name'],
         'email' => $data['test_email'],
-        'company' => $data['company'],
-        'gender' => $data['gender'],
-        'title' => $data['title']
-    ]);
+        'company' => $data['sender_company'],
+        'gender' => $data['sender_gender'],
+        'title' => $data['sender_title']
+    ];
 
+    // Erstelle Platzhalter
+    $placeholders = $placeholderService->createPlaceholders($recipientData);
+
+    // Ersetze Platzhalter in Subject und Message
     $subject = $placeholderService->replacePlaceholders($data['subject'], $placeholders);
     $message = $placeholderService->replacePlaceholders($data['message'], $placeholders);
+
+    // Füge Debug-Informationen für Test-Mail hinzu
     $message = $placeholderService->addDebugInfo($message, $placeholders);
 
     // Hole Anhänge
     $attachments = [];
-    $directory = $uploadBasePath . $content_id . "/";
+    $directory = $uploadBasePath . $userId . "/newsletters/" . $content_id . "/";
 
     if (is_dir($directory)) {
         $files = scandir($directory);
@@ -96,12 +101,12 @@ try {
     $email = [
         'From' => [
             'Email' => $data['sender_email'],
-            'Name' => $data['sender_name']
+            'Name' => trim($data['sender_first_name'] . ' ' . $data['sender_last_name'])
         ],
         'To' => [
             [
                 'Email' => $data['test_email'],
-                'Name' => "Test: {$data['first_name']} {$data['last_name']}"
+                'Name' => "Test: " . trim($data['sender_first_name'] . ' ' . $data['sender_last_name'])
             ]
         ],
         'Subject' => '[TEST] ' . $subject,
@@ -111,7 +116,7 @@ try {
         'CustomID' => "test_mail_{$content_id}_" . time()
     ];
 
-    // Initialisiere Mailjet mit den Credentials aus der Config
+    // Initialisiere Mailjet
     $mj = new \Mailjet\Client(
         $mailjetConfig['api_key'],
         $mailjetConfig['api_secret'],
@@ -119,19 +124,26 @@ try {
         ['version' => 'v3.1']
     );
 
+    // Sende die E-Mail
     $response = $mj->post(Resources::$Email, ['body' => ['Messages' => [$email]]]);
 
     if ($response->success()) {
+        // Log den erfolgreichen Versand
+        $db->query("INSERT INTO email_logs (status, response, created_at) 
+           VALUES ('success', 'Test-Mail erfolgreich gesendet', NOW())");
+
         echo json_encode([
             'success' => true,
-            'message' => 'Test-Mail wurde erfolgreich an ' . $data['test_email'] . ' gesendet',
-            'placeholders' => $placeholders
+            'message' => 'Test-Mail wurde erfolgreich an ' . $data['test_email'] . ' gesendet'
         ]);
     } else {
         throw new Exception('Fehler beim Senden der Test-Mail: ' . json_encode($response->getBody()));
     }
 
 } catch (Exception $e) {
+    // Log den Fehler
+    $db->query("INSERT INTO email_logs (status, response, created_at) 
+    VALUES ('failed', '" . $db->real_escape_string($e->getMessage()) . "', NOW())");
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 } finally {
     if (isset($db)) {

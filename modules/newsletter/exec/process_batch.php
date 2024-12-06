@@ -22,8 +22,8 @@ require_once BASE_PATH . '/classes/EmailService.php';
 require_once BASE_PATH . '/classes/PlaceholderService.php';
 
 // Prüfe ob Klassen geladen wurden
-if (!class_exists('EmailService')) {
-    die("EmailService Klasse nicht gefunden\n");
+if (!class_exists('EmailService') || !class_exists('PlaceholderService')) {
+    die("Erforderliche Klassen nicht gefunden\n");
 }
 
 // Kommandozeilenargumente verarbeiten
@@ -183,53 +183,30 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
 
         writeLog("Verarbeite E-Mail für: " . $job['recipient_email'], 'INFO', $batchLogFile);
 
-        // Platzhalter erstellen
-        $placeholders = [
-            'anrede_formell' => getAnredeFormal(
-                $job['recipient_gender'],
-                $job['recipient_title'],
-                $job['recipient_first_name'],
-                $job['recipient_last_name']
-            ),
-            'anrede_persoenlich' => getAnredePersonal(
-                $job['recipient_gender'],
-                $job['recipient_first_name']
-            ),
-            'titel' => $job['recipient_title'],
-            'vorname' => $job['recipient_first_name'],
-            'nachname' => $job['recipient_last_name'],
-            'firma' => $job['recipient_company'],
+        // Empfängerdaten für den PlaceholderService aufbereiten
+        $recipientData = [
+            'first_name' => $job['recipient_first_name'],
+            'last_name' => $job['recipient_last_name'],
             'email' => $job['recipient_email'],
-            'datum' => date('d.m.Y'),
-            'uhrzeit' => date('H:i')
+            'company' => $job['recipient_company'],
+            'gender' => $job['recipient_gender'],
+            'title' => $job['recipient_title']
         ];
 
+        // Platzhalter über den Service erstellen
+        $placeholders = $placeholderService->createPlaceholders($recipientData);
 
         // Korrekte Basis-URL aus Konfiguration
-        $APP_URL = $_ENV['APP_URL'] ?? 'https://newsletter.ssi.at'; // Fallback hinzufügen
+        $APP_URL = $_ENV['APP_URL'] ?? 'https://newsletter.ssi.at';
 
-        // Platzhalter ersetzen und URLs anpassen
-        try {
-            $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
-
-            $message = $job['message'];
-            $message = $placeholderService->replacePlaceholders($message, $placeholders);
-            $message = makeUrlsAbsolute($message, $APP_URL);
-
-            writeLog("URLs in der Nachricht erfolgreich ersetzt", 'INFO', $batchLogFile);
-        } catch (Exception $e) {
-            writeLog("Fehler beim Verarbeiten der Nachricht: " . $e->getMessage(), 'ERROR', $batchLogFile);
-            throw $e;
-        }
-
-        // Platzhalter ersetzen
+        // Subject und Message mit Platzhaltern ersetzen
         $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
-
-        $message = $job['message'];
-        $message = $placeholderService->replacePlaceholders($message, $placeholders);
+        $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
+        
+        // URLs absolut machen
         $message = makeUrlsAbsolute($message, $APP_URL);
 
-
+        writeLog("Platzhalter erfolgreich ersetzt und URLs angepasst", 'INFO', $batchLogFile);
 
         // Abmelde-Link hinzufügen
         $unsubscribeUrl = $APP_URL . "/modules/newsletter/unsubscribe.php?email=" .
@@ -289,7 +266,7 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
         }
     } catch (Exception $e) {
         $db->rollback();
-        throw $e; // Weitergabe an übergeordnete Fehlerbehandlung
+        throw $e;
     }
 }
 
@@ -360,10 +337,7 @@ function markJobFailed($db, $jobId, $error)
 
 function makeUrlsAbsolute($content, $baseUrl)
 {
-    global $batchLogFile;
     $baseUrl = rtrim($baseUrl, '/');
-
-    writeLog("Starte URL-Ersetzung mit Basis-URL: $baseUrl", 'INFO', $batchLogFile);
 
     $patterns = [
         ['pattern' => '/(src\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'src'],
@@ -373,10 +347,9 @@ function makeUrlsAbsolute($content, $baseUrl)
     foreach ($patterns as $p) {
         $content = preg_replace_callback(
             $p['pattern'],
-            function ($matches) use ($baseUrl, $batchLogFile) {
+            function ($matches) use ($baseUrl) {
                 $oldUrl = $matches[2];
                 $newUrl = $baseUrl . $oldUrl;
-                writeLog("Ersetze URL: $oldUrl -> $newUrl", 'DEBUG', $batchLogFile);
                 return $matches[1] . '"' . $newUrl . '"';
             },
             $content
@@ -384,34 +357,4 @@ function makeUrlsAbsolute($content, $baseUrl)
     }
 
     return $content;
-}
-
-function getAnredeFormal($gender, $title, $firstName, $lastName)
-{
-    $anrede = 'Sehr ';
-
-    if ($gender === 'female') {
-        $anrede .= 'geehrte' . ($title ? ' Frau ' . $title : ' Frau');
-    } else if ($gender === 'male') {
-        $anrede .= 'geehrter' . ($title ? ' Herr ' . $title : ' Herr');
-    } else {
-        $anrede .= 'geehrte Damen und Herren';
-        return $anrede;
-    }
-
-    return $anrede . ' ' . $lastName;
-}
-
-function getAnredePersonal($gender, $firstName)
-{
-    if (!$firstName)
-        return 'Hallo';
-
-    if ($gender === 'female') {
-        return 'Liebe ' . $firstName;
-    } else if ($gender === 'male') {
-        return 'Lieber ' . $firstName;
-    }
-
-    return 'Hallo ' . $firstName;
 }

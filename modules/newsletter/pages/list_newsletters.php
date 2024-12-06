@@ -7,7 +7,9 @@
         loadListGenerator('lists/newsletters.php', {
             saveState: false,
             contentId: 'content_newsletters',
-            autoReloadInterval: 10000
+            sort: 'id',
+            sortDir: 'DESC',
+            //autoReloadInterval: 20000
         });
     });
 </script>

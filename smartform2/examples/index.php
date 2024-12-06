@@ -164,7 +164,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost') {
             });
 
             // Initial load of the MySQL Benutzerliste
-            loadListGenerator('list_mysql.php', { saveState: false, contentId: 'content1' });
+            loadListGenerator('list_mysql.php', { saveState: false, contentId: 'content1', sort: 'id', sortDir: 'DESC', });
             //loadListGenerator('list_array.php', { contentId: 'content2' });
         });
     </script>

@@ -14,7 +14,6 @@ ini_set('error_log', BASE_PATH . '/logs/webhook_error.log');
 // Log-Funktion
 function debugLog($message)
 {
-	return;
 	$logFile = BASE_PATH . '/logs/webhook_debug.log';
 	$logDir = dirname($logFile);
 
@@ -26,7 +25,6 @@ function debugLog($message)
 }
 
 debugLog("Script started");
-debugLog("ALLOW_WEBHOOK is defined: " . (defined('ALLOW_WEBHOOK') ? 'yes' : 'no'));
 
 // Basic Auth Prüfung
 if (
@@ -39,10 +37,6 @@ if (
 }
 
 debugLog("Auth successful");
-// Debug für POST Daten
-debugLog("POST Data: " . print_r($_POST, true));
-debugLog("Raw input: " . file_get_contents('php://input'));
-debugLog("Content Type: " . ($_SERVER['CONTENT_TYPE'] ?? 'not set'));
 
 // Konfiguration laden
 require_once BASE_PATH . '/n_config.php';
@@ -77,9 +71,9 @@ try {
 		'delivered' => 'delivered',
 		'opened' => 'open',
 		'clicked' => 'click',
-		'bounced' => 'failed',
-		'blocked' => 'failed',
-		'spam' => 'rejected',
+		'bounced' => 'bounce',
+		'blocked' => 'blocked',
+		'spam' => 'spam',
 		'unsub' => 'unsub'
 	];
 
@@ -102,104 +96,109 @@ try {
 			debugLog("Started transaction for message ID: $messageId");
 
 			// Event loggen
-			debugLog("Executing status_log INSERT for messageId: $messageId, event: $eventType");
+			$stmt = $db->prepare("
+                INSERT INTO status_log 
+                (event, timestamp, message_id, email)
+                VALUES (?, NOW(), ?, ?)
+            ");
+			$stmt->bind_param("sss", $eventType, $messageId, $email);
+			$stmt->execute();
+			debugLog("Status log entry created");
 
-			try {
-				$stmt = $db->prepare("
-                    INSERT INTO status_log 
-                    (event, timestamp, message_id, email)
-                    VALUES (?, NOW(), ?, ?)
-                ");
-				$stmt->bind_param("sss", $eventType, $messageId, $email);
-				$success = $stmt->execute();
+			// Job ID und Recipient ID für das Tracking holen
+			$stmt = $db->prepare("
+                SELECT ej.id as job_id, ej.recipient_id 
+                FROM email_jobs ej
+                WHERE ej.message_id = ?
+            ");
+			$stmt->bind_param("s", $messageId);
+			$stmt->execute();
+			$jobInfo = $stmt->get_result()->fetch_assoc();
 
-				if ($success) {
-					debugLog("Status log INSERT successful. Affected rows: " . $stmt->affected_rows);
-				} else {
-					debugLog("Status log INSERT failed. Error: " . $stmt->error);
+			// Tracking Events verarbeiten
+			if ($jobInfo && in_array($eventType, ['opened', 'clicked', 'unsub', 'bounced', 'spam'])) {
+				// Event-spezifische Daten sammeln
+				$eventData = [
+					'timestamp' => date('Y-m-d H:i:s'),
+					'ip' => $event['ip'] ?? null,
+					'user_agent' => $event['user_agent'] ?? null
+				];
+
+				// Für Click-Events die URL hinzufügen
+				if ($eventType === 'clicked' && isset($event['url'])) {
+					$eventData['url'] = $event['url'];
 				}
-			} catch (Exception $e) {
-				debugLog("Database error on status_log INSERT: " . $e->getMessage());
-				throw $e;
+
+				// Tracking Event speichern
+				$stmt = $db->prepare("
+                    INSERT INTO email_tracking 
+                    (job_id, recipient_id, event_type, event_data, created_at)
+                    VALUES (?, ?, ?, ?, NOW())
+                ");
+
+				$eventDataJson = json_encode($eventData);
+				$mappedEventType = $statusMapping[$eventType] ?? $eventType;
+
+				$stmt->bind_param(
+					"iiss",
+					$jobInfo['job_id'],
+					$jobInfo['recipient_id'],
+					$mappedEventType,
+					$eventDataJson
+				);
+				$stmt->execute();
+				debugLog("Tracking event created for job_id: {$jobInfo['job_id']}");
 			}
 
 			// Email-Job Status aktualisieren
 			$status = $statusMapping[$eventType] ?? $eventType;
-			debugLog("Executing email_jobs UPDATE for messageId: $messageId, new status: $status");
-
-			try {
-				$stmt = $db->prepare("
-                    UPDATE email_jobs 
-                    SET 
-                        status = ?,
-                        updated_at = NOW()
-                    WHERE message_id = ? 
-                    AND status != 'unsub'
-                ");
-				$stmt->bind_param("ss", $status, $messageId);
-				$success = $stmt->execute();
-
-				if ($success) {
-					debugLog("Email jobs UPDATE successful. Affected rows: " . $stmt->affected_rows);
-				} else {
-					debugLog("Email jobs UPDATE failed. Error: " . $stmt->error);
-				}
-			} catch (Exception $e) {
-				debugLog("Database error on email_jobs UPDATE: " . $e->getMessage());
-				throw $e;
-			}
+			$stmt = $db->prepare("
+                UPDATE email_jobs 
+                SET 
+                    status = ?,
+                    updated_at = NOW()
+                WHERE message_id = ? 
+                AND status != 'unsub'
+            ");
+			$stmt->bind_param("ss", $status, $messageId);
+			$stmt->execute();
+			debugLog("Email job status updated");
 
 			// Abmeldungen verarbeiten
 			if ($eventType === 'unsub' && !empty($email)) {
 				debugLog("Processing unsubscribe for: $email");
 
-				// Empfänger Details holen
-				$stmt = $db->prepare("
-                    SELECT r.id, ej.content_id
-                    FROM email_jobs ej
-                    JOIN recipients r ON r.id = ej.recipient_id
-                    WHERE ej.message_id = ?
-                    LIMIT 1
-                ");
-				$stmt->bind_param("s", $messageId);
-				$stmt->execute();
-				$result = $stmt->get_result();
-				$recipient = $result->fetch_assoc();
-
-				if ($recipient) {
-					debugLog("Found recipient: " . print_r($recipient, true));
-
-					// Empfänger Status aktualisieren
+				// Empfänger Status aktualisieren
+				if ($jobInfo) {
 					$stmt = $db->prepare("
                         UPDATE recipients
                         SET 
-                            status = 'unsubscribed',
+                            unsubscribed = 1,
                             unsubscribed_at = NOW()
                         WHERE id = ?
                     ");
-					$stmt->bind_param("i", $recipient['id']);
+					$stmt->bind_param("i", $jobInfo['recipient_id']);
 					$stmt->execute();
 
-					// Abmeldung loggen
+					// Abmeldung in Log-Tabelle eintragen
 					$stmt = $db->prepare("
                         INSERT INTO unsubscribe_log 
-                        (recipient_id, email, content_id, message_id, timestamp)
-                        VALUES (?, ?, ?, ?, NOW())
+                        (recipient_id, email, message_id, timestamp)
+                        VALUES (?, ?, ?, NOW())
                     ");
 					$stmt->bind_param(
-						"isis",
-						$recipient['id'],
+						"iss",
+						$jobInfo['recipient_id'],
 						$email,
-						$recipient['content_id'],
 						$messageId
 					);
 					$stmt->execute();
-					debugLog("Unsubscribe processed for: $email");
+					debugLog("Unsubscribe processed successfully");
 				}
 			}
 
 			$db->commit();
-			debugLog("Committed transaction for message ID: $messageId");
+			debugLog("Transaction committed for message ID: $messageId");
 
 		} catch (Exception $e) {
 			$db->rollback();
@@ -210,14 +209,12 @@ try {
 
 	// Erfolgreiche Antwort
 	http_response_code(200);
-	$response = [
+	echo json_encode([
 		'success' => true,
 		'message' => 'Events processed',
 		'count' => count($events),
 		'timestamp' => date('c')
-	];
-	debugLog("Success response: " . json_encode($response));
-	echo json_encode($response);
+	]);
 
 } catch (Exception $e) {
 	debugLog("Critical error: " . $e->getMessage());
@@ -233,5 +230,3 @@ try {
 		debugLog("Database connection closed");
 	}
 }
-
-debugLog("Script completed");

@@ -7,9 +7,6 @@ class PlaceholderService
     private array $monthNames;
     private array $weekdayNames;
 
-    /**
-     * Private constructor to prevent direct creation
-     */
     private function __construct(string $locale = 'de_DE.UTF-8', string $timezone = 'Europe/Berlin')
     {
         $this->locale = $locale;
@@ -47,24 +44,7 @@ class PlaceholderService
         ];
     }
 
-    /**
-     * Prevent cloning of the instance
-     */
-    private function __clone()
-    {
-    }
-
-    /**
-     * Prevent unserializing of the instance
-     */
-    public function __wakeup()
-    {
-        throw new Exception("Cannot unserialize singleton");
-    }
-
-    /**
-     * Get the singleton instance
-     */
+    // Singleton-Methoden bleiben unverändert
     public static function getInstance(): self
     {
         if (self::$instance === null) {
@@ -74,79 +54,80 @@ class PlaceholderService
     }
 
     /**
-     * Generiert die Anrede basierend auf den Empfängerdaten
-     */
-    public function generateAnrede($gender, $title, $lastName): string
-    {
-        $anrede = 'Sehr geehrte';
-        if ($gender === 'male') {
-            $anrede .= 'r Herr';
-        } elseif ($gender === 'female') {
-            $anrede .= ' Frau';
-        }
-        if ($title) {
-            $anrede .= ' ' . $title;
-        }
-        if ($lastName) {
-            $anrede .= ' ' . $lastName;
-        }
-        return $anrede;
-    }
-
-    /**
-     * Erstellt alle Platzhalter für einen Empfänger
-     * @param array $recipientData Array mit Empfängerdaten
-     * @return array Array mit allen Platzhaltern
+     * Erstellt Platzhalter für einen Empfänger
      */
     public function createPlaceholders(array $recipientData): array
     {
         $now = new DateTime();
 
         $placeholders = [
+            // Formelle Anrede
+            'anrede_formell' => $this->getAnredeFormal(
+                $recipientData['gender'] ?? '',
+                $recipientData['title'] ?? '',
+                $recipientData['first_name'] ?? '',
+                $recipientData['last_name'] ?? ''
+            ),
+            // Persönliche Anrede
+            'anrede_persoenlich' => $this->getAnredePersonal(
+                $recipientData['gender'] ?? '',
+                $recipientData['first_name'] ?? ''
+            ),
+
             // Personendaten
+            'titel' => $recipientData['title'] ?? '',
             'vorname' => $recipientData['first_name'] ?? '',
             'nachname' => $recipientData['last_name'] ?? '',
-            'titel' => $recipientData['title'] ?? '',
-            'geschlecht' => $recipientData['gender'] ?? '',
-
-            // Firmendaten
             'firma' => $recipientData['company'] ?? '',
-            'company' => $recipientData['company'] ?? '', // Alias für Abwärtskompatibilität
-
-            // Kontaktdaten
             'email' => $recipientData['email'] ?? '',
 
-            // Datums- und Zeitangaben (deutsch formatiert)
+            // Datum und Zeit
             'datum' => $now->format('d.m.Y'),
             'datum_lang' => $this->weekdayNames[$now->format('l')] . ', ' .
                 $now->format('d') . '. ' .
                 $this->monthNames[(int) $now->format('n')] . ' ' .
                 $now->format('Y'),
-            'datum_kurz' => $now->format('d.m.y'),
             'uhrzeit' => $now->format('H:i'),
-            'uhrzeit_lang' => $now->format('H:i:s'),
-
-            // Zusätzliche Formatierungen
             'monat' => $this->monthNames[(int) $now->format('n')],
             'jahr' => $now->format('Y'),
             'wochentag' => $this->weekdayNames[$now->format('l')]
         ];
 
-        // Generiere Anrede
-        $placeholders['anrede'] = $this->generateAnrede(
-            $recipientData['gender'] ?? '',
-            $recipientData['title'] ?? '',
-            $recipientData['last_name'] ?? ''
-        );
-
         return $placeholders;
+    }
+
+    private function getAnredeFormal(string $gender, string $title, string $firstName, string $lastName): string
+    {
+        $anrede = 'Sehr ';
+
+        if ($gender === 'female') {
+            $anrede .= 'geehrte' . ($title ? ' Frau ' . $title : ' Frau');
+        } elseif ($gender === 'male') {
+            $anrede .= 'geehrter' . ($title ? ' Herr ' . $title : ' Herr');
+        } else {
+            return 'Sehr geehrte Damen und Herren';
+        }
+
+        return $anrede . ' ' . $lastName;
+    }
+
+    private function getAnredePersonal(string $gender, string $firstName): string
+    {
+        if (empty($firstName)) {
+            return 'Hallo';
+        }
+
+        if ($gender === 'female') {
+            return 'Liebe ' . $firstName;
+        } elseif ($gender === 'male') {
+            return 'Lieber ' . $firstName;
+        }
+
+        return 'Hallo ' . $firstName;
     }
 
     /**
      * Ersetzt Platzhalter im Text
-     * @param string $text Text mit Platzhaltern
-     * @param array $placeholders Array mit Platzhaltern
-     * @return string Text mit ersetzten Platzhaltern
      */
     public function replacePlaceholders(string $text, array $placeholders): string
     {
@@ -157,58 +138,53 @@ class PlaceholderService
     }
 
     /**
-     * Fügt Debug-Informationen für Test-Mails hinzu
-     */
-    public function addDebugInfo(string $message, array $placeholders): string
-    {
-        $placeholderInfo = [];
-        foreach ($placeholders as $key => $value) {
-            $placeholderInfo[] = "{{" . $key . "}} = " . $value;
-        }
-
-        $debugInfo = "\n\n
-<hr>
-<p><strong>Debug-Informationen für Test-Mail:</strong></p>";
-        $debugInfo .= "
-<pre style='background-color: #f5f5f5; padding: 10px; border-radius: 4px;'>";
-        $debugInfo .= "Verfügbare Platzhalter:\n";
-        $debugInfo .= implode("\n", $placeholderInfo);
-        $debugInfo .= "</pre>";
-
-        return $message . $debugInfo;
-    }
-
-    /**
-     * Gibt eine Liste aller verfügbaren Platzhalter zurück
-     * @return array Array mit Platzhalter-Beschreibungen
+     * Liste aller verfügbaren Platzhalter
      */
     public static function getAvailablePlaceholders(): array
     {
         return [
+            'Anrede' => [
+                'anrede_formell' => 'Formelle Anrede (z.B. Sehr geehrter Herr Dr. Mustermann)',
+                'anrede_persoenlich' => 'Persönliche Anrede (z.B. Lieber Thomas)',
+            ],
             'Personendaten' => [
+                'titel' => 'Akademischer Titel (z.B. Dr., Prof.)',
                 'vorname' => 'Vorname des Empfängers',
                 'nachname' => 'Nachname des Empfängers',
-                'titel' => 'Akademischer Titel',
-                'geschlecht' => 'Geschlecht (male/female)',
-                'anrede' => 'Automatisch generierte Anrede'
-            ],
-            'Firmendaten' => [
                 'firma' => 'Firmenname',
-                'company' => 'Firmenname (Alias)'
-            ],
-            'Kontaktdaten' => [
                 'email' => 'E-Mail-Adresse'
             ],
             'Datum und Zeit' => [
-                'datum' => 'Aktuelles Datum (z.B. 11.11.2024)',
-                'datum_lang' => 'Ausführliches Datum (z.B. Montag, 11. November 2024)',
-                'datum_kurz' => 'Kurzes Datum (z.B. 11.11.24)',
-                'uhrzeit' => 'Aktuelle Uhrzeit (z.B. 14:30)',
-                'uhrzeit_lang' => 'Ausführliche Uhrzeit (z.B. 14:30:45)',
+                'datum' => 'Aktuelles Datum (DD.MM.YYYY)',
+                'datum_lang' => 'Ausführliches Datum',
+                'uhrzeit' => 'Aktuelle Uhrzeit (HH:MM)',
                 'monat' => 'Aktueller Monat ausgeschrieben',
                 'jahr' => 'Aktuelles Jahr',
-                'wochentag' => 'Aktueller Wochentag ausgeschrieben'
+                'wochentag' => 'Aktueller Wochentag'
             ]
         ];
+    }
+
+    /**
+     * Debug-Informationen für Test-Mails
+     */
+    public function addDebugInfo(string $message, array $placeholders): string
+    {
+        $debugInfo = "\n\n<hr><div style='background-color: #f8f9fa; padding: 15px; margin-top: 20px;'>";
+        $debugInfo .= "<h4>Debug-Informationen für Test-Mail</h4>";
+        $debugInfo .= "<table style='width: 100%; border-collapse: collapse;'>";
+        $debugInfo .= "<tr><th style='text-align: left; padding: 5px;'>Platzhalter</th><th style='text-align: left; padding: 5px;'>Wert</th></tr>";
+
+        foreach ($placeholders as $key => $value) {
+            $debugInfo .= sprintf(
+                "<tr><td style='padding: 5px;'>{{%s}}</td><td style='padding: 5px;'>%s</td></tr>",
+                htmlspecialchars($key),
+                htmlspecialchars($value)
+            );
+        }
+
+        $debugInfo .= "</table></div>";
+
+        return $message . $debugInfo;
     }
 }
