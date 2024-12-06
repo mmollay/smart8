@@ -39,7 +39,6 @@ $query = "
            AND r.bounce_status != 'hard'
        ) as potential_recipients,
        COUNT(DISTINCT ej.recipient_id) as total_recipients,
-       SUM(CASE WHEN ej.status = 'delivered' THEN 1 ELSE 0 END) as delivered_count,
        SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
        SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
        SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
@@ -53,7 +52,7 @@ $query = "
            AND COUNT(DISTINCT ej.recipient_id) > 0 
            AND COUNT(DISTINCT ej.recipient_id) = 
                SUM(CASE 
-                   WHEN ej.status IN ('delivered', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
                    THEN 1 
                    ELSE 0 
                END)
@@ -220,23 +219,11 @@ $columns = [
             if ($sent > 0) {
                 $sent_percent = round(($sent / $total) * 100);
                 $stats[] = sprintf(
-                    '<div class="ui tiny yellow label" data-tooltip="An Mailjet übergeben">
-                       <i class="paper plane icon"></i> %d%% (%d)
+                    '<div class="ui tiny green label" data-tooltip="Versendet">
+                       <i class="check icon"></i> %d%% (%d)
                    </div>',
                     $sent_percent,
                     $sent
-                );
-            }
-
-            $delivered = (int) $row['delivered_count'];
-            if ($delivered > 0) {
-                $delivered_percent = round(($delivered / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny green label" data-tooltip="Zustellung bestätigt">
-                       <i class="check icon"></i> %d%% (%d)
-                   </div>',
-                    $delivered_percent,
-                    $delivered
                 );
             }
 
@@ -308,45 +295,43 @@ $columns = [
             }
 
             $total = (int) $row['total_recipients'];
-            $total_delivered = (int) $row['delivered_count'] + (int) $row['opened_count'] + (int) $row['clicked_count'];
+            $sent = (int) $row['sent_count'];
             $failed = (int) $row['failed_count'];
 
-            $progress = round(($total_delivered / $total) * 100);
-
-            if ($total_delivered >= $total) {
+            if ($sent >= $total) {
                 $details = [];
-                if ($row['delivered_count'] > 0)
-                    $details[] = "{$row['delivered_count']} bestätigt";
+                if ($row['sent_count'] > 0)
+                    $details[] = "{$row['sent_count']} versendet";
                 if ($row['opened_count'] > 0)
                     $details[] = "{$row['opened_count']} geöffnet";
                 if ($row['clicked_count'] > 0)
                     $details[] = "{$row['clicked_count']} geklickt";
 
                 return "<div>
-                       <span class='ui green text'><i class='check circle icon'></i> Vollständig zugestellt</span>
+                       <span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span>
                        <div class='ui tiny text'>" . implode(', ', $details) . "</div>
                    </div>";
             }
 
             if ($failed >= $total) {
-                return "<span class='ui red text'><i class='times circle icon'></i> Zustellung fehlgeschlagen</span>";
+                return "<span class='ui red text'><i class='times circle icon'></i> Versand fehlgeschlagen</span>";
             }
 
-            if ($total_delivered > 0) {
+            if ($sent > 0) {
                 if ($failed > 0) {
                     return "<div>
-                           <span class='ui orange text'><i class='exclamation circle icon'></i> Teilweise zugestellt</span>
+                           <span class='ui orange text'><i class='exclamation circle icon'></i> Teilweise versendet</span>
                            <div class='ui tiny text'>
-                               $total_delivered zugestellt, $failed fehlgeschlagen
+                               $sent versendet, $failed fehlgeschlagen
                            </div>
                        </div>";
                 }
             }
 
             return "<div>
-                   <span class='ui yellow text'><i class='sync icon'></i> Zustellung läuft...</span>
+                   <span class='ui yellow text'><i class='sync icon'></i> Versand läuft...</span>
                    <div class='ui tiny text'>
-                       $total_delivered von $total bestätigt/interagiert
+                       $sent von $total versendet/interagiert
                    </div>
                </div>";
         },
@@ -354,6 +339,7 @@ $columns = [
         'width' => '180px'
     ]
 ];
+
 
 // Definition der Buttons
 $buttons = [
