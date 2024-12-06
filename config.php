@@ -45,7 +45,7 @@ try {
 
     // Benutzerdetails laden
     $userDetails = $userId ? getUserDetails($userId, $db) : null;
-    $isSuperuser = $userDetails['superuser'] ?? false;
+    $_SESSION['superuser'] = $isSuperuser = $userDetails['superuser'] ?? false;
 
     // Modulzugriffssteuerung
     function checkModuleAccess($moduleIdentifier)
