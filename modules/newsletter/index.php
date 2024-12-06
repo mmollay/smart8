@@ -6,8 +6,6 @@ $version = $versions['version'];
 
 require(__DIR__ . "/../../DashboardClass.php");
 
-//zum testen
-$_SESSION['superuser'] = 1;
 
 $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
 $dashboard->addMenuItem('leftMenu', "newsletter", "home", "Home", "home icon");
