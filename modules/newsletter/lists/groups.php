@@ -16,7 +16,6 @@ $listGenerator = new ListGenerator([
     'selectable' => true,
     'celled' => true,
     'width' => '1200px',
-    'debug' => true,
 ]);
 
 // Erweiterte Datenbank-Abfrage mit aktiven und abgemeldeten Empfängern

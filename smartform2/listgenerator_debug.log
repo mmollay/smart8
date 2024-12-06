@@ -11881,3 +11881,2483 @@ Daten: Array
     [returnedRows] => 3
 )
 
+[2024-12-06 18:42:55] Debug-Logging initialisiert
+[2024-12-06 18:42:55] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:42:55] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:42:55] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 18:42:55] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:42:55] Total rows
+Daten: Array
+(
+    [count] => 8
+)
+
+[2024-12-06 18:42:55] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:42:55] Data fetched
+Daten: Array
+(
+    [totalRows] => 8
+    [returnedRows] => 8
+)
+
+[2024-12-06 18:43:04] Debug-Logging initialisiert
+[2024-12-06 18:43:04] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:04] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => groups
+            [contentId] => content_group
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_group
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:04] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+)
+
+[2024-12-06 18:43:04] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:04] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:04] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+ ORDER BY group_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:04] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:11] Debug-Logging initialisiert
+[2024-12-06 18:43:11] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:11] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => groups
+            [contentId] => content_group
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_group
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:11] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+)
+
+[2024-12-06 18:43:11] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:11] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:11] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+ ORDER BY group_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:11] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:18] Debug-Logging initialisiert
+[2024-12-06 18:43:18] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:18] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => groups
+            [contentId] => content_group
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_group
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:18] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+)
+
+[2024-12-06 18:43:18] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:18] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:18] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+ ORDER BY group_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:18] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:22] Debug-Logging initialisiert
+[2024-12-06 18:43:23] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:23] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => senders
+            [contentId] => content_senders
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_senders
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:23] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+)
+
+[2024-12-06 18:43:23] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:23] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:23] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+ ORDER BY full_name DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:23] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:34] Debug-Logging initialisiert
+[2024-12-06 18:43:34] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:34] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => senders
+            [contentId] => content_senders
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_senders
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:34] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+)
+
+[2024-12-06 18:43:34] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:34] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:34] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+ ORDER BY full_name DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:34] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:38] Debug-Logging initialisiert
+[2024-12-06 18:43:38] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:38] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => groups
+            [contentId] => content_group
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_group
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:38] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+)
+
+[2024-12-06 18:43:38] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:38] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:38] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+ ORDER BY group_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:38] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:40] Debug-Logging initialisiert
+[2024-12-06 18:43:40] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:40] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => groups
+            [contentId] => content_group
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_group
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:40] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+)
+
+[2024-12-06 18:43:40] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:40] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:40] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+ ORDER BY group_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:40] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:43:42] Debug-Logging initialisiert
+[2024-12-06 18:43:42] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:43:42] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => senders
+            [contentId] => content_senders
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_senders
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:43:42] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+)
+
+[2024-12-06 18:43:42] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:42] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:43:42] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+ ORDER BY full_name DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:43:42] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:44:10] Debug-Logging initialisiert
+[2024-12-06 18:44:10] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:44:10] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => groups
+            [contentId] => content_group
+            [itemsPerPage] => 20
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_group
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:44:10] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+    GROUP BY 
+        g.id
+
+)
+
+[2024-12-06 18:44:10] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:10] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:44:10] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        g.id as group_id, 
+        CONCAT('<div class="ui ', g.color, ' compact empty mini circular label"></div> ', g.name) as group_name,
+        COUNT(DISTINCT r.id) as total_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
+        COUNT(DISTINCT CASE WHEN r.unsubscribed = 1 THEN r.id END) as unsubscribed_recipients,
+        g.created_at
+    FROM 
+        groups g
+        LEFT JOIN recipient_group rg ON g.id = rg.group_id
+        LEFT JOIN recipients r ON rg.recipient_id = r.id
+    WHERE 
+        g.user_id = '1317'    /* Hier direkt den userId verwenden statt Prepared Statement */
+     GROUP BY 
+        g.id
+ ORDER BY group_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:10] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:44:25] Debug-Logging initialisiert
+[2024-12-06 18:44:25] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:44:25] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => senders
+            [contentId] => content_senders
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_senders
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:44:25] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+)
+
+[2024-12-06 18:44:25] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:25] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:44:25] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+ ORDER BY full_name DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:25] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:44:32] Debug-Logging initialisiert
+[2024-12-06 18:44:32] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:44:32] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => senders
+            [contentId] => content_senders
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_senders
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:44:32] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+)
+
+[2024-12-06 18:44:32] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:32] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:44:32] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+ ORDER BY full_name DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:32] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
+[2024-12-06 18:44:33] Debug-Logging initialisiert
+[2024-12-06 18:44:33] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 18:44:33] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => senders
+            [contentId] => content_senders
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_senders
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 18:44:33] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+    GROUP BY id
+
+)
+
+[2024-12-06 18:44:33] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:33] Total rows
+Daten: Array
+(
+    [count] => 1
+)
+
+[2024-12-06 18:44:33] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        id, 
+        CONCAT(
+            IFNULL(CONCAT(title, ' '), ''),
+            first_name, 
+            ' ', 
+            last_name
+        ) AS full_name,
+        company, 
+        email,
+        test_email,
+        CASE 
+            WHEN test_email IS NOT NULL THEN 
+                CONCAT(
+                    '<div class="ui mini basic label">',
+                    '<i class="envelope icon"></i>',
+                    test_email,
+                    '</div>'
+                )
+            ELSE 
+                '<div class="ui mini grey label">Nicht konfiguriert</div>'
+        END as formatted_test_email,
+        gender, 
+        comment
+    FROM senders
+
+	WHERE user_id = '1317'
+     GROUP BY id
+ ORDER BY full_name DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 18:44:33] Data fetched
+Daten: Array
+(
+    [totalRows] => 1
+    [returnedRows] => 1
+)
+
