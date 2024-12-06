@@ -46,7 +46,6 @@ $formGenerator->addField([
             'name' => 'title',
             'label' => 'Titel',
             'width' => 2,
-            'value' => 'Dr.'
         ],
         [
             'type' => 'input',
