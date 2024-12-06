@@ -9649,3 +9649,2235 @@ Daten: Array
     [returnedRows] => 3
 )
 
+[2024-12-06 17:22:35] Debug-Logging initialisiert
+[2024-12-06 17:22:35] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:22:35] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:22:35] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:22:35] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:22:35] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:22:35] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:22:35] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:27:03] Debug-Logging initialisiert
+[2024-12-06 17:27:03] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:27:03] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:27:03] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:27:03] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:27:03] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:27:03] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:27:03] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:33:44] Debug-Logging initialisiert
+[2024-12-06 17:33:44] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:33:44] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:33:44] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:33:44] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:33:44] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:33:44] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:33:44] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:33:50] Debug-Logging initialisiert
+[2024-12-06 17:33:50] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:33:50] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:33:50] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:33:50] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:33:50] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:33:50] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:33:50] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:37:33] Debug-Logging initialisiert
+[2024-12-06 17:37:33] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:37:33] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:37:33] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:37:33] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:33] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:37:33] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:33] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:37:41] Debug-Logging initialisiert
+[2024-12-06 17:37:41] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:37:41] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:37:41] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:37:41] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:41] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:37:41] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:41] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:37:44] Debug-Logging initialisiert
+[2024-12-06 17:37:44] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:37:44] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:37:44] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:37:44] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:44] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:37:44] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:44] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:37:53] Debug-Logging initialisiert
+[2024-12-06 17:37:53] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:37:53] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:37:53] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:37:53] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:53] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:37:53] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:37:53] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+
+[2024-12-06 17:41:02] Debug-Logging initialisiert
+[2024-12-06 17:41:02] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-06 17:41:02] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => recipients
+            [contentId] => content_recipients
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Empfänger gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_recipients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-06 17:41:02] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+ GROUP BY r.id
+)
+
+[2024-12-06 17:41:02] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:41:02] Total rows
+Daten: Array
+(
+    [count] => 3
+)
+
+[2024-12-06 17:41:02] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        r.id,
+        r.first_name,
+        r.last_name,
+        r.company,
+        r.email,
+        r.gender,
+        r.title,
+        r.comment,
+        r.unsubscribed,
+        r.unsubscribed_at,
+        r.bounce_status,
+        r.last_bounce_at,
+        GROUP_CONCAT(DISTINCT g.id) as group_ids,
+        IFNULL(GROUP_CONCAT(
+            DISTINCT CONCAT('<div class="ui mini basic compact label ', g.color, '">', g.name, '</div>')
+            SEPARATOR ' '
+        ), '<div class="ui mini compact label">Keine Gruppen</div>') as group_labels,
+        CASE 
+            WHEN r.unsubscribed = 1 THEN 
+                CONCAT('<div class="ui red mini label" title="Abgemeldet am ', 
+                      DATE_FORMAT(r.unsubscribed_at, '%d.%m.%Y %H:%i'), 
+                      '"><i class="user times icon"></i>Abgemeldet</div>')
+            WHEN r.bounce_status = 'hard' THEN 
+                CONCAT('<div class="ui orange mini label" title="Hard Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation triangle icon"></i>Hard Bounce</div>')
+            WHEN r.bounce_status = 'soft' THEN 
+                CONCAT('<div class="ui yellow mini label" title="Soft Bounce am ',
+                      DATE_FORMAT(r.last_bounce_at, '%d.%m.%Y %H:%i'),
+                      '"><i class="exclamation circle icon"></i>Soft Bounce</div>')
+            ELSE '<div class="ui green mini label"><i class="user check icon"></i>Aktiv</div>'
+        END as status_label
+    FROM recipients r
+    LEFT JOIN recipient_group rg ON r.id = rg.recipient_id
+    LEFT JOIN groups g ON rg.group_id = g.id
+    WHERE r.user_id = '1317'
+  GROUP BY r.id ORDER BY first_name ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-06 17:41:02] Data fetched
+Daten: Array
+(
+    [totalRows] => 3
+    [returnedRows] => 3
+)
+

@@ -40,6 +40,8 @@ $formGenerator->addField([
     ]
 ]);
 
+
+
 $formGenerator->addField([
     'type' => 'grid',
     'columns' => 16,
@@ -96,6 +98,16 @@ $formGenerator->addField([
     'name' => 'comment',
     'label' => 'Kommentar'
 ]);
+
+
+$formGenerator->addField([
+    'type' => 'checkbox',
+    'name' => 'unsubscribed',
+    'label' => 'Newsletter abgemeldet',
+    'class' => 'ui toggle red checkbox',
+    'description' => 'Wenn deaktiviert, ist der Empfänger für den Newsletter angemeldet'
+]);
+
 
 // Buttons hinzufügen
 $formGenerator->addButtonElement([

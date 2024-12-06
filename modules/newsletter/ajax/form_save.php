@@ -132,6 +132,27 @@ try {
 			break;
 
 		case 'recipients':
+			// Check vorherigen Status
+			if ($operation === 'UPDATE') {
+				$stmt = $db->prepare("SELECT unsubscribed FROM recipients WHERE id = ?");
+				$stmt->bind_param("i", $id);
+				$stmt->execute();
+				$oldStatus = $stmt->get_result()->fetch_assoc()['unsubscribed'];
+
+				// Log wenn Admin zurücksetzt
+				if ($oldStatus == 1 && !isset($_POST['unsubscribed'])) {
+					$stmt = $db->prepare("
+			INSERT INTO unsubscribe_log 
+			(recipient_id, email, content_id, message_id, timestamp)
+			VALUES (?, ?, 0, 'ADMIN_RESET', NOW())
+		");
+					$stmt->bind_param("is", $id, $_POST['email']);
+					$stmt->execute();
+				}
+			}
+
+
+
 			$data = [
 				'first_name' => sanitizeInput($_POST['first_name'] ?? ''),
 				'last_name' => sanitizeInput($_POST['last_name'] ?? ''),
@@ -139,7 +160,9 @@ try {
 				'email' => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
 				'gender' => in_array($_POST['gender'] ?? '', ['male', 'female', 'other']) ? $_POST['gender'] : 'other',
 				'title' => sanitizeInput($_POST['title'] ?? ''),
-				'comment' => sanitizeInput($_POST['comment'] ?? '')
+				'comment' => sanitizeInput($_POST['comment'] ?? ''),
+				'unsubscribed' => isset($_POST['unsubscribed']) ? 1 : 0,
+				'unsubscribed_at' => isset($_POST['unsubscribed']) ? date('Y-m-d H:i:s') : null
 			];
 
 			$affected_id = handleDatabaseOperation($db, $operation, 'recipients', $data, $id);
