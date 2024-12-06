@@ -61,7 +61,6 @@ if ($packageInfo) {
             ' . ucfirst($packageInfo['package_type']) . '-Paket:<br>
         </div>
         ' . $packageInfo['emails_remaining_formatted'] . ' von ' . $packageInfo['emails_limit_formatted'] . '<br>E-Mails verfügbar
-    
         <div class="ui tiny ' . $colorClass . ' progress" data-percent="' . $packageInfo['usage_percent'] . '">
             <div class="bar"></div>
         </div>
@@ -82,7 +81,6 @@ $dashboard->render();
 function getUserPackageInfo($userId)
 {
     global $db;
-
     $sql = "
     SELECT 
         nup.package_type,

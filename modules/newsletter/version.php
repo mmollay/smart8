@@ -2,12 +2,13 @@
 return [
     'version' => '1.1.6',
     'changelog' => [
+
         '1.1.3' => [
-            'date' => '2025-01-15',
+            'date' => '2025-12-05',
             'changes' => [
                 'Behoben' => [
-                    'Fehler beim Versand von Newslettern an Gruppen behoben',
-                    'Fehler bei der Anzeige von Empfängern in Gruppen behoben'
+                    'Importschnitte erweitert',
+                    'Newsletter Versand verbessert'
                 ]
             ]
         ],

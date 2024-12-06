@@ -1,8 +1,23 @@
 <?php
 require_once(__DIR__ . '/../n_config.php');
+$importConfig = require(__DIR__ . '/../config/import_export_config.php');
 
 // Hole alle verfügbaren Gruppen für das Dropdown
 $groups = getAllGroups($db);
+
+// Beispieldaten basierend auf der Konfiguration generieren
+$headers = implode(',', array_keys($importConfig['default_columns']));
+$exampleRows = [
+    ['max@example.com', 'Max', 'Mustermann', 'male', 'Dr.', 'Firma GmbH', 'Ein Kommentar'],
+    ['anna.schmidt@technik.com', 'Anna', 'Schmidt', 'female', 'Prof.', 'Technik AG', 'Senior Entwicklerin'],
+    ['t.weber@consulting.net', 'Thomas', 'Weber', 'male', 'Dipl.-Ing.', 'Consulting Partners', 'Projektleiter']
+];
+$exampleData = $headers . "\n" . implode("\n", array_map(function ($row) {
+    return implode(',', array_map(function ($cell) {
+        return strpos($cell, ' ') !== false ? '"' . $cell . '"' : $cell;
+    }, $row));
+}, $exampleRows));
+
 ?>
 <div class="ui container">
     <div class="ui attached message">
@@ -16,16 +31,16 @@ $groups = getAllGroups($db);
     </div>
 
     <div class="ui form attached fluid segment">
-        <br>
         <form class="ui form" id="importForm" method="post" enctype="multipart/form-data">
             <!-- Tab Menu -->
             <div class="ui top attached tabular menu">
-                <a class="item active" data-tab="file">
-                    <i class="file icon"></i> Datei-Upload
-                </a>
-                <a class="item" data-tab="text">
+                <a class="item active" data-tab="text">
                     <i class="edit icon"></i> Direkte Eingabe
                 </a>
+                <a class="item" data-tab="file">
+                    <i class="file icon"></i> Datei-Upload
+                </a>
+
                 <div class="right menu">
                     <a class="item" onclick="$('#helpModal').modal('show')">
                         <i class="question circle icon"></i> Hilfe
@@ -33,13 +48,14 @@ $groups = getAllGroups($db);
                 </div>
             </div>
 
-            <div class="ui bottom attached tab segment active" data-tab="file">
+            <!-- File Upload Tab -->
+            <div class="ui bottom attached tab segment" data-tab="file">
                 <div class="field">
                     <label>CSV/TXT Datei auswählen</label>
                     <div class="ui action input">
                         <input type="file" name="importFile" accept=".csv,.txt" id="fileInput" style="display: none;">
                         <input type="text" readonly placeholder="Keine Datei ausgewählt" id="fileLabel"
-                            style="cursor: pointer;" onclick="$('#fileInput').click();">
+                            onclick="$('#fileInput').click();">
                         <div class="ui primary labeled icon button" onclick="$('#fileInput').click();">
                             <i class="file icon"></i>
                             Durchsuchen
@@ -57,12 +73,13 @@ $groups = getAllGroups($db);
                 </div>
             </div>
 
-            <div class="ui bottom attached tab segment" data-tab="text">
+            <!-- Text Input Tab -->
+            <div class="ui bottom attached tab segment active" data-tab="text">
                 <div class="field">
                     <label>Empfängerdaten direkt eingeben</label>
                     <textarea name="importText" id="textInput" rows="10"
                         style="font-family: monospace; min-height: 200px;"
-                        placeholder="first_name,last_name,email,company,gender,title,comment"></textarea>
+                        placeholder="<?php echo htmlspecialchars($headers); ?>"></textarea>
                     <div class="ui tiny buttons" style="margin-top: 5px;">
                         <button type="button" class="ui labeled icon button" id="insertExample">
                             <i class="paste icon"></i> Beispieldaten
@@ -79,7 +96,6 @@ $groups = getAllGroups($db);
 
             <!-- Import Options -->
             <div class="ui secondary segment">
-                <!-- Gruppen Auswahl mit "Neue Gruppe" Button -->
                 <div class="field">
                     <label>
                         Gruppen auswählen
@@ -93,10 +109,7 @@ $groups = getAllGroups($db);
                         <i class="dropdown icon"></i>
                         <div class="default text">Gruppen wählen...</div>
                         <div class="menu" id="groupsDropdownMenu">
-                            <?php
-                            $groups = getAllGroups($db);
-                            foreach ($groups as $groupId => $groupHtml):
-                                ?>
+                            <?php foreach ($groups as $groupId => $groupHtml): ?>
                                 <div class="item" data-value="<?= htmlspecialchars($groupId) ?>">
                                     <?= $groupHtml ?>
                                 </div>
@@ -104,8 +117,6 @@ $groups = getAllGroups($db);
                         </div>
                     </div>
                 </div>
-
-
 
                 <div class="two fields">
                     <div class="field">
@@ -139,59 +150,6 @@ $groups = getAllGroups($db);
                 <i class="undo icon"></i> Zurücksetzen
             </button>
         </form>
-
-        <!-- Modal für neue Gruppe -->
-        <div class="ui small modal" id="newGroupModal">
-            <i class="close icon"></i>
-            <div class="header">
-                <i class="tags icon"></i> Neue Gruppe erstellen
-            </div>
-            <div class="content">
-                <form class="ui form" id="newGroupForm">
-                    <div class="required field">
-                        <label>Gruppenname</label>
-                        <input type="text" name="name" placeholder="Name der neuen Gruppe" required>
-                    </div>
-                    <div class="required field">
-                        <label>Farbe</label>
-                        <div class="ui fluid selection dropdown" id="colorDropdown">
-                            <input type="hidden" name="color" required>
-                            <i class="dropdown icon"></i>
-                            <div class="default text">Farbe wählen</div>
-                            <div class="menu">
-                                <div class="item" data-value="red"><i class="circle red icon"></i>Rot</div>
-                                <div class="item" data-value="orange"><i class="circle orange icon"></i>Orange</div>
-                                <div class="item" data-value="yellow"><i class="circle yellow icon"></i>Gelb</div>
-                                <div class="item" data-value="olive"><i class="circle olive icon"></i>Olive</div>
-                                <div class="item" data-value="green"><i class="circle green icon"></i>Grün</div>
-                                <div class="item" data-value="teal"><i class="circle teal icon"></i>Türkis</div>
-                                <div class="item" data-value="blue"><i class="circle blue icon"></i>Blau</div>
-                                <div class="item" data-value="violet"><i class="circle violet icon"></i>Violett
-                                </div>
-                                <div class="item" data-value="purple"><i class="circle purple icon"></i>Lila</div>
-                                <div class="item" data-value="pink"><i class="circle pink icon"></i>Pink</div>
-                                <div class="item" data-value="brown"><i class="circle brown icon"></i>Braun</div>
-                                <div class="item" data-value="grey"><i class="circle grey icon"></i>Grau</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>Beschreibung</label>
-                        <textarea name="description" rows="2"
-                            placeholder="Optionale Beschreibung der Gruppe"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="actions">
-                <div class="ui black deny button">
-                    Abbrechen
-                </div>
-                <div class="ui positive right labeled icon button" onclick="createNewGroup()">
-                    Gruppe erstellen
-                    <i class="check icon"></i>
-                </div>
-            </div>
-        </div>
 
         <!-- Results Message -->
         <div id="importResults" style="display:none;" class="ui message">
@@ -227,79 +185,52 @@ $groups = getAllGroups($db);
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>first_name</td>
-                    <td>Vorname</td>
-                    <td><i class="green checkmark icon"></i></td>
-                    <td>Max</td>
-                </tr>
-                <tr>
-                    <td>last_name</td>
-                    <td>Nachname</td>
-                    <td><i class="green checkmark icon"></i></td>
-                    <td>Mustermann</td>
-                </tr>
-                <tr>
-                    <td>email</td>
-                    <td>E-Mail-Adresse</td>
-                    <td><i class="green checkmark icon"></i></td>
-                    <td>max@example.com</td>
-                </tr>
-                <tr>
-                    <td>company</td>
-                    <td>Firma</td>
-                    <td><i class="red remove icon"></i></td>
-                    <td>Firma GmbH</td>
-                </tr>
-                <tr>
-                    <td>gender</td>
-                    <td>Geschlecht (male/female/other)</td>
-                    <td><i class="red remove icon"></i></td>
-                    <td>male</td>
-                </tr>
-                <tr>
-                    <td>title</td>
-                    <td>Titel</td>
-                    <td><i class="red remove icon"></i></td>
-                    <td>Dr.</td>
-                </tr>
-                <tr>
-                    <td>comment</td>
-                    <td>Kommentar</td>
-                    <td><i class="red remove icon"></i></td>
-                    <td>Ein Kommentar</td>
-                </tr>
+                <?php foreach ($importConfig['default_columns'] as $field => $label): ?>
+                    <tr>
+                        <td><?php echo $field; ?></td>
+                        <td><?php echo $label; ?></td>
+                        <td>
+                            <?php if (in_array($field, $importConfig['required_fields'])): ?>
+                                <i class="green checkmark icon"></i>
+                            <?php else: ?>
+                                <i class="red remove icon"></i>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo getExampleValue($field); ?></td>
+                    </tr>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 </div>
-<!-- Allgeinenes JS -->
+
+<?php
+function getExampleValue($field)
+{
+    $examples = [
+        'email' => 'max@example.com',
+        'first_name' => 'Max',
+        'last_name' => 'Mustermann',
+        'company' => 'Firma GmbH',
+        'gender' => 'male',
+        'title' => 'Dr.',
+        'comment' => 'Ein Kommentar'
+    ];
+    return $examples[$field] ?? '';
+}
+?>
+
 <script>
     $(document).ready(function () {
         // Initialisierungen
-        $('.menu .item').tab({
-            history: false,
-            onVisible: function (tabPath) {
-                // Optional: Zusätzliche Aktionen beim Tab-Wechsel
-                if (tabPath === 'file') {
-                    $('#fileInput').val('');
-                    $('#fileLabel').val('Keine Datei ausgewählt');
-                } else if (tabPath === 'text') {
-                    $('#textInput').val('');
-                }
-            }
-        });
+        $('.menu .item').tab();
         $('.ui.dropdown').dropdown();
         $('.ui.checkbox').checkbox();
         $('.ui.modal').modal();
 
-        // Beispieldaten
-        const exampleData = `first_name,last_name,email,company,gender,title,comment
-Max,Mustermann,max@example.com,Firma GmbH,male,Dr.,"Ein Kommentar"
-Anna,Schmidt,anna.schmidt@technik.com,Technik AG,female,Prof.,"Senior Entwicklerin"
-Thomas,Weber,t.weber@consulting.net,Consulting Partners,male,Dipl.-Ing.,"Projektleiter"
-Marie,Bauer,m.bauer@design-studio.de,Creative Design Studio,female,,"UI/UX Spezialistin"
-Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Süd"`;
+        // Konstanten
+        const requiredFields = <?php echo json_encode($importConfig['required_fields']); ?>;
+        const exampleData = <?php echo json_encode($exampleData); ?>;
 
         // File Input Handler
         $('#fileInput').on('change', function () {
@@ -313,7 +244,7 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
             }
         });
 
-        // Button Handlers
+        // Button Handler
         $('#insertExample').click(() => $('#textInput').val(exampleData));
         $('#clearText').click(() => $('#textInput').val(''));
 
@@ -327,9 +258,8 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
             try {
                 const lines = text.split('\n');
                 const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
-                const required = ['first_name', 'last_name', 'email'];
 
-                const missing = required.filter(field => !headers.includes(field));
+                const missing = requiredFields.filter(field => !headers.includes(field));
                 if (missing.length > 0) {
                     showMessage('error', 'Fehler', `Fehlende Pflichtfelder: ${missing.join(', ')}`);
                     return;
@@ -339,8 +269,8 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
                 const emailIdx = headers.indexOf('email');
 
                 lines.slice(1).forEach((line, idx) => {
-                    const fields = line.split(',');
-                    const email = fields[emailIdx]?.trim().replace(/"/g, '');
+                    const fields = parseCsvLine(line);
+                    const email = fields[emailIdx]?.trim();
                     if (!email || !isValidEmail(email)) {
                         errors.push(`Zeile ${idx + 2}: Ungültige E-Mail-Adresse (${email || 'leer'})`);
                     }
@@ -376,7 +306,6 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
                 return;
             }
 
-            // Show and reset progress bar
             const $progress = $('#importProgress').show().progress({
                 total: 100,
                 text: {
@@ -385,7 +314,6 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
                 }
             });
 
-            // Disable form buttons
             const $buttons = $('#importForm button').addClass('disabled');
 
             $.ajax({
@@ -438,32 +366,30 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
             });
         });
 
-        // Form Reset Handler
-        $('#importForm').on('reset', function (e) {
-            // Verstecke die Nachricht
-            $('#importResults').hide();
-
-            // Setze Datei-Input zurück
-            $('#fileInput').val('');
-            $('#fileLabel').val('Keine Datei ausgewählt');
-
-            // Setze Text-Input zurück
-            $('#textInput').val('');
-
-            // Setze Dropdowns zurück
-            $('.ui.dropdown').dropdown('clear');
-
-            // Setze Checkboxen auf Standardwerte zurück
-            $('input[name="skipHeader"]').prop('checked', true).trigger('change');
-            $('input[name="overwriteExisting"]').prop('checked', false).trigger('change');
-
-            // Verstecke Progress Bar
-            $('#importProgress').hide().progress('reset');
-        });
-
         // Helper Functions
         function isValidEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function parseCsvLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let char of line) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+                if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                    continue;
+                }
+                current += char;
+            }
+            result.push(current);
+            return result;
         }
 
         function showMessage(type, title, message) {
@@ -475,214 +401,26 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
                 .siblings('.content').html(message);
         }
 
-        // Close button for messages
+        // Form Reset Handler
+        $('#importForm').on('reset', function () {
+            $('#importResults').hide();
+            $('#fileInput').val('');
+            $('#fileLabel').val('Keine Datei ausgewählt');
+            $('#textInput').val('');
+            $('.ui.dropdown').dropdown('clear');
+            $('input[name="skipHeader"]').prop('checked', true).trigger('change');
+            $('input[name="overwriteExisting"]').prop('checked', false).trigger('change');
+            $('#importProgress').hide().progress('reset');
+        });
+
+        // Close button für Messages
         $('.message .close').on('click', function () {
             $(this).closest('.message').hide();
         });
     });
 </script>
 
-<!-- Hochladen von Files -->
-<script>
-    // Verbesserte File Input Handhabung
-    $(document).ready(function () {
-        const $fileInput = $('#fileInput');
-        const $fileLabel = $('#fileLabel');
-
-        // Style für Hover-Effekt
-        $fileLabel.hover(
-            function () { $(this).addClass('hover'); },
-            function () { $(this).removeClass('hover'); }
-        );
-
-        // File Input Handler
-        $fileInput.on('change', function () {
-            const file = this.files[0];
-            if (file) {
-                if (validateFile(file)) {
-                    $fileLabel.val(file.name);
-                } else {
-                    this.value = '';
-                    $fileLabel.val('Keine Datei ausgewählt');
-                }
-            }
-        });
-
-        // Datei-Validierung
-        function validateFile(file) {
-            const maxSize = 5 * 1024 * 1024; // 5MB
-            const validTypes = ['.csv', '.txt'];
-            const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-
-            if (file.size > maxSize) {
-                showMessage('error', 'Fehler', 'Die Datei ist zu groß (Maximum: 5MB)');
-                return false;
-            }
-
-            if (!validTypes.includes(fileExtension)) {
-                showMessage('error', 'Fehler', 'Ungültiges Dateiformat. Bitte nur CSV oder TXT Dateien hochladen.');
-                return false;
-            }
-
-            return true;
-        }
-    });
-</script>
-
-<!-- Neue Gruppen erstellen -->
-<script>
-    $(document).ready(function () {
-        // Initialisiere Modal mit angepassten Optionen
-        $('#newGroupModal').modal({
-            closable: true,
-            onDeny: function () {
-                $('#newGroupForm').form('clear');
-                return true;
-            },
-            onApprove: false // Verhindert automatisches Schließen bei Approve
-        });
-
-        // Erweiterte Form-Validierung
-        $('#newGroupForm').form({
-            fields: {
-                name: {
-                    identifier: 'name',
-                    rules: [
-                        {
-                            type: 'empty',
-                            prompt: 'Bitte geben Sie einen Gruppennamen ein'
-                        },
-                        {
-                            type: 'minLength[2]',
-                            prompt: 'Der Gruppenname muss mindestens 2 Zeichen lang sein'
-                        }
-                    ]
-                },
-                color: {
-                    identifier: 'color',
-                    rules: [
-                        {
-                            type: 'empty',
-                            prompt: 'Bitte wählen Sie eine Farbe'
-                        }
-                    ]
-                }
-            }
-        });
-    });
-
-    function createNewGroup() {
-        const $form = $('#newGroupForm');
-        const $submitButton = $('.ui.positive.button');
-
-        // Prüfe Form-Validierung
-        if (!$form.form('validate form')) {
-            return false;
-        }
-
-        // Deaktiviere Submit Button
-        $submitButton.addClass('loading disabled');
-
-        const formData = new FormData($form[0]);
-
-        // Prüfe zuerst, ob der Name bereits existiert
-        const groupName = formData.get('name');
-
-        $.ajax({
-            url: 'ajax/check_group_name.php',
-            type: 'POST',
-            data: { name: groupName },
-            success: function (checkResponse) {
-                if (checkResponse.exists) {
-                    showErrorToast('Der Gruppenname existiert bereits');
-                    // Name existiert bereits
-                    $form.form('add errors', ['Der Gruppenname existiert bereits']);
-                    $submitButton.removeClass('loading disabled');
-                    return;
-                }
-
-                // Name ist verfügbar, erstelle Gruppe
-                createGroup(formData);
-            },
-            error: function () {
-                showErrorToast('Fehler bei der Überprüfung des Gruppennamens');
-                $submitButton.removeClass('loading disabled');
-            }
-        });
-    }
-
-    function createGroup(formData) {
-        const $submitButton = $('.ui.positive.button');
-        const $modal = $('#newGroupModal');
-
-        $.ajax({
-            url: 'ajax/create_group.php',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                if (response.success) {
-                    const $groupDropdown = $('.ui.fluid.multiple.search.selection.dropdown');
-
-                    // Füge neue Gruppe zum Dropdown hinzu
-                    const newOption = `
-                    <div class="item" data-value="${response.id}">
-                        <i class="circle ${response.color} icon"></i>
-                        ${response.name}
-                    </div>
-                `;
-                    $('#groupsDropdownMenu').append(newOption);
-
-                    // Erfolgsmeldung
-                    showSuccessToast(`Gruppe "${response.name}" wurde erfolgreich erstellt`);
-
-                    // Schließe Modal
-                    $modal.modal('hide');
-                    $('#newGroupForm').form('clear');
-
-                    // Längerer Timeout und getrennte Aktionen
-                    setTimeout(() => {
-                        // Zuerst Wert setzen
-                        $groupDropdown.dropdown('set selected', response.id);
-                    }, 300);
-                } else {
-                    showErrorToast(response.message || 'Fehler beim Erstellen der Gruppe');
-                }
-            },
-            error: function (xhr, status, error) {
-                showErrorToast('Serverfehler beim Erstellen der Gruppe');
-                console.error('Error creating group:', error);
-            },
-            complete: function () {
-                $submitButton.removeClass('loading disabled');
-            }
-        });
-    }
-
-    // Hilfsfunktionen für Toast-Nachrichten
-    function showSuccessToast(message) {
-        $('body').toast({
-            class: 'success',
-            message: message,
-            showProgress: 'bottom',
-            displayTime: 3000
-        });
-    }
-
-    function showErrorToast(message) {
-        $('body').toast({
-            class: 'error',
-            message: message,
-            showProgress: 'bottom',
-            displayTime: 4000
-        });
-    }
-</script>
-
-
 <style>
-    /* Styling für das Textfeld */
     #fileLabel {
         cursor: pointer !important;
         background-color: #fff !important;
@@ -696,15 +434,11 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
         background-color: #f5f5f5 !important;
     }
 
-    /* Verbessertes Button Styling */
     .ui.action.input .button {
         display: flex;
         align-items: center;
     }
-</style>
 
-<style>
-    /* Styling für das Gruppen-Dropdown */
     .ui.selection.dropdown .menu>.item {
         display: flex;
         align-items: center;
@@ -716,28 +450,8 @@ Klaus,Fischer,klaus.fischer@handel.de,Handel & Co. KG,male,,"Vertrieb Region Sü
         font-size: 1em;
     }
 
-    /* Styling für den "Neue Gruppe" Button */
     .field>label>.button {
         padding: 0.5em !important;
         font-size: 0.8em !important;
-    }
-
-    /* Styling für das Modal */
-    #newGroupModal .content {
-        padding: 1.5em !important;
-    }
-
-    #newGroupModal .ui.form .field {
-        margin-bottom: 1em;
-    }
-
-    /* Farb-Dropdown Styling */
-    #colorDropdown .menu>.item {
-        display: flex;
-        align-items: center;
-    }
-
-    #colorDropdown .menu>.item i.icon {
-        margin-right: 0.5em;
     }
 </style>

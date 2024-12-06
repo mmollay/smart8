@@ -42,5 +42,20 @@ return [
         'failed' => '<i class="times circle red icon"></i> Fehlgeschlagen',
         'blocked' => '<i class="ban red icon"></i> Blockiert',
         'spam' => '<i class="warning sign orange icon"></i> Als Spam markiert'
-    ]
+    ],
+    // Ergänze in config.php im return Array:
+    'import_export' => [
+        'column_order' => [
+            'email',
+            'first_name',
+            'last_name',
+            'gender',
+            'title',
+            'company',
+            'comment'
+        ],
+        'required_fields' => [
+            'email',
+        ]
+    ],
 ];
