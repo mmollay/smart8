@@ -211,16 +211,20 @@ $columns = [
         'formatter' => function ($value, $row) {
             $total = (int) $row['total_recipients'];
             if ($total === 0) {
-                return '<span class="ui grey text">Keine Empfänger</span>';
+                return '<span class="ui grey text"></span>';
             }
 
             $stats = [];
 
             // Basis-Zahlen
+            $unsub = (int) $row['unsub_count'];
             $clicked = (int) $row['clicked_count'];
             $opened = (int) $row['opened_count'];
-            $sent = (int) $row['sent_count'] + ($opened - $clicked) + $clicked;
+            $sent = (int) $row['sent_count'] + $opened + $clicked + $unsub;
             $failed = (int) $row['failed_count'];
+
+            // Öffnungen inkl. Klicks berechnen
+            $total_opened = $opened + $clicked;
 
             // Öffnungen inkl. Klicks berechnen
             $total_opened = $opened + $clicked;
@@ -229,7 +233,7 @@ $columns = [
             if ($sent > 0) {
                 $sent_percent = min(100, round(($sent / $total) * 100));
                 $stats[] = sprintf(
-                    '<div class="ui tiny green label" data-tooltip="Versendet">
+                    '<div class="ui tiny gray label" data-tooltip="Versendet">
                         <i class="check icon"></i> %d%% (%d)
                     </div>',
                     $sent_percent,
@@ -258,6 +262,18 @@ $columns = [
                     </div>',
                     $percent,
                     $clicked
+                );
+            }
+
+            // Abmeldungs-Statistik
+            if ($unsub > 0) {
+                $percent = min(100, round(($unsub / $total) * 100));
+                $stats[] = sprintf(
+                    '<div class="ui tiny orange label" data-tooltip="Abgemeldet">
+                        <i class="user times icon"></i> %d%% (%d)
+                    </div>',
+                    $percent,
+                    $unsub
                 );
             }
 
@@ -292,24 +308,54 @@ $columns = [
                 return "<span class='ui grey text'>Keine Empfänger</span>";
             }
 
+            $unsub = (int) $row['unsub_count'];
             $total = (int) $row['total_recipients'];
             $clicked = (int) $row['clicked_count'];
-            $opened = (int) $row['opened_count'] + $clicked; // Geklickte zählen auch als geöffnet
-            $sent = (int) $row['sent_count'] + $opened + $clicked; // Geöffnete und geklickte zählen als versendet
+            $opened = (int) $row['opened_count'] + $clicked;
+            $sent = (int) $row['sent_count'] + $opened + $clicked + $unsub;
             $failed = (int) $row['failed_count'];
+
+
+            // Berechne den Fortschritt
+            $progress = round(($sent / $total) * 100);
 
             if ($failed >= $total) {
                 return "<span class='ui red text'><i class='times circle icon'></i> Versand fehlgeschlagen</span>";
             }
 
             if ($sent >= $total) {
-                return "<div><span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span></div>";
+                $detailsHtml = !empty($details) ? '<div class="ui tiny text">' . implode(' | ', $details) . '</div>' : '';
+
+                return "
+                <div>
+                    <span class='ui green text'><i class='check circle icon'></i> Vollständig versendet</span>
+                    <div class='ui tiny progress success' data-percent='100'>
+                        <div class='bar' style='width: 100%'></div>
+                    </div>
+                    {$detailsHtml}
+                </div>";
             }
 
-            return "<div>
-                   <span class='ui yellow text'><i class='sync icon'></i> Versand läuft...</span>
-                   <div class='ui tiny text'>$sent von $total versendet</div>
-               </div>";
+            // Progress Bar für laufende Sendungen
+            $details = [];
+            if ($unsub > 0) {
+                $details[] = "<span class='ui orange text'>{$unsub} Abmeldungen</span>";
+            }
+            if ($failed > 0) {
+                $details[] = "<span class='ui red text'>{$failed} Fehler</span>";
+            }
+
+            $detailsHtml = !empty($details) ? '<div class="ui tiny text">' . implode(' | ', $details) . '</div>' : '';
+
+            return "
+            <div>
+                <span class='ui yellow text'><i class='sync icon'></i> Versand läuft...</span>
+                <div class='ui tiny progress' data-content-id='{$row['content_id']}' data-percent='{$progress}'>
+                    <div class='bar' style='width: {$progress}%'></div>
+                    <div class='label'>{$sent} von {$total} versendet</div>
+                </div>
+                {$detailsHtml}
+            </div>";
         },
         'allowHtml' => true,
         'width' => '180px'
@@ -448,10 +494,56 @@ if (isset($db)) {
 
 <script>
     $(document).ready(function () {
+        // Bestehende Initialisierungen
         $('.ui.popup').popup();
         $('.ui.tooltip').popup();
         $('.ui.label').popup();
 
+        // Initialisiere Progress Bars
+        $('.ui.progress').progress({
+            precision: 1,
+            showActivity: false
+        });
+
+        // Funktion zum Aktualisieren des Fortschritts
+        function updateProgress() {
+            $('.ui.progress:not(.success)').each(function () {
+                var $progress = $(this);
+                var contentId = $progress.data('content-id');
+                if (contentId) {
+                    checkProgress(contentId, $progress);
+                }
+            });
+        }
+
+        // Prüfe den Fortschritt für eine einzelne Progress Bar
+        function checkProgress(contentId, $progress) {
+            $.ajax({
+                url: 'ajax/check_sending_status.php',
+                data: { content_id: contentId },
+                success: function (response) {
+                    if (response.success && response.total > 0) {
+                        var percent = Math.round((response.sent / response.total) * 100);
+                        $progress.progress('set percent', percent);
+                        $progress.find('.label').text(response.sent + ' von ' + response.total + ' versendet');
+
+                        if (percent >= 100) {
+                            setTimeout(function () {
+                                reloadTable();
+                            }, 1000);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Starte periodisches Update wenn Progress Bars vorhanden sind
+        if ($('.ui.progress:not(.success)').length > 0) {
+            updateProgress(); // Initial update
+            setInterval(updateProgress, 5000);  // Alle 5 Sekunden aktualisieren
+        }
+
+        // Bestehende Attachment Info Logik
         $('.attachment-info').each(function () {
             var $this = $(this);
             var contentId = $this.data('content-id');

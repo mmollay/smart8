@@ -358,26 +358,6 @@ function markJobFailed($db, $jobId, $error)
     }
 }
 
-/**
- * Generiert die Anrede basierend auf den Empfängerdaten
- */
-function getAnrede($gender, $title, $firstName, $lastName)
-{
-    $anrede = 'Sehr ';
-
-    if ($gender === 'female') {
-        $anrede .= 'geehrte';
-        $anrede .= $title ? ' Frau ' . $title : ' Frau';
-    } else {
-        $anrede .= 'geehrter';
-        $anrede .= $title ? ' Herr ' . $title : ' Herr';
-    }
-
-    $anrede .= ' ' . $lastName;
-
-    return $anrede;
-}
-
 function makeUrlsAbsolute($content, $baseUrl)
 {
     global $batchLogFile;
