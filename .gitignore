@@ -21,3 +21,5 @@ Thumbs.db
 #/config/*.php
 !/config/*.example.php
 smart_users/
+listgenerator_debug.log
+webhook.php
