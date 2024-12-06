@@ -4,7 +4,6 @@ let autoReloadTimers = {};
 
 function loadListGenerator(url, customState = {}) {
 
-    alert('Tst');
     const contentId = customState.contentId || 'content';
     currentContentId = contentId; // Speichern der aktuellen ContentID
 
