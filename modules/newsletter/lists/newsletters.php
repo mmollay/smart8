@@ -477,7 +477,7 @@ $buttons = [
         'params' => ['content_id' => 'content_id'],
         'conditions' => [
             function ($row) {
-                return $row['is_fully_sent'] == 0;
+                return $row['send_status'] == 0;  // Nur anzeigen wenn noch nicht versendet
             }
         ]
     ],
