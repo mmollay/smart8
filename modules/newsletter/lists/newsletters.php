@@ -373,7 +373,7 @@ $columns = [
             return $html;
         },
         'allowHtml' => true,
-        'width' => '300px'
+        'width' => '320px'
     ],
     [
         'name' => 'status',
