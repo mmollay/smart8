@@ -1,6 +1,6 @@
 <?php
 return [
-    'version' => '1.1.9',
+    'version' => '1.2.0',
     'changelog' => [
 
         '1.1.3' => [

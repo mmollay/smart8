@@ -96,8 +96,8 @@ try {
     $stmt->close();
 
     // Dateien physisch kopieren
-    $source_dir = "../../../uploads/users/{$content_id}";
-    $dest_dir = "../../../uploads/users/{$new_content_id}";
+    $source_dir = $uploadBasePath . "/{$content_id}";
+    $dest_dir = $uploadBasePath . "/{$new_content_id}";
     if (is_dir($source_dir)) {
         if (!copyDirectory($source_dir, $dest_dir)) {
             throw new Exception('Fehler beim Kopieren der Anhänge.');

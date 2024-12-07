@@ -201,21 +201,21 @@ $columns = [
             if ($row['send_status'] == 0) {
                 return sprintf(
                     '<div class="ui basic blue label" title="Voraussichtliche Empfänger">
-                        <i class="users icon"></i> %s Empfänger
+                        <i class="users icon"></i> %s
                     </div>',
                     number_format($potential, 0, ',', '.')
                 );
             } else {
                 return sprintf(
                     '<div class="ui basic label" title="Gesamtempfänger">
-                        <i class="users icon"></i> %s Gesamt
+                    <i class="users icon"></i> %s 
                     </div>',
                     number_format($total, 0, ',', '.')
                 );
             }
         },
         'allowHtml' => true,
-        'width' => '250px'
+        'width' => '120px'
     ],
     [
         'name' => 'timing',
@@ -432,7 +432,7 @@ $columns = [
             </div>";
         },
         'allowHtml' => true,
-        'width' => '180px'
+        'width' => '200px'
     ]
 ];
 
