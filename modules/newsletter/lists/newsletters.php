@@ -21,57 +21,79 @@ $listConfig = [
 $listGenerator = new ListGenerator($listConfig);
 
 $query = "
-   SELECT DISTINCT
-       ec.id  content_id,
-       ec.subject,
-       ec.send_status,
-       CONCAT(s.first_name, ' ', s.last_name) as sender_name,
-       s.email as sender_email,
-       MAX(ej.sent_at) as send_date,
-       (
-           SELECT COUNT(DISTINCT r.id)
-           FROM recipients r
-           JOIN recipient_group rg ON r.id = rg.recipient_id
-           JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
-           WHERE ecg.email_content_id = ec.id
-           AND r.unsubscribed = 0 
-           AND r.bounce_status != 'hard'
-       ) as potential_recipients,
-       COUNT(DISTINCT ej.recipient_id) as total_recipients,
-       SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
-       SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
-       SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
-       SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
-       SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
-       GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
-       GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
-       GROUP_CONCAT(DISTINCT g.id) as group_id,
-       CASE 
-           WHEN ec.send_status = 1 
-           AND COUNT(DISTINCT ej.recipient_id) > 0 
-           AND COUNT(DISTINCT ej.recipient_id) = 
-               SUM(CASE 
-                   WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
-                   THEN 1 
-                   ELSE 0 
-               END)
-           THEN 1 
-           ELSE 0 
-       END as is_fully_sent
-   FROM 
-       email_contents ec
-       LEFT JOIN senders s ON ec.sender_id = s.id
-       LEFT JOIN email_jobs ej ON ec.id = ej.content_id
-       LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
-       LEFT JOIN groups g ON ecg.group_id = g.id
-   WHERE 
-       ec.user_id = '$userId'
-   GROUP BY 
-       ec.id, 
-       ec.subject,
-       ec.send_status,
-       sender_name,
-       sender_email
+  SELECT DISTINCT
+   ec.id content_id,
+   ec.subject,
+   ec.send_status,
+   cs.start_time,
+   cs.end_time, 
+   cs.processed_emails,
+   cs.success_count,
+   cs.error_count,
+   cs.status as cron_status,
+   TIMESTAMPDIFF(SECOND, cs.start_time, cs.end_time) as duration_seconds,
+   CONCAT(s.first_name, ' ', s.last_name) as sender_name,
+   s.email as sender_email,
+   (
+       SELECT COUNT(DISTINCT r.id)
+       FROM recipients r
+       JOIN recipient_group rg ON r.id = rg.recipient_id 
+       JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
+       WHERE ecg.email_content_id = ec.id
+       AND r.unsubscribed = 0 
+       AND r.bounce_status != 'hard'
+   ) as potential_recipients,
+   COUNT(DISTINCT ej.recipient_id) as total_recipients,
+   SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
+   SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
+   SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
+   SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
+   SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
+   GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
+   GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
+   GROUP_CONCAT(DISTINCT g.id) as group_id,
+   CASE 
+       WHEN ec.send_status = 1 
+       AND COUNT(DISTINCT ej.recipient_id) > 0 
+       AND COUNT(DISTINCT ej.recipient_id) = 
+           SUM(CASE 
+               WHEN ej.status IN ('send', 'failed', 'bounce', 'blocked', 'spam', 'unsub') 
+               THEN 1 
+               ELSE 0 
+           END)
+       THEN 1 
+       ELSE 0 
+   END as is_fully_sent
+FROM 
+   email_contents ec
+   LEFT JOIN senders s ON ec.sender_id = s.id
+   LEFT JOIN email_jobs ej ON ec.id = ej.content_id
+   LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+   LEFT JOIN groups g ON ecg.group_id = g.id  
+   LEFT JOIN cron_status cs ON cs.content_id = ec.id
+    AND cs.id = (
+        SELECT cs2.id 
+        FROM cron_status cs2 
+        WHERE cs2.content_id = ec.id
+        AND cs2.status = 'completed' 
+        AND cs2.end_time IS NOT NULL 
+        ORDER BY cs2.end_time DESC 
+        LIMIT 1
+    )
+WHERE 
+   ec.user_id = '$userId' 
+GROUP BY 
+   ec.id, 
+   ec.subject,
+   ec.send_status,
+   sender_name,
+   sender_email,
+   cs.start_time,
+   cs.end_time,
+   cs.processed_emails,
+   cs.success_count,
+   cs.error_count,
+   cs.status 
 ";
 
 $listGenerator->setSearchableColumns(['ec.subject', 's.first_name', 's.last_name', 's.email', 'g.name']);
@@ -125,15 +147,21 @@ $columns = [
     [
         'name' => 'subject',
         'label' => '<i class="envelope icon"></i>Betreff',
-        'formatter' => function ($value) {
+        'formatter' => function ($value, $row) {
             $truncated = mb_strlen($value) > 30 ?
                 mb_substr($value, 0, 27) . '...' :
                 $value;
-            return sprintf(
+
+            $html = sprintf(
                 '<div class="ui popup-hover" data-content="%s">%s</div>',
                 htmlspecialchars($value),
                 htmlspecialchars($truncated)
             );
+
+            // Attachment-Info direkt danach
+            $html .= " <span class='attachment-info' data-content-id='{$row['content_id']}'></span>";
+
+            return $html;
         },
         'allowHtml' => true,
         'width' => '250px'
@@ -160,7 +188,8 @@ $columns = [
 
             return implode(' ', $labels);
         },
-        'allowHtml' => true
+        'allowHtml' => true,
+        'width' => '200px'
     ],
     [
         'name' => 'potential_recipients',
@@ -172,37 +201,84 @@ $columns = [
             if ($row['send_status'] == 0) {
                 return sprintf(
                     '<div class="ui basic blue label" title="Voraussichtliche Empfänger">
-                <i class="users icon"></i> %s Empfänger
-            </div>',
+                        <i class="users icon"></i> %s Empfänger
+                    </div>',
                     number_format($potential, 0, ',', '.')
                 );
             } else {
                 return sprintf(
                     '<div class="ui basic label" title="Gesamtempfänger">
-                <i class="users icon"></i> %s Gesamt
-            </div>',
+                        <i class="users icon"></i> %s Gesamt
+                    </div>',
                     number_format($total, 0, ',', '.')
                 );
             }
         },
-        'allowHtml' => true
+        'allowHtml' => true,
+        'width' => '250px'
     ],
     [
-        'name' => 'send_date',
-        'label' => '<i class="calendar icon"></i>Gesendet',
-        'formatter' => function ($value) {
-            return $value ? date('d.m.Y H:i', strtotime($value)) : '<span class="ui grey text">-</span>';
-        },
-        'allowHtml' => true
-    ],
-    [
-        'name' => 'attachments',
-        'label' => '<i class="paperclip icon"></i>Anhänge',
+        'name' => 'timing',
+        'label' => '<i class="clock outline icon"></i>Zeit',
         'formatter' => function ($value, $row) {
-            return "<span class='attachment-info' data-content-id='{$row['content_id']}'></span>";
+            // Wenn noch nicht gestartet
+            if (!$row['start_time']) {
+                return '<span class="ui grey text">-</span>';
+            }
+
+            $date = date('d.m.Y', strtotime($row['start_time']));
+            $startTime = date('H:i', strtotime($row['start_time']));
+
+            // Wenn noch läuft
+            if ($row['cron_status'] === 'running') {
+                return sprintf(
+                    '<div data-tooltip="%s" data-position="right center" class="ui small text">%s<br>%s - <i class="spinner loading icon"></i></div>',
+                    'Start: ' . date('d.m.Y H:i:s', strtotime($row['start_time'])),
+                    $date,
+                    $startTime
+                );
+            }
+
+            // Wenn abgeschlossen
+            if ($row['end_time']) {
+                $endTime = date('H:i', strtotime($row['end_time']));
+                $seconds = $row['duration_seconds'];
+
+                // Kurze Dauer
+                $duration = '';
+                if ($seconds < 60) {
+                    $duration = $seconds . 's';
+                } elseif ($seconds < 3600) {
+                    $duration = sprintf('%dm', floor($seconds / 60));
+                } else {
+                    $duration = sprintf('%dh%d', floor($seconds / 3600), floor(($seconds % 3600) / 60));
+                }
+
+                // Details für Tooltip
+                $details = sprintf(
+                    "
+                    Start: %s<br>
+                    Ende: %s<br>
+                    Dauer: %s",
+                    date('d.m.Y H:i:s', strtotime($row['start_time'])),
+                    date('d.m.Y H:i:s', strtotime($row['end_time'])),
+                    $seconds < 60 ? "$seconds Sekunden" :
+                    ($seconds < 3600 ? sprintf('%d Minuten %d Sekunden', floor($seconds / 60), $seconds % 60) :
+                        sprintf('%d Stunden %d Minuten', floor($seconds / 3600), floor(($seconds % 3600) / 60)))
+                );
+
+                return sprintf(
+                    '<div data-html="%s" class="ui popup2 small text">%s<br>%s - %s (%s)</div>',
+                    htmlspecialchars($details),
+                    $date,
+                    $startTime,
+                    $endTime,
+                    $duration
+                );
+            }
         },
         'allowHtml' => true,
-        'width' => '160px'
+        'width' => '200px'
     ],
     [
         'name' => 'delivery_stats',
@@ -252,7 +328,7 @@ $columns = [
                 );
             }
 
-            // Klick-Statistik (als Teilmenge der Öffnungen)
+            // Klick-Statistik
             if ($clicked > 0) {
                 $percent = min(100, round(($clicked / $total) * 100));
                 $stats[] = sprintf(
@@ -318,7 +394,6 @@ $columns = [
             $sent = (int) $row['sent_count'] + $opened + $clicked + $unsub;
             $failed = (int) $row['failed_count'];
 
-
             // Berechne den Fortschritt
             $progress = round(($sent / $total) * 100);
 
@@ -349,7 +424,6 @@ $columns = [
 
             return "
             <div>
-                
                 <div class='ui tiny active progress' data-content-id='{$row['content_id']}' data-percent='{$progress}'>
                     <div class='bar' style='width: {$progress}%'></div>
                     <div class='label'>{$sent} von {$total} versendet</div>
@@ -361,7 +435,6 @@ $columns = [
         'width' => '180px'
     ]
 ];
-
 
 // Definition der Buttons
 $buttons = [
@@ -485,9 +558,6 @@ foreach ($modals as $id => $modal) {
 $listGenerator->setButtonColumnTitle('left', '', 'left');
 $listGenerator->setButtonColumnTitle('right', '', 'right');
 
-//$listGenerator->addScript('alert("Hallo");', 'head');
-//$listGenerator->addScript("js/newsletter-namespace.js", 'end', true);
-
 echo $listGenerator->generateList();
 
 if (isset($db)) {
@@ -506,6 +576,10 @@ if (isset($db)) {
         $('.ui.progress').progress({
             precision: 1,
             showActivity: false
+        });
+        // Für die Zeitanzeige
+        $('.popup2').popup({
+            html: true,
         });
     }
 

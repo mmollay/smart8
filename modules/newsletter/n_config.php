@@ -61,9 +61,9 @@ $eventTypes = $config['eventTypes'];
 
 // Modul-spezifische Pfade
 $isCliMode = php_sapi_name() === 'cli';
-$uploadBasePath = $isCliMode || $_SERVER['SERVER_NAME'] === 'localhost'
-    ? $_ENV['APP_ROOT'] . '/uploads/users/'
-    : $_ENV['UPLOAD_PATH'];
+
+//upload path für Attachements der Emails 
+$uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $_SESSION['user_id'] . '/newsletters';
 
 try {
     // Initialisierung der Newsletter-Datenbankverbindung

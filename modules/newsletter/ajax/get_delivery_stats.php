@@ -2,7 +2,6 @@
 header('Content-Type: application/json');
 include(__DIR__ . '/../n_config.php');
 
-
 $contentId = intval($_GET['content_id']);
 $response = ['success' => false];
 

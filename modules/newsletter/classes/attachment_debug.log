@@ -1,0 +1,35 @@
+[2024-12-07 12:48:04] Content ID: 289
+[2024-12-07 12:48:04] Upload Base Path: /var/www/ssi/users/1317/newsletters/289
+[2024-12-07 12:48:04] Verzeichnis existiert und ist: /var/www/ssi/users/1317/newsletters/289
+[2024-12-07 12:48:04] Gefundene Dateien: Array
+(
+    [0] => .
+    [1] => ..
+    [2] => Bildschirmfoto 2024-12-06 um 19.30.12.png
+)
+
+[2024-12-07 12:51:19] Content ID: 290
+[2024-12-07 12:51:19] Upload Base Path: /var/www/ssi/users/1317/newsletters/290
+[2024-12-07 12:51:19] Verzeichnis existiert und ist: /var/www/ssi/users/1317/newsletters/290
+[2024-12-07 12:51:19] Gefundene Dateien: Array
+(
+    [0] => .
+    [1] => ..
+    [2] => Bildschirmfoto 2024-12-06 um 19.56.50.png
+)
+
+[2024-12-07 12:51:19] Verarbeite Datei: /var/www/ssi/users/1317/newsletters/290Bildschirmfoto 2024-12-06 um 19.56.50.png
+[2024-12-07 12:51:19] FEHLER: Datei nicht lesbar oder kein File: /var/www/ssi/users/1317/newsletters/290Bildschirmfoto 2024-12-06 um 19.56.50.png
+[2024-12-07 12:51:19] Anzahl der vorbereiteten Attachments: 0
+[2024-12-07 12:54:07] Start prepareAttachments für Content ID: 291
+[2024-12-07 12:54:07] Basis-Verzeichnis: /var/www/ssi/users/1317/newsletters/291
+[2024-12-07 12:54:07] Gefundene Dateien: Array
+(
+    [0] => .
+    [1] => ..
+    [2] => Bildschirmfoto 2024-12-06 um 18.52.00.png
+)
+
+[2024-12-07 12:54:07] Verarbeite Datei: /var/www/ssi/users/1317/newsletters/291/Bildschirmfoto 2024-12-06 um 18.52.00.png
+[2024-12-07 12:54:07] Erfolgreich verarbeitet: Bildschirmfoto 2024-12-06 um 18.52.00.png (Typ: image/png, Größe: 638.68 KB)
+[2024-12-07 12:54:07] Verarbeitung abgeschlossen. Anzahl Attachments: 1

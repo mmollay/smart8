@@ -79,7 +79,9 @@ try {
 
     // Hole Anhänge
     $attachments = [];
-    $directory = $uploadBasePath . $userId . "/newsletters/" . $content_id . "/";
+
+    //siehe n_config.php
+    $directory = $uploadBasePath . '/' . $content_id . "/";
 
     if (is_dir($directory)) {
         $files = scandir($directory);

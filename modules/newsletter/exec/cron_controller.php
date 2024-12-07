@@ -2,7 +2,7 @@
 namespace Newsletter;
 define('BASE_PATH', dirname(__DIR__));
 
-// Grundeinstellungen erweitert
+// Grundeinstellungen
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
@@ -26,12 +26,7 @@ require_once BASE_PATH . '/classes/BatchManager.php';
 
 /**
  * Erweiterte Logging-Funktion mit Memory und Performance Tracking
- * @param string $message Die Log-Nachricht
- * @param string $type Log-Level (INFO, WARNING, ERROR, CRITICAL)
- * @param bool $includeMemory Ob Memory-Informationen geloggt werden sollen
  */
-
- 
 function writeLog($message, $type = 'INFO', $includeMemory = false)
 {
     static $startTime;
@@ -39,13 +34,10 @@ function writeLog($message, $type = 'INFO', $includeMemory = false)
         $startTime = microtime(true);
     }
 
-    $timestamp = date('Y-m-d H:i:s');
+    $timestamp = date('Y-m.Y H:i:s');
     $processId = getmypid();
-
-    // Basis Log-Nachricht
     $logMessage = "[$timestamp][$type][PID:$processId] $message";
 
-    // Memory Informationen hinzufügen wenn gewünscht
     if ($includeMemory) {
         $memoryUsage = memory_get_usage(true);
         $peakMemory = memory_get_peak_usage(true);
@@ -60,19 +52,15 @@ function writeLog($message, $type = 'INFO', $includeMemory = false)
     }
 
     $logMessage .= "\n";
-
-    // Log in Datei schreiben
     $logFile = BASE_PATH . '/logs/cron_controller.log';
-
-    // Prüfe ob Logverzeichnis existiert
     $logDir = dirname($logFile);
+
     if (!is_dir($logDir)) {
         mkdir($logDir, 0755, true);
     }
 
     file_put_contents($logFile, $logMessage, FILE_APPEND);
 
-    // Bei kritischen Fehlern auch in error_log schreiben
     if ($type === 'CRITICAL') {
         error_log($message);
     }
@@ -80,11 +68,16 @@ function writeLog($message, $type = 'INFO', $includeMemory = false)
 
 writeLog("Starte Newsletter-Versand Controller", 'INFO', true);
 
+// Statistik-Variablen
+$totalProcessed = 0;
+$successCount = 0;
+$errorCount = 0;
+
 try {
     // Performance-Counter starten
     $startTime = microtime(true);
 
-    // BatchManager mit konfigurierbaren Werten initialisieren
+    // BatchManager initialisieren
     $batchManager = new BatchManager($db, BASE_PATH . '/logs');
     $batchManager
         ->setBatchSize(BATCH_SIZE)
@@ -135,9 +128,8 @@ try {
         ORDER BY created_at ASC
     ");
 
-    // Vor dem bind_param
-    $maxJobs = MAX_JOBS_WARNING;  // Variable erstellen
-    $stmt->bind_param("i", $maxJobs);  // Variable übergeben
+    $maxJobs = MAX_JOBS_WARNING;
+    $stmt->bind_param("i", $maxJobs);
     $stmt->execute();
     $newsletters = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
@@ -162,9 +154,55 @@ try {
     // Verarbeite jeden Newsletter
     foreach ($newsletters as $newsletter) {
         $contentId = $newsletter['id'];
+
+        // Neuen Cron-Lauf für diesen Newsletter registrieren
+        $stmt = $db->prepare("
+            INSERT INTO cron_status 
+            (start_time, status, content_id) 
+            VALUES (NOW(), 'running', ?)
+        ");
+        $stmt->bind_param("i", $contentId);
+        $stmt->execute();
+        $cronId = $db->insert_id;
+
+        // Prüfe auf andere laufende Cron-Prozesse für diesen Newsletter
+        $stmt = $db->prepare("
+            SELECT id 
+            FROM cron_status 
+            WHERE status = 'running' 
+            AND id != ? 
+            AND content_id = ?
+            AND start_time > DATE_SUB(NOW(), INTERVAL 1 HOUR)
+        ");
+        $stmt->bind_param("ii", $cronId, $contentId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            writeLog("Es existiert noch ein laufender Cron-Prozess für Newsletter $contentId", 'WARNING');
+            continue;
+        }
+
         writeLog("Starte Verarbeitung von Newsletter {$contentId}: {$newsletter['subject']}", 'INFO', true);
 
-        // Hole ausstehende Jobs für diesen Newsletter
+        // Setze hängengebliebene Jobs zurück
+        $stmt = $db->prepare("
+            UPDATE email_jobs 
+            SET status = 'pending',
+                error_message = 'Reset after cron abort'
+            WHERE content_id = ?
+            AND status = 'processing'
+            AND updated_at < DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+        ");
+        $stmt->bind_param("i", $contentId);
+        $stmt->execute();
+        $resetCount = $stmt->affected_rows;
+
+        if ($resetCount > 0) {
+            writeLog("$resetCount hängengebliebene Jobs wurden zurückgesetzt", 'INFO');
+        }
+
+        // Hole ausstehende Jobs
         $stmt = $db->prepare("
             SELECT COUNT(*) as total 
             FROM email_jobs ej
@@ -179,12 +217,13 @@ try {
 
         writeLog("Ausstehende Emails für Newsletter $contentId: $totalJobs");
 
-        // Verarbeite Batches solange noch Jobs vorhanden sind
+        // Verarbeite Batches
         $processedJobs = 0;
         $startBatchTime = microtime(true);
+        $newsletterSuccessCount = 0;
+        $newsletterErrorCount = 0;
 
         while ($totalJobs > 0) {
-            // Prüfe ob neue Prozesse gestartet werden können
             if ($batchManager->checkProcesses()) {
                 // Hole nächsten Batch
                 $stmt = $db->prepare("
@@ -220,6 +259,18 @@ try {
                 if ($pid) {
                     $processedJobs += count($batch);
                     $totalJobs -= count($batch);
+                    $totalProcessed += count($batch);
+
+                    // Aktualisiere die Status-Information
+                    $stmt = $db->prepare("
+                        UPDATE cron_status 
+                        SET processed_emails = processed_emails + ?,
+                            updated_at = NOW()
+                        WHERE id = ?
+                    ");
+                    $batchSize = count($batch);
+                    $stmt->bind_param("ii", $batchSize, $cronId);
+                    $stmt->execute();
 
                     // Log Fortschritt
                     $progress = round(($processedJobs / $newsletter['pending_jobs']) * 100, 2);
@@ -236,27 +287,44 @@ try {
                 }
             }
 
-            // Warte kurz bevor der nächste Batch gestartet wird
             sleep(PROCESS_SLEEP_TIME);
-
-            // Überprüfe auf abgebrochene oder fehlgeschlagene Prozesse
             $batchManager->checkAndResetStaleProcesses();
         }
 
         // Prüfe ob Newsletter komplett verarbeitet wurde
         $stmt = $db->prepare("
-            SELECT COUNT(*) as remaining 
-            FROM email_jobs ej
-            JOIN recipients r ON ej.recipient_id = r.id
-            WHERE ej.content_id = ? 
-            AND ej.status IN ('pending', 'processing')
-            AND r.unsubscribed = 0
+            SELECT 
+                COUNT(*) as remaining,
+                SUM(CASE WHEN status = 'send' THEN 1 ELSE 0 END) as sent,
+                SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed,
+                SUM(CASE WHEN status = 'skipped' THEN 1 ELSE 0 END) as skipped
+            FROM email_jobs 
+            WHERE content_id = ?
         ");
         $stmt->bind_param("i", $contentId);
         $stmt->execute();
-        $remaining = $stmt->get_result()->fetch_assoc()['remaining'];
+        $stats = $stmt->get_result()->fetch_assoc();
 
-        if ($remaining == 0) {
+        $newsletterSuccessCount = $stats['sent'];
+        $newsletterErrorCount = $stats['failed'];
+
+        $successCount += $newsletterSuccessCount;
+        $errorCount += $newsletterErrorCount;
+
+        // Aktualisiere den Cron-Status
+        $stmt = $db->prepare("
+            UPDATE cron_status 
+            SET end_time = NOW(),
+                processed_emails = ?,
+                success_count = ?,
+                error_count = ?,
+                status = 'completed'
+            WHERE id = ?
+        ");
+        $stmt->bind_param("iiii", $processedJobs, $newsletterSuccessCount, $newsletterErrorCount, $cronId);
+        $stmt->execute();
+
+        if ($stats['remaining'] == 0) {
             // Setze Newsletter auf abgeschlossen
             $stmt = $db->prepare("
                 UPDATE email_contents 
@@ -266,19 +334,6 @@ try {
             ");
             $stmt->bind_param("i", $contentId);
             $stmt->execute();
-
-            // Erstelle Zusammenfassungs-Log
-            $stmt = $db->prepare("
-                SELECT 
-                    COUNT(CASE WHEN ej.status = 'send' THEN 1 END) as sent,
-                    COUNT(CASE WHEN ej.status = 'failed' THEN 1 END) as failed,
-                    COUNT(CASE WHEN ej.status = 'skipped' THEN 1 END) as skipped
-                FROM email_jobs ej
-                WHERE ej.content_id = ?
-            ");
-            $stmt->bind_param("i", $contentId);
-            $stmt->execute();
-            $stats = $stmt->get_result()->fetch_assoc();
 
             $duration = round(microtime(true) - $startBatchTime, 2);
             writeLog(
@@ -300,12 +355,29 @@ try {
     writeLog("Controller-Durchlauf abgeschlossen in {$totalDuration}s", 'INFO', true);
 
 } catch (Exception $e) {
+    // Fehlerbehandlung
+    if (isset($cronId)) {
+        $errorMsg = $e->getMessage();
+        $stmt = $db->prepare("
+            UPDATE cron_status 
+            SET end_time = NOW(),
+                status = 'error',
+                error_messages = ?,
+                processed_emails = ?,
+                success_count = ?,
+                error_count = ?
+            WHERE id = ?
+        ");
+        $stmt->bind_param("siiii", $errorMsg, $totalProcessed, $successCount, $errorCount, $cronId);
+        $stmt->execute();
+    }
+
     writeLog("Kritischer Fehler: " . $e->getMessage(), 'CRITICAL');
     if (isset($adminEmail)) {
         mail(
             $adminEmail,
             'Fehler im Newsletter-Versand Controller',
-            "Zeitpunkt: " . date('Y-m-d H:i:s') . "\n\n" .
+            "Zeitpunkt: " . date('Y-m.Y H:i:s') . "\n\n" .
             "Fehler: " . $e->getMessage() . "\n\n" .
             "Stack Trace:\n" . $e->getTraceAsString()
         );

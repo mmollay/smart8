@@ -156,3 +156,189 @@ Output: Array
 )
 
 Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+    [0] => 
+    [1] => Fatal error: Uncaught mysqli_sql_exception: Unknown column 'updated_at' in 'field list' in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php:265
+    [2] => Stack trace:
+    [3] => #0 /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php(265): mysqli->prepare('\n              ...')
+    [4] => #1 {main}
+    [5] =>   thrown in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php on line 265
+)
+
+Return: 255
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0

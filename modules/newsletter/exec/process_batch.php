@@ -36,30 +36,72 @@ $contentId = (int) $options['content-id'];
 $jobIds = explode(',', $options['job-ids']);
 $processId = getmypid();
 
-// Batch-spezifische Logging-Datei
-$batchLogFile = BASE_PATH . "/logs/batch_{$contentId}_" . time() . ".log";
+// Am Anfang der Datei nach den defines
+define('LOG_PATH', '/var/www/ssi/smart8/logs');
 
-// Logging-Funktion
-function writeLog($message, $type = 'INFO', $logFile = null)
+// Logging-Funktion anpassen
+function writeLog($message, $type = 'INFO', $includeMemory = false)
 {
-    global $processId, $batchLogFile;
-    $timestamp = date('Y-m-d H:i:s');
-    $logMessage = "[$timestamp][$type][PID:$processId] $message\n";
-
-    // Schreibe in die Batch-spezifische Log-Datei
-    if ($logFile) {
-        file_put_contents($logFile, $logMessage, FILE_APPEND);
+    static $startTime;
+    if (!isset($startTime)) {
+        $startTime = microtime(true);
     }
 
-    // Schreibe auch in das allgemeine Batch-Log
-    file_put_contents(
-        BASE_PATH . '/logs/batch_process.log',
-        $logMessage,
-        FILE_APPEND
-    );
+    $timestamp = date('Y-m-d H:i:s');
+    $processId = getmypid();
+    $logMessage = "[$timestamp][$type][PID:$processId] $message";
+
+    if ($includeMemory) {
+        $memoryUsage = memory_get_usage(true);
+        $peakMemory = memory_get_peak_usage(true);
+        $runtime = round(microtime(true) - $startTime, 2);
+
+        $logMessage .= sprintf(
+            "\nMemory: %s MB | Peak: %s MB | Runtime: %s seconds",
+            round($memoryUsage / 1024 / 1024, 2),
+            round($peakMemory / 1024 / 1024, 2),
+            $runtime
+        );
+    }
+
+    $logMessage .= "\n";
+    $logFile = LOG_PATH . '/cron_controller.log';
+
+    // Erstelle Log-Verzeichnis falls es nicht existiert
+    if (!is_dir(LOG_PATH)) {
+        mkdir(LOG_PATH, 0755, true);
+    }
+
+    file_put_contents($logFile, $logMessage, FILE_APPEND);
+
+    if ($type === 'CRITICAL') {
+        error_log($message);
+    }
 }
 
+
+// user_id aus der Datenbank holen basierend auf content_id
+$stmt = $db->prepare("
+    SELECT user_id 
+    FROM email_contents 
+    WHERE id = ?
+");
+$stmt->bind_param("i", $contentId);
+$stmt->execute();
+$result = $stmt->get_result();
+$userData = $result->fetch_assoc();
+
+if (!$userData) {
+    writeLog("Keine user_id für content_id: $contentId gefunden", 'ERROR', true);
+    die("Fehler: Keine user_id gefunden\n");
+}
+
+$userId = $userData['user_id'];
+$uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $userId . '/newsletters' . '/' . $contentId;
+
 writeLog("Starte Batch-Verarbeitung für Content ID: $contentId mit Jobs: " . implode(',', $jobIds), 'INFO', $batchLogFile);
+writeLog("Upload Base Path: " . $uploadBasePath, 'INFO', true);
+writeLog("Base Path: " . BASE_PATH, 'INFO', true);
 
 try {
     // Services initialisieren
@@ -69,6 +111,7 @@ try {
         $mailjetConfig['api_secret'],
         $uploadBasePath
     );
+
     $placeholderService = PlaceholderService::getInstance();
 
     $successCount = 0;
@@ -202,7 +245,7 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
         // Subject und Message mit Platzhaltern ersetzen
         $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
         $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
-        
+
         // URLs absolut machen
         $message = makeUrlsAbsolute($message, $APP_URL);
 

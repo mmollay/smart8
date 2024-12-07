@@ -10,13 +10,11 @@ window.Newsletter = {
         },
 
         initializeComponents: function () {
-            $('.ui.popup').popup();
-            $('.ui.tooltip').popup();
-            $('.ui.label').popup();
             $('.ui.progress').progress({
                 precision: 1,
                 showActivity: false
             });
+
         },
 
         startUpdates: function () {
@@ -78,7 +76,7 @@ window.Newsletter = {
 
                 if (percent >= 100) {
                     $progress.addClass('success');
-                    setTimeout(() => Newsletter.UI.reloadTable(), 1000);
+                    setTimeout(() => reloadTable(), 1000);
                 }
             }
         },
@@ -98,6 +96,7 @@ window.Newsletter = {
         },
 
         updateDeliveryStats: function (contentId, $statsContainer) {
+
             $.ajax({
                 url: 'ajax/get_delivery_stats.php',
                 method: 'GET',
@@ -106,32 +105,43 @@ window.Newsletter = {
                 success: (response) => {
                     if (response.success) {
                         const stats = [];
-                        const total = response.total_recipients;
 
-                        if (response.sent_count > 0) {
-                            const percent = Math.min(100, Math.round((response.sent_count / total) * 100));
-                            stats.push(this.createStatLabel('check', 'gray', 'Versendet', percent, response.sent_count));
+                        // Berechnung exakt wie in newsletters.php
+                        const unsub = parseInt(response.unsub_count) || 0;
+                        const clicked = parseInt(response.clicked_count) || 0;
+                        const total = parseInt(response.total_recipients) || 0;
+                        const opened = parseInt(response.opened_count) + clicked;
+                        const sent = parseInt(response.sent_count) + parseInt(response.opened_count) + clicked + unsub;
+                        const failed = parseInt(response.failed_count) || 0;
+
+                        // Versandstatistik
+                        if (sent > 0) {
+                            const sentPercent = Math.min(100, Math.round((sent / total) * 100));
+                            stats.push(this.createStatLabel('check', 'gray', 'Versendet', sentPercent, sent));
                         }
 
-                        const total_opened = response.opened_count + response.clicked_count;
-                        if (total_opened > 0) {
-                            const percent = Math.min(100, Math.round((total_opened / total) * 100));
-                            stats.push(this.createStatLabel('eye', 'blue', 'Newsletter geöffnet (inkl. Klicks)', percent, total_opened));
+                        // Öffnungsstatistik (inkl. Klicks)
+                        if (opened > 0) {
+                            const openedPercent = Math.min(100, Math.round((opened / total) * 100));
+                            stats.push(this.createStatLabel('eye', 'blue', 'Newsletter geöffnet (inkl. Klicks)', openedPercent, opened));
                         }
 
-                        if (response.clicked_count > 0) {
-                            const percent = Math.min(100, Math.round((response.clicked_count / total) * 100));
-                            stats.push(this.createStatLabel('mouse pointer', 'teal', 'Links angeklickt', percent, response.clicked_count));
+                        // Klickstatistik
+                        if (clicked > 0) {
+                            const clickedPercent = Math.min(100, Math.round((clicked / total) * 100));
+                            stats.push(this.createStatLabel('mouse pointer', 'teal', 'Links angeklickt', clickedPercent, clicked));
                         }
 
-                        if (response.unsub_count > 0) {
-                            const percent = Math.min(100, Math.round((response.unsub_count / total) * 100));
-                            stats.push(this.createStatLabel('user times', 'orange', 'Abgemeldet', percent, response.unsub_count));
+                        // Abmeldungen
+                        if (unsub > 0) {
+                            const unsubPercent = Math.min(100, Math.round((unsub / total) * 100));
+                            stats.push(this.createStatLabel('user times', 'orange', 'Abgemeldet', unsubPercent, unsub));
                         }
 
-                        if (response.failed_count > 0) {
-                            const percent = Math.min(100, Math.round((response.failed_count / total) * 100));
-                            stats.push(this.createStatLabel('exclamation triangle', 'red', 'Fehler oder Bounces', percent, response.failed_count));
+                        // Fehler
+                        if (failed > 0) {
+                            const failedPercent = Math.min(100, Math.round((failed / total) * 100));
+                            stats.push(this.createStatLabel('exclamation triangle', 'red', 'Fehler oder Bounces', failedPercent, failed));
                         }
 
                         this.updateStatsContainer($statsContainer, stats);
@@ -220,7 +230,7 @@ window.Newsletter = {
         handleSendResponse: function (response) {
             if (response.success === true) {
                 Newsletter.UI.showSuccessToast(response.message || 'Newsletter wird versendet');
-                setTimeout(Newsletter.UI.reloadTable, 2100);
+                setTimeout(reloadTable, 1000);
             } else {
                 Newsletter.UI.showErrorToast(response.message || 'Fehler beim Versenden');
             }
@@ -240,7 +250,7 @@ window.Newsletter = {
         handleTestMailResponse: function (data) {
             if (data.success) {
                 Newsletter.UI.showSuccessToast(data.message || 'Test-Mail wurde gesendet');
-                Newsletter.UI.reloadTable();
+                reloadTable();
             } else {
                 Newsletter.UI.showErrorToast(data.message || 'Fehler beim Senden der Test-Mail');
             }
@@ -260,7 +270,7 @@ window.Newsletter = {
         handleCloneResponse: function (data) {
             if (data.status === 'success') {
                 Newsletter.UI.showSuccessToast(data.message || 'Newsletter erfolgreich dupliziert');
-                Newsletter.UI.reloadTable();
+                reloadTable();
             } else {
                 Newsletter.UI.showErrorToast(data.message || 'Fehler beim Duplizieren des Newsletters');
             }

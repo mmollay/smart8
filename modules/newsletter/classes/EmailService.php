@@ -29,7 +29,7 @@ class EmailService
             }
 
             // Prepare attachments
-            $attachments = $this->prepareAttachments($contentId);
+            $attachments = $this->prepareAttachments();
 
             // Prepare the email data
             $emailData = [
@@ -158,30 +158,51 @@ class EmailService
         }
     }
 
-    private function prepareAttachments($contentId)
+    private function prepareAttachments()
     {
         $attachments = [];
-        $directory = $this->uploadBasePath . $contentId . "/";
+        $directory = rtrim($this->uploadBasePath, '/');
 
-        if (is_dir($directory)) {
-            foreach (scandir($directory) as $file) {
-                if ($file != "." && $file != "..") {
-                    $full_path = $directory . $file;
-                    if (is_file($full_path) && is_readable($full_path)) {
-                        try {
-                            $fileContent = file_get_contents($full_path);
-                            if ($fileContent !== false) {
-                                $attachments[] = [
-                                    'ContentType' => mime_content_type($full_path) ?: 'application/octet-stream',
-                                    'Filename' => $file,
-                                    'Base64Content' => base64_encode($fileContent)
-                                ];
-                            }
-                        } catch (Exception $e) {
-                            error_log("Failed to process attachment {$file}: " . $e->getMessage());
-                        }
-                    }
+        // Grundlegende Verzeichnisprüfung
+        if (!is_dir($directory) || !is_readable($directory)) {
+            error_log("Directory not accessible: " . $directory);
+            return $attachments;
+        }
+
+        $files = scandir($directory);
+        if ($files === false) {
+            error_log("Could not scan directory: " . $directory);
+            return $attachments;
+        }
+
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $full_path = $directory . '/' . $file;
+
+            if (!is_file($full_path) || !is_readable($full_path)) {
+                continue;
+            }
+
+            try {
+                $fileContent = file_get_contents($full_path);
+                if ($fileContent === false) {
+                    continue;
                 }
+
+                $mime_type = mime_content_type($full_path) ?: 'application/octet-stream';
+
+                $attachments[] = [
+                    'ContentType' => $mime_type,
+                    'Filename' => $file,
+                    'Base64Content' => base64_encode($fileContent)
+                ];
+
+            } catch (Exception $e) {
+                error_log("Error processing attachment: " . $e->getMessage());
+                continue;
             }
         }
 
