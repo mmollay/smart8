@@ -513,6 +513,11 @@ $buttons = [
             'position' => 'top right'
         ],
         'params' => ['delete_id' => 'content_id'],
+        'conditions' => [
+            function ($row) {
+                return $row['send_status'] == 0;  // Nur anzeigen wenn noch nicht versendet
+            }
+        ],
     ],
 ];
 
