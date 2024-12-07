@@ -116,14 +116,14 @@ $listGenerator->addExternalButton('new_newsletter', [
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Newsletter anzulegen']
 ]);
 
-$listGenerator->addExternalButton('export', [
-    'icon' => 'download',
-    'class' => 'ui green circular button',
-    'position' => 'top',
-    'alignment' => 'right',
-    'title' => 'CSV Export',
-    'onclick' => 'window.location.href="ajax/export.php?type=newsletters&format=csv"'
-]);
+// $listGenerator->addExternalButton('export', [
+//     'icon' => 'download',
+//     'class' => 'ui green circular button',
+//     'position' => 'top',
+//     'alignment' => 'right',
+//     'title' => 'CSV Export',
+//     'onclick' => 'window.location.href="ajax/export.php?type=newsletters&format=csv"'
+// ]);
 
 $columns = [
     [
