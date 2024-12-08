@@ -20,7 +20,7 @@ ini_set('memory_limit', '256M');
 require_once BASE_PATH . '/n_config.php';
 require_once BASE_PATH . '/classes/EmailService.php';
 require_once BASE_PATH . '/classes/PlaceholderService.php';
-require_once BASE_PATH . '/exec/functions_sendmail.php';
+require_once BASE_PATH . '/functions.php';
 
 // Prüfe ob Klassen geladen wurden
 if (!class_exists('EmailService') || !class_exists('PlaceholderService')) {

@@ -162,6 +162,7 @@ $listGenerator->addExternalButton('export', [
 
 // Spalten definieren
 $columns = [
+    ['name' => 'id', 'label' => "ID"],
     ['name' => 'first_name', 'label' => "<i class='user icon'></i>Vorname"],
     ['name' => 'last_name', 'label' => "<i class='user icon'></i>Nachname"],
     ['name' => 'company', 'label' => "<i class='building icon'></i>Firma"],

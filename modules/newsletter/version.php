@@ -2,6 +2,20 @@
 return [
     'version' => '1.2.3',
     'changelog' => [
+        '1.2.3' => [
+            'date' => '2026-01-01',
+            'changes' => [
+                'Neu' => [
+                    'Blacklist eingeführt',
+                    'E-Mail-Adressen können auf die Blacklist gesetzt werden',
+                    'E-Mail-Adressen auf der Blacklist erhalten keine Newsletter mehr',
+                ],
+                'Behoben' => [
+                    'User kann mehrerer Gruppen zugewiesen werden',
+                    'Importschnittstelle korrigiert'
+                ]
+            ]
+        ],
 
         '1.1.3' => [
             'date' => '2025-12-05',

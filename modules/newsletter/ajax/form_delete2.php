@@ -16,6 +16,33 @@ $db->begin_transaction();
 
 try {
     switch ($list_id) {
+        case 'blacklist':
+            // Prüfe zuerst ob der Eintrag existiert und dem User gehört
+            $stmt = $db->prepare("SELECT source FROM blacklist WHERE id = ? AND user_id = ? LIMIT 1");
+            $stmt->bind_param("ii", $delete_id, $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows === 0) {
+                throw new Exception("Blacklist-Eintrag nicht gefunden oder keine Berechtigung");
+            }
+
+            $blacklistEntry = $result->fetch_assoc();
+
+            // Optional: Verhindere das Löschen von automatisch erstellten Einträgen
+            // if ($blacklistEntry['source'] !== 'manual') {
+            //     throw new Exception("Automatisch erstellte Einträge können nicht gelöscht werden");
+            // }
+
+            // Lösche den Blacklist-Eintrag
+            $stmt = $db->prepare("DELETE FROM blacklist WHERE id = ? AND user_id = ? LIMIT 1");
+            $stmt->bind_param("ii", $delete_id, $userId);
+            $stmt->execute();
+
+            if ($stmt->affected_rows === 0) {
+                throw new Exception("Fehler beim Löschen des Blacklist-Eintrags");
+            }
+            break;
         case 'senders':
             $stmt = $db->prepare("DELETE FROM senders WHERE id = ? LIMIT 1");
             $stmt->bind_param("i", $delete_id);

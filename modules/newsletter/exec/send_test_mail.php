@@ -8,8 +8,18 @@ use \Mailjet\Resources;
 
 header('Content-Type: application/json');
 
+// Logging-Funktion
+function logTestMail($userId, $message, $status = 'info')
+{
+    $logFile = __DIR__ . '/../logs/test_mail.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp][User:$userId][$status] $message\n";
+    error_log($logMessage, 3, $logFile);
+}
+
 // Überprüfe API Credentials
 if (empty($mailjetConfig['api_key']) || empty($mailjetConfig['api_secret'])) {
+    logTestMail($userId ?? 0, 'Mailjet API Konfiguration fehlt', 'error');
     die(json_encode([
         'success' => false,
         'message' => 'Mailjet API Konfiguration fehlt'
@@ -17,13 +27,14 @@ if (empty($mailjetConfig['api_key']) || empty($mailjetConfig['api_secret'])) {
 }
 
 if (!isset($_POST['content_id'])) {
+    logTestMail($userId ?? 0, 'Keine Newsletter-ID übermittelt', 'error');
     die(json_encode(['success' => false, 'message' => 'Keine Newsletter-ID übermittelt']));
 }
 
 $content_id = intval($_POST['content_id']);
 
 try {
-    // Prüfe ob der Newsletter dem User gehört
+    // Prüfe ob der Newsletter und Absender dem User gehören
     $stmt = $db->prepare("
         SELECT 
             ec.subject,
@@ -55,6 +66,24 @@ try {
         throw new Exception('Keine Test-Email-Adresse für diesen Absender konfiguriert');
     }
 
+    // Blacklist-Prüfung
+    $stmt = $db->prepare("
+        SELECT id, reason 
+        FROM blacklist 
+        WHERE email = ? 
+        AND user_id = ?
+    ");
+    $stmt->bind_param("si", $data['test_email'], $userId);
+    $stmt->execute();
+    $blacklistResult = $stmt->get_result();
+
+    if ($blacklistResult->num_rows > 0) {
+        $blacklistData = $blacklistResult->fetch_assoc();
+        logTestMail($userId, "Test-Mail an Blacklist-Adresse verhindert: {$data['test_email']}", 'warning');
+        throw new Exception('Diese E-Mail-Adresse steht auf der Blacklist und kann keine E-Mails empfangen. Grund: ' .
+            ($blacklistData['reason'] ?? 'Nicht angegeben'));
+    }
+
     // Initialisiere PlaceholderService
     $placeholderService = PlaceholderService::getInstance();
 
@@ -77,17 +106,10 @@ try {
     $subject = $placeholderService->replacePlaceholders($data['subject'], $placeholders);
     $message = $placeholderService->replacePlaceholders($data['message'], $placeholders);
     $message = prepareHtmlForEmail($message);
-    // Füge Debug-Informationen für Test-Mail hinzu
-    //$message = $placeholderService->addDebugInfo($message, $placeholders);
-
-    // URLs absolut machen
     $message = makeUrlsAbsolute($message, $APP_URL);
-
 
     // Hole Anhänge
     $attachments = [];
-
-    //siehe n_config.php
     $directory = $uploadBasePath . '/' . $content_id . "/attachements/";
 
     if (is_dir($directory)) {
@@ -133,27 +155,49 @@ try {
         ['version' => 'v3.1']
     );
 
+    logTestMail($userId, "Sende Test-Mail an: {$data['test_email']}", 'info');
+
     // Sende die E-Mail
     $response = $mj->post(Resources::$Email, ['body' => ['Messages' => [$email]]]);
 
     if ($response->success()) {
         // Log den erfolgreichen Versand
-        $db->query("INSERT INTO email_logs (status, response, created_at) 
-           VALUES ('success', 'Test-Mail erfolgreich gesendet', NOW())");
+        $stmt = $db->prepare("
+            INSERT INTO email_logs (status, response, created_at) 
+            VALUES ('success', ?, NOW())
+        ");
+        $successMsg = "Test-Mail erfolgreich an {$data['test_email']} gesendet";
+        $stmt->bind_param("s", $successMsg);
+        $stmt->execute();
+
+        logTestMail($userId, $successMsg, 'success');
 
         echo json_encode([
             'success' => true,
-            'message' => 'Test-Mail wurde erfolgreich an ' . $data['test_email'] . ' gesendet'
+            'message' => $successMsg
         ]);
     } else {
-        throw new Exception('Fehler beim Senden der Test-Mail: ' . json_encode($response->getBody()));
+        $errorMsg = 'Fehler beim Senden der Test-Mail: ' . json_encode($response->getBody());
+        throw new Exception($errorMsg);
     }
 
 } catch (Exception $e) {
     // Log den Fehler
-    $db->query("INSERT INTO email_logs (status, response, created_at) 
-    VALUES ('failed', '" . $db->real_escape_string($e->getMessage()) . "', NOW())");
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    $errorMessage = $e->getMessage();
+
+    $stmt = $db->prepare("
+        INSERT INTO email_logs (status, response, created_at) 
+        VALUES ('failed', ?, NOW())
+    ");
+    $stmt->bind_param("s", $errorMessage);
+    $stmt->execute();
+
+    logTestMail($userId ?? 0, $errorMessage, 'error');
+
+    echo json_encode([
+        'success' => false,
+        'message' => $errorMessage
+    ]);
 } finally {
     if (isset($db)) {
         $db->close();

@@ -3,6 +3,9 @@
 <!-- <script src="../../smartform2/js/listGenerator.js"></script> -->
 <script>
     $(document).ready(function () {
-        loadListGenerator('lists/recipients.php', { saveState: false, contentId: 'content_recipients' });
+        loadListGenerator('lists/recipients.php', {
+            saveState: false, contentId: 'content_recipients', sort: 'id',
+            sortDir: 'DESC',
+        });
     });
 </script>
