@@ -17715,3 +17715,164 @@ Daten: Array
     [returnedRows] => 5
 )
 
+[2024-12-08 13:46:17] Debug-Logging initialisiert
+[2024-12-08 13:46:17] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-08 13:46:17] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 1200px
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+            [compact] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-08 13:46:17] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+    GROUP BY
+        u.id
+
+)
+
+[2024-12-08 13:46:17] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-08 13:46:17] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-08 13:46:17] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT
+        u.id, u.first_name, u.last_name, u.email, u.role, u.status, u.created_at, u.hire_date, u.salary,
+        ud.city,
+        d.name AS department_name,
+        COUNT(DISTINCT up.project_id) AS project_count
+    FROM
+        users u
+    LEFT JOIN
+        user_details ud ON u.id = ud.user_id
+    LEFT JOIN
+        departments d ON u.department_id = d.id
+    LEFT JOIN
+        user_projects up ON u.id = up.user_id
+     GROUP BY
+        u.id
+ ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-08 13:46:17] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+

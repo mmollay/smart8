@@ -48,9 +48,9 @@ $formGenerator->addField([
         'toolbar' => array_merge($defaultEditorConfig['toolbar']['items'], ['imageUpload']),
         'image' => [
             'upload' => [
-                'types' => ['jpeg', 'png', 'gif'],
+                'types' => ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp', 'tiff'],
                 'maxFileSize' => 5 * 1024 * 1024,
-                'path' => '../../test/'
+                'path' => '/smartform2/examples/uploads'
             ]
         ]
     ])

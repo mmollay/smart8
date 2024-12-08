@@ -114,40 +114,80 @@ function checkEmailLimit($userId)
 }
 
 
-function prepareHtmlForEmail($html)
+
+
+function makeUrlsAbsolute($content, $baseUrl)
 {
-    // Image-Klassen in Style umwandeln
-    $html = preg_replace(
-        '/<figure class="image image_resized image-style-align-left" style="width:(\d+)%;">/',
-        '<div style="float:left; width:$1%; margin:10px;">',
-        $html
-    );
+    $baseUrl = rtrim($baseUrl, '/');
 
-    // Figure Tags durch Divs ersetzen
-    $html = str_replace('<figure', '<div', $html);
-    $html = str_replace('</figure>', '</div>', $html);
+    $patterns = [
+        ['pattern' => '/(src\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'src'],
+        ['pattern' => '/(href\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'href'],
+    ];
 
-    // Bilder auf maximale Breite beschränken
-    $html = preg_replace(
-        '/<img([^>]+)>/',
-        '<img style="max-width:100%; height:auto;"$1>',
-        $html
-    );
+    foreach ($patterns as $p) {
+        $content = preg_replace_callback(
+            $p['pattern'],
+            function ($matches) use ($baseUrl) {
+                $oldUrl = $matches[2];
+                $newUrl = $baseUrl . $oldUrl;
+                return $matches[1] . '"' . $newUrl . '"';
+            },
+            $content
+        );
+    }
 
-    // Paragraphen mit Standardformatierung
-    $html = preg_replace(
-        '/<p>/',
-        '<p style="margin:0 0 10px 0; padding:0;">',
-        $html
-    );
-
-    // Absolute URLs für Bilder
-    // $baseUrl = "https://deine-domain.de";
-    // $html = preg_replace(
-    //     '/src="\/([^"]+)"/',
-    //     'src="' . $baseUrl . '/$1"',
-    //     $html
-    // );
-
-    return $html;
+    return $content;
 }
+
+
+
+function prepareHtmlForEmail($content)
+{
+    // Behandle figure mit image-style-side
+    $content = preg_replace(
+        '/<figure(.*?)class="(.*?)image-style-side(.*?)"(.*?)>/i',
+        '<div$1class="$2image-style-align-right$3" style="float: right; margin-left: 20px; $4">',
+        $content
+    );
+
+    // Ersetze übrige figure-Tags durch div-Tags
+    $content = preg_replace('/<figure(.*?)>/i', '<div$1>', $content);
+    $content = str_replace('</figure>', '</div>', $content);
+
+    // Füge float-Styles für Ausrichtungen hinzu und behalte bestehende Styles
+    $content = preg_replace(
+        '/class="([^"]*?)image-style-align-left([^"]*?)"\s*style="([^"]*?)"/i',
+        'class="$1image-style-align-left$2" style="$3; float: left; margin-right: 20px;"',
+        $content
+    );
+
+    $content = preg_replace(
+        '/class="([^"]*?)image-style-align-right([^"]*?)"\s*style="([^"]*?)"/i',
+        'class="$1image-style-align-right$2" style="$3; float: right; margin-left: 20px;"',
+        $content
+    );
+
+    $content = preg_replace(
+        '/class="([^"]*?)image-style-align-center([^"]*?)"\s*style="([^"]*?)"/i',
+        'class="$1image-style-align-center$2" style="$3; display: block; margin: 0 auto; text-align: center;"',
+        $content
+    );
+
+    // Wickle alleinstehende Bilder in div-Container
+    $content = preg_replace(
+        '/<img([^>]*?)class="([^"]*?)image_resized([^"]*?)image-style-align-left([^"]*?)"([^>]*?)>/i',
+        '<div class="$2image_resized$3image-style-align-left$4" style="float: left; margin-right: 20px;"><img$1class="$2$3$4"$5></div>',
+        $content
+    );
+
+    $content = preg_replace(
+        '/<img([^>]*?)class="([^"]*?)image_resized([^"]*?)"([^>]*?)>/i',
+        '<div class="$2image_resized$3" style="display: block;"><img$1class="$2$3"$4></div>',
+        $content
+    );
+
+    return $content;
+}
+
+?>

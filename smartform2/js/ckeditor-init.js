@@ -37,6 +37,7 @@ function initializeCKEditor(editorId, config, uploadUrl) {
                     'imageStyle:full',
                     'imageStyle:side',
                     '|',
+                    'imageResize:custom',  // Ermöglicht freie Skalierung
                     'imageResize'
                 ],
                 styles: [
@@ -46,7 +47,7 @@ function initializeCKEditor(editorId, config, uploadUrl) {
                     'alignCenter',
                     'alignRight'
                 ],
-                resizeUnit: '%',
+                resizeUnit: 'px',  // Änderung von '%' zu 'px'
                 resizeOptions: [
                     {
                         name: 'imageResize:original',
@@ -54,24 +55,24 @@ function initializeCKEditor(editorId, config, uploadUrl) {
                         label: 'Original'
                     },
                     {
-                        name: 'imageResize:25',
-                        value: '25',
-                        label: '25%'
+                        name: 'imageResize:200',
+                        value: '200',
+                        label: '200px'
                     },
                     {
-                        name: 'imageResize:50',
-                        value: '50',
-                        label: '50%'
+                        name: 'imageResize:400',
+                        value: '400',
+                        label: '400px'
                     },
                     {
-                        name: 'imageResize:75',
-                        value: '75',
-                        label: '75%'
+                        name: 'imageResize:600',
+                        value: '600',
+                        label: '600px'
                     },
                     {
-                        name: 'imageResize:100',
-                        value: '100',
-                        label: '100%'
+                        name: 'imageResize:800',
+                        value: '800',
+                        label: '800px'
                     }
                 ],
                 upload: {

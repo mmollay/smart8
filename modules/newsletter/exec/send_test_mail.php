@@ -71,13 +71,18 @@ try {
     // Erstelle Platzhalter
     $placeholders = $placeholderService->createPlaceholders($recipientData);
 
+    $APP_URL = $_ENV['APP_URL'] ?? 'https://newsletter.ssi.at';
+
     // Ersetze Platzhalter in Subject und Message
     $subject = $placeholderService->replacePlaceholders($data['subject'], $placeholders);
     $message = $placeholderService->replacePlaceholders($data['message'], $placeholders);
-    $message = prepareHtmlForEmail($message) . 'test';
+    $message = prepareHtmlForEmail($message);
     // Füge Debug-Informationen für Test-Mail hinzu
-
     //$message = $placeholderService->addDebugInfo($message, $placeholders);
+
+    // URLs absolut machen
+    $message = makeUrlsAbsolute($message, $APP_URL);
+
 
     // Hole Anhänge
     $attachments = [];
