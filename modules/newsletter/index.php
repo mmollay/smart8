@@ -9,6 +9,8 @@ require(__DIR__ . "/../../DashboardClass.php");
 $dashboard->addMenu('leftMenu', 'ui labeled icon left fixed menu mini vertical', true);
 $dashboard->addMenuItem('leftMenu', "newsletter", "home", "Home", "home icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newsletter", "newspaper icon");
+//Newsletter erstellen
+//$dashboard->addMenuItem('leftMenu', "newsletter", "create_newsletter", "Newsletter erstellen", "edit icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_recipients", "Empfänger", "address card icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "import_recipients", "Empfänger importieren", "upload icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_groups", "Gruppen", "users icon");

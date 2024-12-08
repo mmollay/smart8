@@ -43,8 +43,10 @@ if ($content_id) {
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
 
+    $data['message'] = prepareHtmlForEmail($data['message']);
+
     // Anhänge laden
-    $upload_dir = "../../../uploads/users/{$content_id}/";
+    $upload_dir = $uploadBasePath . "/{$content_id}/attachements/";
     $attachments = [];
     if (is_dir($upload_dir)) {
         $files = scandir($upload_dir);

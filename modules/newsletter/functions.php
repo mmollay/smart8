@@ -112,3 +112,42 @@ function checkEmailLimit($userId)
         return false;
     return $package['emails_sent'] < $package['emails_limit'];
 }
+
+
+function prepareHtmlForEmail($html)
+{
+    // Image-Klassen in Style umwandeln
+    $html = preg_replace(
+        '/<figure class="image image_resized image-style-align-left" style="width:(\d+)%;">/',
+        '<div style="float:left; width:$1%; margin:10px;">',
+        $html
+    );
+
+    // Figure Tags durch Divs ersetzen
+    $html = str_replace('<figure', '<div', $html);
+    $html = str_replace('</figure>', '</div>', $html);
+
+    // Bilder auf maximale Breite beschränken
+    $html = preg_replace(
+        '/<img([^>]+)>/',
+        '<img style="max-width:100%; height:auto;"$1>',
+        $html
+    );
+
+    // Paragraphen mit Standardformatierung
+    $html = preg_replace(
+        '/<p>/',
+        '<p style="margin:0 0 10px 0; padding:0;">',
+        $html
+    );
+
+    // Absolute URLs für Bilder
+    // $baseUrl = "https://deine-domain.de";
+    // $html = preg_replace(
+    //     '/src="\/([^"]+)"/',
+    //     'src="' . $baseUrl . '/$1"',
+    //     $html
+    // );
+
+    return $html;
+}

@@ -3,8 +3,8 @@ function getEditorConfig($userId, $update_id)
 {
 
     return [
-        'minHeight' => 300,
-        'maxHeight' => 600,
+        'minHeight' => 400,
+        'maxHeight' => 800,
         'placeholder' => 'Geben Sie hier Ihre Nachricht ein...',
         'image' => [
             'upload' => [

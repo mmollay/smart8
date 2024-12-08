@@ -23,6 +23,7 @@ ini_set('memory_limit', MEMORY_LIMIT);
 // Erforderliche Dateien einbinden
 require_once BASE_PATH . '/n_config.php';
 require_once BASE_PATH . '/classes/BatchManager.php';
+require_once(BASE_PATH . '/functions.php');
 
 /**
  * Erweiterte Logging-Funktion mit Memory und Performance Tracking

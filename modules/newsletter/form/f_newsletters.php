@@ -1,4 +1,5 @@
 <?php
+
 include(__DIR__ . '/../n_config.php');
 include(__DIR__ . '/../../../smartform2/FormGenerator.php');
 include(__DIR__ . '/../components/placeholders.php');
@@ -132,6 +133,7 @@ $formGenerator->addField([
     'type' => 'ckeditor5',
     'name' => 'message',
     'tab' => 'basis',
+
     //'label' => 'Nachricht',
     //'required' => true,
     'error_message' => 'Bitte geben Sie eine Nachricht ein',
@@ -148,7 +150,7 @@ $formGenerator->addField([
         'MAX_FOLDER_SIZE' => 10000 * 1024 * 1024,
         'ALLOWED_FORMATS' => ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif', 'txt', 'zip', 'wav'],
         'MAX_FILE_COUNT' => 10,
-        'UPLOAD_DIR' => "../../../users/$userId/newsletters/$update_id/",
+        'UPLOAD_DIR' => "../../../users/$userId/newsletters/$update_id/attachements/",
         'LANGUAGE' => 'de',
         'dropZoneId' => 'drop-zone',
         'fileInputId' => 'file-input',

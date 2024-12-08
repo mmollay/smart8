@@ -38,8 +38,8 @@ try {
     }
 
     // Prüfe ob Gruppe bereits existiert
-    $stmt = $db->prepare("SELECT id FROM `groups` WHERE name = ?");
-    $stmt->bind_param('s', $name);
+    $stmt = $db->prepare("SELECT id FROM `groups` WHERE name = ? AND user_id = ?");
+    $stmt->bind_param('si', $name, $userId);
     $stmt->execute();
     if ($stmt->get_result()->num_rows > 0) {
         throw new Exception('Eine Gruppe mit diesem Namen existiert bereits');
@@ -47,8 +47,8 @@ try {
     $stmt->close();
 
     // Erstelle neue Gruppe
-    $stmt = $db->prepare("INSERT INTO `groups` (name, color, description) VALUES (?, ?, ?)");
-    $stmt->bind_param('sss', $name, $color, $description);
+    $stmt = $db->prepare("INSERT INTO `groups` (user_id, name, color, description) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('isss', $userId, $name, $color, $description);
 
     if (!$stmt->execute()) {
         throw new Exception('Fehler beim Speichern der Gruppe: ' . $db->error);

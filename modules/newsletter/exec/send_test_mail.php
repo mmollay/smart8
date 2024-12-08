@@ -3,6 +3,7 @@ require_once(__DIR__ . '/../n_config.php');
 require_once(__DIR__ . '/../classes/EmailService.php');
 require_once(__DIR__ . '/../classes/PlaceholderService.php');
 require __DIR__ . '/../../../vendor/autoload.php';
+require_once(__DIR__ . '/../functions.php');
 use \Mailjet\Resources;
 
 header('Content-Type: application/json');
@@ -73,15 +74,16 @@ try {
     // Ersetze Platzhalter in Subject und Message
     $subject = $placeholderService->replacePlaceholders($data['subject'], $placeholders);
     $message = $placeholderService->replacePlaceholders($data['message'], $placeholders);
-
+    $message = prepareHtmlForEmail($message) . 'test';
     // Füge Debug-Informationen für Test-Mail hinzu
-    $message = $placeholderService->addDebugInfo($message, $placeholders);
+
+    //$message = $placeholderService->addDebugInfo($message, $placeholders);
 
     // Hole Anhänge
     $attachments = [];
 
     //siehe n_config.php
-    $directory = $uploadBasePath . '/' . $content_id . "/";
+    $directory = $uploadBasePath . '/' . $content_id . "/attachements/";
 
     if (is_dir($directory)) {
         $files = scandir($directory);

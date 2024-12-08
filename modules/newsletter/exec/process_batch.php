@@ -97,7 +97,7 @@ if (!$userData) {
 }
 
 $userId = $userData['user_id'];
-$uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $userId . '/newsletters' . '/' . $contentId;
+$uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $userId . '/newsletters' . '/' . $contentId . "/attachements/";
 
 writeLog("Starte Batch-Verarbeitung für Content ID: $contentId mit Jobs: " . implode(',', $jobIds), 'INFO', $batchLogFile);
 writeLog("Upload Base Path: " . $uploadBasePath, 'INFO', true);
@@ -245,6 +245,7 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
         // Subject und Message mit Platzhaltern ersetzen
         $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
         $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
+        $message = prepareHtmlForEmail($message) . 'test';
 
         // URLs absolut machen
         $message = makeUrlsAbsolute($message, $APP_URL);

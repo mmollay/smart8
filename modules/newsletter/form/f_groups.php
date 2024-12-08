@@ -1,6 +1,6 @@
 <?php
-include (__DIR__ . '/../n_config.php');
-include (__DIR__ . '/../../../smartform2/FormGenerator.php');
+include(__DIR__ . '/../n_config.php');
+include(__DIR__ . '/../../../smartform2/FormGenerator.php');
 
 $update_id = $_POST['update_id'] ?? null;
 $formGenerator = new FormGenerator();

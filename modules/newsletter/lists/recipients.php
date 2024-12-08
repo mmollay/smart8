@@ -114,7 +114,7 @@ $listGenerator->addFilter('status', 'Status', [
 // Externe Buttons
 $listGenerator->addExternalButton('add', [
     'icon' => 'plus',
-    'class' => 'ui blue circular button',
+    'class' => 'ui blue button',
     'position' => 'inline',
     'alignment' => 'right',
     'title' => 'Neuen Empfänger anlegen',

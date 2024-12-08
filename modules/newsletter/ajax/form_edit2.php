@@ -1,6 +1,6 @@
 <?php
 // Zugangsdaten für die Datenbank
-require_once (__DIR__ . '/../n_config.php');
+require_once(__DIR__ . '/../n_config.php');
 
 // Funktion zur Validierung und Bereinigung von Eingaben
 function sanitizeInput($input)
@@ -87,6 +87,8 @@ try {
 			$sender_id = intval($_POST['sender_id'] ?? 0);
 			$subject = sanitizeInput($_POST['subject'] ?? '');
 			$message = $_POST['message'] ?? ''; // Nicht sanitieren, da es HTML enthalten kann
+			$message = prepareHtmlForEmail($message);
+
 			$group_ids = array_filter(array_map('intval', explode(',', $_POST['tags'] ?? '')));
 
 			if ($id) {

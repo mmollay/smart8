@@ -6,7 +6,7 @@ include(__DIR__ . '/../n_config.php');
 function getAttachmentInfo($content_id, $uploadBasePath)
 {
 
-    $upload_dir = $uploadBasePath . '/' . $content_id . "/";
+    $upload_dir = $uploadBasePath . '/' . $content_id . "/attachements/";
 
     $files = glob($upload_dir . "*");
     $count = count($files);

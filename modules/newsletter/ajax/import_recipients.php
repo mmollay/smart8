@@ -1,6 +1,6 @@
 <?php
 // ajax/import_recipients.php
-include(__DIR__ . '/../n_config.php');
+include(__DIR__ . '/../../n_config.php');
 
 header('Content-Type: application/json');
 
@@ -22,13 +22,12 @@ $stats = [
 
 $skip_duplicates = isset($_POST['skip_duplicates']) && $_POST['skip_duplicates'] === 'on';
 $update_existing = isset($_POST['update_existing']) && $_POST['update_existing'] === 'on';
-$group_id = isset($_POST['group_id']) && !empty($_POST['group_id']) ? (int)$_POST['group_id'] : null;
+$group_id = isset($_POST['group_id']) && !empty($_POST['group_id']) ? (int) $_POST['group_id'] : null;
 
 // Prepare statements
 $check_stmt = $db->prepare("SELECT id FROM recipients WHERE email = ? AND user_id = ?");
 $insert_stmt = $db->prepare("INSERT INTO recipients (email, first_name, last_name, company, gender, user_id) VALUES (?, ?, ?, ?, ?, ?)");
-// Fixed update statement - removed user_id from WHERE clause since it's not a parameter
-$update_stmt = $db->prepare("UPDATE recipients SET first_name = ?, last_name = ?, company = ?, gender = ? WHERE id = ?");
+$update_stmt = $db->prepare("UPDATE recipients SET first_name = ?, last_name = ?, company = ?, gender = ? WHERE email = ? AND user_id = ?");
 $group_stmt = null;
 if ($group_id) {
     $group_stmt = $db->prepare("INSERT IGNORE INTO recipient_group (recipient_id, group_id) VALUES (?, ?)");
@@ -38,28 +37,28 @@ if ($group_id) {
 $lines = explode("\n", trim($_POST['import_data']));
 foreach ($lines as $line) {
     $stats['total']++;
-    
+
     // Skip empty lines
     if (empty(trim($line))) {
         continue;
     }
-    
+
     // Split line by tabs
     $data = explode("\t", trim($line));
-    
+
     // Validate email (minimum requirement)
     $email = trim($data[0]);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $stats['errors']++;
         continue;
     }
-    
+
     // Extract other fields with defaults
     $first_name = isset($data[1]) ? trim($data[1]) : '';
     $last_name = isset($data[2]) ? trim($data[2]) : '';
     $company = isset($data[3]) ? trim($data[3]) : '';
     $gender = isset($data[4]) ? trim($data[4]) : '';
-    
+
     // Normalize gender
     if (strtolower($gender) === 'weiblich' || strtolower($gender) === 'w') {
         $gender = 'female';
@@ -68,25 +67,23 @@ foreach ($lines as $line) {
     } else {
         $gender = 'other';
     }
-    
+
     // Check if email exists
     $check_stmt->bind_param("si", $email, $userId);
     $check_stmt->execute();
     $result = $check_stmt->get_result();
     $exists = $result->num_rows > 0;
-    
+
     if ($exists) {
         if ($skip_duplicates) {
             $stats['skipped']++;
             continue;
         } elseif ($update_existing) {
-            // Get the existing recipient's ID
-            $recipient_id = $result->fetch_assoc()['id'];
-            
-            // Update existing recipient - now using ID in WHERE clause
-            $update_stmt->bind_param("ssssi", $first_name, $last_name, $company, $gender, $recipient_id);
+            // Update existing recipient
+            $update_stmt->bind_param("sssss", $first_name, $last_name, $company, $gender, $email, $userId);
             if ($update_stmt->execute()) {
                 $stats['updated']++;
+                $recipient_id = $result->fetch_assoc()['id'];
             } else {
                 $stats['errors']++;
                 continue;
@@ -106,9 +103,9 @@ foreach ($lines as $line) {
             continue;
         }
     }
-    
+
     // Add to group if specified
-    if ($group_id && isset($recipient_id)) {
+    if ($group_id && $recipient_id) {
         $group_stmt->bind_param("ii", $recipient_id, $group_id);
         $group_stmt->execute();
     }
