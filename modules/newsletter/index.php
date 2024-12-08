@@ -12,11 +12,11 @@ $dashboard->addMenuItem('leftMenu', "newsletter", "list_newsletters", "Newslette
 //Newsletter erstellen
 //$dashboard->addMenuItem('leftMenu', "newsletter", "create_newsletter", "Newsletter erstellen", "edit icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_recipients", "Empfänger", "address card icon");
-$dashboard->addMenuItem('leftMenu', "newsletter", "import_recipients", "Empfänger importieren", "upload icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_groups", "Gruppen", "users icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_senders", "Absender", "at icon");
 //Blacklist
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_blacklist", "Blacklist", "ban icon");
+$dashboard->addMenuItem('leftMenu', "newsletter", "import_recipients", "Empfänger importieren", "upload icon");
 $dashboard->addMenuItem('leftMenu', "newsletter", "list_templates", "Vorlagen", "file alternate icon");
 
 

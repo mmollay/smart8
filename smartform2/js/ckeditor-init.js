@@ -23,7 +23,9 @@ function initializeCKEditor(editorId, config, uploadUrl) {
                     'blockQuote',
                     'insertTable',
                     'undo',
-                    'redo'
+                    'redo',
+                    '|',
+                    'removeFormat'
                 ]
             },
             image: {
@@ -92,6 +94,8 @@ function initializeCKEditor(editorId, config, uploadUrl) {
         })
         .then(function (editor) {
             console.log('CKEditor instance created:', editorId);
+
+
             editorElement.dataset.editorInitialized = 'true';
 
             var formId = $(editorElement).closest('form').attr('id');

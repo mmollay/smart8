@@ -27,7 +27,8 @@ $defaultEditorConfig = [
             'blockQuote',
             'insertTable',
             'undo',
-            'redo'
+            'redo',
+            'removeFormat'
         ]
     ],
     'language' => 'de',
@@ -136,6 +137,7 @@ $formGenerator->addButtonElement([
             box-shadow: none;
         }
     </style>
+    <link rel="stylesheet" href="../../ckeditor5/ckeditor5.css">
 </head>
 
 <body>
@@ -162,8 +164,14 @@ $formGenerator->addButtonElement([
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/translations/de.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "ckeditor5": "../../ckeditor5/ckeditor5.js",
+                "ckeditor5/": "../../ckeditor5/"
+            }
+        }
+        </script>
     <script src="../js/fileUploader.js"></script>
     <script src="../js/formGenerator.js"></script>
     <script src="../js/ckeditor-init.js"></script>

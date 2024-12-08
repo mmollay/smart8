@@ -39,7 +39,9 @@ function getEditorConfig($userId, $update_id)
                 'insertTable',
                 '|',
                 'undo',
-                'redo'
+                'redo',
+                '|',
+                'removeFormatting'
             ]
         ]
     ];
