@@ -3,17 +3,22 @@ require_once(__DIR__ . '/../n_config.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['data'])) {
     $db->begin_transaction();
-
     try {
         // Zeilen aufteilen
         $lines = explode("\n", trim($_POST['data']));
         $imported = 0;
+        $duplicates = 0;
         $errors = [];
 
-        // userId statt fester 5 verwenden
-        $stmt = $db->prepare("
-            INSERT INTO blacklist 
-            (email, reason, created_at, source, user_id) 
+        // Prepare Statements
+        $checkStmt = $db->prepare("
+            SELECT id FROM blacklist 
+            WHERE email = ? AND user_id = ?
+        ");
+
+        $insertStmt = $db->prepare("
+            INSERT INTO blacklist
+            (email, reason, created_at, source, user_id)
             VALUES (?, ?, ?, 'manual', ?)
         ");
 
@@ -22,33 +27,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['data'])) {
             if (empty($line))
                 continue;
 
-            // Tabs als Trennzeichen
             $data = explode("\t", $line);
-
             if (count($data) >= 3) {
                 $email = trim($data[0]);
                 $reason = trim($data[1]);
                 $created_at = trim($data[2]);
 
-                $stmt->bind_param("sssi", $email, $reason, $created_at, $userId);
+                // Prüfe auf Duplikat
+                $checkStmt->bind_param("si", $email, $userId);
+                $checkStmt->execute();
+                $result = $checkStmt->get_result();
 
-                if ($stmt->execute()) {
+                if ($result->num_rows > 0) {
+                    $duplicates++;
+                    continue;
+                }
+
+                // Füge neuen Eintrag hinzu
+                $insertStmt->bind_param("sssi", $email, $reason, $created_at, $userId);
+                if ($insertStmt->execute()) {
                     $imported++;
                 } else {
-                    $errors[] = "Fehler bei E-Mail $email: " . $stmt->error;
+                    $errors[] = "Fehler bei E-Mail $email: " . $insertStmt->error;
                 }
             }
         }
 
         $db->commit();
-        $message = "$imported Einträge erfolgreich importiert.";
+
+        // Detaillierte Erfolgsmeldung
+        $message = [];
+        if ($imported > 0) {
+            $message[] = "$imported Einträge erfolgreich importiert";
+        }
+        if ($duplicates > 0) {
+            $message[] = "$duplicates Einträge übersprungen (bereits vorhanden)";
+        }
+
+        $messageText = implode(", ", $message);
+
         if (!empty($errors)) {
-            $message .= "<br>Fehler: " . implode("<br>", $errors);
+            $messageText .= "<br>Fehler: " . implode("<br>", $errors);
         }
 
     } catch (Exception $e) {
         $db->rollback();
-        $message = "Fehler beim Import: " . $e->getMessage();
+        $messageText = "Fehler beim Import: " . $e->getMessage();
     }
 }
 ?>
@@ -62,7 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['data'])) {
 
 <body>
     <div class="ui container" style="padding: 20px;">
-        <!-- Zurück Button oben links -->
         <a href="../" class="ui left labeled icon button">
             <i class="left arrow icon"></i>
             Zurück zur Übersicht
@@ -70,9 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['data'])) {
 
         <h2 class="ui header">Blacklist Daten Import</h2>
 
-        <?php if (isset($message)): ?>
-            <div class="ui <?php echo strpos($message, 'Fehler') !== false ? 'negative' : 'positive'; ?> message">
-                <?php echo $message; ?>
+        <?php if (isset($messageText)): ?>
+            <div class="ui <?php echo strpos($messageText, 'Fehler') !== false ? 'negative' : 'positive'; ?> message">
+                <?php echo $messageText; ?>
             </div>
         <?php endif; ?>
 
