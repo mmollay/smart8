@@ -518,11 +518,29 @@ $buttons = [
 ];
 
 $modals = [
-    'modal_edit' => [
-        'title' => 'Newsletter bearbeiten',
-        'content' => 'form/f_newsletters.php',
-        'class' => 'longer large'
-    ],
+    'modal_edit' =>
+        [
+            'title' => 'Newsletter bearbeiten',
+            'content' => 'form/f_newsletters.php',
+            'size' => 'fullscreen overlay',  // statt 'class' nutzen wir jetzt 'size'
+            'method' => 'POST',
+            'scrolling' => true,
+            'buttons' => [
+                'approve' => [
+                    'text' => 'Speichern',
+                    'class' => 'orange',
+                    'icon' => 'check',
+                    //'onclick' => "alert('test')",  // Optional: wenn du einen Alert haben möchtest
+                    'form_id' => 'form_edit'  // Hier die ID deines Formulars eintragen
+                ],
+                'cancel' => [
+                    'text' => 'Abbrechen',
+                    'class' => 'cancel',
+                    'icon' => 'times',
+                    'action' => 'close'
+                ]
+            ]
+        ],
     'modal_form_delete' => [
         'title' => 'Newsletter entfernen',
         'content' => 'pages/form_delete.php',

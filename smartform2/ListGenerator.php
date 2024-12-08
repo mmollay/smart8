@@ -1049,17 +1049,28 @@ class ListGenerator
             'content' => '',
             'size' => 'small',
             'method' => 'POST',
-            'class' => ''
+            'class' => '',
+            'buttons' => [
+                'approve' => [
+                    'text' => 'Speichern',
+                    'class' => 'positive',
+                    'icon' => 'check',
+                    'action' => 'submit',
+                    'form_id' => '',  // Jetzt pro Button
+                    'callback' => null
+                ],
+                'cancel' => [
+                    'text' => 'Abbrechen',
+                    'class' => 'cancel',
+                    'icon' => 'times',
+                    'action' => 'close',
+                    'form_id' => ''   // Jetzt pro Button
+                ]
+            ]
         ];
 
         $options = array_merge($defaultOptions, $options);
-
-        // Wenn das Modal bereits existiert, überschreiben wir es komplett
-        if (isset($this->modals[$id])) {
-            $this->modals[$id] = $options;
-        } else {
-            $this->modals[$id] = $options;
-        }
+        $this->modals[$id] = $options;
     }
 
     public function addButton($id, $options)
@@ -1674,22 +1685,132 @@ class ListGenerator
         foreach ($this->modals as $id => $modal) {
             $sizeClass = $this->getModalSizeClass($modal['size']);
             $method = $modal['method'];
-            $class = $modal['class'];
-            $html .= "<div class='ui modal {$sizeClass} {$class}' id='{$id}' data-content-url='{$modal['content']}' data-method='{$method}'>";
+            $additionalClass = '';
+
+            if ($sizeClass === 'fullscreen') {
+                $additionalClass = 'fullscreen';
+            } elseif ($sizeClass === 'fullscreen overlay') {
+                $additionalClass = 'fullscreen overlay';
+            }
+
+            $html .= "<div class='ui modal {$sizeClass} {$additionalClass}' id='{$id}' data-content-url='{$modal['content']}' data-method='{$method}'>";
             $html .= "<i class='close icon'></i>";
             $html .= "<div class='header'>{$modal['title']}</div>";
-            $html .= "<div class='content'>";
+
+            // Add scrolling class if specified in modal options
+            $contentClass = 'content';
+            if (!empty($modal['scrolling'])) {
+                $contentClass .= ' scrolling';
+            }
+
+            $html .= "<div class='{$contentClass}'>";
             $html .= "<div class='ui active inverted dimmer'>";
             $html .= "<div class='ui text loader'>Laden...</div>";
             $html .= "</div>";
             $html .= "</div>";
+
+            // Action Buttons
+            if (!empty($modal['buttons'])) {
+                $html .= "<div class='actions'>";
+                foreach ($modal['buttons'] as $type => $button) {
+                    $icon = !empty($button['icon']) ? "<i class='{$button['icon']} icon'></i>" : '';
+                    $buttonClass = "ui {$button['class']} button";
+
+                    // Attribute sammeln
+                    $buttonAttributes = [];
+
+                    // Wenn onclick existiert
+                    if (!empty($button['onclick'])) {
+                        $onclickCode = $button['onclick'];
+                        // Wenn form_id existiert, fügen wir das Submit hinzu
+                        if (!empty($button['form_id'])) {
+                            $onclickCode .= "; $('#{$button['form_id']}').submit()";
+                        }
+                        $buttonAttributes[] = "onclick=\"event.preventDefault(); {$onclickCode}\"";
+                    } else if (!empty($button['action'])) {
+                        $buttonAttributes[] = "data-action='{$button['action']}'";
+                    }
+
+                    if (!empty($button['callback'])) {
+                        $buttonAttributes[] = "data-callback='{$button['callback']}'";
+                    }
+                    if (!empty($button['form_id'])) {
+                        $buttonAttributes[] = "data-form-id='{$button['form_id']}'";
+                    }
+
+                    // Button zusammenbauen
+                    $attributesStr = implode(' ', $buttonAttributes);
+                    $html .= "<div class='{$buttonClass}' {$attributesStr}>{$icon}{$button['text']}</div>";
+                }
+                $html .= "</div>";
+            }
+
             $html .= "</div>";
         }
+
+        $html .= $this->generateModalScript();
         return $html;
+    }
+
+    private function generateModalScript()
+    {
+        return <<<EOT
+    <script>
+    jQuery(document).ready(function() {
+        jQuery('.ui.modal').each(function() {
+            var modalId = jQuery(this).attr('id');
+            var modal = jQuery(this);
+            
+            modal.modal({
+                closable: false,
+                onShow: function() {
+                    // Bestehende Event-Listener entfernen und neue hinzufügen
+                    modal.find('.actions .button').off('click').on('click', function(e) {
+                        var button = jQuery(this);
+                        var action = button.data('action');
+                        
+                        // Nur action behandeln wenn kein onclick vorhanden ist
+                        if(action) {
+                            switch(action) {
+                                case 'submit':
+                                    var formId = button.data('form-id');
+                                    if(formId) {
+                                        var form = jQuery('#' + formId);
+                                        if(form.length) {
+                                            form.submit();
+                                        }
+                                    } else {
+                                        // Fallback: erstes Formular im Modal
+                                        var form = modal.find('form');
+                                        if(form.length) {
+                                            form.submit();
+                                        }
+                                    }
+                                    break;
+                                    
+                                case 'close':
+                                    modal.modal('hide');
+                                    break;
+                                    
+                                case 'custom':
+                                    var callback = button.data('callback');
+                                    if(callback && typeof window[callback] === 'function') {
+                                        window[callback](modal, button.data('form-id'), button);
+                                    }
+                                    break;
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    });
+    </script>
+    EOT;
     }
     private function getModalSizeClass($size)
     {
-        $validSizes = ['mini', 'tiny', 'small', 'large', 'fullscreen'];
+        $validSizes = ['mini', 'tiny', 'small', 'large', 'fullscreen', 'fullscreen overlay'];
         return in_array($size, $validSizes) ? $size : 'small';
     }
 

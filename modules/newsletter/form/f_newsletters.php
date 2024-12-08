@@ -164,20 +164,20 @@ $formGenerator->addField([
 ]);
 
 // Buttons
-$formGenerator->addButtonElement([
-    [
-        'type' => 'submit',
-        'name' => 'submit',
-        'value' => 'Speichern',
-        'class' => 'ui primary button'
-    ],
-    [
-        'name' => 'close',
-        'value' => 'Schließen',
-        'class' => 'ui button',
-        'onclick' => "$('.ui.modal').modal('hide');"
-    ]
-]);
+// $formGenerator->addButtonElement([
+//     [
+//         'type' => 'submit',
+//         'name' => 'submit',
+//         'value' => 'Speichern',
+//         'class' => 'ui primary button'
+//     ],
+//     [
+//         'name' => 'close',
+//         'value' => 'Schließen',
+//         'class' => 'ui button',
+//         'onclick' => "$('.ui.modal').modal('hide');"
+//     ]
+// ]);
 
 if ($update_id) {
     $sql = "SELECT * FROM email_contents WHERE id = '$update_id' AND user_id = '$userId'";

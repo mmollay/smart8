@@ -50,7 +50,6 @@ $formGenerator->addButtonElement([
 
 ]);
 
-
 // Generiere das Formular
 echo $formGenerator->generateForm();
 // Generiere den JavaScript-Code
