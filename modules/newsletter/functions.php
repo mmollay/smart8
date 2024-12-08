@@ -180,4 +180,3 @@ function prepareHtmlForEmail($content)
 
     return $content;
 }
-
