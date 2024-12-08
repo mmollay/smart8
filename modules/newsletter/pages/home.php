@@ -24,7 +24,7 @@ $versions = require(__DIR__ . "/../version.php");
         </div>
 
         <div class="ui segment">
-            <div class="ui styled fluid accordion">
+            <div class="ui fluid accordion">
                 <?php
                 $isFirst = true;
                 foreach ($versions['changelog'] as $version => $info):

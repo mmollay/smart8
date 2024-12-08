@@ -3,7 +3,7 @@ return [
     'version' => '1.2.3',
     'changelog' => [
         '1.2.3' => [
-            'date' => '2026-01-01',
+            'date' => '2024-12-08',
             'changes' => [
                 'Neu' => [
                     'Blacklist eingeführt',
