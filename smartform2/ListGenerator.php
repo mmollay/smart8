@@ -1050,23 +1050,23 @@ class ListGenerator
             'size' => 'small',
             'method' => 'POST',
             'class' => '',
-            'buttons' => [
-                'approve' => [
-                    'text' => 'Speichern',
-                    'class' => 'positive',
-                    'icon' => 'check',
-                    'action' => 'submit',
-                    'form_id' => '',  // Jetzt pro Button
-                    'callback' => null
-                ],
-                'cancel' => [
-                    'text' => 'Abbrechen',
-                    'class' => 'cancel',
-                    'icon' => 'times',
-                    'action' => 'close',
-                    'form_id' => ''   // Jetzt pro Button
-                ]
-            ]
+            // 'buttons' => [
+            //     'approve' => [
+            //         'text' => 'Speichern',
+            //         'class' => 'positive',
+            //         'icon' => 'check',
+            //         'action' => 'submit',
+            //         'form_id' => '',  // Jetzt pro Button
+            //         'callback' => null
+            //     ],
+            //     'cancel' => [
+            //         'text' => 'Abbrechen',
+            //         'class' => 'cancel',
+            //         'icon' => 'times',
+            //         'action' => 'close',
+            //         'form_id' => ''   // Jetzt pro Button
+            //     ]
+            // ]
         ];
 
         $options = array_merge($defaultOptions, $options);
