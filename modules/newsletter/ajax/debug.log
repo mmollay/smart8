@@ -377,3 +377,209 @@ Output: Array
 )
 
 Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+    [0] => PHP Parse error:  syntax error, unexpected identifier "define" in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php on line 29
+)
+
+Return: 255
+Output: Array
+(
+    [0] => PHP Parse error:  syntax error, unexpected identifier "define" in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php on line 29
+)
+
+Return: 255
+Output: Array
+(
+    [0] => test
+)
+
+Return: 0
+Output: Array
+(
+    [0] => test
+)
+
+Return: 0
+Output: Array
+(
+    [0] => test
+)
+
+Return: 0
+Output: Array
+(
+    [0] => /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+    [0] => 
+    [1] => Fatal error: Uncaught Error: Failed opening required '/Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/functions_sendmail.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php:25
+    [2] => Stack trace:
+    [3] => #0 {main}
+    [4] =>   thrown in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php on line 25
+)
+
+Return: 255
+Output: Array
+(
+    [0] => 
+    [1] => Fatal error: Uncaught Error: Failed opening required '/Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/functions_sendmail.php' (include_path='.:/Applications/XAMPP/xamppfiles/lib/php') in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php:25
+    [2] => Stack trace:
+    [3] => #0 {main}
+    [4] =>   thrown in /Applications/XAMPP/xamppfiles/htdocs/smart/smart8/modules/newsletter/exec/cron_controller.php on line 25
+)
+
+Return: 255
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0
+Output: Array
+(
+)
+
+Return: 0

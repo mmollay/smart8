@@ -3,7 +3,7 @@ require_once(__DIR__ . '/../n_config.php');
 require_once(__DIR__ . '/../classes/EmailService.php');
 require_once(__DIR__ . '/../classes/PlaceholderService.php');
 require __DIR__ . '/../../../vendor/autoload.php';
-require_once(__DIR__ . '/../functions.php');
+require_once(__DIR__ . '/functions_sendmail.php');
 use \Mailjet\Resources;
 
 header('Content-Type: application/json');

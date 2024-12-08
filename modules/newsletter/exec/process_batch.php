@@ -20,6 +20,7 @@ ini_set('memory_limit', '256M');
 require_once BASE_PATH . '/n_config.php';
 require_once BASE_PATH . '/classes/EmailService.php';
 require_once BASE_PATH . '/classes/PlaceholderService.php';
+require_once BASE_PATH . '/exec/functions_sendmail.php';
 
 // Prüfe ob Klassen geladen wurden
 if (!class_exists('EmailService') || !class_exists('PlaceholderService')) {
@@ -245,8 +246,7 @@ function processJob($db, $emailService, $placeholderService, $contentId, $jobId,
         // Subject und Message mit Platzhaltern ersetzen
         $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
         $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
-        $message = prepareHtmlForEmail($message) . 'test';
-
+        $message = prepareHtmlForEmail($message);
         // URLs absolut machen
         $message = makeUrlsAbsolute($message, $APP_URL);
 
@@ -377,28 +377,4 @@ function markJobFailed($db, $jobId, $error)
         $db->rollback();
         writeLog("Fehler beim Markieren als fehlgeschlagen: " . $e->getMessage(), 'ERROR');
     }
-}
-
-function makeUrlsAbsolute($content, $baseUrl)
-{
-    $baseUrl = rtrim($baseUrl, '/');
-
-    $patterns = [
-        ['pattern' => '/(src\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'src'],
-        ['pattern' => '/(href\s*=\s*)"(\/users\/[^"]+)"/i', 'attr' => 'href'],
-    ];
-
-    foreach ($patterns as $p) {
-        $content = preg_replace_callback(
-            $p['pattern'],
-            function ($matches) use ($baseUrl) {
-                $oldUrl = $matches[2];
-                $newUrl = $baseUrl . $oldUrl;
-                return $matches[1] . '"' . $newUrl . '"';
-            },
-            $content
-        );
-    }
-
-    return $content;
 }
