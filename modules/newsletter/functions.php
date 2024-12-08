@@ -144,50 +144,40 @@ function makeUrlsAbsolute($content, $baseUrl)
 
 function prepareHtmlForEmail($content)
 {
-    // Behandle figure mit image-style-side
+    // Bereinige Style-Attribute
+    $content = str_replace('=3D', '=', $content);
+    $content = preg_replace('/style="([^"]*?);+([^"]*?)"/i', 'style="$1;$2"', $content);
+
+    // Behandle figure mit image-style-side (rechtsbündig)
     $content = preg_replace(
-        '/<figure(.*?)class="(.*?)image-style-side(.*?)"(.*?)>/i',
-        '<div$1class="$2image-style-align-right$3" style="float: right; margin-left: 20px; $4">',
+        '/<figure(.*?)class="(.*?)image-style-side(.*?)"(.*?)style="width:200px;?(.*?)"/i',
+        '<div$1class="$2image-style-align-right$3"$4style="float: right; margin-left: 20px; width: 200px;$5"',
         $content
     );
 
-    // Ersetze übrige figure-Tags durch div-Tags
+    // Ersetze übrige figure-Tags
     $content = preg_replace('/<figure(.*?)>/i', '<div$1>', $content);
     $content = str_replace('</figure>', '</div>', $content);
 
-    // Füge float-Styles für Ausrichtungen hinzu und behalte bestehende Styles
+    // Behandle linksbündige Bilder
     $content = preg_replace(
-        '/class="([^"]*?)image-style-align-left([^"]*?)"\s*style="([^"]*?)"/i',
-        'class="$1image-style-align-left$2" style="$3; float: left; margin-right: 20px;"',
+        '/class="([^"]*?)image-style-align-left([^"]*?)"\s*style="width:200px;?(.*?)"/i',
+        'class="$1image-style-align-left$2" style="width: 200px; float: left; margin-right: 20px;$3"',
         $content
     );
 
+    // Behandle zentrierte Bilder
     $content = preg_replace(
-        '/class="([^"]*?)image-style-align-right([^"]*?)"\s*style="([^"]*?)"/i',
-        'class="$1image-style-align-right$2" style="$3; float: right; margin-left: 20px;"',
+        '/class="([^"]*?)image-style-align-center([^"]*?)"\s*style="width:200px;?(.*?)"/i',
+        'class="$1image-style-align-center$2" style="width: 200px; display: block; margin: 0 auto; text-align: center;$3"',
         $content
     );
 
-    $content = preg_replace(
-        '/class="([^"]*?)image-style-align-center([^"]*?)"\s*style="([^"]*?)"/i',
-        'class="$1image-style-align-center$2" style="$3; display: block; margin: 0 auto; text-align: center;"',
-        $content
-    );
-
-    // Wickle alleinstehende Bilder in div-Container
-    $content = preg_replace(
-        '/<img([^>]*?)class="([^"]*?)image_resized([^"]*?)image-style-align-left([^"]*?)"([^>]*?)>/i',
-        '<div class="$2image_resized$3image-style-align-left$4" style="float: left; margin-right: 20px;"><img$1class="$2$3$4"$5></div>',
-        $content
-    );
-
-    $content = preg_replace(
-        '/<img([^>]*?)class="([^"]*?)image_resized([^"]*?)"([^>]*?)>/i',
-        '<div class="$2image_resized$3" style="display: block;"><img$1class="$2$3"$4></div>',
-        $content
-    );
+    // Bereinige das HTML
+    $content = preg_replace('/\s+/', ' ', $content);
+    $content = preg_replace('/;\s*;/', ';', $content);
+    $content = preg_replace('/";\s*"/', '"', $content);
 
     return $content;
 }
 
-?>
