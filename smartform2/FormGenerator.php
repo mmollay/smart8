@@ -1054,7 +1054,7 @@ class FormGenerator
                 $fieldId = $field['id'] ?? $field['name'];
                 $fieldHtml .= "<label>{$label}</label>
                         <div id='{$fieldId}-toolbar'></div>
-                        <div id='{$fieldId}-container' style='border:solid #e5e5e5; border-width:0 1px 1px 1px; border-radius:0 0 3px 3px; overflow-y: auto;'>
+                        <div id='{$fieldId}-container' style='border:solid #e5e5e5; border-width:0 1px 1px 1px; border-radius:0 0 3px 3px;'>
                             <div id='{$fieldId}' class='ckeditor-content' data-name='{$field['name']}'>
                                 {$value}
                             </div>
@@ -1063,8 +1063,8 @@ class FormGenerator
                 // CKEditor Konfiguration
                 if (!empty($field['config'])) {
                     self::$ckeditorConfigs[$fieldId] = array_merge([
-                        //'minHeight' => 300,
-                        //'maxHeight' => 600,
+                        'minHeight' => 500,
+                        'maxHeight' => 600,
                         'placeholder' => 'Text eingeben...',
                         'image' => [
                             'upload' => [
