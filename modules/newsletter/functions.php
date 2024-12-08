@@ -141,7 +141,6 @@ function makeUrlsAbsolute($content, $baseUrl)
 }
 
 
-
 function prepareHtmlForEmail($content)
 {
     // Bereinige Style-Attribute
@@ -159,20 +158,20 @@ function prepareHtmlForEmail($content)
         // Für figure-Tags
         $pattern = '/<figure(.*?)class="(.*?)image-style-' .
             ($align === 'side' ? 'side' : 'align-' . $align) .
-            '(.*?)"(.*?)style="width:(\d+px)(.*?)"/i';
+            '(.*?)"(.*?)style="width:(\d+)px(.*?)"><img(.*?)>/i';
 
         $replacement = '<div$1class="$2image-style-align-' .
             ($align === 'side' ? 'right' : $align) .
-            '$3"$4style="' . $styles . '; width: $5;"';
+            '$3"$4style="' . $styles . '; width: $5px;"><img$7 width="$5">';
 
         $content = preg_replace($pattern, $replacement, $content);
 
         // Für img-Tags
         $imgPattern = '/<img([^>]*?)class="([^"]*?)image_resized([^"]*?)image-style-align-' .
-            $align . '([^"]*?)"([^>]*?)style="width:(\d+px)(.*?)"/i';
+            $align . '([^"]*?)"([^>]*?)style="width:(\d+)px(.*?)"/i';
 
         $imgReplacement = '<div class="$2image_resized$3image-style-align-' . $align .
-            '$4" style="' . $styles . '; width: $6;"><img$1class="$2$3$4"$5></div>';
+            '$4" style="' . $styles . '; width: $6px;"><img$1class="$2$3$4"$5 width="$6">';
 
         $content = preg_replace($imgPattern, $imgReplacement, $content);
     }
@@ -188,4 +187,3 @@ function prepareHtmlForEmail($content)
 
     return $content;
 }
-
