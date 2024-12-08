@@ -66,7 +66,7 @@ try {
 				'last_name' => sanitizeInput($_POST['last_name'] ?? ''),
 				'company' => sanitizeInput($_POST['company'] ?? ''),
 				'email' => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
-				'test_email' => filter_var($_POST['test_email'] ?? '', FILTER_SANITIZE_EMAIL),
+				'test_email' => filter_var($_POST['test_email'] ?? ''),
 				'gender' => in_array($_POST['gender'] ?? '', ['male', 'female', 'other']) ? $_POST['gender'] : 'other',
 				'title' => sanitizeInput($_POST['title'] ?? ''),
 				'comment' => sanitizeInput($_POST['comment'] ?? '')
