@@ -1063,8 +1063,8 @@ class FormGenerator
                 // CKEditor Konfiguration
                 if (!empty($field['config'])) {
                     self::$ckeditorConfigs[$fieldId] = array_merge([
-                        'minHeight' => 300,
-                        'maxHeight' => 600,
+                        //'minHeight' => 300,
+                        //'maxHeight' => 600,
                         'placeholder' => 'Text eingeben...',
                         'image' => [
                             'upload' => [

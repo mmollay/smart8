@@ -525,7 +525,7 @@ $modals = [
     'modal_edit' => [
         'title' => 'Newsletter bearbeiten',
         'content' => 'form/f_newsletters.php',
-        'class' => 'large'
+        'class' => 'long large'
     ],
     'modal_form_delete' => [
         'title' => 'Newsletter entfernen',
