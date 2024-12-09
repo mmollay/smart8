@@ -236,7 +236,7 @@ $columns = [
             return $html;
         },
         'allowHtml' => true,
-        'width' => '280px'
+        'width' => '240px'
     ],
     [
         'name' => 'group_names',
@@ -350,7 +350,7 @@ $columns = [
             // Status: Keine Empfänger gewählt
             if (empty($row['group_names'])) {
                 return "<span class='ui grey text'>
-                        <i class='users slash icon'></i> Noch keine Empfänger gewählt
+                        <i class='users slash icon'></i> Keine Empfänger gewählt
                        </span>";
             }
 
@@ -394,16 +394,16 @@ $columns = [
             }
 
             // Status: Erfolgreich versendet
-            if ($failed == 0 && $blacklisted == 0) {
-                return "<span class='ui green text'>
+            //if ($failed == 0 && $blacklisted == 0) {
+            return "<span class='ui green text'>
                         <i class='check circle icon'></i> Erfolgreich versendet
                        </span>";
-            }
-
+            //}
+        
             // Status: Mit Fehlern versendet
-            return "<span class='ui yellow text'>
-                    <i class='exclamation circle icon'></i> Versendet mit {$failed} Fehlern
-                   </span>";
+            // return "<span class='ui yellow text'>
+            //         <i class='exclamation circle icon'></i> Versendet mit {$failed} Fehlern
+            //        </span>";
         },
         'allowHtml' => true,
         'width' => '240px'
