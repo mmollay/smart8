@@ -25,11 +25,11 @@ if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
     //Button zum Absenden anstossen
 }
 
-if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
-    $button_exec = '<button onclick="startCron()" class="ui tiny primary button"><i class="play icon"></i>Versand starten</button>';
-    $dashboard->addMenuItem('leftMenu', "", "", $button_exec, "");
+//if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
+$button_exec = '<button onclick="startCron()" class="ui tiny primary button"><i class="play icon"></i>Versand starten</button>';
+$dashboard->addMenuItem('leftMenu', "", "", $button_exec, "");
 
-    $dashboard->addScript("
+$dashboard->addScript("
         function startCron() {
             $.ajax({
                 url: 'ajax/start_cron.php',
@@ -43,7 +43,7 @@ if (isset($_SESSION['superuser']) && $_SESSION['superuser'] == 1) {
                 }
             });
         }", true);
-}
+//}
 
 $package = '<br><div id="packageInfo"></div>';
 

@@ -16,15 +16,15 @@ if ($packageInfo) {
     }
 
     $html = '
-    <div class="ui message">
-        <div class="ui header">
-            ' . ucfirst($packageInfo['package_type']) . '-Paket:<br>
-        </div>
-        ' . $packageInfo['emails_remaining_formatted'] . ' von ' . $packageInfo['emails_limit_formatted'] . '<br>E-Mails verfügbar
-        <div class="ui tiny ' . $colorClass . ' progress" data-percent="' . $packageInfo['usage_percent'] . '">
-            <div class="bar"></div>
-        </div>
-    </div>';
+
+    <div class="ui header">
+   ' . ucfirst($packageInfo['package_type']) . '<br>
+    </div>
+   ' . $packageInfo['emails_remaining_formatted'] . ' von ' . $packageInfo['emails_limit_formatted'] . '<br><br>E-Mails verfügbar
+    <br><br><div class="ui tiny ' . $colorClass . ' progress" data-percent="' . $packageInfo['usage_percent'] . '">
+    <div class="bar"></div>
+    </div>
+   ';
 }
 
 echo json_encode([
