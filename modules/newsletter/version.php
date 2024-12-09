@@ -1,18 +1,24 @@
 <?php
 return [
-    'version' => '1.2.3',
+    'version' => '1.2.4',
     'changelog' => [
-        '1.2.3' => [
-            'date' => '2024-12-08',
+        '1.2.4' => [
+            'date' => '2024-12-09',
             'changes' => [
                 'Neu' => [
+                    'Startseite mit Statistik eingführt',
                     'Blacklist eingeführt',
                     'E-Mail-Adressen können auf die Blacklist gesetzt werden',
                     'E-Mail-Adressen auf der Blacklist erhalten keine Newsletter mehr',
                 ],
+                'Verbessert' => [
+                    'Newsletter-Liste komplett überarbeitet',
+                    'Eingabemaske für Newsletter verbessert',
+                ],
                 'Behoben' => [
                     'User kann mehrerer Gruppen zugewiesen werden',
-                    'Importschnittstelle korrigiert'
+                    'Importschnittstelle korrigiert',
+                    'Absender von E-Mails korrigiert',
                 ]
             ]
         ],
