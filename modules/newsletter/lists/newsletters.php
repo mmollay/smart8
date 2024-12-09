@@ -15,6 +15,7 @@ $listConfig = [
     'striped' => true,
     'selectable' => true,
     'celled' => true,
+    'width' => '1500px'
 ];
 
 $listGenerator = new ListGenerator($listConfig);
@@ -150,6 +151,7 @@ $columns = [
                     $row['content_id']
                 );
             }
+
 
             $date = date('d.m.Y', strtotime($row['start_time']));
             $startTime = date('H:i', strtotime($row['start_time']));
@@ -492,11 +494,11 @@ $buttons = [
             'position' => 'top right'
         ],
         'params' => ['delete_id' => 'content_id'],
-        'conditions' => [
-            function ($row) {
-                return $row['send_status'] == 0;  // Nur anzeigen wenn noch nicht versendet
-            }
-        ],
+        // 'conditions' => [
+        //     function ($row) {
+        //         return $row['send_status'] == 0;  // Nur anzeigen wenn noch nicht versendet
+        //     }
+        // ],
     ],
 ];
 
