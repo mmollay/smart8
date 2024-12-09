@@ -619,12 +619,6 @@ class Dashboard
             echo "    <link rel=\"stylesheet\" href=\"" . htmlspecialchars($style) . "\">\n";
         }
         echo "    <link rel=\"stylesheet\" href=\"../../css/basis.css\">\n";
-
-        // Styles für stabile Sidebar-Breite
-        echo "    <style>\n";
-
-        echo "    </style>\n";
-
         echo "    <script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>\n";
         echo "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js\"></script>\n";
 
@@ -697,7 +691,6 @@ class Dashboard
 
         echo "    <div class=\"pusher\">\n";
         echo "        <div id=\"pageContent\"></div>\n";
-
         // Footer
         echo "        <div class=\"ui container footer\" align=\"center\">\n";
         echo $this->footerContent;
@@ -705,10 +698,8 @@ class Dashboard
             echo "           <div class='ui label'> Version " . htmlspecialchars($this->version) . "</div>\n";
         }
         echo "        </div>\n";
-
         echo "    </div>\n";
         echo "</div>\n";
-
         echo "    <script src=\"../../js/main.js\"></script>\n";
 
         foreach (array_keys($this->menus) as $menuId) {
@@ -734,7 +725,4 @@ class Dashboard
 
         $this->renderTemplate();
     }
-
-
-
 }

@@ -237,7 +237,7 @@ $columns = [
             return $html;
         },
         'allowHtml' => true,
-        'width' => '300px'
+        'width' => '280px'
     ],
     [
         'name' => 'group_names',
