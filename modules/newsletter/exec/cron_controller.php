@@ -10,11 +10,11 @@ ini_set('error_log', BASE_PATH . '/logs/cron_error.log');
 
 // Konfigurierbare Parameter
 const MAX_EXECUTION_TIME = 3600; // 1 Stunde
-const MEMORY_LIMIT = '512M';
-const BATCH_SIZE = 50;
-const MAX_PROCESSES = 8;
+const MEMORY_LIMIT = '256M';
+const BATCH_SIZE = 30;
+const MAX_PROCESSES = 4;
 const MAX_JOBS_WARNING = 20000;
-const PROCESS_SLEEP_TIME = 1; // Sekunden zwischen Batch-Checks
+const PROCESS_SLEEP_TIME = 2; // Sekunden zwischen Batch-Checks
 
 // Zeit- und Speicherlimits
 set_time_limit(MAX_EXECUTION_TIME);
