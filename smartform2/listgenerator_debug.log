@@ -29044,3 +29044,1823 @@ Daten: Array
 )
 
 >>>>>>> 21912f7 (Remove unnecessary code and comments)
+[2024-12-09 00:52:42] Debug-Logging initialisiert
+[2024-12-09 00:52:42] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:52:42] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:52:42] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:52:42] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:52:42] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:52:42] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:52:42] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:55:01] Debug-Logging initialisiert
+[2024-12-09 00:55:01] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:55:01] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:55:01] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:55:01] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:55:01] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:55:01] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:55:01] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:55:51] Debug-Logging initialisiert
+[2024-12-09 00:55:51] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:55:51] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:55:51] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:55:51] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:55:51] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:55:51] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:55:51] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:57:52] Debug-Logging initialisiert
+[2024-12-09 00:57:52] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:57:52] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:57:52] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:57:52] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:57:52] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:57:52] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:57:52] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:58:03] Debug-Logging initialisiert
+[2024-12-09 00:58:03] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:58:03] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:58:03] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:58:03] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:03] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:58:03] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:03] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:58:22] Debug-Logging initialisiert
+[2024-12-09 00:58:22] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:58:22] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:58:22] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:58:22] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:22] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:58:22] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:22] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:58:36] Debug-Logging initialisiert
+[2024-12-09 00:58:36] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:58:36] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:58:36] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:58:36] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:36] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:58:36] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:36] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 00:58:54] Debug-Logging initialisiert
+[2024-12-09 00:58:54] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 00:58:54] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 00:58:54] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 00:58:54] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:54] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 00:58:54] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 00:58:54] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 01:01:16] Debug-Logging initialisiert
+[2024-12-09 01:01:16] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 01:01:16] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 01:01:16] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 01:01:16] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:01:16] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 01:01:16] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:01:16] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 01:02:59] Debug-Logging initialisiert
+[2024-12-09 01:02:59] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 01:02:59] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 01:02:59] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 01:02:59] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:02:59] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 01:02:59] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:02:59] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 01:08:18] Debug-Logging initialisiert
+[2024-12-09 01:08:18] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 01:08:18] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 01:08:18] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 01:08:18] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:08:18] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 01:08:18] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:08:18] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 01:08:35] Debug-Logging initialisiert
+[2024-12-09 01:08:35] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 01:08:35] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 01:08:35] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 01:08:35] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:08:35] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 01:08:35] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:08:35] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+
+[2024-12-09 01:08:44] Debug-Logging initialisiert
+[2024-12-09 01:08:44] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-09 01:08:44] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => userList
+            [contentId] => content1
+            [itemsPerPage] => 10
+            [sortColumn] => id
+            [sortDirection] => DESC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Daten gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled table
+            [headerClasses] => ui inverted blue table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => blue
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => DESC
+            [search] => 
+            [saveState] => false
+            [contentId] => content1
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-09 01:08:44] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+
+)
+
+[2024-12-09 01:08:44] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:08:44] Total rows
+Daten: Array
+(
+    [count] => 5
+)
+
+[2024-12-09 01:08:44] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        u.id, 
+        u.first_name, 
+        u.last_name, 
+        u.email, 
+        u.role, 
+        u.status,
+        d.name AS department_name
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+  ORDER BY id DESC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-09 01:08:44] Data fetched
+Daten: Array
+(
+    [totalRows] => 5
+    [returnedRows] => 5
+)
+

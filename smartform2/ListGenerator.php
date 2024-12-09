@@ -1697,7 +1697,6 @@ class ListGenerator
             $html .= "<i class='close icon'></i>";
             $html .= "<div class='header'>{$modal['title']}</div>";
 
-            // Add scrolling class if specified in modal options
             $contentClass = 'content';
             if (!empty($modal['scrolling'])) {
                 $contentClass .= ' scrolling';
@@ -1716,21 +1715,34 @@ class ListGenerator
                     $icon = !empty($button['icon']) ? "<i class='{$button['icon']} icon'></i>" : '';
                     $buttonClass = "ui {$button['class']} button";
 
-                    // Attribute sammeln
+                    // Collect button attributes
                     $buttonAttributes = [];
 
-                    // Wenn onclick existiert
+                    // Handle onclick and form submission
+                    $onclickCode = '';
                     if (!empty($button['onclick'])) {
+                        // If onclick exists, we'll execute it first
                         $onclickCode = $button['onclick'];
-                        // Wenn form_id existiert, fügen wir das Submit hinzu
+
+                        // If form_id exists, append form submission after onclick
                         if (!empty($button['form_id'])) {
-                            $onclickCode .= "; $('#{$button['form_id']}').submit()";
+                            $onclickCode .= "; $('#{$button['form_id']}').submit();";
                         }
+
                         $buttonAttributes[] = "onclick=\"event.preventDefault(); {$onclickCode}\"";
+                    } else if (!empty($button['action']) && $button['action'] === 'submit') {
+                        // If no onclick but action is submit, handle form submission
+                        if (!empty($button['form_id'])) {
+                            $onclickCode = "event.preventDefault(); $('#{$button['form_id']}').submit();";
+                            $buttonAttributes[] = "onclick=\"{$onclickCode}\"";
+                        }
+                        $buttonAttributes[] = "data-action='submit'";
                     } else if (!empty($button['action'])) {
+                        // Other actions (like close)
                         $buttonAttributes[] = "data-action='{$button['action']}'";
                     }
 
+                    // Add additional attributes
                     if (!empty($button['callback'])) {
                         $buttonAttributes[] = "data-callback='{$button['callback']}'";
                     }
@@ -1738,7 +1750,7 @@ class ListGenerator
                         $buttonAttributes[] = "data-form-id='{$button['form_id']}'";
                     }
 
-                    // Button zusammenbauen
+                    // Build button
                     $attributesStr = implode(' ', $buttonAttributes);
                     $html .= "<div class='{$buttonClass}' {$attributesStr}>{$icon}{$button['text']}</div>";
                 }
@@ -1755,58 +1767,38 @@ class ListGenerator
     private function generateModalScript()
     {
         return <<<EOT
-    <script>
-    jQuery(document).ready(function() {
-        jQuery('.ui.modal').each(function() {
-            var modalId = jQuery(this).attr('id');
-            var modal = jQuery(this);
-            
-            modal.modal({
-                closable: false,
-                onShow: function() {
-                    // Bestehende Event-Listener entfernen und neue hinzufügen
-                    modal.find('.actions .button').off('click').on('click', function(e) {
-                        var button = jQuery(this);
-                        var action = button.data('action');
-                        
-                        // Nur action behandeln wenn kein onclick vorhanden ist
-                        if(action) {
-                            switch(action) {
-                                case 'submit':
-                                    var formId = button.data('form-id');
-                                    if(formId) {
-                                        var form = jQuery('#' + formId);
-                                        if(form.length) {
-                                            form.submit();
-                                        }
-                                    } else {
-                                        // Fallback: erstes Formular im Modal
-                                        var form = modal.find('form');
-                                        if(form.length) {
-                                            form.submit();
-                                        }
-                                    }
-                                    break;
-                                    
-                                case 'close':
-                                    modal.modal('hide');
-                                    break;
-                                    
-                                case 'custom':
-                                    var callback = button.data('callback');
-                                    if(callback && typeof window[callback] === 'function') {
-                                        window[callback](modal, button.data('form-id'), button);
-                                    }
-                                    break;
+        <script>
+        jQuery(document).ready(function() {
+            jQuery('.ui.modal').each(function() {
+                var modalId = jQuery(this).attr('id');
+                var modal = jQuery(this);
+                
+                modal.modal({
+                    closable: false,
+                    onShow: function() {
+                        modal.find('.actions .button').off('click').on('click', function(e) {
+                            var button = jQuery(this);
+                            var action = button.data('action');
+                            var formId = button.data('form-id');
+                            
+                            if (action === 'submit' && formId && !button.attr('onclick')) {
+                                e.preventDefault();
+                                jQuery('#' + formId).submit();
+                            } else if (action === 'close') {
+                                modal.modal('hide');
+                            } else if (action === 'custom') {
+                                var callback = button.data('callback');
+                                if (callback && typeof window[callback] === 'function') {
+                                    window[callback](modal, formId, button);
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             });
         });
-    });
-    </script>
-    EOT;
+        </script>
+        EOT;
     }
     private function getModalSizeClass($size)
     {

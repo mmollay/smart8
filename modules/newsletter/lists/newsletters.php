@@ -530,7 +530,8 @@ $modals = [
                     'text' => 'Speichern',
                     'class' => 'orange',
                     'icon' => 'check',
-                    //'onclick' => "alert('test')",  // Optional: wenn du einen Alert haben möchtest
+                    'action' => 'submit',
+                    'onclick' => "alert('test')",  // Optional: wenn du einen Alert haben möchtest
                     'form_id' => 'form_edit'  // Hier die ID deines Formulars eintragen
                 ],
                 'cancel' => [

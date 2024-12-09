@@ -109,8 +109,8 @@ $listGenerator->addModal('modal_form_edit', [
             'class' => 'orange',
             'icon' => 'check',
             'action' => 'submit',
-            //'onclick' => "alert('test')",  // Führt erst alert aus
-            'form_id' => 'simpleForm'      // Und submitted dann das Formular
+            'onclick' => "alert('test')",  // Führt erst alert aus
+            //'form_id' => 'simpleForm'      // Und submitted dann das Formular
         ],
         'cancel' => [
             'text' => 'Abbrechen',
