@@ -15,7 +15,7 @@ $listConfig = [
     'striped' => true,
     'selectable' => true,
     'celled' => true,
-    'width' => '1500px',
+    'width' => '1600px',
 ];
 
 $listGenerator = new ListGenerator($listConfig);
@@ -60,7 +60,7 @@ SELECT DISTINCT
     GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
     GROUP_CONCAT(DISTINCT g.id) as group_id
 FROM email_contents ec
-LEFT JOIN senders s ON ec.sender_id = s.id AND s.id IS NOT NULL
+LEFT JOIN senders s ON ec.sender_id = s.id
 LEFT JOIN email_jobs ej ON ec.id = ej.content_id
 LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
 LEFT JOIN groups g ON ecg.group_id = g.id  
@@ -79,9 +79,8 @@ GROUP BY
     ec.id, 
     ec.subject,
     ec.send_status,
-    s.first_name,
-    s.last_name,
-    s.email,
+    sender_name,
+    sender_email,
     cs.start_time,
     cs.end_time,
     cs.processed_emails,
@@ -127,6 +126,7 @@ $columns = [
     ],
     [
         'name' => 'timing',
+        'align' => 'center',
         'label' => '<i class="clock outline icon"></i>Zeit',
         'formatter' => function ($value, $row) {
             // Wenn noch nicht gestartet
@@ -134,23 +134,10 @@ $columns = [
             //     return '<span class="ui grey text">-</span>';
             // }
         
-            if ($row['send_status'] == 0 && $row['potential_recipients'] > 0)
-                return "<button class='ui green mini button' onclick='sendNewsletter({$row['content_id']})'><i class='send icon'></i> Senden</button>";
-
-            if ($row['send_status'] == 0 && !$row['potential_recipients']) {
-                return sprintf(
-                    '<button data-modal="modal_edit" 
-                                data-content="Newsletter bearbeiten" 
-                                data-position="top left" 
-                                data-listid="newsletters" 
-                                data-update_id="%d" 
-                                class="ui blue mini button">
-                            <i class="edit icon"></i>
-                            Bearbeiten
-                        </button>',
-                    $row['content_id']
-                );
+            if ($row['send_status'] == 0) {
+                return "<button class='ui green small button' onclick='sendNewsletter({$row['content_id']})'><i class='send icon'></i> Senden</button>";
             }
+
 
             $date = date('d.m.Y', strtotime($row['start_time']));
             $startTime = date('H:i', strtotime($row['start_time']));
@@ -158,7 +145,7 @@ $columns = [
             // Wenn noch läuft
             if ($row['cron_status'] === 'running') {
                 return sprintf(
-                    '<div data-tooltip="%s" data-position="right center" class="ui small text">%s<br>%s - <i class="spinner loading icon"></i></div>',
+                    '<div data-="%s" data-position="right center" class="popup_hover ui small text">%s<br>%s - <i class="spinner loading icon"></i></div>',
                     'Start: ' . date('d.m.Y H:i:s', strtotime($row['start_time'])),
                     $date,
                     $startTime
@@ -209,14 +196,7 @@ $columns = [
     [
         'name' => 'sender_email',
         'width' => '200px',
-        'label' => '<i class="user icon"></i>Absender',
-        'formatter' => function ($value, $row) {
-            if (empty($value)) {
-                return '<span class="ui grey text">-</span>';
-            }
-            return htmlspecialchars($value);
-        },
-        'allowHtml' => true
+        'label' => '<i class="user icon"></i>Absender'
     ],
     [
         'name' => 'subject',
@@ -238,7 +218,7 @@ $columns = [
             return $html;
         },
         'allowHtml' => true,
-        'width' => '350px'
+        'width' => '500px'
     ],
     [
         'name' => 'group_names',
@@ -402,67 +382,64 @@ $columns = [
     [
         'name' => 'status',
         'label' => 'Status',
+        'align' => 'center',
         'formatter' => function ($value, $row) {
-            // Status: Keine Empfänger gewählt
-            if (empty($row['group_names'])) {
-                return "<span class='ui grey text'>
-                        <i class='users slash icon'></i> Noch keine Empfänger gewählt
-                       </span>";
+            // Wenn noch nicht gesendet
+            if ($row['send_status'] == 0) {
+                return "<div class='ui popup-hover' data-html='Dieser Newsletter wurde noch nicht versendet'>
+                         <i class='clock outline grey icon large'></i>
+                       </div>";
             }
 
-            // Status: Kein Absender gewählt
-            if (empty($row['sender_email'])) {
-                return "<span class='ui orange text'>
-                        <i class='user slash icon'></i> Kein Absender gewählt
-                       </span>";
+            // Wenn keine Empfänger
+            if ($row['total_recipients'] == 0) {
+                return "<div class='ui popup-hover' data-html='Keine Empfänger vorhanden'>
+                         <i class='users slash grey icon large'></i>
+                       </div>";
             }
 
-            // Status: Versendebereit
-            if ($row['send_status'] == 0 && !empty($row['group_names']) && !empty($row['sender_email'])) {
-                return "<span class='ui blue text'>
-                        <i class='paper plane icon'></i> Versendebereit
-                       </span>";
-            }
-
-            // Versandstatistiken berechnen
+            // Statistiken berechnen
             $total = (int) $row['total_recipients'];
             $blacklisted = (int) $row['blacklisted_count'];
             $clicked = (int) $row['clicked_count'];
             $opened = (int) $row['opened_count'];
             $sent = (int) $row['sent_count'] + $opened + $clicked;
             $failed = (int) $row['failed_count'];
+            $unsub = (int) $row['unsub_count'];
 
-            // Gesamtfortschritt
-            $verarbeitet = $sent + $failed + $blacklisted;
-            $progress = round(($verarbeitet / $total) * 100);
-
-            // Status: Versand läuft
-            if ($verarbeitet < $total) {
-                return "<div class='ui tiny active progress'
-                            data-content-id='{$row['content_id']}'
-                            data-percent='{$progress}'>
-                            <div class='bar' style='width: {$progress}%'></div>
-                            <div class='label'>
-                                <i class='sync loading icon'></i> 
-                                {$sent} von {$total} versendet
-                            </div>
-                        </div>";
+            // Popup-Details erstellen
+            $details = [];
+            if ($blacklisted > 0) {
+                $details[] = "$blacklisted auf Blacklist";
+            }
+            if ($sent > 0) {
+                $details[] = "Vollständing verarbeitet";
+            }
+            if ($failed > 0) {
+                $details[] = "$failed Fehler";
+            }
+            if ($unsub > 0) {
+                $details[] = "$unsub Abmeldungen";
             }
 
-            // Status: Erfolgreich versendet
-            if ($failed == 0 && $blacklisted == 0) {
-                return "<span class='ui green text'>
-                        <i class='check circle icon'></i> Erfolgreich versendet
-                       </span>";
+            $popupContent = htmlspecialchars(implode('<br>', $details));
+
+            // Status-Icon bestimmen
+            if (($sent + $failed + $blacklisted) >= $total) {
+                return "<div class='ui popup-hover' data-html='$popupContent'>
+                         <i class='check circle green icon large'></i>
+                       </div>";
             }
 
-            // Status: Mit Fehlern versendet
-            return "<span class='ui yellow text'>
-                    <i class='exclamation circle icon'></i> Versendet mit {$failed} Fehlern
-                   </span>";
+            // Teilweise versendet
+            $progress = round((($sent + $failed + $blacklisted) / $total) * 100);
+            return "<div class='ui popup-hover' data-html='$popupContent'>
+                     <i class='paper plane blue icon large'></i>
+                     <small>$progress%</small>
+                   </div>";
         },
         'allowHtml' => true,
-        'width' => '200px'
+        'width' => '80px'
     ]
 ];
 
@@ -471,7 +448,7 @@ $buttons = [
     'edit' => [
         'icon' => 'edit',
         'position' => 'left',
-        'class' => 'ui blue mini button',
+        'class' => 'ui blue small button',
         'modalId' => 'modal_edit',
         'popup' => [
             'content' => 'Newsletter bearbeiten',
@@ -487,7 +464,7 @@ $buttons = [
     'clone' => [
         'icon' => 'copy outline',
         'position' => 'left',
-        'class' => 'ui mini button',
+        'class' => 'ui small button',
         'popup' => [
             'content' => 'Newsletter duplizieren und bearbeiten',
             'position' => 'top left'
@@ -498,7 +475,7 @@ $buttons = [
     'preview' => [
         'icon' => 'eye',
         'position' => 'left',
-        'class' => 'ui mini button',
+        'class' => 'ui small button',
         'modalId' => 'modal_preview',
         'popup' => [
             'content' => 'Newsletter-Vorschau anzeigen',
@@ -510,7 +487,7 @@ $buttons = [
     'test' => [
         'icon' => 'paper plane outline',
         'position' => 'left',
-        'class' => 'ui mini button',
+        'class' => 'ui small button',
         'popup' => [
             'content' => 'Test-E-Mail an hinterlegte Test-Adresse senden',
             'position' => 'top left'
@@ -526,23 +503,18 @@ $buttons = [
     'log' => [
         'icon' => 'history',
         'position' => 'right',
-        'class' => 'ui mini button',
+        'class' => 'ui small button',
         'modalId' => 'modal_log',
         'popup' => [
             'content' => 'Versandprotokoll anzeigen',
             'position' => 'top left'
-        ],
-        'conditions' => [
-            function ($row) {
-                return $row['send_status'] != 0;  // Nur anzeigen wenn noch nicht versendet
-            }
         ],
         'params' => ['content_id' => 'content_id']
     ],
     'delete' => [
         'icon' => 'trash alternate outline',
         'position' => 'right',
-        'class' => 'ui red mini button',
+        'class' => 'ui red small button',
         'modalId' => 'modal_form_delete',
         'popup' => [
             'content' => 'Newsletter löschen',
@@ -571,7 +543,7 @@ $modals = [
                     'class' => 'orange',
                     'icon' => 'check',
                     'action' => 'submit',
-                    //'onclick' => "alert('test')",  // Optional: wenn du einen Alert haben möchtest
+                    //  'onclick' => "alert('test')",  // Optional: wenn du einen Alert haben möchtest
                     'form_id' => 'form_edit'  // Hier die ID deines Formulars eintragen
                 ],
                 'cancel' => [

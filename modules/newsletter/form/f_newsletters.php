@@ -5,11 +5,24 @@ include(__DIR__ . '/../../../smartform2/FormGenerator.php');
 include(__DIR__ . '/../components/placeholders.php');
 include(__DIR__ . '/../components/editor_config.php');
 
-// Initial Newsletter erstellen oder prüfen
 if (!isset($_POST['update_id'])) {
-    $sql = "INSERT INTO email_contents (subject, message, sender_id, user_id) VALUES ('Neue Nachricht', 'Neuer Text', 1, '$userId')";
+    // Ersten verfügbaren Sender des Users holen
+    $senderQuery = "SELECT id FROM senders WHERE user_id = '$userId' ORDER BY id ASC LIMIT 1";
+    $senderResult = $db->query($senderQuery);
+
+    // Default sender_id (entweder der erste gefundene oder NULL)
+    $defaultSenderId = ($senderResult && $senderResult->num_rows > 0)
+        ? $senderResult->fetch_object()->id
+        : 'NULL';
+
+    // Neuen Newsletter erstellen
+    $sql = "INSERT INTO email_contents (subject, message, sender_id, user_id) 
+            VALUES ('Neue Nachricht', 'Neuer Text', $defaultSenderId, '$userId')";
     $db->query($sql);
     $update_id = $db->insert_id;
+
+    // Tabelle neu laden nach dem Erstellen
+    echo "<script>reloadTable();</script>";
 } else {
     $update_id = $_POST['update_id'];
     // Prüfe ob der Newsletter dem User gehört
@@ -18,7 +31,6 @@ if (!isset($_POST['update_id'])) {
         die("Keine Berechtigung");
     }
 }
-
 
 $formGenerator = new FormGenerator();
 

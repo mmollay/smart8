@@ -82,9 +82,24 @@ window.Newsletter = {
         },
 
         updateProgressBar: function ($progress, percent, sent, total) {
-            $progress.find('.bar').css('width', percent + '%');
-            $progress.find('.label').text(`${sent} von ${total} versendet`);
-            $progress.attr('data-percent', percent);
+            // Progress Bar aktualisieren
+            $progress.progress({
+                percent: percent
+            });
+
+            // Status-Text und Icon basierend auf Prozent
+            let statusIcon = percent >= 100
+                ? '<i class="check circle icon"></i>'
+                : '<i class="sync loading icon"></i>';
+
+            $progress.find('.label').html(`${statusIcon} ${sent} von ${total} versendet`);
+
+            // Wenn fertig, Tabelle neu laden
+            if (percent >= 100) {
+                $progress.addClass('success');
+                Newsletter.UI.showSuccessToast('Newsletter wurde erfolgreich versendet');
+                setTimeout(() => Newsletter.UI.reloadTable(), 1000);
+            }
         },
 
         createStatLabel: function (icon, color, tooltip, percent, count) {
