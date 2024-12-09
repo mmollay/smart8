@@ -341,7 +341,7 @@ $columns = [
                 : '<div class="ui small labels">' . implode(' ', $stats) . '</div>';
         },
         'allowHtml' => true,
-        'width' => '280px'
+        'width' => '200px'
     ],
     [
         'name' => 'status',
