@@ -61,17 +61,19 @@ try {
 			$update_recipient->close();
 			break;
 		case 'senders':
+			$test_emails = $_POST['test_email'] ?? '';
+			$test_emails = array_filter(array_map('trim', explode("\n", $test_emails)));
+
 			$data = [
 				'first_name' => sanitizeInput($_POST['first_name'] ?? ''),
 				'last_name' => sanitizeInput($_POST['last_name'] ?? ''),
 				'company' => sanitizeInput($_POST['company'] ?? ''),
 				'email' => filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL),
-				'test_email' => filter_var($_POST['test_email'] ?? '', FILTER_SANITIZE_EMAIL),
+				'test_email' => implode("\n", $test_emails), // Speichert alle E-Mails als String
 				'gender' => in_array($_POST['gender'] ?? '', ['male', 'female', 'other']) ? $_POST['gender'] : 'other',
 				'title' => sanitizeInput($_POST['title'] ?? ''),
 				'comment' => sanitizeInput($_POST['comment'] ?? '')
 			];
-
 			if (empty($data['test_email'])) {
 				unset($data['test_email']);
 			}

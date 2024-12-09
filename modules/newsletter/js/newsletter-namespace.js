@@ -188,7 +188,7 @@ window.Newsletter = {
                 class: 'success',
                 message: message,
                 showProgress: 'bottom',
-                displayTime: 2000
+                displayTime: 5000
             });
         },
 

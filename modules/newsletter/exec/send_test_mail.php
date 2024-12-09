@@ -128,45 +128,59 @@ try {
         }
     }
 
-    // Erstelle E-Mail
-    $email = [
-        'From' => [
-            'Email' => $data['sender_email'],
-            'Name' => trim($data['sender_first_name'] . ' ' . $data['sender_last_name'])
-        ],
-        'To' => [
-            [
-                'Email' => $data['test_email'],
-                'Name' => "Test: " . trim($data['sender_first_name'] . ' ' . $data['sender_last_name'])
-            ]
-        ],
-        'Subject' => '[TEST] ' . $subject,
-        'TextPart' => strip_tags($message),
-        'HTMLPart' => $message,
-        'Attachments' => $attachments,
-        'CustomID' => "test_mail_{$content_id}_" . time()
-    ];
+    $test_emails = array_filter(array_map('trim', explode("\n", $data['test_email'])));
+    $successful_emails = [];
 
-    // Initialisiere Mailjet
-    $mj = new \Mailjet\Client(
-        $mailjetConfig['api_key'],
-        $mailjetConfig['api_secret'],
-        true,
-        ['version' => 'v3.1']
-    );
+    foreach ($test_emails as $test_email) {
+        // Erstelle E-Mail
+        $email = [
+            'From' => [
+                'Email' => $data['sender_email'],
+                'Name' => trim($data['sender_first_name'] . ' ' . $data['sender_last_name'])
+            ],
+            'To' => [
+                [
+                    'Email' => $test_email,
+                    'Name' => "Test: " . trim($data['sender_first_name'] . ' ' . $data['sender_last_name'])
+                ]
+            ],
+            'Subject' => '[TEST] ' . $subject,
+            'TextPart' => strip_tags($message),
+            'HTMLPart' => $message,
+            'Attachments' => $attachments,
+            'CustomID' => "test_mail_{$content_id}_" . time()
+        ];
 
-    logTestMail($userId, "Sende Test-Mail an: {$data['test_email']}", 'info');
+        // Initialisiere Mailjet
+        $mj = new \Mailjet\Client(
+            $mailjetConfig['api_key'],
+            $mailjetConfig['api_secret'],
+            true,
+            ['version' => 'v3.1']
+        );
 
-    // Sende die E-Mail
-    $response = $mj->post(Resources::$Email, ['body' => ['Messages' => [$email]]]);
+        logTestMail($userId, "Sende Test-Mail an: {$test_email}", 'info');
 
-    if ($response->success()) {
-        // Log den erfolgreichen Versand
+        // Sende die E-Mail
+        $response = $mj->post(Resources::$Email, ['body' => ['Messages' => [$email]]]);
+
+        if ($response->success()) {
+            $successful_emails[] = $test_email;
+            logTestMail($userId, "Test-Mail erfolgreich an {$test_email} gesendet", 'success');
+        } else {
+            $errorMsg = 'Fehler beim Senden der Test-Mail: ' . json_encode($response->getBody());
+            throw new Exception($errorMsg);
+        }
+    }
+
+    // Log den erfolgreichen Versand
+    if (!empty($successful_emails)) {
+        $successMsg = "Test-Mail erfolgreich versendet an:<br/>" . implode("<br/>", $successful_emails);
+
         $stmt = $db->prepare("
             INSERT INTO email_logs (status, response, created_at) 
             VALUES ('success', ?, NOW())
         ");
-        $successMsg = "Test-Mail erfolgreich an {$data['test_email']} gesendet";
         $stmt->bind_param("s", $successMsg);
         $stmt->execute();
 
@@ -174,11 +188,10 @@ try {
 
         echo json_encode([
             'success' => true,
-            'message' => $successMsg
+            'message' => $successMsg,
+            'duration' => 5000,
+            'html' => true
         ]);
-    } else {
-        $errorMsg = 'Fehler beim Senden der Test-Mail: ' . json_encode($response->getBody());
-        throw new Exception($errorMsg);
     }
 
 } catch (Exception $e) {
@@ -196,7 +209,8 @@ try {
 
     echo json_encode([
         'success' => false,
-        'message' => $errorMessage
+        'message' => $errorMessage,
+        'duration' => 8000
     ]);
 } finally {
     if (isset($db)) {

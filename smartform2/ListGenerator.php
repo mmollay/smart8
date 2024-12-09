@@ -1226,8 +1226,6 @@ class ListGenerator
         }
     }
 
-
-
     private function generateTotalRow($position = 'header')
     {
         $html = "<tr class='active'>";
@@ -1331,67 +1329,12 @@ class ListGenerator
         return $html;
     }
 
-    private function generateGroupedTable($data)
-    {
-        $html = '';
-        foreach ($data as $groupValue => $groupItems) {
-            $html .= "<h3 class='ui header'>{$groupValue}</h3>";
-            $html .= "<table class='{$this->buildTableClasses()}'>";
-            $html .= $this->generateTableHeader();
-
-            if ($this->hasTotals()) {
-                $html .= "<thead>";
-                $html .= $this->generateTotalRow('header');
-                $html .= "</thead>";
-            }
-
-            $html .= "<tbody>";
-
-            foreach ($groupItems as $item) {
-                $html .= $this->generateTableRow($item);
-            }
-
-            $html .= "</tbody>";
-
-            if ($this->hasTotals()) {
-                $html .= "<tfoot>";
-                $html .= $this->generateTotalRow('footer');
-                $html .= "</tfoot>";
-            }
-
-            $html .= "</table>";
-        }
-        return $html;
-    }
 
     private function hasTotals()
     {
         return !empty($this->totals);
     }
 
-    private function generateGroupByDropdown()
-    {
-        if (empty($this->groupByOptions)) {
-            return '';
-        }
-
-        $html = "<div class='ui form' style='margin-bottom: 20px;'>";
-        $html .= "<div class='field'>";
-        $html .= "<label>Gruppieren nach:</label>";
-        $html .= "<select id='groupBySelect' class='ui clearable dropdown'>";
-        $html .= "<option value=''>Keine Gruppierung</option>";
-
-        foreach ($this->groupByOptions as $column => $label) {
-            $selected = ($this->groupBy == $column) ? 'selected' : '';
-            $html .= "<option value='{$column}' {$selected}>{$label}</option>";
-        }
-
-        $html .= "</select>";
-        $html .= "</div>";
-        $html .= "</div>";
-
-        return $html;
-    }
 
     private function generateSearchField()
     {

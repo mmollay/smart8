@@ -103,7 +103,7 @@ $listGenerator->addFilter('send_status', 'Newsletter-Status', $newsletterStatus)
 $listGenerator->addExternalButton('new_newsletter', [
     'icon' => 'plus',
     'class' => 'ui primary button',
-    'position' => 'top',
+    'position' => 'inline',
     'alignment' => 'right',
     'title' => 'Neuer Newsletter',
     'modalId' => 'modal_edit',

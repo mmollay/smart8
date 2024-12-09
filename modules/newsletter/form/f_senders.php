@@ -79,14 +79,15 @@ $formGenerator->addField([
 
 
 $formGenerator->addField([
-    'type' => 'input',
+    'type' => 'textarea',
     'name' => 'test_email',
-    'label' => 'Test-Email für Newsletter',
-    'placeholder' => 'test@example.com',
-    'email' => true,
-    'width' => 'eight',
+    'label' => 'Test-Emails für den Newsletter',
+    'placeholder' => 'test@example.com
+test2@example.com
+test3@example.com',
     'value' => $data['test_email'] ?? '',
-    'error_message' => 'Bitte geben Sie eine gültige E-Mail-Adresse ein.'
+    'error_message' => 'Bitte geben Sie gültige E-Mail-Adressen ein.',
+    'description' => 'Geben Sie eine E-Mail-Adresse pro Zeile ein.'
 ]);
 
 

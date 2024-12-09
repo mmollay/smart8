@@ -6,6 +6,7 @@ return [
             'date' => '2024-12-09',
             'changes' => [
                 'Neu' => [
+                    'Senden an mehrere Testuser möglich',
                     'Startseite mit Statistik eingführt',
                     'Blacklist eingeführt',
                     'E-Mail-Adressen können auf die Blacklist gesetzt werden',
