@@ -208,7 +208,6 @@ $columns = [
     ],
     [
         'name' => 'sender_email',
-        'width' => '200px',
         'label' => '<i class="user icon"></i>Absender',
         'formatter' => function ($value, $row) {
             if (empty($value)) {
