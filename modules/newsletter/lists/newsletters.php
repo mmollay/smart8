@@ -15,7 +15,7 @@ $listConfig = [
     'striped' => true,
     'selectable' => true,
     'celled' => true,
-    'width' => '1500px',
+    'width' => '1300px',
 ];
 
 $listGenerator = new ListGenerator($listConfig);
@@ -406,7 +406,7 @@ $columns = [
             //        </span>";
         },
         'allowHtml' => true,
-        'width' => '240px'
+        'width' => '220px'
     ]
 ];
 
