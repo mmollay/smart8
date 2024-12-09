@@ -7,7 +7,7 @@
         loadListGenerator('lists/newsletters.php', {
             saveState: false,
             contentId: 'content_newsletters',
-            sort: 'id',
+            sort: 'content_id',
             sortDir: 'DESC',
             //autoReloadInterval: 20000
         });

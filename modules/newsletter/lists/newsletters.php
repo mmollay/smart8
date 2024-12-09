@@ -204,7 +204,6 @@ $columns = [
             }
         },
         'allowHtml' => true,
-        'width' => '200px'
     ],
     [
         'name' => 'sender_email',
@@ -221,12 +220,12 @@ $columns = [
         'name' => 'subject',
         'label' => '<i class="envelope icon"></i>Betreff',
         'formatter' => function ($value, $row) {
-            $truncated = mb_strlen($value) > 40 ?
-                mb_substr($value, 0, 37) . '...' :
+            $truncated = mb_strlen($value) > 30 ?
+                mb_substr($value, 0, 27) . '...' :
                 $value;
 
             $html = sprintf(
-                '<div class="ui popup-hover" data-content="%s">%s</div>',
+                '<div class="ui popup-hover" data-html="%s">%s</div>',
                 htmlspecialchars($value),
                 htmlspecialchars($truncated)
             );
@@ -281,7 +280,6 @@ $columns = [
             );
         },
         'allowHtml' => true,
-        'width' => '100px'
     ],
     [
         'name' => 'potential_recipients',
@@ -300,7 +298,6 @@ $columns = [
             return "<div class='ui basic label' title='$titel'>$anzahl</div>";
         },
         'allowHtml' => true,
-        'width' => '120px'
     ],
     [
         'name' => 'delivery_stats',
@@ -308,7 +305,7 @@ $columns = [
         'formatter' => function ($value, $row) {
             $total = (int) $row['total_recipients'];
             if ($total === 0)
-                return '<span class="ui grey text">-</span>';
+                return '<span class="ui grey text"></span>';
 
             $stats = [];
 
