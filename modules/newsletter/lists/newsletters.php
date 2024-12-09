@@ -222,8 +222,8 @@ $columns = [
         'name' => 'subject',
         'label' => '<i class="envelope icon"></i>Betreff',
         'formatter' => function ($value, $row) {
-            $truncated = mb_strlen($value) > 30 ?
-                mb_substr($value, 0, 27) . '...' :
+            $truncated = mb_strlen($value) > 40 ?
+                mb_substr($value, 0, 37) . '...' :
                 $value;
 
             $html = sprintf(
@@ -238,7 +238,7 @@ $columns = [
             return $html;
         },
         'allowHtml' => true,
-        'width' => '350px'
+        'width' => '300px'
     ],
     [
         'name' => 'group_names',
@@ -305,99 +305,47 @@ $columns = [
     ],
     [
         'name' => 'delivery_stats',
-        'label' => '<i class="chart bar icon"></i>Zustellstatistik',
+        'label' => '<i class="chart bar icon"></i>Statistik',
         'formatter' => function ($value, $row) {
             $total = (int) $row['total_recipients'];
-            if ($total === 0) {
+            if ($total === 0)
                 return '<span class="ui grey text">-</span>';
-            }
 
             $stats = [];
 
-            // Blacklist-Statistik zuerst anzeigen (wenn vorhanden)
-            $blacklisted = (int) $row['blacklisted_count'];
-            if ($blacklisted > 0) {
-                $percent = min(100, round(($blacklisted / $total) * 100));
-                $stats[] = sprintf(
-                    '<div class="ui tiny black label" data-tooltip="Auf Blacklist">
-                        <i class="ban icon"></i> %d%% (%d)
-                    </div>',
-                    $percent,
-                    $blacklisted
-                );
+            // Statistiken sammeln mit primärem Fokus auf absolute Zahlen
+            $mapping = [
+                ['blacklisted_count', 'ban', 'black', 'Auf Blacklist'],
+                ['sent_count', 'paper plane', 'yellow', 'Versendet'],
+                ['opened_count', 'eye', 'blue', 'Geöffnet'],
+                ['clicked_count', 'mouse pointer', 'teal', 'Geklickt'],
+                ['failed_count', 'exclamation triangle', 'red', 'Fehler'],
+                ['unsub_count', 'user times', 'orange', 'Abgemeldet']
+            ];
+
+            foreach ($mapping as [$key, $icon, $color, $tooltip]) {
+                $count = (int) $row[$key];
+                if ($count > 0) {
+                    $percent = round(($count / $total) * 100);
+                    $stats[] = sprintf(
+                        '<div class="ui tiny %s label" data-tooltip="%s">
+                            <i class="%s icon"></i>%d <small><br>(%d%%)</small>
+                        </div>',
+                        $color,
+                        $tooltip,
+                        $icon,
+                        $count,
+                        $percent
+                    );
+                }
             }
 
-            // Versendet (aber noch nicht bestätigt)
-            $sent = (int) $row['sent_count'];
-            if ($sent > 0) {
-                $sent_percent = round(($sent / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny yellow label" data-tooltip="An Mailjet übergeben">
-                        <i class="paper plane icon"></i> %d%% (%d)
-                    </div>',
-                    $sent_percent,
-                    $sent
-                );
-            }
-
-            // Geöffnet
-            $opened = (int) $row['opened_count'];
-            if ($opened > 0) {
-                $percent = round(($opened / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny blue label" data-tooltip="Newsletter geöffnet">
-                        <i class="eye icon"></i> %d%% (%d)
-                    </div>',
-                    $percent,
-                    $opened
-                );
-            }
-
-            // Geklickt
-            $clicked = (int) $row['clicked_count'];
-            if ($clicked > 0) {
-                $percent = round(($clicked / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny teal label" data-tooltip="Links angeklickt">
-                        <i class="mouse pointer icon"></i> %d%% (%d)
-                    </div>',
-                    $percent,
-                    $clicked
-                );
-            }
-
-            // Fehler/Bounces
-            $failed = (int) $row['failed_count'];
-            if ($failed > 0) {
-                $percent = round(($failed / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny red label" data-tooltip="Fehler oder Bounces">
-                        <i class="exclamation triangle icon"></i> %d%% (%d)
-                    </div>',
-                    $percent,
-                    $failed
-                );
-            }
-
-            // Abgemeldet
-            $unsub = (int) $row['unsub_count'];
-            if ($unsub > 0) {
-                $percent = round(($unsub / $total) * 100);
-                $stats[] = sprintf(
-                    '<div class="ui tiny orange label" data-tooltip="Abgemeldet">
-                        <i class="user times icon"></i> %d%% (%d)
-                    </div>',
-                    $percent,
-                    $unsub
-                );
-            }
-
-            return empty($stats) ?
-                '<span class="ui grey text">Keine Statistiken verfügbar</span>' :
-                '<div class="ui labels">' . implode(' ', $stats) . '</div>';
+            return empty($stats)
+                ? '<span class="ui grey text">-</span>'
+                : '<div class="ui small labels">' . implode(' ', $stats) . '</div>';
         },
         'allowHtml' => true,
-        'width' => '320px'
+        'width' => '280px'
     ],
     [
         'name' => 'status',
@@ -462,7 +410,7 @@ $columns = [
                    </span>";
         },
         'allowHtml' => true,
-        'width' => '200px'
+        'width' => '240px'
     ]
 ];
 
