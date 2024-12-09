@@ -15,7 +15,6 @@ $listConfig = [
     'striped' => true,
     'selectable' => true,
     'celled' => true,
-    'width' => '1300px',
 ];
 
 $listGenerator = new ListGenerator($listConfig);
