@@ -13,4 +13,3 @@
         });
     });
 </script>
-<script src="js/newsletter-namespace.js"></script>
