@@ -65,7 +65,7 @@ try {
 		$events = [$events];
 	}
 
-	// Status-Mapping
+	// Status-Mappings getrennt definieren
 	$statusMapping = [
 		'sent' => 'send',
 		'delivered' => 'delivered',
@@ -75,6 +75,14 @@ try {
 		'blocked' => 'blocked',
 		'spam' => 'spam',
 		'unsub' => 'unsub'
+	];
+
+	$trackingStatusMapping = [
+		'opened' => 'open',
+		'clicked' => 'click',
+		'unsub' => 'unsubscribe',
+		'bounced' => 'bounce',
+		'spam' => 'spam'
 	];
 
 	// Events verarbeiten
@@ -90,6 +98,13 @@ try {
 		$messageId = $event['MessageID'];
 		$eventType = strtolower($event['event']);
 		$email = $event['email'] ?? '';
+
+		// Content ID aus CustomID extrahieren
+		$content_id = null;
+		if (!empty($event['CustomID']) && preg_match('/job_\d+_(\d+)_/', $event['CustomID'], $matches)) {
+			$content_id = $matches[1];
+			debugLog("Extracted content_id: " . $content_id);
+		}
 
 		try {
 			$db->begin_transaction();
@@ -107,7 +122,7 @@ try {
 
 			// Job ID und Recipient ID für das Tracking holen
 			$stmt = $db->prepare("
-                SELECT ej.id as job_id, ej.recipient_id 
+                SELECT ej.id as job_id, ej.recipient_id, ej.content_id
                 FROM email_jobs ej
                 WHERE ej.message_id = ?
             ");
@@ -137,13 +152,13 @@ try {
                 ");
 
 				$eventDataJson = json_encode($eventData);
-				$mappedEventType = $statusMapping[$eventType] ?? $eventType;
+				$trackingEventType = $trackingStatusMapping[$eventType] ?? $eventType;
 
 				$stmt->bind_param(
 					"iiss",
 					$jobInfo['job_id'],
 					$jobInfo['recipient_id'],
-					$mappedEventType,
+					$trackingEventType,
 					$eventDataJson
 				);
 				$stmt->execute();
@@ -180,16 +195,17 @@ try {
 					$stmt->bind_param("i", $jobInfo['recipient_id']);
 					$stmt->execute();
 
-					// Abmeldung in Log-Tabelle eintragen
+					// Abmeldung in Log-Tabelle eintragen mit content_id
 					$stmt = $db->prepare("
                         INSERT INTO unsubscribe_log 
-                        (recipient_id, email, message_id, timestamp)
-                        VALUES (?, ?, ?, NOW())
+                        (recipient_id, email, content_id, message_id, timestamp)
+                        VALUES (?, ?, ?, ?, NOW())
                     ");
 					$stmt->bind_param(
-						"iss",
+						"isis",
 						$jobInfo['recipient_id'],
 						$email,
+						$content_id,
 						$messageId
 					);
 					$stmt->execute();

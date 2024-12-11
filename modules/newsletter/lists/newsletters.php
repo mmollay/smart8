@@ -2,6 +2,7 @@
 include __DIR__ . '/../../../smartform2/ListGenerator.php';
 include __DIR__ . '/../n_config.php';
 
+// Grundlegende Listeneinstellungen
 $listConfig = [
     'listId' => 'newsletters',
     'contentId' => 'content_newsletters',
@@ -9,116 +10,77 @@ $listConfig = [
     'sortColumn' => $_GET['sort'] ?? 'ec.id',
     'sortDirection' => strtoupper($_GET['sortDir'] ?? 'DESC'),
     'page' => intval($_GET['page'] ?? 1),
-    'search' => $_GET['search'] ?? '',
     'showNoDataMessage' => true,
     'noDataMessage' => 'Keine Newsletter gefunden.',
     'striped' => true,
     'selectable' => true,
-    'celled' => true,
-    'width' => '1500px'
+    'celled' => true
 ];
 
 $listGenerator = new ListGenerator($listConfig);
 
+// Datenbankabfrage mit relevanten Daten
 $query = "
-SELECT DISTINCT
-    ec.id content_id,
+SELECT 
+    ec.id as content_id,
     ec.subject,
     ec.send_status,
-    cs.start_time,
-    cs.end_time, 
-    cs.processed_emails,
-    cs.success_count,
-    cs.error_count,
-    cs.status as cron_status,
-    TIMESTAMPDIFF(SECOND, cs.start_time, cs.end_time) as duration_seconds,
-    CONCAT(s.first_name, ' ', s.last_name) as sender_name,
     s.email as sender_email,
-    (
-        SELECT COUNT(DISTINCT r.id)
+    ec.created_at,
+    cs.status as cron_status,
+    CASE 
+        WHEN ec.send_status = 0 THEN 'draft'
+        WHEN ec.send_status = 1 AND cs.status IS NULL THEN 'pending'
+        ELSE cs.status 
+    END as process_status,
+    cs.start_time,
+    cs.end_time,
+    TIMESTAMPDIFF(SECOND, cs.start_time, cs.end_time) as duration_seconds,
+    COALESCE(
+        (SELECT COUNT(DISTINCT r.id)
         FROM recipients r
         JOIN recipient_group rg ON r.id = rg.recipient_id 
         JOIN email_content_groups ecg ON rg.group_id = ecg.group_id
         WHERE ecg.email_content_id = ec.id
-        AND r.unsubscribed = 0 
+        AND r.unsubscribed = 0
         AND r.bounce_status != 'hard'
-        AND NOT EXISTS (
-            SELECT 1 
-            FROM blacklist b 
-            WHERE b.email = r.email 
-            AND b.user_id = r.user_id
-        )
-    ) as potential_recipients,
-    COUNT(DISTINCT ej.recipient_id) as total_recipients,
-    SUM(CASE WHEN ej.status = 'send' THEN 1 ELSE 0 END) as sent_count,
-    SUM(CASE WHEN ej.status = 'open' THEN 1 ELSE 0 END) as opened_count,
-    SUM(CASE WHEN ej.status = 'click' THEN 1 ELSE 0 END) as clicked_count,
-    SUM(CASE WHEN ej.status IN ('failed', 'bounce', 'blocked', 'spam') THEN 1 ELSE 0 END) as failed_count,
-    SUM(CASE WHEN ej.status = 'unsub' THEN 1 ELSE 0 END) as unsub_count,
-    SUM(CASE WHEN ej.status = 'skipped' AND ej.error_message LIKE '%Blacklist%' THEN 1 ELSE 0 END) as blacklisted_count,
+        AND r.user_id = '$userId'), 0
+    ) as recipient_count,
+    (
+        SELECT COUNT(*) 
+        FROM email_jobs ej 
+        WHERE ej.content_id = ec.id
+    ) as total_jobs,
+    (
+        SELECT COUNT(*) 
+        FROM email_jobs ej 
+        WHERE ej.content_id = ec.id 
+        AND ej.status IN ('send', 'open', 'click', 'failed', 'bounce', 'spam', 'unsub')
+    ) as processed_jobs,
     GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR '||') as group_names,
-    GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors,
-    GROUP_CONCAT(DISTINCT g.id) as group_id
+    GROUP_CONCAT(DISTINCT g.color ORDER BY g.name ASC SEPARATOR '||') as group_colors
 FROM email_contents ec
-LEFT JOIN senders s ON ec.sender_id = s.id AND s.id IS NOT NULL
-LEFT JOIN email_jobs ej ON ec.id = ej.content_id
-LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
-LEFT JOIN groups g ON ecg.group_id = g.id  
+LEFT JOIN senders s ON ec.sender_id = s.id
 LEFT JOIN cron_status cs ON cs.content_id = ec.id
-    AND cs.id = (
-        SELECT cs2.id 
-        FROM cron_status cs2 
-        WHERE cs2.content_id = ec.id
-        AND cs2.status = 'completed' 
-        AND cs2.end_time IS NOT NULL 
-        ORDER BY cs2.end_time DESC 
-        LIMIT 1
-    )
+LEFT JOIN email_content_groups ecg ON ec.id = ecg.email_content_id
+LEFT JOIN groups g ON ecg.group_id = g.id
 WHERE ec.user_id = '$userId'
-GROUP BY 
-    ec.id, 
-    ec.subject,
-    ec.send_status,
-    s.first_name,
-    s.last_name,
-    s.email,
-    cs.start_time,
-    cs.end_time,
-    cs.processed_emails,
-    cs.success_count,
-    cs.error_count,
-    cs.status
+GROUP BY ec.id
 ";
 
-$listGenerator->setSearchableColumns(['ec.subject', 's.first_name', 's.last_name', 's.email', 'g.name']);
-$listGenerator->setDatabase($db, $query, true);
+$listGenerator->setDatabase($db, $query);
 
-$listGenerator->addFilter('group_id', 'Gruppe', getAllGroups($db));
-$newsletterStatus = [
-    '0' => 'Nicht gesendet',
-    '1' => 'Gesendet/In Versand'
-];
-$listGenerator->addFilter('send_status', 'Newsletter-Status', $newsletterStatus);
-
+// Neuer Newsletter Button
 $listGenerator->addExternalButton('new_newsletter', [
     'icon' => 'plus',
     'class' => 'ui primary button',
     'position' => 'inline',
     'alignment' => 'right',
     'title' => 'Neuer Newsletter',
-    'modalId' => 'modal_edit',
-    'popup' => ['content' => 'Klicken Sie hier, um einen neuen Newsletter anzulegen']
+    'modalId' => 'modal_edit'
 ]);
 
-// $listGenerator->addExternalButton('export', [
-//     'icon' => 'download',
-//     'class' => 'ui green circular button',
-//     'position' => 'top',
-//     'alignment' => 'right',
-//     'title' => 'CSV Export',
-//     'onclick' => 'window.location.href="ajax/export.php?type=newsletters&format=csv"'
-// ]);
-
+// Spalten Definition
 $columns = [
     [
         'name' => 'content_id',
@@ -126,118 +88,30 @@ $columns = [
         'width' => '60px'
     ],
     [
-        'name' => 'timing',
-        'label' => '<i class="clock outline icon"></i>Zeit',
-        'formatter' => function ($value, $row) {
-            // Wenn noch nicht gestartet
-            // if (!$row['start_time']) {
-            //     return '<span class="ui grey text">-</span>';
-            // }
-        
-            if ($row['send_status'] == 0 && $row['potential_recipients'] > 0)
-                return "<button class='ui green mini button' onclick='sendNewsletter({$row['content_id']})'><i class='send icon'></i> Senden</button>";
-
-            if ($row['send_status'] == 0 && !$row['potential_recipients']) {
-                return sprintf(
-                    '<button data-modal="modal_edit" 
-                                data-content="Newsletter bearbeiten" 
-                                data-position="top left" 
-                                data-listid="newsletters" 
-                                data-update_id="%d" 
-                                class="ui blue mini button">
-                            <i class="edit icon"></i>
-                            Bearbeiten
-                        </button>',
-                    $row['content_id']
-                );
-            }
-
-
-            $date = date('d.m.Y', strtotime($row['start_time']));
-            $startTime = date('H:i', strtotime($row['start_time']));
-
-            // Wenn noch läuft
-            if ($row['cron_status'] === 'running') {
-                return sprintf(
-                    '<div data-tooltip="%s" data-position="right center" class="ui small text">%s<br>%s - <i class="spinner loading icon"></i></div>',
-                    'Start: ' . date('d.m.Y H:i:s', strtotime($row['start_time'])),
-                    $date,
-                    $startTime
-                );
-            }
-
-            // Wenn abgeschlossen
-            if ($row['end_time']) {
-                $endTime = date('H:i', strtotime($row['end_time']));
-                $seconds = $row['duration_seconds'];
-
-                // Kurze Dauer
-                $duration = '';
-                if ($seconds < 60) {
-                    $duration = $seconds . 's';
-                } elseif ($seconds < 3600) {
-                    $duration = sprintf('%dm', floor($seconds / 60));
-                } else {
-                    $duration = sprintf('%dh%d', floor($seconds / 3600), floor(($seconds % 3600) / 60));
-                }
-
-                // Details für Tooltip
-                $details = sprintf(
-                    "
-                    Start: %s<br>
-                    Ende: %s<br>
-                    Dauer: %s",
-                    date('d.m.Y H:i:s', strtotime($row['start_time'])),
-                    date('d.m.Y H:i:s', strtotime($row['end_time'])),
-                    $seconds < 60 ? "$seconds Sekunden" :
-                    ($seconds < 3600 ? sprintf('%d Minuten %d Sekunden', floor($seconds / 60), $seconds % 60) :
-                        sprintf('%d Stunden %d Minuten', floor($seconds / 3600), floor(($seconds % 3600) / 60)))
-                );
-
-                return sprintf(
-                    '<div data-html="%s" class="ui popup_hover small text">%s<br>%s - %s (%s)</div>',
-                    htmlspecialchars($details),
-                    $date,
-                    $startTime,
-                    $endTime,
-                    $duration
-                );
-            }
-        },
-        'allowHtml' => true,
-    ],
-    [
-        'name' => 'sender_email',
-        'label' => '<i class="user icon"></i>Absender',
-        'formatter' => function ($value, $row) {
-            if (empty($value)) {
-                return '<span class="ui grey text">-</span>';
-            }
-            return htmlspecialchars($value);
-        },
-        'allowHtml' => true
-    ],
-    [
         'name' => 'subject',
         'label' => '<i class="envelope icon"></i>Betreff',
         'formatter' => function ($value, $row) {
-            $truncated = mb_strlen($value) > 30 ?
-                mb_substr($value, 0, 27) . '...' :
+            // Betreff auf 40 Zeichen begrenzen
+            $truncatedSubject = mb_strlen($value) > 40 ?
+                mb_substr($value, 0, 37) . '...' :
                 $value;
 
             $html = sprintf(
-                '<div class="ui popup-hover" data-html="%s">%s</div>',
-                htmlspecialchars($value),
-                htmlspecialchars($truncated)
+                '<span class="ui header tiny" data-tooltip="%s" data-position="top left">
+                    %s
+                </span><span class="attachment-info" data-content-id="%d" style="margin-left: 5px;"></span>
+                <div class="ui text small">
+                    <i class="user icon"></i> %s
+                </div>',
+                htmlspecialchars($value), // vollständiger Betreff im Tooltip
+                htmlspecialchars($truncatedSubject), // gekürzter Betreff in der Anzeige
+                $row['content_id'],
+                $row['sender_email'] ? htmlspecialchars($row['sender_email']) : '<span class="ui grey text">Kein Absender</span>'
             );
-
-            // Attachment-Info direkt danach
-            $html .= " <span class='attachment-info' data-content-id='{$row['content_id']}'></span>";
-
             return $html;
         },
         'allowHtml' => true,
-        'width' => '240px'
+        'width' => '300px'
     ],
     [
         'name' => 'group_names',
@@ -249,194 +123,221 @@ $columns = [
 
             $groups = explode('||', $value);
             $colors = explode('||', $row['group_colors']);
-
-            // Icons für die Anzeige
             $icons = [];
-            $groupLabels = [];
 
+            // Gruppennamen für Popup formatieren
+            $groupLabels = [];
             foreach ($groups as $i => $group) {
                 $color = $colors[$i] ?? 'grey';
-                // Icon
+
+                // Icon mit Popup
                 $icons[] = sprintf(
                     '<i class="tags icon %s"></i>',
                     htmlspecialchars($color)
                 );
-                // Label mit Zeilenumbruch
+
+                // Label für Popup-Inhalt
                 $groupLabels[] = sprintf(
-                    '<div class="ui label %s" style="display: block; margin-bottom: 4px;">%s</div>',
+                    '<div class="ui label %s" style="margin-bottom: 4px">%s</div>',
                     htmlspecialchars($color),
                     htmlspecialchars($group)
                 );
             }
 
             // HTML für Popup sicher kodieren
-            $popupContent = htmlspecialchars(implode('', $groupLabels));
+            $popupHtml = htmlspecialchars(implode('', $groupLabels));
 
             return sprintf(
-                '<div class="ui popup-hover" data-html=\'%s\'>
-                    %s
-                </div>',
-                $popupContent,
+                '<div class="ui popup-hover" data-html=\'%s\'>%s</div>',
+                $popupHtml,
                 implode(' ', $icons)
             );
         },
         'allowHtml' => true,
-    ],
-    [
-        'name' => 'potential_recipients',
-        'label' => 'Empfänger',
-        'formatter' => function ($value, $row) {
-            // Zahlen formatieren (z.B. 1.234 statt 1234)
-            $anzahl = $row['send_status'] == 0
-                ? number_format((int) $value, 0, ',', '.')
-                : number_format((int) $row['total_recipients'], 0, ',', '.');
-
-            // Art der Empfänger bestimmen
-            $titel = $row['send_status'] == 0
-                ? 'Voraussichtliche Empfänger'
-                : 'Gesamtempfänger';
-
-            return "<div class='ui basic label' title='$titel'>$anzahl</div>";
-        },
-        'allowHtml' => true,
+        'width' => '60px'
     ],
     [
         'name' => 'delivery_stats',
         'label' => '<i class="chart bar icon"></i>Statistik',
         'formatter' => function ($value, $row) {
-            $total = (int) $row['total_recipients'];
-            if ($total === 0)
-                return '<span class="ui grey text"></span>';
-
-            $stats = [];
-
-            // Statistiken sammeln mit primärem Fokus auf absolute Zahlen
-            $mapping = [
-                ['blacklisted_count', 'ban', 'black', 'Auf Blacklist'],
-                ['sent_count', 'paper plane', 'yellow', 'Versendet'],
-                ['opened_count', 'eye', 'blue', 'Geöffnet'],
-                ['clicked_count', 'mouse pointer', 'teal', 'Geklickt'],
-                ['failed_count', 'exclamation triangle', 'red', 'Fehler'],
-                ['unsub_count', 'user times', 'orange', 'Abgemeldet']
-            ];
-
-            foreach ($mapping as [$key, $icon, $color, $tooltip]) {
-                $count = (int) $row[$key];
-                if ($count > 0) {
-                    $percent = round(($count / $total) * 100);
-                    $stats[] = sprintf(
-                        '<div class="ui tiny %s label" data-tooltip="%s">
-                            <i class="%s icon"></i>%d <small><br>(%d%%)</small>
-                        </div>',
-                        $color,
-                        $tooltip,
-                        $icon,
-                        $count,
-                        $percent
-                    );
+            // Wenn noch nicht versendet
+            if ($row['send_status'] == 0) {
+                if ($row['recipient_count'] > 0) {
+                    return "<div class='ui basic label'>" .
+                        number_format($row['recipient_count'], 0, ',', '.') .
+                        " Empfänger</div>";
                 }
+                return '<span class="ui grey text">-</span>';
             }
 
-            return empty($stats)
-                ? '<span class="ui grey text">-</span>'
-                : '<div class="ui small labels">' . implode(' ', $stats) . '</div>';
+            // Container für AJAX-Updates
+            return sprintf(
+                '<div class="newsletter-stats" data-content-id="%d">
+                    <div class="ui active mini inline loader"></div> Lade...
+                </div>',
+                $row['content_id']
+            );
         },
         'allowHtml' => true,
-        'width' => '200px'
+        'width' => '400px'
     ],
     [
-        'name' => 'status',
-        'label' => 'Status',
+        'name' => 'send_status_combined',
+        'label' => '<i class="paper plane outline icon"></i>Versand',
         'formatter' => function ($value, $row) {
-            // Status: Keine Empfänger gewählt
-            if (empty($row['group_names'])) {
-                return "<span class='ui grey text'>
-                        <i class='users slash icon'></i> Keine Empfänger gewählt
-                       </span>";
-            }
+            switch ($row['process_status']) {
+                // ENTWURF
+                case 'draft':
+                    if ($row['recipient_count'] > 0) {
+                        return "<button class='ui green mini button' onclick='sendNewsletter({$row['content_id']})'>
+                            <i class='send icon'></i> Senden
+                        </button>";
+                    }
+                    return "<span class='ui grey text'>
+                        <i class='users slash icon'></i> Keine Empfänger
+                    </span>";
 
-            // Status: Kein Absender gewählt
-            if (empty($row['sender_email'])) {
-                return "<span class='ui orange text'>
-                        <i class='user slash icon'></i> Kein Absender gewählt
-                       </span>";
-            }
+                // WARTE AUF CRON
+                case 'pending':
+                    return sprintf(
+                        "<div class='ui small text'>
+                            <i class='clock outline icon'></i> Warte auf Verarbeitung...<br>
+                            <small class='ui grey text'>Freigegeben am %s</small>
+                        </div>",
+                        date('d.m.Y H:i', strtotime($row['created_at']))
+                    );
 
-            // Status: Versendebereit
-            if ($row['send_status'] == 0 && !empty($row['group_names']) && !empty($row['sender_email'])) {
-                return "<span class='ui blue text'>
-                        <i class='paper plane icon'></i> Versendebereit
-                       </span>";
-            }
+                // VERSAND LÄUFT
+                case 'running':
+                    $jobStats = getJobStats($row['content_id']);
+                    $total = $jobStats['total'] ?? 0;
+                    $processed = $jobStats['processed'] ?? 0;
+                    $progress = $total > 0 ? round(($processed / $total) * 100) : 0;
 
-            // Versandstatistiken berechnen
-            $total = (int) $row['total_recipients'];
-            $blacklisted = (int) $row['blacklisted_count'];
-            $clicked = (int) $row['clicked_count'];
-            $opened = (int) $row['opened_count'];
-            $sent = (int) $row['sent_count'] + $opened + $clicked;
-            $failed = (int) $row['failed_count'];
+                    return sprintf(
+                        "<div class='ui small text'>
+                            %s<br>%s 
+                            <i class='spinner loading icon'></i>
+                        </div>
+                        <div class='ui tiny active indicating progress' data-content-id='%d' data-percent='%d'>
+                            <div class='bar' style='width: %d%%;'></div>
+                            <div class='label'>%d von %d versendet</div>
+                        </div>",
+                        date('d.m.Y', strtotime($row['start_time'])),
+                        date('H:i', strtotime($row['start_time'])),
+                        $row['content_id'],
+                        $progress,
+                        $progress,
+                        $processed,
+                        $total
+                    );
 
-            // Gesamtfortschritt
-            $verarbeitet = $sent + $failed + $blacklisted;
-            $progress = round(($verarbeitet / $total) * 100);
+                // VERSAND ABGESCHLOSSEN    
+                case 'completed':
+                    if (!$row['end_time']) {
+                        return "<span class='ui grey text'>
+                            <i class='question circle icon'></i> Keine Endzeit verfügbar
+                        </span>";
+                    }
 
-            // Status: Versand läuft
-            if ($verarbeitet < $total) {
-                return "<div class='ui tiny active progress'
-                            data-content-id='{$row['content_id']}'
-                            data-percent='{$progress}'>
-                            <div class='bar' style='width: {$progress}%'></div>
-                            <div class='label'>
-                                <i class='sync loading icon'></i> 
-                                {$sent} von {$total} versendet
+                    $jobStats = getJobStats($row['content_id']);
+                    $total = $jobStats['total'] ?? 0;
+                    $processed = $jobStats['processed'] ?? 0;
+
+                    $startDate = date('d.m.Y', strtotime($row['start_time']));
+                    $startTime = date('H:i', strtotime($row['start_time']));
+                    $endTime = date('H:i', strtotime($row['end_time']));
+                    $seconds = $row['duration_seconds'];
+
+                    // Dauer formatieren
+                    if ($seconds < 60) {
+                        $duration = $seconds . 's';
+                    } elseif ($seconds < 3600) {
+                        $duration = floor($seconds / 60) . 'm';
+                    } else {
+                        $hours = floor($seconds / 3600);
+                        $minutes = floor(($seconds % 3600) / 60);
+                        $duration = $hours . 'h' . $minutes . 'm';
+                    }
+
+                    // Detailinfos für Tooltip
+                    $details = sprintf(
+                        "Start: %s %s<br>
+                         Ende: %s %s<br>
+                         Dauer: %s<br>
+                         Versendet: %d von %d",
+                        $startDate,
+                        $startTime,
+                        date('d.m.Y', strtotime($row['end_time'])),
+                        $endTime,
+                        $seconds < 60 ? "$seconds Sekunden" :
+                        ($seconds < 3600 ? floor($seconds / 60) . " Minuten " . ($seconds % 60) . " Sekunden" :
+                            floor($seconds / 3600) . " Stunden " . floor(($seconds % 3600) / 60) . " Minuten"),
+                        $processed,
+                        $total
+                    );
+
+                    return sprintf(
+                        '<div class="ui popup_hover" data-html="%s">
+                            <div class="ui small text">%s<br>%s - %s (%s)</div>
+                            <div class="ui tiny progress success" data-percent="100">
+                                <div class="bar" style="width: 100%%;"></div>
+                                <div class="label"><i class="check icon"></i> Abgeschlossen</div>
                             </div>
-                        </div>";
-            }
+                        </div>',
+                        htmlspecialchars($details),
+                        $startDate,
+                        $startTime,
+                        $endTime,
+                        $duration
+                    );
 
-            // Status: Erfolgreich versendet
-            //if ($failed == 0 && $blacklisted == 0) {
-            return "<span class='ui green text'>
-                        <i class='check circle icon'></i> Erfolgreich versendet
-                       </span>";
-            //}
-        
-            // Status: Mit Fehlern versendet
-            // return "<span class='ui yellow text'>
-            //         <i class='exclamation circle icon'></i> Versendet mit {$failed} Fehlern
-            //        </span>";
+                // FEHLER BEIM VERSAND
+                case 'error':
+                    return sprintf(
+                        "<div class='ui small red text'>
+                            <i class='exclamation triangle icon'></i> Fehler beim Versand<br>
+                            <small>Start: %s</small>
+                        </div>",
+                        date('d.m.Y H:i', strtotime($row['start_time']))
+                    );
+
+                // UNBEKANNTER STATUS
+                default:
+                    return sprintf(
+                        "<span class='ui grey text'>
+                            <i class='question circle icon'></i> Status unbekannt (%s)
+                        </span>",
+                        htmlspecialchars($row['process_status'])
+                    );
+            }
         },
         'allowHtml' => true,
         'width' => '220px'
-    ]
+    ],
+
 ];
 
-// Definition der Buttons
+// Buttons Definition
 $buttons = [
     'edit' => [
         'icon' => 'edit',
         'position' => 'left',
         'class' => 'ui blue mini button',
         'modalId' => 'modal_edit',
-        'popup' => [
-            'content' => 'Newsletter bearbeiten',
-            'position' => 'top left'
-        ],
+        'popup' => ['content' => 'Newsletter bearbeiten'],
         'params' => ['update_id' => 'content_id'],
         'conditions' => [
             function ($row) {
                 return $row['send_status'] == 0;
             }
-        ],
+        ]
     ],
     'clone' => [
         'icon' => 'copy outline',
         'position' => 'left',
         'class' => 'ui mini button',
-        'popup' => [
-            'content' => 'Newsletter duplizieren und bearbeiten',
-            'position' => 'top left'
-        ],
+        'popup' => ['content' => 'Newsletter duplizieren'],
         'callback' => 'cloneNewsletter',
         'params' => ['content_id' => 'content_id']
     ],
@@ -445,43 +346,7 @@ $buttons = [
         'position' => 'left',
         'class' => 'ui mini button',
         'modalId' => 'modal_preview',
-        'popup' => [
-            'content' => 'Newsletter-Vorschau anzeigen',
-            'position' => 'top left'
-        ],
-        'params' => ['content_id' => 'content_id']
-    ],
-
-    'test' => [
-        'icon' => 'paper plane outline',
-        'position' => 'left',
-        'class' => 'ui mini button',
-        'popup' => [
-            'content' => 'Test-E-Mail an hinterlegte Test-Adresse senden',
-            'position' => 'top left'
-        ],
-        'callback' => 'sendTestMail',
-        'params' => ['content_id' => 'content_id'],
-        'conditions' => [
-            function ($row) {
-                return $row['send_status'] == 0;  // Nur anzeigen wenn noch nicht versendet
-            }
-        ]
-    ],
-    'log' => [
-        'icon' => 'history',
-        'position' => 'right',
-        'class' => 'ui mini button',
-        'modalId' => 'modal_log',
-        'popup' => [
-            'content' => 'Versandprotokoll anzeigen',
-            'position' => 'top left'
-        ],
-        'conditions' => [
-            function ($row) {
-                return $row['send_status'] != 0;  // Nur anzeigen wenn noch nicht versendet
-            }
-        ],
+        'popup' => ['content' => 'Vorschau'],
         'params' => ['content_id' => 'content_id']
     ],
     'delete' => [
@@ -489,46 +354,53 @@ $buttons = [
         'position' => 'right',
         'class' => 'ui red mini button',
         'modalId' => 'modal_form_delete',
+        'popup' => ['content' => 'Newsletter löschen'],
+        'params' => ['delete_id' => 'content_id']
+    ],
+    'log' => [
+        'icon' => 'history',
+        'position' => 'right',
+        'class' => 'ui blue mini button',
+        'modalId' => 'modal_log',
         'popup' => [
-            'content' => 'Newsletter löschen',
-            'position' => 'top right'
+            'content' => 'Versandprotokoll anzeigen',
+            'position' => 'top left'
         ],
-        'params' => ['delete_id' => 'content_id'],
+        'params' => ['content_id' => 'content_id'],
         // 'conditions' => [
         //     function ($row) {
-        //         return $row['send_status'] == 0;  // Nur anzeigen wenn noch nicht versendet
+        //         return $row['send_status'] == 1;
         //     }
-        // ],
+        // ]
     ],
 ];
 
+// Modals Definition
 $modals = [
-    'modal_edit' =>
-        [
-            'title' => 'Newsletter bearbeiten',
-            'content' => 'form/f_newsletters.php',
-            'size' => 'fullscreen overlay',  // statt 'class' nutzen wir jetzt 'size'
-            'method' => 'POST',
-            'scrolling' => true,
-            'buttons' => [
-                'approve' => [
-                    'text' => 'Speichern',
-                    'class' => 'orange',
-                    'icon' => 'check',
-                    'action' => 'submit',
-                    //'onclick' => "alert('test')",  // Optional: wenn du einen Alert haben möchtest
-                    'form_id' => 'form_edit'  // Hier die ID deines Formulars eintragen
-                ],
-                'cancel' => [
-                    'text' => 'Abbrechen',
-                    'class' => 'cancel',
-                    'icon' => 'times',
-                    'action' => 'close'
-                ]
+    'modal_edit' => [
+        'title' => 'Newsletter bearbeiten',
+        'content' => 'form/f_newsletters.php',
+        'size' => 'fullscreen overlay',
+        'method' => 'POST',
+        'scrolling' => true,
+        'buttons' => [
+            'approve' => [
+                'text' => 'Speichern',
+                'class' => 'orange',
+                'icon' => 'check',
+                'action' => 'submit',
+                'form_id' => 'form_edit'
+            ],
+            'cancel' => [
+                'text' => 'Abbrechen',
+                'class' => 'cancel',
+                'icon' => 'times',
+                'action' => 'close'
             ]
-        ],
+        ]
+    ],
     'modal_form_delete' => [
-        'title' => 'Newsletter entfernen',
+        'title' => 'Newsletter löschen',
         'content' => 'pages/form_delete.php',
         'size' => 'small'
     ],
@@ -544,6 +416,7 @@ $modals = [
     ]
 ];
 
+// Hinzufügen der Komponenten
 foreach ($columns as $column) {
     $listGenerator->addColumn(
         $column['name'],
@@ -560,36 +433,287 @@ foreach ($modals as $id => $modal) {
     $listGenerator->addModal($id, $modal);
 }
 
+// Button-Spalten Titel setzen
 $listGenerator->setButtonColumnTitle('left', '', 'left');
 $listGenerator->setButtonColumnTitle('right', '', 'right');
 
+// Liste ausgeben
 echo $listGenerator->generateList();
 
 if (isset($db)) {
     $db->close();
 }
+
+function getJobStats($contentId)
+{
+    global $db;
+
+    $stats = [
+        'total' => 0,
+        'processed' => 0
+    ];
+
+    $sql = "
+        SELECT 
+            COUNT(*) as total,
+            SUM(CASE 
+                WHEN status IN ('send', 'open', 'click', 'failed', 'bounce', 'spam', 'unsub', 'skipped') 
+                THEN 1 
+                ELSE 0 
+            END) as processed
+        FROM email_jobs 
+        WHERE content_id = ?
+    ";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $contentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        $stats = $row;
+    }
+
+    return $stats;
+}
 ?>
-<!-- Dann unsere Attachment-Funktionalität -->
-<script src="js/newsletter-attachment.js"></script>
 
 <script>
-    // Die Komponenten-Initialisierung
-    function initializeComponents() {
+    $(document).ready(function () {
+        // Popup Initialisierung
         $('.ui.popup').popup();
-        $('.ui.tooltip').popup();
-        $('.ui.label').popup();
+        $('.ui.popup-hover').popup({
+            hoverable: true,
+            position: 'top center'
+        });
+        loadAttachments();
+
+        function loadAttachments() {
+
+            $('.attachment-info').each(function () {
+                const contentId = $(this).data('content-id');
+
+                $.ajax({
+                    url: 'ajax/get_attachment_info.php',
+                    data: { content_id: contentId },
+                    success: function (response) {
+                        if (response.count > 0) {
+                            $(`.attachment-info[data-content-id="${contentId}"]`).html(`
+            <span class="ui gray text" data-tooltip="${response.count} ${response.count === 1 ? 'Anhang' : 'Anhänge'} (${response.size} MB)">
+                <i class="paperclip icon"></i>
+            </span>
+        `).find('[data-tooltip]').popup();
+                        }
+                    }
+                });
+            });
+        }
+
+        loadAllNewsletterStats();
+        setInterval(loadAllNewsletterStats, 10000);
+
+        // Callback für Newsletter-Duplizierung
+        window.cloneNewsletter = function (params) {
+            $.ajax({
+                url: 'ajax/clone_newsletter.php',
+                method: 'POST',
+                data: { content_id: params.content_id },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.status === 'success') {
+                        $('body').toast({
+                            class: 'success',
+                            message: response.message || 'Newsletter erfolgreich dupliziert'
+                        });
+                        reloadTable();
+                    } else {
+                        $('body').toast({
+                            class: 'error',
+                            message: response.message || 'Fehler beim Duplizieren'
+                        });
+                    }
+                }
+            });
+        };
+
+        // Globale Funktion für das Senden
+        window.sendNewsletter = function (contentId) {
+            if (confirm('Möchten Sie diesen Newsletter jetzt versenden?')) {
+                $('body').toast({
+                    class: 'info',
+                    message: 'Newsletter wird zum Versand vorbereitet...',
+                    showProgress: 'bottom'
+                });
+
+                $.ajax({
+                    url: 'ajax/send_newsletter.php',
+                    method: 'POST',
+                    data: { content_id: contentId },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            $('body').toast({
+                                class: 'success',
+                                message: response.message || 'Newsletter wird versendet'
+                            });
+                            // Kurz warten und dann Liste neu laden
+                            setTimeout(function () {
+                                window.reloadTable();
+                            }, 1000);
+                        } else {
+                            $('body').toast({
+                                class: 'error',
+                                message: response.message || 'Fehler beim Versenden'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('body').toast({
+                            class: 'error',
+                            message: 'Fehler beim Versenden: ' + error
+                        });
+                    }
+                });
+            }
+        };
+
+        // Progress Bar Initialisierung
         $('.ui.progress').progress({
-            precision: 1,
             showActivity: false
         });
-        // Für die Zeitanzeige
-        $('.popup-hover').popup({
-            html: true,
+
+        // Update alle 5 Sekunden wenn aktive Versände laufen
+        if ($('.ui.active.progress').length > 0) {
+            setInterval(updateProgress, 5000);
+        }
+    });
+
+    // Auto-Update für laufende Versände
+    function updateProgress() {
+        $('.ui.active.progress').each(function () {
+            var contentId = $(this).closest('tr').find('[data-content-id]').data('content-id');
+            if (contentId) {
+                $.ajax({
+                    url: 'ajax/get_send_progress.php',
+                    data: { content_id: contentId },
+                    success: function (data) {
+                        if (data.success) {
+                            var progress = Math.round((data.processed / data.total) * 100);
+                            $('.ui.progress[data-content-id="' + contentId + '"]')
+                                .progress('set percent', progress)
+                                .find('.label')
+                                .text(data.processed + ' von ' + data.total + ' versendet');
+
+                            if (progress >= 100) {
+                                setTimeout(reloadTable, 1000);
+                            }
+                        }
+                    }
+                });
+            }
         });
     }
 
-    // Wenn das Dokument geladen ist
-    $(document).ready(function () {
-        initializeComponents();
-    });
+    function loadAllNewsletterStats() {
+        $('.newsletter-stats').each(function () {
+            const contentId = $(this).data('content-id');
+            loadNewsletterStats(contentId);
+        });
+    }
+
+    function loadNewsletterStats(contentId) {
+        $.ajax({
+            url: 'ajax/get_newsletter_stats.php',
+            data: { content_id: contentId },
+            success: function (response) {
+                if (response.success) {
+                    const stats = response.data;
+                    const $container = $(`.newsletter-stats[data-content-id="${contentId}"]`);
+
+                    const labels = [];
+                    const total = parseInt(stats.total_recipients);
+
+                    // Gesamt
+                    if (total > 0) {
+                        labels.push(`
+                       <div class="ui tiny gray label" data-tooltip="Gesamt">
+                           <i class="users icon"></i>${total}
+                       </div>
+                   `);
+                    }
+
+                    // Versendet
+                    if (stats.sent_count > 0) {
+                        const percent = Math.round((stats.sent_count / total) * 100);
+                        labels.push(`
+                       <div class="ui tiny yellow label" data-tooltip="Versendet">
+                           <i class="paper plane icon"></i>${stats.sent_count} <small>(${percent}%)</small>
+                       </div>
+                   `);
+                    }
+
+                    // Geöffnet
+                    if (stats.opened_count > 0) {
+                        const percent = Math.round((stats.opened_count / total) * 100);
+                        labels.push(`
+                       <div class="ui tiny blue label" data-tooltip="Geöffnet">
+                           <i class="eye icon"></i>${stats.opened_count} <small>(${percent}%)</small>
+                       </div>
+                   `);
+                    }
+
+                    // Geklickt
+                    if (stats.clicked_count > 0) {
+                        const percent = Math.round((stats.clicked_count / total) * 100);
+                        labels.push(`
+                       <div class="ui tiny teal label" data-tooltip="Geklickt">
+                           <i class="mouse pointer icon"></i>${stats.clicked_count} <small>(${percent}%)</small>
+                       </div>
+                   `);
+                    }
+
+                    // Fehler/Bounces
+                    if (stats.failed_count > 0) {
+                        const percent = Math.round((stats.failed_count / total) * 100);
+                        labels.push(`
+                       <div class="ui tiny red label" data-tooltip="Fehler/Bounces">
+                           <i class="exclamation triangle icon"></i>${stats.failed_count} <small>(${percent}%)</small>
+                       </div>
+                   `);
+                    }
+
+                    // Abgemeldet
+                    if (stats.unsub_count > 0) {
+                        const percent = Math.round((stats.unsub_count / total) * 100);
+                        labels.push(`
+                       <div class="ui tiny orange label" data-tooltip="Abgemeldet">
+                           <i class="user times icon"></i>${stats.unsub_count} <small>(${percent}%)</small>
+                       </div>
+                   `);
+                    }
+
+                    // Auf Blacklist
+                    if (stats.blacklisted_count > 0) {
+                        const percent = Math.round((stats.blacklisted_count / total) * 100);
+                        labels.push(`
+                       <div class="ui tiny black label" data-tooltip="Auf Blacklist">
+                           <i class="ban icon"></i>${stats.blacklisted_count} <small>(${percent}%)</small>
+                       </div>
+                   `);
+                    }
+
+                    $container.html(
+                        labels.length > 0
+                            ? '<div class="ui small labels">' + labels.join('') + '</div>'
+                            : '<span class="ui grey text">-</span>'
+                    );
+
+                    // Tooltips initialisieren
+                    $container.find('.ui.label').popup();
+                }
+            }
+        });
+
+
+    }
 </script>

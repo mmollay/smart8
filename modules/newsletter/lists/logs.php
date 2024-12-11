@@ -13,19 +13,35 @@ if ($content_id === 0) {
     exit;
 }
 
+// Event-Typen definieren
+$eventTypes = [
+    'pending' => 'Ausstehend',
+    'processing' => 'In Verarbeitung',
+    'send' => 'Gesendet',
+    'delivered' => 'Zugestellt',
+    'open' => 'Geöffnet',
+    'click' => 'Geklickt',
+    'unsub' => 'Abgemeldet',
+    'bounce' => 'Bounce',
+    'blocked' => 'Blockiert',
+    'spam' => 'Spam',
+    'failed' => 'Fehler'
+];
+
 // Newsletter-Details laden
 $stmt = $db->prepare("
     SELECT 
         subject,
         created_at,
+        send_status,
         (SELECT COUNT(DISTINCT recipient_id) FROM email_jobs WHERE content_id = email_contents.id) as total_recipients,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('send', 'delivered')) as sent_count,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'open') as opened_count,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'click') as clicked_count,
-        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('failed', 'bounce', 'blocked', 'spam')) as error_count
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('failed', 'bounce', 'blocked', 'spam')) as error_count,
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'unsub') as unsub_count
     FROM email_contents 
     WHERE id = ? AND user_id = ?
-  
 ");
 
 $stmt->bind_param("ii", $content_id, $userId);
@@ -39,6 +55,35 @@ if (!$newsletter) {
           </div>";
     exit;
 }
+
+// Statistiken berechnen
+$stats = [
+    'sent' => [
+        'count' => $newsletter['sent_count'],
+        'percent' => $newsletter['total_recipients'] > 0 ?
+            round(($newsletter['sent_count'] / $newsletter['total_recipients']) * 100, 1) : 0
+    ],
+    'opened' => [
+        'count' => $newsletter['opened_count'],
+        'percent' => $newsletter['total_recipients'] > 0 ?
+            round(($newsletter['opened_count'] / $newsletter['total_recipients']) * 100, 1) : 0
+    ],
+    'clicked' => [
+        'count' => $newsletter['clicked_count'],
+        'percent' => $newsletter['total_recipients'] > 0 ?
+            round(($newsletter['clicked_count'] / $newsletter['total_recipients']) * 100, 1) : 0
+    ],
+    'errors' => [
+        'count' => $newsletter['error_count'],
+        'percent' => $newsletter['total_recipients'] > 0 ?
+            round(($newsletter['error_count'] / $newsletter['total_recipients']) * 100, 1) : 0
+    ],
+    'unsub' => [
+        'count' => $newsletter['unsub_count'],
+        'percent' => $newsletter['total_recipients'] > 0 ?
+            round(($newsletter['unsub_count'] / $newsletter['total_recipients']) * 100, 1) : 0
+    ]
+];
 
 // ListGenerator Config
 $listGenerator = new ListGenerator([
@@ -57,32 +102,36 @@ $listGenerator = new ListGenerator([
     'tableClasses' => 'ui celled striped small compact table'
 ]);
 
-// Überarbeitete Query für die Log-Daten
+// Query für die Log-Daten
 $query = "
     SELECT 
         ej.id,
         ej.status as event,
         COALESCE(ej.sent_at, ej.created_at) as timestamp,
         r.email,
-        COALESCE(r.first_name, '') as first_name,
-        COALESCE(r.last_name, '') as last_name,
-        COALESCE(ej.error_message, '') as error_message,
-        COALESCE(r.company, '') as company,
-        COALESCE(r.id, 0) as recipient_id,
+        r.first_name,
+        r.last_name,
+        ej.error_message,
+        r.company,
+        r.id as recipient_id,
         ej.status as current_status,
-        (SELECT COUNT(*) FROM status_log sl WHERE sl.message_id = ej.message_id AND sl.event IN ('open', 'click')) as total_interactions
+        (
+            SELECT COUNT(*) 
+            FROM email_tracking et 
+            WHERE et.job_id = ej.id 
+            AND et.event_type IN ('open', 'click')
+        ) as total_interactions
     FROM 
         email_jobs ej
         LEFT JOIN recipients r ON ej.recipient_id = r.id
     WHERE 
-        ej.content_id = {$content_id} AND ej.id IS NOT NULL
-    GROUP BY 
-    ej.id
+        ej.content_id = {$content_id}
+        GROUP by  ej.id
 ";
 
 $listGenerator->setSearchableColumns(['r.email', 'r.first_name', 'r.last_name', 'r.company']);
 $listGenerator->setDatabase($db, $query, true);
-$listGenerator->addFilter('ej.status', 'Status', $eventTypes);
+$listGenerator->addFilter('status', 'Status', $eventTypes);
 
 // Header mit Newsletter-Informationen
 echo "
@@ -101,21 +150,25 @@ echo "
     </div>
     <div class='ui attached segment'>
         <div class='ui tiny statistics'>
-            <div class='statistic'>
-                <div class='value'><i class='paper plane icon'></i> " . number_format($newsletter['sent_count'], 0, ',', '.') . "</div>
-                <div class='label'>Gesendet</div>
+            <div class='ui statistic' data-tooltip='Erfolgreich versendet'>
+                <div class='value'>" . number_format($stats['sent']['count'], 0, ',', '.') . " <small>(" . $stats['sent']['percent'] . "%)</small></div>
+                <div class='label'><i class='paper plane icon'></i> Gesendet</div>
             </div>
-            <div class='statistic'>
-                <div class='value'><i class='eye icon'></i> " . number_format($newsletter['opened_count'], 0, ',', '.') . "</div>
-                <div class='label'>Geöffnet</div>
+            <div class='ui statistic' data-tooltip='Newsletter geöffnet'>
+                <div class='value'>" . number_format($stats['opened']['count'], 0, ',', '.') . " <small>(" . $stats['opened']['percent'] . "%)</small></div>
+                <div class='label'><i class='eye icon'></i> Geöffnet</div>
             </div>
-            <div class='statistic'>
-                <div class='value'><i class='mouse pointer icon'></i> " . number_format($newsletter['clicked_count'], 0, ',', '.') . "</div>
-                <div class='label'>Geklickt</div>
+            <div class='ui statistic' data-tooltip='Links angeklickt'>
+                <div class='value'>" . number_format($stats['clicked']['count'], 0, ',', '.') . " <small>(" . $stats['clicked']['percent'] . "%)</small></div>
+                <div class='label'><i class='mouse pointer icon'></i> Geklickt</div>
             </div>
-            <div class='statistic' " . ($newsletter['error_count'] > 0 ? "style='color: #db2828;'" : "") . ">
-                <div class='value'><i class='exclamation circle icon'></i> " . number_format($newsletter['error_count'], 0, ',', '.') . "</div>
-                <div class='label'>Fehler</div>
+            <div class='ui " . ($stats['errors']['count'] > 0 ? "red" : "grey") . " statistic' data-tooltip='Fehler/Bounces'>
+                <div class='value'>" . number_format($stats['errors']['count'], 0, ',', '.') . " <small>(" . $stats['errors']['percent'] . "%)</small></div>
+                <div class='label'><i class='exclamation circle icon'></i> Fehler</div>
+            </div>
+            <div class='ui orange statistic' data-tooltip='Abgemeldet'>
+                <div class='value'>" . number_format($stats['unsub']['count'], 0, ',', '.') . " <small>(" . $stats['unsub']['percent'] . "%)</small></div>
+                <div class='label'><i class='user times icon'></i> Abgemeldet</div>
             </div>
         </div>
     </div>
@@ -128,14 +181,6 @@ $columns = [
         'label' => '<i class="clock icon"></i>Zeitpunkt',
         'formatter' => function ($value) {
             return $value ? date('d.m.Y H:i:s', strtotime($value)) : '-';
-        },
-        'allowHtml' => true
-    ],
-    [
-        'name' => 'event',
-        'label' => '<i class="event icon"></i>Ereignis',
-        'formatter' => function ($value, $row) use ($eventTypes) {
-            return $eventTypes[$value] ?? $value;
         },
         'allowHtml' => true
     ],
@@ -158,7 +203,7 @@ $columns = [
             }
             if (!empty($row['company'])) {
                 $html .= $name ? "<br>" : "";
-                $html .= "<span class='ui gray large text'>" . htmlspecialchars($row['company']) . "</span>";
+                $html .= "<span class='ui gray text'>" . htmlspecialchars($row['company']) . "</span>";
             }
             $html .= "</div>";
             return $html ?: '-';
@@ -168,7 +213,7 @@ $columns = [
     [
         'name' => 'status_info',
         'label' => '<i class="info circle icon"></i>Status',
-        'formatter' => function ($value, $row) {
+        'formatter' => function ($value, $row) use ($eventTypes) {
             $html = "<div class='ui small labels'>";
 
             $statusColors = [
@@ -180,22 +225,32 @@ $columns = [
                 'spam' => 'orange',
                 'open' => 'teal',
                 'click' => 'teal',
-                'processing' => 'yellow'
+                'unsub' => 'orange',
+                'processing' => 'yellow',
+                'skipped' => 'grey'
             ];
 
             $currentStatus = $row['current_status'] ?: 'unknown';
             $color = $statusColors[$currentStatus] ?? 'grey';
-            $html .= "<div class='ui {$color} label'>" . ucfirst($currentStatus) . "</div>";
+            $statusText = $eventTypes[$currentStatus] ?? ucfirst($currentStatus);
+
+            // Skipped oder Fehler Status
+            if ($currentStatus === 'skipped' || $currentStatus === 'failed' || $currentStatus === 'bounce' || $currentStatus === 'blocked' || $currentStatus === 'spam') {
+                $html .= sprintf(
+                    "<div class='ui %s label' data-tooltip='%s' data-position='top left'>%s</div>",
+                    $color,
+                    htmlspecialchars($row['error_message'] ?: 'Kein Grund angegeben'),
+                    $statusText
+                );
+            } else {
+                $html .= "<div class='ui {$color} label'>{$statusText}</div>";
+            }
 
             if ($row['total_interactions'] > 0) {
                 $html .= "<div class='ui teal label'>{$row['total_interactions']} Interaktionen</div>";
             }
 
             $html .= "</div>";
-
-            if (!empty($row['error_message'])) {
-                $html .= "<div class='ui negative tiny message'>" . htmlspecialchars($row['error_message']) . "</div>";
-            }
 
             return $html;
         },
@@ -209,9 +264,6 @@ foreach ($columns as $column) {
 
 echo $listGenerator->generateList();
 
-if (isset($db)) {
-    $db->close();
-}
 ?>
 
 <style>
@@ -219,46 +271,49 @@ if (isset($db)) {
         margin: 0;
         display: flex;
         justify-content: space-around;
+        flex-wrap: wrap;
     }
 
     .ui.tiny.statistics .statistic {
-        margin: 0;
-        min-width: 120px;
+        margin: 0.5em;
+        min-width: 150px;
+        padding: 0.5em;
     }
 
     .ui.tiny.statistics .statistic .value {
         font-size: 1.5em !important;
     }
 
+    .ui.tiny.statistics .statistic .value small {
+        font-size: 0.7em;
+        opacity: 0.8;
+    }
+
     .ui.tiny.statistics .statistic .label {
         font-size: 0.9em;
+        margin-top: 0.5em;
+    }
+
+    .ui.red.tiny.message {
+        padding: 0.5em;
+        margin-top: 0.5em;
     }
 </style>
 
 <script>
     $(document).ready(function () {
-        $('.ui.popup').popup();
+        // Tooltips initialisieren
         $('.ui.statistic').popup({
             position: 'top center'
         });
 
-        function checkSendStatus() {
-            $.ajax({
-                url: 'ajax/check_newsletter_status.php',
-                data: { content_id: <?php echo $content_id; ?> },
-                success: function (response) {
-                    if (response.is_sending) {
-                        setTimeout(function () {
-                            if (typeof reloadTable === 'function') {
-                                reloadTable();
-                            }
-                            checkSendStatus();
-                        }, 30000);
-                    }
+        // Wenn der Newsletter noch versendet wird, regelmäßig aktualisieren
+        if (<?php echo $newsletter['send_status'] == 1 ? 'true' : 'false' ?>) {
+            setInterval(function () {
+                if (typeof standardReloadTable === 'function') {
+                    standardReloadTable();
                 }
-            });
+            }, 30000);
         }
-
-        checkSendStatus();
     });
 </script>

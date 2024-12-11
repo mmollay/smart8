@@ -52,7 +52,7 @@ $dashboard->addMenuItem('leftMenu', "", "", "$package", "");
 //$dashboard->addScript('js/send_emails.js');
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/ckeditor.js");
 $dashboard->addScript("https://cdn.ckeditor.com/ckeditor5/38.0.1/decoupled-document/translations/de.js");
-$dashboard->addScript("js/form_after.js");
+//$dashboard->addScript("js/form_after.js");
 $dashboard->addScript("js/cron-control.js");
 $dashboard->addScript("
     function updatePackageInfo() {

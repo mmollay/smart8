@@ -730,6 +730,8 @@ class ListGenerator
                 $countQuery = "SELECT COUNT(*) as total FROM ({$this->query}) as subquery {$innerWhereClause}";
             }
 
+
+
             $this->debugLog("Count query", [
                 'query' => $countQuery,
                 'params' => $params
