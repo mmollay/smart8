@@ -1,9 +1,10 @@
 <?php
 return [
-    'version' => '1.2.4',
+    'version' => '1.2.5',
     'changelog' => [
+
         '1.2.4' => [
-            'date' => '2024-12-09',
+            'date' => '2024-12-11',
             'changes' => [
                 'Neu' => [
                     'Senden an mehrere Testuser möglich',
@@ -13,7 +14,7 @@ return [
                     'E-Mail-Adressen auf der Blacklist erhalten keine Newsletter mehr',
                 ],
                 'Verbessert' => [
-                    'Newsletter-Liste komplett überarbeitet',
+                    'Newsletter-Liste komplett überarbeitet (version2)',
                     'Eingabemaske für Newsletter verbessert',
                 ],
                 'Behoben' => [
