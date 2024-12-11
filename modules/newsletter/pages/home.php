@@ -13,61 +13,53 @@ $stats = [
 ];
 ?>
 
-<div class="ui container">
-    <!-- Header -->
+<div class="ui container" style="padding-top: 2em; padding-bottom: 2em;">
     <div class="ui basic segment center aligned">
-        <div class="ui text container">
-            <h1 class="ui header">
-
-                <div class="content">
-                    <i class="envelope open outline icon  blue"></i>SSI - Newsletter System
-                    <div class="sub header" style="margin-top: 1em;">
-                        Ihr professionelles E-Mail-Marketing-Tool:
-                        Newsletter erstellen, Empfänger verwalten und Erfolge messen - alles in einem System.
-                    </div>
-                </div>
-            </h1>
-
-        </div>
+        <h1 class="ui header">
+            <div><i class="envelope open outline icon blue"></i> SSI - Newsletter System</div>
+            <div class="sub header" style="margin-top: 1em; color: #555;">
+                Ihr professionelles E-Mail-Marketing-Tool:<br>
+                Newsletter erstellen, Empfänger verwalten und Erfolge messen.
+            </div>
+        </h1>
     </div>
 
     <div class="ui stackable grid">
-        <!-- Linke Spalte: Statistiken -->
         <div class="six wide column">
-            <div class="ui segments">
-                <div class="ui secondary segment">
-                    <h4 class="ui header">Statistiken</h4>
+            <div class="ui segments" style="border-radius: 5px;">
+                <div class="ui secondary segment" style="background-color: #f7f7f7;">
+                    <h4 class="ui header" style="margin-bottom: 0;">Statistiken</h4>
                 </div>
                 <div class="ui segment">
-                    <div class="ui list">
+                    <div class="ui relaxed list">
                         <div class="item">
                             <i class="envelope icon"></i>
                             <div class="content">
-                                <div class="header"><?php echo number_format($stats['newsletters']); ?> Newsletter</div>
+                                <strong><?php echo number_format($stats['newsletters']); ?></strong> Newsletter
                             </div>
                         </div>
                         <div class="item">
                             <i class="users icon"></i>
                             <div class="content">
-                                <div class="header"><?php echo number_format($stats['recipients']); ?> Empfänger</div>
+                                <strong><?php echo number_format($stats['recipients']); ?></strong> Empfänger
                             </div>
                         </div>
                         <div class="item">
                             <i class="paper plane icon"></i>
                             <div class="content">
-                                <div class="header"><?php echo number_format($stats['sent']); ?> Versendet</div>
+                                <strong><?php echo number_format($stats['sent']); ?></strong> Versendet
                             </div>
                         </div>
                         <div class="item">
                             <i class="eye icon"></i>
                             <div class="content">
-                                <div class="header"><?php echo number_format($stats['opened']); ?> Geöffnet</div>
+                                <strong><?php echo number_format($stats['opened']); ?></strong> Geöffnet
                             </div>
                         </div>
                         <div class="item">
                             <i class="mouse pointer icon"></i>
                             <div class="content">
-                                <div class="header"><?php echo number_format($stats['clicked']); ?> Geklickt</div>
+                                <strong><?php echo number_format($stats['clicked']); ?></strong> Geklickt
                             </div>
                         </div>
                     </div>
@@ -75,14 +67,12 @@ $stats = [
             </div>
         </div>
 
-        <!-- Rechte Spalte: Navigation & Version -->
         <div class="ten wide column">
-
-
-            <!-- Version -->
-            <div class="ui segments">
-                <div class="ui secondary segment">
-                    <h4 class="ui header">Version <?php echo htmlspecialchars($versions['version']); ?></h4>
+            <div class="ui segments" style="border-radius: 5px;">
+                <div class="ui secondary segment" style="background-color: #f7f7f7;">
+                    <h4 class="ui header" style="margin-bottom:0;">Version
+                        <?php echo htmlspecialchars($versions['version']); ?>
+                    </h4>
                 </div>
                 <div class="ui segment">
                     <div class="ui accordion">
@@ -92,15 +82,17 @@ $stats = [
                             ?>
                             <div class="<?php echo $isFirst ? 'active' : ''; ?> title">
                                 <i class="dropdown icon"></i>
-                                Version <?php echo htmlspecialchars($version); ?>
-                                <small>(<?php echo date('d.m.Y', strtotime($info['date'])); ?>)</small>
+                                <strong>Version <?php echo htmlspecialchars($version); ?></strong>
+                                <small style="color: #777;">(<?php echo date('d.m.Y', strtotime($info['date'])); ?>)</small>
                             </div>
                             <div class="<?php echo $isFirst ? 'active' : ''; ?> content">
-                                <div class="ui small list">
+                                <div class="ui small relaxed list">
                                     <?php foreach ($info['changes'] as $category => $changes): ?>
-                                        <div class="header"><b><?php echo htmlspecialchars($category); ?></b></div>
+                                        <div class="header" style="margin-top:0.5em;">
+                                            <b><?php echo htmlspecialchars($category); ?></b>
+                                        </div>
                                         <?php foreach ($changes as $change): ?>
-                                            <div class="item"> - <?php echo htmlspecialchars($change); ?></div>
+                                            <div class="item" style="color: #555;">- <?php echo htmlspecialchars($change); ?></div>
                                         <?php endforeach; ?>
                                     <?php endforeach; ?>
                                 </div>
@@ -112,11 +104,8 @@ $stats = [
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
-</div>
 </div>
 
 <script>
