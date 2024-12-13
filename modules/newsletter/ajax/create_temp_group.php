@@ -28,18 +28,17 @@ try {
 
     switch ($type) {
         case 'sent':
-            $sql .= "WHERE ej.content_id = ? AND ej.status IN ('send', 'open', 'click')";
+            $sql .= "WHERE ej.content_id = ? AND ej.status = 'send'";
             break;
         case 'opened':
-            $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
-                     WHERE ej.content_id = ? 
-                     AND et.event_type = 'open'";
+            // Für geöffnete Mails
+            $sql .= "WHERE ej.content_id = ? AND ej.status = 'open'";
             break;
         case 'clicked':
-            $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
-                     WHERE ej.content_id = ? 
-                     AND et.event_type = 'click'";
+            // Für geklickte Mails
+            $sql .= "WHERE ej.content_id = ? AND ej.status = 'click'";
             break;
+
     }
 
     // Zusätzliche Sicherheitsprüfung für user_id
