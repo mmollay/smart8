@@ -2,7 +2,15 @@
 return [
     'version' => '1.2.5',
     'changelog' => [
-
+        '1.2.5' => [
+            'date' => '2025-12-13',
+            'changes' => [
+                'Neu' => [
+                    'Follow-Up E-Mails durch klicken auf die jeweiligen Labels',
+                    'Newsletter-Liste komplett überarbeitet (version2)',
+                ]
+            ]
+        ],
         '1.2.4' => [
             'date' => '2024-12-11',
             'changes' => [
@@ -14,7 +22,6 @@ return [
                     'E-Mail-Adressen auf der Blacklist erhalten keine Newsletter mehr',
                 ],
                 'Verbessert' => [
-                    'Newsletter-Liste komplett überarbeitet (version2)',
                     'Eingabemaske für Newsletter verbessert',
                 ],
                 'Behoben' => [
