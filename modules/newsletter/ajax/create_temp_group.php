@@ -26,7 +26,7 @@ try {
             JOIN email_jobs ej ON r.id = ej.recipient_id ";
 
     switch ($type) {
-        case 'sent':
+        case 'send':
             $sql .= "WHERE ej.content_id = ? AND ej.status = 'send'";
             break;
         case 'open':
