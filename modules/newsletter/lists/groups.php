@@ -21,7 +21,7 @@ $listGenerator = new ListGenerator([
 // Erweiterte Datenbank-Abfrage mit aktiven und abgemeldeten Empfängern
 $query = "
     SELECT 
-        g.id as group_id, 
+        g.id as group_id, is_temp,
         CONCAT('<div class=\"ui ', g.color, ' compact empty mini circular label\"></div> ', g.name) as group_name,
         COUNT(DISTINCT r.id) as total_recipients,
         COUNT(DISTINCT CASE WHEN r.unsubscribed = 0 THEN r.id END) as active_recipients,
@@ -32,7 +32,8 @@ $query = "
         LEFT JOIN recipient_group rg ON g.id = rg.group_id
         LEFT JOIN recipients r ON rg.recipient_id = r.id
     WHERE 
-        g.user_id = '$userId'    /* Hier direkt den userId verwenden statt Prepared Statement */
+        g.user_id = '$userId'
+
     GROUP BY 
         g.id
 ";
@@ -51,11 +52,14 @@ $listGenerator->addExternalButton('add', [
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Eintrag hinzuzufügen']
 ]);
 
-$listGenerator->addFilter('group_type', 'Gruppen-Typ', [
+$listGenerator->addFilter('is_temp', 'Gruppen-Typ', [
     '' => 'Alle Gruppen',
-    'regular' => 'Reguläre Gruppen',
-    'temp' => 'Temporäre Gruppen'
+    '0' => 'Reguläre Gruppen',
+    '1' => 'Temporäre Gruppen'
+], [
+    'defaultValue' => '0'  // Setzt "Reguläre Gruppen" als Standard
 ]);
+
 
 // $listGenerator->addExport([
 //     'url' => 'ajax/generic_export.php',

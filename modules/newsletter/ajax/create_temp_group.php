@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
 include __DIR__ . '/../n_config.php';
 
 // Input-Validierung
@@ -31,13 +32,13 @@ try {
             break;
         case 'opened':
             $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
-                         WHERE ej.content_id = ? 
-                         AND et.event_type = 'open'";
+                     WHERE ej.content_id = ? 
+                     AND et.event_type = 'open'";
             break;
         case 'clicked':
             $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
-                         WHERE ej.content_id = ? 
-                         AND et.event_type = 'click'";
+                     WHERE ej.content_id = ? 
+                     AND et.event_type = 'click'";
             break;
     }
 
@@ -45,7 +46,7 @@ try {
     $sql .= " AND r.user_id = ?";
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param('sissi', $groupName, $userId, $description, $type, $contentId);
+    $stmt->bind_param('ii', $contentId, $userId);
 
     if (!$stmt->execute()) {
         throw new Exception("Fehler beim Laden der Empfänger");
@@ -66,15 +67,17 @@ try {
     $db->begin_transaction();
 
     try {
-        // Temporäre Gruppe erstellen
+        // Erst die Variablen definieren
         $groupName = "Temp: " . ucfirst($type) . " (NL #" . $contentId . ")";
         $description = "Automatisch erstellt für Newsletter #$contentId - " . ucfirst($type) . " Filter";
 
-        $sql = "INSERT INTO groups
-        (name, user_id, description, color, is_temp, temp_source, source_newsletter_id)
-       VALUES (?, ?, ?, 'orange', 1, ?, ?)";
+        // Dann die Gruppe erstellen
+        $sql = "INSERT INTO groups 
+                (name, user_id, description, color, is_temp, temp_source, source_newsletter_id)
+                VALUES (?, ?, ?, 'orange', 1, ?, ?)";
+
         $stmt = $db->prepare($sql);
-        $stmt->bind_param('sis', $groupName, $userId, $description);  // FALSCH
+        $stmt->bind_param('sissi', $groupName, $userId, $description, $type, $contentId);
 
         if (!$stmt->execute()) {
             throw new Exception("Fehler beim Erstellen der Gruppe");
@@ -88,7 +91,7 @@ try {
             $values[] = "(" . intval($rid) . ", " . $groupId . ")";
         }
 
-        $sql = "INSERT INTO recipient_group (recipient_id, group_id) 
+        $sql = "INSERT INTO recipient_group (recipient_id, group_id)
                 VALUES " . implode(',', $values);
 
         if (!$db->query($sql)) {

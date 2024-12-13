@@ -527,7 +527,8 @@ class ListGenerator
             'clearable' => true,
             'where' => null,
             'parameterized' => false,
-            'filterType' => 'simple'  // Neuer Parameter zur Unterscheidung zwischen einfachen und komplexen Filtern
+            'filterType' => 'simple',
+            'defaultValue' => null  // Neu: Default-Wert
         ];
 
         $finalConfig = array_merge($defaultConfig, $config);
@@ -535,6 +536,11 @@ class ListGenerator
         // Wenn 'where' nicht gesetzt ist und es sich um einen einfachen Filter handelt
         if ($finalConfig['where'] === null && $finalConfig['filterType'] === 'simple') {
             $finalConfig['where'] = "$key = ?";
+        }
+
+        // Setze Default-Wert in GET wenn keiner gesetzt ist
+        if ($finalConfig['defaultValue'] !== null && !isset($_GET['filters'][$key])) {
+            $_GET['filters'][$key] = $finalConfig['defaultValue'];
         }
 
         $this->filters[$key] = [
@@ -1363,12 +1369,14 @@ class ListGenerator
 
         foreach ($this->filters as $key => $filter) {
             $filterId = "filter_{$this->config['contentId']}_{$key}";
+            $currentValue = $_GET['filters'][$key] ?? $filter['config']['defaultValue'] ?? null;
+
             $html .= "<div class='four wide column'>";
             $html .= "<div class='field'>";
             $html .= "<label>{$filter['label']}</label>";
 
-            // Dropdown-Klassen mit selection
-            $dropdownClass = 'ui fluid selection dropdown';  // Hier wurde 'selection' hinzugefügt
+            // Dropdown-Klassen
+            $dropdownClass = 'ui fluid selection dropdown';
             if ($filter['config']['searchable']) {
                 $dropdownClass .= ' search';
             }
@@ -1382,13 +1390,20 @@ class ListGenerator
 
             // Dropdown Container
             $html .= "<div class='{$dropdownClass}' id='{$filterId}'>";
-            $html .= "<input type='hidden' name='{$filterId}'>";
+            $html .= "<input type='hidden' name='{$filterId}' value='{$currentValue}'>";
             $html .= "<i class='dropdown icon'></i>";
-            $html .= "<div class='default text'>{$filter['config']['placeholder']}</div>";
+
+            // Default Text oder ausgewählter Wert
+            if ($currentValue !== null && isset($filter['options'][$currentValue])) {
+                $html .= "<div class='text'>{$filter['options'][$currentValue]}</div>";
+            } else {
+                $html .= "<div class='default text'>{$filter['config']['placeholder']}</div>";
+            }
+
             $html .= "<div class='menu'>";
 
             foreach ($filter['options'] as $value => $label) {
-                $selected = (isset($_GET['filters'][$key]) && $_GET['filters'][$key] == $value) ? 'active selected' : '';
+                $selected = ($currentValue !== null && $currentValue == $value) ? 'active selected' : '';
                 $html .= "<div class='item {$selected}' data-value='{$value}'>{$label}</div>";
             }
 
