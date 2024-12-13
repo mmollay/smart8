@@ -30,17 +30,17 @@ $eventTypes = [
 
 // Newsletter-Details laden
 $stmt = $db->prepare("
-    SELECT 
+    SELECT
         subject,
         created_at,
         send_status,
         (SELECT COUNT(DISTINCT recipient_id) FROM email_jobs WHERE content_id = email_contents.id) as total_recipients,
-        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('send', 'delivered')) as sent_count,
+        (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'send') as sent_count,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'open') as opened_count,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'click') as clicked_count,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status IN ('failed', 'bounce', 'blocked', 'spam')) as error_count,
         (SELECT COUNT(*) FROM email_jobs WHERE content_id = email_contents.id AND status = 'unsub') as unsub_count
-    FROM email_contents 
+    FROM email_contents
     WHERE id = ? AND user_id = ?
 ");
 

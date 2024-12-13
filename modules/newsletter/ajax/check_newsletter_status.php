@@ -6,8 +6,12 @@ $content_id = isset($_GET['content_id']) ? intval($_GET['content_id']) : 0;
 $stmt = $db->prepare("
     SELECT 
         COUNT(*) as total_jobs,
-        SUM(CASE WHEN status IN ('success', 'delivered', 'failed', 'bounce', 'blocked') THEN 1 ELSE 0 END) as completed_jobs
-    FROM email_jobs
+        SUM(CASE 
+            WHEN status IN ('send', 'open', 'click', 'failed', 'bounce', 'spam', 'blocked', 'unsub') 
+            THEN 1 
+            ELSE 0 
+        END) as completed_jobs
+    FROM email_jobs 
     WHERE content_id = ?
 ");
 
