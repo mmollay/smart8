@@ -13,20 +13,54 @@ if ($content_id === 0) {
     exit;
 }
 
-// Event-Typen definieren
-$eventTypes = [
-    'pending' => 'Ausstehend',
-    'processing' => 'In Verarbeitung',
-    'send' => 'Gesendet',
-    'delivered' => 'Zugestellt',
-    'open' => 'Geöffnet',
-    'click' => 'Geklickt',
-    'unsub' => 'Abgemeldet',
-    'bounce' => 'Bounce',
-    'blocked' => 'Blockiert',
-    'spam' => 'Spam',
-    'failed' => 'Fehler'
+// Status-Zählung aus der Datenbank holen
+$statusCountQuery = "
+    SELECT 
+        ej.status,
+        COUNT(*) as count
+    FROM 
+        email_jobs ej
+    WHERE 
+        ej.content_id = ?
+    GROUP BY 
+        ej.status";
+
+$stmt = $db->prepare($statusCountQuery);
+$stmt->bind_param("i", $content_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$statusCounts = [];
+while ($row = $result->fetch_assoc()) {
+    $statusCounts[$row['status']] = $row['count'];
+}
+
+// Status-Config mit Farben und Icons
+$statusConfig = [
+    'pending' => ['color' => 'grey', 'icon' => 'clock', 'label' => 'Ausstehend'],
+    'processing' => ['color' => 'yellow', 'icon' => 'sync', 'label' => 'In Verarbeitung'],
+    'send' => ['color' => 'blue', 'icon' => 'paper plane', 'label' => 'Gesendet'],
+    'open' => ['color' => 'teal', 'icon' => 'eye', 'label' => 'Geöffnet'],
+    'click' => ['color' => 'teal', 'icon' => 'mouse pointer', 'label' => 'Geklickt'],
+    'unsub' => ['color' => 'orange', 'icon' => 'user times', 'label' => 'Abgemeldet'],
+    'bounce' => ['color' => 'red', 'icon' => 'mail reply', 'label' => 'Bounce'],
+    'blocked' => ['color' => 'red', 'icon' => 'ban', 'label' => 'Blockiert'],
+    'spam' => ['color' => 'orange', 'icon' => 'exclamation triangle', 'label' => 'Spam'],
+    'failed' => ['color' => 'red', 'icon' => 'times circle', 'label' => 'Fehler']
 ];
+
+// Event-Typen mit Anzahl, Farbe und Icon definieren
+$eventTypes = [];
+foreach ($statusConfig as $status => $config) {
+    $count = $statusCounts[$status] ?? 0;
+    $eventTypes[$status] = sprintf(
+        "<i class='%s icon' style='color: var(--%s)'></i>%s (%d)",
+        $config['icon'],
+        $config['color'],
+        $config['label'],
+        $count
+    );
+}
 
 // Newsletter-Details laden
 $stmt = $db->prepare("
@@ -89,7 +123,7 @@ $stats = [
 $listGenerator = new ListGenerator([
     'listId' => 'newsletter_logs',
     'contentId' => 'content_logs',
-    'itemsPerPage' => 50,
+    'itemsPerPage' => 20,
     'sortColumn' => $_GET['sort'] ?? 'timestamp',
     'sortDirection' => strtoupper($_GET['sortDir'] ?? 'DESC'),
     'page' => intval($_GET['page'] ?? 1),
@@ -126,12 +160,20 @@ $query = "
         LEFT JOIN recipients r ON ej.recipient_id = r.id
     WHERE 
         ej.content_id = {$content_id}
-        GROUP by  ej.id
+    GROUP BY 
+        ej.id
 ";
 
 $listGenerator->setSearchableColumns(['r.email', 'r.first_name', 'r.last_name', 'r.company']);
 $listGenerator->setDatabase($db, $query, true);
-$listGenerator->addFilter('status', 'Status', $eventTypes);
+
+// Filter mit Standardwert hinzufügen
+$listGenerator->addFilter('status', '<i class="filter icon"></i>Status Filter', $eventTypes, [
+    'defaultValue' => 'send',
+    'placeholder' => 'Alle Status anzeigen',
+    'allowHtml' => true,
+    // 'customClass' => 'status-filter'
+]);
 
 // Header mit Newsletter-Informationen
 echo "
@@ -150,15 +192,15 @@ echo "
     </div>
     <div class='ui attached segment'>
         <div class='ui tiny statistics'>
-            <div class='ui statistic' data-tooltip='Erfolgreich versendet'>
+            <div class='ui blue statistic' data-tooltip='Erfolgreich versendet'>
                 <div class='value'>" . number_format($stats['sent']['count'], 0, ',', '.') . " <small>(" . $stats['sent']['percent'] . "%)</small></div>
                 <div class='label'><i class='paper plane icon'></i> Gesendet</div>
             </div>
-            <div class='ui statistic' data-tooltip='Newsletter geöffnet'>
+            <div class='ui teal statistic' data-tooltip='Newsletter geöffnet'>
                 <div class='value'>" . number_format($stats['opened']['count'], 0, ',', '.') . " <small>(" . $stats['opened']['percent'] . "%)</small></div>
                 <div class='label'><i class='eye icon'></i> Geöffnet</div>
             </div>
-            <div class='ui statistic' data-tooltip='Links angeklickt'>
+            <div class='ui teal statistic' data-tooltip='Links angeklickt'>
                 <div class='value'>" . number_format($stats['clicked']['count'], 0, ',', '.') . " <small>(" . $stats['clicked']['percent'] . "%)</small></div>
                 <div class='label'><i class='mouse pointer icon'></i> Geklickt</div>
             </div>
@@ -213,45 +255,45 @@ $columns = [
     [
         'name' => 'status_info',
         'label' => '<i class="info circle icon"></i>Status',
-        'formatter' => function ($value, $row) use ($eventTypes) {
+        'formatter' => function ($value, $row) use ($statusConfig) {
             $html = "<div class='ui small labels'>";
 
-            $statusColors = [
-                'send' => 'blue',
-                'delivered' => 'green',
-                'failed' => 'red',
-                'bounce' => 'red',
-                'blocked' => 'red',
-                'spam' => 'orange',
-                'open' => 'teal',
-                'click' => 'teal',
-                'unsub' => 'orange',
-                'processing' => 'yellow',
-                'skipped' => 'grey'
-            ];
-
             $currentStatus = $row['current_status'] ?: 'unknown';
-            $color = $statusColors[$currentStatus] ?? 'grey';
-            $statusText = $eventTypes[$currentStatus] ?? ucfirst($currentStatus);
+            $config = $statusConfig[$currentStatus] ?? ['color' => 'grey', 'icon' => 'question', 'label' => ucfirst($currentStatus)];
 
-            // Skipped oder Fehler Status
-            if ($currentStatus === 'skipped' || $currentStatus === 'failed' || $currentStatus === 'bounce' || $currentStatus === 'blocked' || $currentStatus === 'spam') {
+            // Status Label
+            if (in_array($currentStatus, ['skipped', 'failed', 'bounce', 'blocked', 'spam'])) {
                 $html .= sprintf(
-                    "<div class='ui %s label' data-tooltip='%s' data-position='top left'>%s</div>",
-                    $color,
+                    "<div class='ui %s label' data-tooltip='%s' data-position='top left'>
+                        <i class='%s icon'></i> %s
+                    </div>",
+                    $config['color'],
                     htmlspecialchars($row['error_message'] ?: 'Kein Grund angegeben'),
-                    $statusText
+                    $config['icon'],
+                    $config['label']
                 );
             } else {
-                $html .= "<div class='ui {$color} label'>{$statusText}</div>";
+                $html .= sprintf(
+                    "<div class='ui %s label'>
+                        <i class='%s icon'></i> %s
+                    </div>",
+                    $config['color'],
+                    $config['icon'],
+                    $config['label']
+                );
             }
 
+            // Interaktionen Label
             if ($row['total_interactions'] > 0) {
-                $html .= "<div class='ui teal label'>{$row['total_interactions']} Interaktionen</div>";
+                $html .= sprintf(
+                    "<div class='ui teal label'>
+                        <i class='mouse pointer icon'></i> %d Interaktionen
+                    </div>",
+                    $row['total_interactions']
+                );
             }
 
             $html .= "</div>";
-
             return $html;
         },
         'allowHtml' => true
@@ -263,7 +305,6 @@ foreach ($columns as $column) {
 }
 
 echo $listGenerator->generateList();
-
 ?>
 
 <style>
@@ -298,22 +339,86 @@ echo $listGenerator->generateList();
         padding: 0.5em;
         margin-top: 0.5em;
     }
+
+    /* Filter-Styling */
+    .status-filter .item {
+        padding: 0.5em !important;
+    }
+
+    /* Filter-Styling */
+    .status-filter .item {
+        padding: 0.5em !important;
+    }
+
+    .status-filter .item .ui.label {
+        width: 100%;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .status-filter .item .detail {
+        margin-left: auto;
+        font-weight: bold;
+        opacity: 0.8;
+    }
+
+    /* Labels in der Tabelle */
+    .ui.small.labels {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .ui.small.labels .label {
+        margin: 0 !important;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .ui.small.labels .label i.icon {
+        margin-right: 4px;
+    }
+
+    /* Tooltip-Verbesserungen */
+    .ui.popup {
+        font-size: 0.9em;
+        padding: 0.5em 0.8em;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Hover-Effekte */
+    .ui.label:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
 </style>
 
 <script>
     $(document).ready(function () {
         // Tooltips initialisieren
-        $('.ui.statistic').popup({
+        $('.ui.statistic, .ui.label[data-tooltip]').popup({
             position: 'top center'
+        });
+
+        // Filter-Popup Verzögerung
+        $('.status-filter .item').popup({
+            delay: {
+                show: 300,
+                hide: 100
+            }
         });
 
         // Wenn der Newsletter noch versendet wird, regelmäßig aktualisieren
         if (<?php echo $newsletter['send_status'] == 1 ? 'true' : 'false' ?>) {
             setInterval(function () {
                 if (typeof standardReloadTable === 'function') {
-                    standardReloadTable();
+                    ReloadTable();
                 }
             }, 30000);
         }
+
     });
 </script>
