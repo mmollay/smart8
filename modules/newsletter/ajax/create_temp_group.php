@@ -29,11 +29,11 @@ try {
         case 'sent':
             $sql .= "WHERE ej.content_id = ? AND ej.status = 'send'";
             break;
-        case 'opened':
+        case 'open':
             $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
                      WHERE ej.content_id = ? AND et.event_type = 'open'";
             break;
-        case 'clicked':
+        case 'click':
             $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
                      WHERE ej.content_id = ? AND et.event_type = 'click'";
             break;
