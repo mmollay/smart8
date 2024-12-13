@@ -26,16 +26,16 @@ try {
             JOIN email_jobs ej ON r.id = ej.recipient_id ";
 
     switch ($type) {
-        case 'send':
+        case 'sent':
             $sql .= "WHERE ej.content_id = ? AND ej.status = 'send'";
             break;
-        case 'open':
-            $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
-                     WHERE ej.content_id = ? AND et.event_type = 'open'";
+        case 'opened':
+            // Für geöffnete Mails
+            $sql .= "WHERE ej.content_id = ? AND ej.status = 'open'";
             break;
-        case 'click':
-            $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
-                     WHERE ej.content_id = ? AND et.event_type = 'click'";
+        case 'clicked':
+            // Für geklickte Mails
+            $sql .= "WHERE ej.content_id = ? AND ej.status = 'click'";
             break;
     }
 
