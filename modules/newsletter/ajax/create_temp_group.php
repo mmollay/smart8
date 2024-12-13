@@ -27,15 +27,17 @@ try {
 
     switch ($type) {
         case 'sent':
-            $sql .= "WHERE ej.content_id = ? AND ej.status = 'send'";
+            $sql .= "WHERE ej.content_id = ? AND ej.status IN ('send', 'open', 'click')";
             break;
         case 'opened':
-            // Für geöffnete Mails
-            $sql .= "WHERE ej.content_id = ? AND ej.status = 'open'";
+            $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
+                         WHERE ej.content_id = ? 
+                         AND et.event_type = 'open'";
             break;
         case 'clicked':
-            // Für geklickte Mails
-            $sql .= "WHERE ej.content_id = ? AND ej.status = 'click'";
+            $sql .= "JOIN email_tracking et ON ej.id = et.job_id 
+                         WHERE ej.content_id = ? 
+                         AND et.event_type = 'click'";
             break;
     }
 
@@ -43,7 +45,7 @@ try {
     $sql .= " AND r.user_id = ?";
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param('ii', $contentId, $userId);
+    $stmt->bind_param('sissi', $groupName, $userId, $description, $type, $contentId);
 
     if (!$stmt->execute()) {
         throw new Exception("Fehler beim Laden der Empfänger");
@@ -68,11 +70,11 @@ try {
         $groupName = "Temp: " . ucfirst($type) . " (NL #" . $contentId . ")";
         $description = "Automatisch erstellt für Newsletter #$contentId - " . ucfirst($type) . " Filter";
 
-        $sql = "INSERT INTO groups (name, user_id, description, color) 
-                VALUES (?, ?, ?, 'orange')";
-
+        $sql = "INSERT INTO groups
+        (name, user_id, description, color, is_temp, temp_source, source_newsletter_id)
+       VALUES (?, ?, ?, 'orange', 1, ?, ?)";
         $stmt = $db->prepare($sql);
-        $stmt->bind_param('sis', $groupName, $userId, $description);
+        $stmt->bind_param('sis', $groupName, $userId, $description);  // FALSCH
 
         if (!$stmt->execute()) {
             throw new Exception("Fehler beim Erstellen der Gruppe");

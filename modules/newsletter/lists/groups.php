@@ -51,6 +51,12 @@ $listGenerator->addExternalButton('add', [
     'popup' => ['content' => 'Klicken Sie hier, um einen neuen Eintrag hinzuzufügen']
 ]);
 
+$listGenerator->addFilter('group_type', 'Gruppen-Typ', [
+    '' => 'Alle Gruppen',
+    'regular' => 'Reguläre Gruppen',
+    'temp' => 'Temporäre Gruppen'
+]);
+
 // $listGenerator->addExport([
 //     'url' => 'ajax/generic_export.php',
 //     'listId' => 'groups',
