@@ -31032,3 +31032,3170 @@ Daten: Array
     [returnedRows] => 2
 )
 
+[2024-12-19 19:24:54] Debug-Logging initialisiert
+[2024-12-19 19:24:54] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+    GROUP BY 
+        client.client_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:24:54] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => clients
+            [contentId] => content_clients
+            [itemsPerPage] => 30
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Kunden gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_clients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:24:54] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+    GROUP BY 
+        client.client_id
+
+)
+
+[2024-12-19 19:24:54] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+     GROUP BY 
+        client.client_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:24:54] Total rows
+Daten: Array
+(
+    [count] => 724
+)
+
+[2024-12-19 19:24:54] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+     GROUP BY 
+        client.client_id
+ ORDER BY client_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:24:54] Data fetched
+Daten: Array
+(
+    [totalRows] => 724
+    [returnedRows] => 30
+)
+
+[2024-12-19 19:24:56] Debug-Logging initialisiert
+[2024-12-19 19:24:56] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:24:56] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => bill_list
+            [contentId] => content_bills
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_bills
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:24:56] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+)
+
+[2024-12-19 19:24:56] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:24:56] Total rows
+Daten: Array
+(
+    [count] => 1992
+)
+
+[2024-12-19 19:24:56] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+ ORDER BY title_company ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:24:56] Data fetched
+Daten: Array
+(
+    [totalRows] => 1992
+    [returnedRows] => 25
+)
+
+[2024-12-19 19:25:00] Debug-Logging initialisiert
+[2024-12-19 19:25:00] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:25:00] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => bill_list
+            [contentId] => content_bills
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_bills
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:25:00] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+)
+
+[2024-12-19 19:25:00] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:00] Total rows
+Daten: Array
+(
+    [count] => 1992
+)
+
+[2024-12-19 19:25:00] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+ ORDER BY title_company ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:00] Data fetched
+Daten: Array
+(
+    [totalRows] => 1992
+    [returnedRows] => 25
+)
+
+[2024-12-19 19:25:44] Debug-Logging initialisiert
+[2024-12-19 19:25:44] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:25:44] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => bill_list
+            [contentId] => content_bills
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_bills
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:25:44] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+)
+
+[2024-12-19 19:25:44] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:44] Total rows
+Daten: Array
+(
+    [count] => 1992
+)
+
+[2024-12-19 19:25:44] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+ ORDER BY title_company ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:44] Data fetched
+Daten: Array
+(
+    [totalRows] => 1992
+    [returnedRows] => 25
+)
+
+[2024-12-19 19:25:55] Debug-Logging initialisiert
+[2024-12-19 19:25:55] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:25:55] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => bill_list
+            [contentId] => content_bills
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_bills
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:25:55] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+)
+
+[2024-12-19 19:25:55] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:55] Total rows
+Daten: Array
+(
+    [count] => 1992
+)
+
+[2024-12-19 19:25:55] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+ ORDER BY title_company ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:55] Data fetched
+Daten: Array
+(
+    [totalRows] => 1992
+    [returnedRows] => 25
+)
+
+[2024-12-19 19:25:57] Debug-Logging initialisiert
+[2024-12-19 19:25:57] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+    GROUP BY 
+        client.client_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:25:57] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => clients
+            [contentId] => content_clients
+            [itemsPerPage] => 30
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Kunden gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_clients
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:25:57] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+    GROUP BY 
+        client.client_id
+
+)
+
+[2024-12-19 19:25:57] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+     GROUP BY 
+        client.client_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:57] Total rows
+Daten: Array
+(
+    [count] => 724
+)
+
+[2024-12-19 19:25:57] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        client.client_id, 
+        CONCAT(client.firstname, ' ', client.secondname) as full_name,
+        client.join_date,
+        CASE
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 != '' 
+                THEN CONCAT(client.company_1, ' (', client.firstname, ' ', client.secondname, ')')
+            WHEN (client.firstname != '' OR client.secondname != '') AND client.company_1 = '' 
+                THEN CONCAT(client.firstname, ' ', client.secondname)
+            ELSE client.company_1
+        END as company_1,
+        IFNULL(DATE_FORMAT(client.reg_date, '%Y-%m-%d'), '') as reg_date,
+        CONCAT('<i class="', client.country, ' flag"></i>') as country,
+        COUNT(DISTINCT tree.client_faktura_id) as tree_count,
+        client.client_number,
+        IF(client.abo, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as abo,
+        IF(client.newsletter, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as newsletter,
+        IF(client.post, '<i class="green icon checkmark"></i>', '<i class="icon disabled checkmark"></i>') as post,
+        client.email,
+        client.zip,
+        client.city,
+        client.birth,
+        client.send_date,
+        client.company_id,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto ELSE 0 END), 0), 2) as brutto,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.booking_total ELSE 0 END), 0), 2) as booking_total,
+        ROUND(IFNULL(SUM(CASE WHEN bills.date_storno = '0000-00-00' AND bills.document = 'rn' THEN bills.brutto - bills.booking_total ELSE 0 END), 0), 2) as amound_open,
+        IF(client.tel != '', CONCAT('<button class="client_info" title="Tel:', client.tel, '">Info</button>'), '') as info
+    FROM 
+        client 
+        LEFT JOIN bills ON client.client_id = bills.client_id 
+        LEFT JOIN membership ON client.client_id = membership.client_id 
+        LEFT JOIN sections ON client.client_id = sections.client_id 
+        LEFT JOIN tree ON tree.client_faktura_id = client.client_id
+        WHERE 1=1
+     GROUP BY 
+        client.client_id
+ ORDER BY client_id ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:57] Data fetched
+Daten: Array
+(
+    [totalRows] => 724
+    [returnedRows] => 30
+)
+
+[2024-12-19 19:25:59] Debug-Logging initialisiert
+[2024-12-19 19:25:59] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 1
+)
+
+[2024-12-19 19:25:59] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => bill_list
+            [contentId] => content_bills
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_bills
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:25:59] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+    GROUP BY 
+        bills.bill_id
+
+)
+
+[2024-12-19 19:25:59] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:59] Total rows
+Daten: Array
+(
+    [count] => 1992
+)
+
+[2024-12-19 19:25:59] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        bills.bill_id, 
+        bill_number,
+        client_number,
+        DATE_FORMAT(date_create,'%Y-%m-%d') as date_create_show,
+        date_booking,
+        date_send,
+        date_remind,
+        remind_level,
+        bills.netto,
+        post,
+        firstname,
+        secondname,
+        zip,
+        city,
+        ROUND(brutto,2) as brutto,
+        date_storno, 
+        (SELECT company_1 FROM company WHERE company_id = bills.company_id) as title_company, 
+        IF(email = '', '', CONCAT('<i class="icon mail tooltip" title="', email, '"></i>')) as email,    
+        IF(ROUND(booking_total) != ROUND(brutto), ROUND(brutto-booking_total,2), '0,00') as booking_total,        
+        CASE 
+            WHEN status = 'queued' THEN 'Versendet'
+            WHEN status = 'sent' THEN '<h5 style="font-size:12px" class="ui grey header">Zugestellt</h5>'
+            WHEN status = 'open' THEN '<h5 style="font-size:12px" class="ui green header">Geöffnet</h5>'
+            WHEN status = 'click' THEN '<h5 style="font-size:12px" class="ui green header">Angegklickt</h5>'
+            WHEN status = 'blocked' THEN '<h5 style="font-size:12px" class="ui black header">Geblockt</h5>'
+            WHEN status = 'bounce' THEN '<h5 style="font-size:12px" class="ui red header">Unzustellbar</h5>'
+            WHEN status = 'spam' THEN '<h5 style="font-size:12px" class="ui red header">Spam</h5>'
+            WHEN status = 'unsub' THEN '<h5 style="font-size:12px" class="ui red header">Abgemeldet</h5>'
+            ELSE status
+        END as status,
+        CASE
+            WHEN date_storno != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:red">', date_storno, ' (Storno)</div>')
+            WHEN date_booking != '0000-00-00' THEN CONCAT('<div class="info_text" style="color:green">', date_booking, ' (Verbucht)</div>')
+            WHEN date_send = '0000-00-00' THEN CONCAT('<button class="ui button blue mini" onclick="send_pdf(', bills.bill_id, ')"><i class="icon send"></i> Versenden</button>')
+            ELSE
+                CASE
+                    WHEN remind_level = 1 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 1 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 1 THEN CONCAT('<button class="ui button yellow mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 1</button>')
+                    WHEN remind_level = 2 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 2 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 2 THEN CONCAT('<button class="ui button orange mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 2</button>')
+                    WHEN remind_level = 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Mahnung 3 in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level = 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', true)" title="seit ', DATEDIFF(NOW(), date_remind), ' Tagen">Mahnung 3</button>')
+                    WHEN remind_level > 3 AND date_remind > NOW() THEN CONCAT('<span class="info_text" style="color:grey">Inkasso in ', DATEDIFF(date_remind, NOW()), ' Tagen</span>')
+                    WHEN remind_level > 3 THEN CONCAT('<button class="ui button red mini" onclick="send_pdf(', bills.bill_id, ', \'\', true)">Inkasso seit ', DATEDIFF(NOW(), date_remind), ' Tagen</button>')
+                    ELSE ''
+                END
+        END as send_status,
+        IF(tel, CONCAT('<button class="client_info" title="Tel:', tel, '">Info</button>'), '') as tel,
+        CASE
+            WHEN LENGTH(company_1) >= 40 THEN CONCAT(SUBSTRING(company_1, 1, 40), '<span class="km_info" title="', company_1, '">[...]</span>')
+            WHEN company_1 = '' THEN CONCAT(firstname, ' ', secondname)
+            ELSE company_1
+        END as company_1
+    FROM 
+        bills 
+        LEFT JOIN bill_details ON bills.bill_id = bill_details.bill_id 
+        LEFT JOIN logfile ON (bills.bill_id = logfile.bill_id AND log_id = (SELECT MAX(log_id) FROM logfile WHERE bill_id = bills.bill_id))
+        WHERE document = 'rn'
+     GROUP BY 
+        bills.bill_id
+ ORDER BY title_company ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:25:59] Data fetched
+Daten: Array
+(
+    [totalRows] => 1992
+    [returnedRows] => 25
+)
+
+[2024-12-19 19:26:11] Debug-Logging initialisiert
+[2024-12-19 19:26:11] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-19 19:26:11] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => invoice_list
+            [contentId] => content_invoices
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_invoices
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:26:11] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+)
+
+[2024-12-19 19:26:11] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+     GROUP BY 
+        invoices.invoice_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:11] Total rows
+Daten: Array
+(
+    [count] => 2
+)
+
+[2024-12-19 19:26:11] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+     GROUP BY 
+        invoices.invoice_id
+ ORDER BY invoice_number ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:11] Data fetched
+Daten: Array
+(
+    [totalRows] => 2
+    [returnedRows] => 2
+)
+
+[2024-12-19 19:26:20] Debug-Logging initialisiert
+[2024-12-19 19:26:20] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-19 19:26:20] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => invoice_list
+            [contentId] => content_invoices
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [filters] => Array
+                (
+                    [year_filter] => YEAR(invoice_date)= "2024"
+                )
+
+            [saveState] => false
+            [contentId] => content_invoices
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:26:20] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+)
+
+[2024-12-19 19:26:20] Applied filter
+Daten: Array
+(
+    [key] => year_filter
+    [value] => YEAR(invoice_date)= "2024"
+    [type] => complex
+)
+
+[2024-12-19 19:26:20] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    WHERE YEAR(invoice_date)= "2024" GROUP BY 
+        invoices.invoice_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:20] Total rows
+Daten: Array
+(
+    [count] => 2
+)
+
+[2024-12-19 19:26:20] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    WHERE YEAR(invoice_date)= "2024" GROUP BY 
+        invoices.invoice_id
+ ORDER BY invoice_number ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:20] Data fetched
+Daten: Array
+(
+    [totalRows] => 2
+    [returnedRows] => 2
+)
+
+[2024-12-19 19:26:22] Debug-Logging initialisiert
+[2024-12-19 19:26:22] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-19 19:26:22] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => invoice_list
+            [contentId] => content_invoices
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [filters] => Array
+                (
+                    [year_filter] => YEAR(invoice_date)= "2025"
+                )
+
+            [saveState] => false
+            [contentId] => content_invoices
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:26:22] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+)
+
+[2024-12-19 19:26:22] Applied filter
+Daten: Array
+(
+    [key] => year_filter
+    [value] => YEAR(invoice_date)= "2025"
+    [type] => complex
+)
+
+[2024-12-19 19:26:22] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    WHERE YEAR(invoice_date)= "2025" GROUP BY 
+        invoices.invoice_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:22] Total rows
+Daten: Array
+(
+    [count] => 0
+)
+
+[2024-12-19 19:26:22] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    WHERE YEAR(invoice_date)= "2025" GROUP BY 
+        invoices.invoice_id
+ ORDER BY invoice_number ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:22] Data fetched
+Daten: Array
+(
+    [totalRows] => 0
+    [returnedRows] => 0
+)
+
+[2024-12-19 19:26:23] Debug-Logging initialisiert
+[2024-12-19 19:26:23] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-19 19:26:24] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => invoice_list
+            [contentId] => content_invoices
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine Rechnungen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [filters] => Array
+                (
+                    [year_filter] => 
+                )
+
+            [saveState] => false
+            [contentId] => content_invoices
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:26:24] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+    GROUP BY 
+        invoices.invoice_id
+
+)
+
+[2024-12-19 19:26:24] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+     GROUP BY 
+        invoices.invoice_id
+) as subquery
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:24] Total rows
+Daten: Array
+(
+    [count] => 2
+)
+
+[2024-12-19 19:26:24] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        invoices.invoice_id, 
+        invoice_number,
+        DATE_FORMAT(invoice_date,'%Y-%m-%d') as invoice_date_show,
+        due_date,
+        customers.company_name,
+        customers.contact_person,
+        customers.postal_code,
+        customers.city,
+        ROUND(invoices.total_amount,2) as total_amount,
+        invoices.paid,
+        customers.email,
+        CASE
+            WHEN invoices.paid = 1 THEN '<div class="info_text" style="color:green">Bezahlt</div>'
+            WHEN CURDATE() > invoices.due_date THEN '<div class="info_text" style="color:red">Überfällig</div>'
+            ELSE '<div class="info_text" style="color:orange">Offen</div>'
+        END as payment_status,
+        IF(customers.email = '', '', CONCAT('<i class="icon mail tooltip" title="', customers.email, '"></i>')) as email_icon
+    FROM 
+        invoices 
+        LEFT JOIN customers ON invoices.customer_id = customers.customer_id
+     GROUP BY 
+        invoices.invoice_id
+ ORDER BY invoice_number ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:24] Data fetched
+Daten: Array
+(
+    [totalRows] => 2
+    [returnedRows] => 2
+)
+
+[2024-12-19 19:26:25] Debug-Logging initialisiert
+[2024-12-19 19:26:25] Database set
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        elba_id, 
+        account,
+        date,
+        text,
+        amount,
+        booking_date,
+        timestamp,
+        comment,
+        connect_id,
+        automator_id
+    FROM 
+        data_elba
+
+    [useDatabase] => 1
+    [hasWhereClause] => 
+)
+
+[2024-12-19 19:26:25] Fetching data
+Daten: Array
+(
+    [config] => Array
+        (
+            [debug] => 1
+            [debugLogFile] => 
+            [maxLogSize] => 10485760
+            [listId] => elba_list
+            [contentId] => content_elba
+            [itemsPerPage] => 25
+            [sortColumn] => id
+            [sortDirection] => ASC
+            [search] => 
+            [page] => 1
+            [showNoDataMessage] => 1
+            [noDataMessage] => Keine ELBA-Transaktionen gefunden.
+            [showFooter] => 1
+            [footerTemplate] => Gesamt: {totalRows} Einträge | Seite {currentPage} von {totalPages}
+            [showPagination] => 1
+            [tableClasses] => ui celled striped definition small compact very selectable table
+            [headerClasses] => ui table
+            [rowClasses] => 
+            [cellClasses] => 
+            [selectable] => 1
+            [celled] => 1
+            [color] => 
+            [size] => small
+            [width] => 100%
+            [filterClass] => ui message
+            [rememberFilters] => 1
+            [allowHtml] => 
+            [striped] => 1
+        )
+
+    [GET] => Array
+        (
+            [page] => 1
+            [sort] => id
+            [sortDir] => ASC
+            [search] => 
+            [saveState] => false
+            [contentId] => content_elba
+            [autoReloadInterval] => 0
+        )
+
+)
+
+[2024-12-19 19:26:25] Verwende Datenbankabfrage
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        elba_id, 
+        account,
+        date,
+        text,
+        amount,
+        booking_date,
+        timestamp,
+        comment,
+        connect_id,
+        automator_id
+    FROM 
+        data_elba
+
+)
+
+[2024-12-19 19:26:25] Count query
+Daten: Array
+(
+    [query] => SELECT COUNT(*) as total FROM (
+    SELECT 
+        elba_id, 
+        account,
+        date,
+        text,
+        amount,
+        booking_date,
+        timestamp,
+        comment,
+        connect_id,
+        automator_id
+    FROM 
+        data_elba
+) as subquery 
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:25] Total rows
+Daten: Array
+(
+    [count] => 200
+)
+
+[2024-12-19 19:26:25] Final SQL Query
+Daten: Array
+(
+    [query] => 
+    SELECT 
+        elba_id, 
+        account,
+        date,
+        text,
+        amount,
+        booking_date,
+        timestamp,
+        comment,
+        connect_id,
+        automator_id
+    FROM 
+        data_elba
+  ORDER BY date ASC LIMIT ? OFFSET ?
+    [params] => Array
+        (
+        )
+
+)
+
+[2024-12-19 19:26:25] Data fetched
+Daten: Array
+(
+    [totalRows] => 200
+    [returnedRows] => 25
+)
+

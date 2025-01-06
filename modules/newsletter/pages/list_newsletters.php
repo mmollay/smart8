@@ -9,6 +9,7 @@
             contentId: 'content_newsletters',
             sort: 'content_id',
             sortDir: 'DESC',
+            reload: false
             //autoReloadInterval: 20000
         });
     });

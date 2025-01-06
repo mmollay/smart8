@@ -1,469 +1,637 @@
-DashboardClass.php  [error opening dir]
-HowTo
-└── info.txt
-auth
-├── google-callback.php
-├── login copy.php
-├── login.php
-├── login2.php
-├── logout.php
-├── new_password.php
-├── no_access.php
-├── password_helper.php
-├── register.php
-├── reset_password.php
-└── verify.php
-check_permission.php  [error opening dir]
-composer.json  [error opening dir]
-composer.lock  [error opening dir]
-config
-├── config.php
-├── database.php
-├── mail_config.php
-├── oauth_config.php
-└── version.php
-config.php  [error opening dir]
-css
-└── basis.css
-img
-└── logo.png
-index.php  [error opening dir]
-js
-├── jquery.message.js
-└── main.js
-logs
-└── error.log
-modules
-├── example
-│   ├── ajax
-│   │   ├── form_delete.php
-│   │   └── form_save.php
-│   ├── e_config.php
-│   ├── form
-│   │   └── f_items.php
-│   ├── index.php
-│   ├── lists
-│   │   └── items.php
-│   └── pages
-│       ├── home.php
-│       └── list_items.php
-├── faktura2
-│   ├── data
-│   │   └── get_article_data.php
-│   ├── f_config.php
-│   ├── form
-│   │   ├── f_accounts.php
-│   │   ├── f_articles.php
-│   │   ├── f_customers.php
-│   │   ├── f_delete.php
-│   │   ├── f_expenses.php
-│   │   ├── f_invoices.php
-│   │   └── f_suppliers.php
-│   ├── index.php
-│   ├── js
-│   │   ├── form.js
-│   │   └── invoice.js
-│   ├── lists
-│   │   ├── accounts.php
-│   │   ├── articles.php
-│   │   ├── customers.php
-│   │   ├── elba.php
-│   │   ├── expenses.php
-│   │   ├── invoices.php
-│   │   └── suppliers.php
-│   ├── pages
-│   │   ├── home.php
-│   │   ├── list_accounts.php
-│   │   ├── list_articles.php
-│   │   ├── list_customers.php
-│   │   ├── list_elba.php
-│   │   ├── list_expenses.php
-│   │   ├── list_invoices.php
-│   │   └── list_suppliers.php
-│   └── save
-│       ├── process_account_form.php
-│       ├── process_article_form.php
-│       ├── process_customer_form.php
-│       ├── process_delete.php
-│       ├── process_invoice_form.php
-│       └── process_supplier_form.php
-├── index.php
-├── main
-│   ├── ajax
-│   │   └── settings_save.php
-│   ├── index.php
-│   ├── js
-│   │   └── form_setting.js
-│   ├── list
-│   └── pages
-│       ├── home.php
-│       ├── settings.php
-│       └── users.php
-├── newsletter
-│   ├── ajax
-│   │   ├── check_group_name.php
-│   │   ├── check_newsletter_status.php
-│   │   ├── check_pending_emails.php
-│   │   ├── check_queue_progress.php
-│   │   ├── check_sending_status.php
-│   │   ├── clone_newsletter.php
-│   │   ├── create_group.php
-│   │   ├── delete_attachment_info.php
-│   │   ├── export.php
-│   │   ├── export_recipients.php
-│   │   ├── form_delete2.php
-│   │   ├── form_edit2.php
-│   │   ├── form_save.php
-│   │   ├── generic_export.php
-│   │   ├── get_attachment_info.php
-│   │   ├── process_import.php
-│   │   ├── save_attachment_info.php
-│   │   ├── send_newsletter.php
-│   │   ├── ssi_newsletter.sql
-│   │   ├── start_mass_mailer.php
-│   │   ├── template
-│   │   │   ├── delete.php
-│   │   │   ├── duplicate.php
-│   │   │   ├── get_preview_data.php
-│   │   │   ├── get_recipient_data.php
-│   │   │   ├── get_template.php
-│   │   │   ├── get_templates.php
-│   │   │   ├── save_template.php
-│   │   │   └── update_file_list.php
-│   │   ├── update_attachments.php
-│   │   └── update_filelist.php
-│   ├── classes
-│   │   ├── BatchManager.php
-│   │   ├── EmailQueueManager.php
-│   │   ├── EmailService.php
-│   │   ├── PlaceholderService.php
-│   │   ├── QueueProcessor.php
-│   │   ├── WebhookHandler.php
-│   │   ├── importers
-│   │   │   └── RecipientImporter.php
-│   │   └── logs
-│   ├── components
-│   │   ├── editor_config.php
-│   │   └── placeholders.php
-│   ├── config
-│   │   └── export_config.php
-│   ├── css
-│   │   ├── common.css
-│   │   └── import-recipients.css
-│   ├── database.txt
-│   ├── exec
-│   │   ├── cron_controller.php
-│   │   ├── mailjet_event_handler.php
-│   │   ├── process_batch.php
-│   │   ├── process_queue copy.php
-│   │   ├── process_queue.php
-│   │   ├── send_email_background.php
-│   │   ├── send_test_mail.php
-│   │   ├── test_mailjet_handler_direct.php
-│   │   ├── test_queue_manager.php
-│   │   ├── test_single_event.php
-│   │   ├── test_status_transitions.php
-│   │   └── test_webhook.php
-│   ├── export
-│   ├── form
-│   │   ├── f_groups.php
-│   │   ├── f_newsletters.php
-│   │   ├── f_recipients.php
-│   │   ├── f_senders.php
-│   │   ├── f_templates.php
-│   │   └── preview_template.php
-│   ├── import.txt
-│   ├── index.php
-│   ├── js
-│   │   ├── editor_utils.js
-│   │   ├── form_after.js
-│   │   ├── form_home.js
-│   │   ├── import-recipients.js
-│   │   ├── newsletter-utils.js
-│   │   └── send_emails.js
-│   ├── lists
-│   │   ├── groups.php
-│   │   ├── logs.php
-│   │   ├── newsletters.php
-│   │   ├── recipients.php
-│   │   ├── senders.php
-│   │   └── templates.php
-│   ├── logs
-│   │   ├── batch_187_1733226109.log
-│   │   ├── batch_187_1733226462.log
-│   │   ├── batch_188_1733226688.log
-│   │   ├── batch_189_1733227061.log
-│   │   ├── batch_189_1733227273.log
-│   │   ├── batch_189_1733227294.log
-│   │   ├── batch_190_1733227317.log
-│   │   ├── batch_190_1733227357.log
-│   │   ├── batch_190_1733227560.log
-│   │   ├── batch_192_1733232423.log
-│   │   ├── batch_error.log
-│   │   ├── batch_process.log
-│   │   ├── cron.log
-│   │   ├── cron_controller.log
-│   │   ├── cron_error.log
-│   │   ├── error.log
-│   │   └── mailjet_webhook.log
-│   ├── n_config.php
-│   ├── pages
-│   │   ├── form_delete.php
-│   │   ├── form_edit.php
-│   │   ├── home.php
-│   │   ├── import_recipients.php
-│   │   ├── list_groups.php
-│   │   ├── list_logs.php
-│   │   ├── list_newsletters.php
-│   │   ├── list_recipients.php
-│   │   ├── list_senders.php
-│   │   ├── list_templates.php
-│   │   ├── preview_newsletter.php
-│   │   └── setting.php
-│   ├── test
-│   │   ├── INFO.txt
-│   │   ├── index.php
-│   │   ├── save_email_data.php
-│   │   ├── send_emails.php
-│   │   ├── send_emails_background.php
-│   │   └── webhook.php
-│   ├── tmp
-│   ├── tree_newsletter.txt
-│   ├── unsubscribe.php
-│   └── webhooks
-│       ├── logs
-│       ├── mailjet.php
-│       └── webhooks
-├── service
-│   ├── Change_log.txt
-│   ├── ajax
-│   │   └── mysql_save.php
-│   ├── exec
-│   │   └── hack_cleaner.php
-│   ├── inc
-│   │   ├── apache_count_clients.php
-│   │   ├── change_user_id.php
-│   │   ├── function_fix_utf8.php
-│   │   ├── rm_eval.php
-│   │   ├── rm_index_hack.php
-│   │   └── rm_x_hack.php
-│   ├── index.php
-│   ├── js
-│   │   └── main.js
-│   ├── manuel
-│   │   ├── oegt_new_nr2021.php
-│   │   ├── transfer_site_option_old2smart_options.php
-│   │   ├── transfer_smart_domain2company_domain.php
-│   │   └── transfer_smart_user2company_user.php
-│   ├── pages
-│   │   ├── apache.php
-│   │   ├── dns.php
-│   │   ├── hacker.php
-│   │   └── home.php
-│   ├── terminal.php
-│   └── was ist zu tun
-├── trader
-│   ├── ajax
-│   │   ├── content_chart_data.php
-│   │   ├── form_edit2.php
-│   │   └── post.php
-│   ├── change_log.txt
-│   ├── exec
-│   │   ├── fetch_dax.php
-│   │   ├── fetch_orders.php
-│   │   ├── fetch_stock.php
-│   │   ├── generate_startey_fetch_to_orders.php
-│   │   ├── generate_token.php
-│   │   ├── orders.txt
-│   │   └── session_data.txt
-│   ├── form
-│   │   ├── f_account.php
-│   │   ├── f_broker.php
-│   │   ├── f_client.php
-│   │   ├── f_investment.php
-│   │   ├── f_orders.php
-│   │   ├── f_server.php
-│   │   └── f_strategy.php
-│   ├── functions.inc.php
-│   ├── inc
-│   │   ├── ema_form.php
-│   │   ├── getOpenPosition.php
-│   │   └── getServerInfo.php
-│   ├── index.php
-│   ├── js
-│   │   ├── form_after.js
-│   │   ├── form_broker.js
-│   │   ├── form_develop.js
-│   │   ├── form_home.js
-│   │   ├── form_server.js
-│   │   ├── form_setting.js
-│   │   ├── form_strategy.js
-│   │   ├── function_home.js
-│   │   └── main.js
-│   ├── list
-│   │   ├── broker.php
-│   │   ├── clients.php
-│   │   ├── investments.php
-│   │   ├── orderdetail.php
-│   │   ├── orders.php
-│   │   ├── servers.php
-│   │   └── strategy.php
-│   ├── pages
-│   │   ├── broker.php
-│   │   ├── chart.php
-│   │   ├── client.php
-│   │   ├── content_account.php
-│   │   ├── content_develop.php
-│   │   ├── content_home2.php
-│   │   ├── content_import.php
-│   │   ├── content_import2.php
-│   │   ├── content_profit.php
-│   │   ├── content_setting.php
-│   │   ├── form_delete.php
-│   │   ├── form_edit.php
-│   │   ├── form_send_strategy2server.php
-│   │   ├── home.php
-│   │   ├── investments.php
-│   │   ├── orders.php
-│   │   ├── server.php
-│   │   ├── strategy.php
-│   │   └── version.php
-│   └── t_config.php
-├── trader2
-│   ├── ajax
-│   ├── functions.inc.php
-│   ├── index.php
-│   ├── js
-│   ├── lists
-│   │   └── trades.php
-│   ├── pages
-│   │   ├── home.php
-│   │   └── list_trades.php
-│   └── t_config.php
-├── trader_client
-│   ├── check_permission.php
-│   ├── config.php
-│   ├── db.txt
-│   ├── functions.php
-│   ├── index.php
-│   ├── js
-│   │   └── form_setting.js
-│   ├── list
-│   │   ├── home_array.php
-│   │   ├── investment_array.php
-│   │   └── trades_array.php
-│   ├── listrs
-│   │   └── trades2.php
+.
+├── DashboardClass.php
+├── HowTo
+│   └── info.txt
+├── auth
+│   ├── google-callback.php
+│   ├── login copy.php
 │   ├── login.php
 │   ├── login2.php
 │   ├── logout.php
-│   ├── pages
-│   │   ├── chart_data.php
-│   │   ├── charts.php
-│   │   ├── home.php
-│   │   ├── settings.php
-│   │   ├── settings_save_data.php
-│   │   ├── trades.php
-│   │   └── trades2.php
-│   └── user_impersonation.php
-└── users
-    ├── ajax
-    │   ├── delete_user.php
-    │   ├── save_modules.php
-    │   ├── save_permissions.php
-    │   ├── save_user.php
-    │   └── toggle_status.php
-    ├── form
-    │   ├── f_module.php
-    │   ├── f_password.php
-    │   ├── f_permission.php
-    │   └── f_user.php
-    ├── index.php
-    ├── js
-    │   ├── modules.js
-    │   ├── permissions.js
-    │   └── users.js
-    ├── lists
-    │   ├── modules.php
-    │   ├── permissions.php
-    │   └── users.php
-    ├── pages
-    │   ├── home.php
-    │   ├── list_modules.php
-    │   ├── list_permissions.php
-    │   └── list_users.php
-    └── users_config.php
-php_functions
-├── fpdf
-│   ├── FAQ.htm
-│   ├── changelog.htm
-│   ├── class.fpdf_table.php
-│   ├── class.multicelltag.php
-│   ├── class.string_tags.php
-│   ├── doc
-│   │   ├── __construct.htm
-│   │   ├── acceptpagebreak.htm
-│   │   ├── addfont.htm
-│   │   ├── addlink.htm
-│   │   ├── addpage.htm
-│   │   ├── aliasnbpages.htm
-│   │   ├── cell.htm
-│   │   ├── close.htm
-│   │   ├── error.htm
-│   │   ├── footer.htm
-│   │   ├── getpageheight.htm
-│   │   ├── getpagewidth.htm
-│   │   ├── getstringwidth.htm
-│   │   ├── getx.htm
-│   │   ├── gety.htm
-│   │   ├── header.htm
-│   │   ├── image.htm
-│   │   ├── index.htm
-│   │   ├── line.htm
-│   │   ├── link.htm
-│   │   ├── ln.htm
-│   │   ├── multicell.htm
-│   │   ├── output.htm
-│   │   ├── pageno.htm
-│   │   ├── rect.htm
-│   │   ├── setauthor.htm
-│   │   ├── setautopagebreak.htm
-│   │   ├── setcompression.htm
-│   │   ├── setcreator.htm
-│   │   ├── setdisplaymode.htm
-│   │   ├── setdrawcolor.htm
-│   │   ├── setfillcolor.htm
-│   │   ├── setfont.htm
-│   │   ├── setfontsize.htm
-│   │   ├── setkeywords.htm
-│   │   ├── setleftmargin.htm
-│   │   ├── setlinewidth.htm
-│   │   ├── setlink.htm
-│   │   ├── setmargins.htm
-│   │   ├── setrightmargin.htm
-│   │   ├── setsubject.htm
-│   │   ├── settextcolor.htm
-│   │   ├── settitle.htm
-│   │   ├── settopmargin.htm
-│   │   ├── setx.htm
-│   │   ├── setxy.htm
-│   │   ├── sety.htm
-│   │   ├── text.htm
-│   │   └── write.htm
-│   ├── easyTable.php
-│   ├── ex.php
-│   ├── example4.php
-│   ├── exfpdf.php
-│   ├── font
-│   │   ├── courier.php
-│   │   ├── courierb.php
-│   │   ├── courierbi.php
-│   │   ├── courieri.php
-│   │   ├── desktop.ini
-│   │   ├── helvetica.php
-│   │   ├── helveticab.php
-│   │   ├── helveticabi.php
-│   │   ├── helveticai.php
+│   ├── new_password.php
+│   ├── no_access.php
+│   ├── password_helper.php
+│   ├── register.php
+│   ├── reset_password.php
+│   └── verify.php
+├── check_permission.php
+├── composer.json
+├── composer.lock
+├── config
+│   ├── config.php
+│   ├── database.php
+│   ├── mail_config.php
+│   ├── oauth_config.php
+│   └── version.php
+├── config.php
+├── css
+│   └── basis.css
+├── img
+│   └── logo.png
+├── index.php
+├── js
+│   ├── jquery.message.js
+│   └── main.js
+├── logs
+│   ├── 5ab1fc327db48b3e3c7385c4a7ebee67.png
+│   ├── cron_controller.log
+│   └── error.log
+├── modules
+│   ├── example
+│   │   ├── ajax
+│   │   │   ├── form_delete.php
+│   │   │   └── form_save.php
+│   │   ├── e_config.php
+│   │   ├── form
+│   │   │   └── f_items.php
+│   │   ├── index.php
+│   │   ├── lists
+│   │   │   └── items.php
+│   │   └── pages
+│   │       ├── home.php
+│   │       └── list_items.php
+│   ├── faktura2
+│   │   ├── data
+│   │   │   └── get_article_data.php
+│   │   ├── f_config.php
+│   │   ├── form
+│   │   │   ├── f_accounts.php
+│   │   │   ├── f_articles.php
+│   │   │   ├── f_customers.php
+│   │   │   ├── f_delete.php
+│   │   │   ├── f_expenses.php
+│   │   │   ├── f_invoices.php
+│   │   │   └── f_suppliers.php
+│   │   ├── index.php
+│   │   ├── js
+│   │   │   ├── form.js
+│   │   │   └── invoice.js
+│   │   ├── lists
+│   │   │   ├── accounts.php
+│   │   │   ├── articles.php
+│   │   │   ├── customers.php
+│   │   │   ├── elba.php
+│   │   │   ├── expenses.php
+│   │   │   ├── invoices.php
+│   │   │   └── suppliers.php
+│   │   ├── pages
+│   │   │   ├── home.php
+│   │   │   ├── list_accounts.php
+│   │   │   ├── list_articles.php
+│   │   │   ├── list_customers.php
+│   │   │   ├── list_elba.php
+│   │   │   ├── list_expenses.php
+│   │   │   ├── list_invoices.php
+│   │   │   └── list_suppliers.php
+│   │   └── save
+│   │       ├── process_account_form.php
+│   │       ├── process_article_form.php
+│   │       ├── process_customer_form.php
+│   │       ├── process_delete.php
+│   │       ├── process_invoice_form.php
+│   │       └── process_supplier_form.php
+│   ├── index.php
+│   ├── main
+│   │   ├── ajax
+│   │   │   └── settings_save.php
+│   │   ├── index.php
+│   │   ├── js
+│   │   │   └── form_setting.js
+│   │   ├── list
+│   │   └── pages
+│   │       ├── home.php
+│   │       ├── settings.php
+│   │       └── users.php
+│   ├── newsletter
+│   │   ├── ajax
+│   │   │   ├── check_group_name.php
+│   │   │   ├── check_newsletter_status.php
+│   │   │   ├── check_pending_emails.php
+│   │   │   ├── check_queue_progress.php
+│   │   │   ├── check_sending_status.php
+│   │   │   ├── clone_newsletter.php
+│   │   │   ├── create_group.php
+│   │   │   ├── create_temp_group.php
+│   │   │   ├── debug.log
+│   │   │   ├── delete_attachment_info.php
+│   │   │   ├── export.php
+│   │   │   ├── export_recipients.php
+│   │   │   ├── form_delete2.php
+│   │   │   ├── form_edit2.php
+│   │   │   ├── form_save.php
+│   │   │   ├── generic_export.php
+│   │   │   ├── get_attachment_info.php
+│   │   │   ├── get_delivery_stats.php
+│   │   │   ├── get_groups.php
+│   │   │   ├── get_newsletter_stats.php
+│   │   │   ├── get_package_info.php
+│   │   │   ├── get_send_progress.php
+│   │   │   ├── get_tracking_data.php
+│   │   │   ├── import_blacklist.php
+│   │   │   ├── import_recipients.php
+│   │   │   ├── import_status.php
+│   │   │   ├── process_import.php
+│   │   │   ├── recipient_import.php
+│   │   │   ├── save_package.php
+│   │   │   ├── search_recipients.php
+│   │   │   ├── send_newsletter.php
+│   │   │   ├── ssi_newsletter.sql
+│   │   │   ├── start_cron.php
+│   │   │   ├── start_mass_mailer.php
+│   │   │   ├── stop_sending.php
+│   │   │   ├── template
+│   │   │   │   ├── delete.php
+│   │   │   │   ├── duplicate.php
+│   │   │   │   ├── get_preview_data.php
+│   │   │   │   ├── get_recipient_data.php
+│   │   │   │   ├── get_template.php
+│   │   │   │   ├── get_templates.php
+│   │   │   │   ├── save_template.php
+│   │   │   │   └── update_file_list.php
+│   │   │   ├── update_attachments.php
+│   │   │   └── update_filelist.php
+│   │   ├── changelog_modal.php
+│   │   ├── classes
+│   │   │   ├── BatchManager.php
+│   │   │   ├── DatabaseManager.php
+│   │   │   ├── EmailQueueManager.php
+│   │   │   ├── EmailService.php
+│   │   │   ├── PlaceholderService.php
+│   │   │   ├── QueueProcessor.php
+│   │   │   ├── WebhookHandler.php
+│   │   │   ├── attachment_debug.log
+│   │   │   ├── importers
+│   │   │   │   └── RecipientImporter.php
+│   │   │   ├── logs
+│   │   │   └── test
+│   │   ├── components
+│   │   │   ├── editor_config.php
+│   │   │   ├── placeholders copy.php
+│   │   │   └── placeholders.php
+│   │   ├── config
+│   │   │   ├── config.php
+│   │   │   ├── export_config.php
+│   │   │   └── import_export_config.php
+│   │   ├── css
+│   │   │   ├── common.css
+│   │   │   └── import-recipients.css
+│   │   ├── database.txt
+│   │   ├── exec
+│   │   │   ├── cron_controller.php
+│   │   │   ├── logs
+│   │   │   │   └── webhook_debug.log
+│   │   │   ├── mailjet_event_handler.php
+│   │   │   ├── process_batch.php
+│   │   │   ├── send_email_background.php
+│   │   │   ├── send_test_mail.php
+│   │   │   └── test
+│   │   │       ├── test_mailjet_handler_direct.php
+│   │   │       ├── test_queue_manager.php
+│   │   │       ├── test_single_event.php
+│   │   │       ├── test_status_transitions.php
+│   │   │       ├── test_webhook.php
+│   │   │       └── test_webhook2.php
+│   │   ├── export
+│   │   ├── form
+│   │   │   ├── f_blacklist.php
+│   │   │   ├── f_groups.php
+│   │   │   ├── f_newsletters.php
+│   │   │   ├── f_packages.php
+│   │   │   ├── f_recipients.php
+│   │   │   ├── f_senders.php
+│   │   │   ├── f_templates.php
+│   │   │   └── preview_template.php
+│   │   ├── functions.php
+│   │   ├── import.txt
+│   │   ├── index.php
+│   │   ├── js
+│   │   │   ├── cron-control.js
+│   │   │   ├── editor_utils.js
+│   │   │   ├── f_newsletter.js
+│   │   │   ├── form_after.js
+│   │   │   ├── form_home.js
+│   │   │   ├── import-recipients.js
+│   │   │   ├── import.js
+│   │   │   ├── newsletter.js
+│   │   │   └── send_emails.js
+│   │   ├── lists
+│   │   │   ├── blacklist.php
+│   │   │   ├── groups.php
+│   │   │   ├── logs.php
+│   │   │   ├── newsletters copy 2.php
+│   │   │   ├── newsletters copy.php
+│   │   │   ├── newsletters.php
+│   │   │   ├── packages.php
+│   │   │   ├── recipients.php
+│   │   │   ├── senders.php
+│   │   │   └── templates.php
+│   │   ├── logs
+│   │   │   ├── batch_103_2024-12-11_22-17-52.log
+│   │   │   ├── batch_104_2024-12-11_22-17-54.log
+│   │   │   ├── batch_105_2024-12-11_22-17-56.log
+│   │   │   ├── batch_106_2024-12-11_22-37-07.log
+│   │   │   ├── batch_107_2024-12-11_22-44-15.log
+│   │   │   ├── batch_108_2024-12-11_22-45-40.log
+│   │   │   ├── batch_111_2024-12-13_10-35-36.log
+│   │   │   ├── batch_118_2024-12-13_14-27-29.log
+│   │   │   ├── batch_274_2024-12-07_11-56-46.log
+│   │   │   ├── batch_275_2024-12-07_12-02-38.log
+│   │   │   ├── batch_276_2024-12-07_12-07-32.log
+│   │   │   ├── batch_279_2024-12-07_12-08-53.log
+│   │   │   ├── batch_280_2024-12-07_12-10-22.log
+│   │   │   ├── batch_281_2024-12-07_12-13-03.log
+│   │   │   ├── batch_282_2024-12-07_12-16-14.log
+│   │   │   ├── batch_283_2024-12-07_12-18-41.log
+│   │   │   ├── batch_284_2024-12-07_12-20-50.log
+│   │   │   ├── batch_285_2024-12-07_12-21-48.log
+│   │   │   ├── batch_286_2024-12-07_12-22-23.log
+│   │   │   ├── batch_287_2024-12-07_12-45-57.log
+│   │   │   ├── batch_288_2024-12-07_12-46-34.log
+│   │   │   ├── batch_289_2024-12-07_12-48-04.log
+│   │   │   ├── batch_290_2024-12-07_12-51-19.log
+│   │   │   ├── batch_291_2024-12-07_12-54-07.log
+│   │   │   ├── batch_292_2024-12-07_13-20-48.log
+│   │   │   ├── batch_293_2024-12-07_13-25-02.log
+│   │   │   ├── batch_307_2024-12-08_12-06-31.log
+│   │   │   ├── batch_309_2024-12-08_12-43-02.log
+│   │   │   ├── batch_310_2024-12-08_12-43-04.log
+│   │   │   ├── batch_311_2024-12-08_14-29-26.log
+│   │   │   ├── batch_311_2024-12-08_15-02-55.log
+│   │   │   ├── batch_311_2024-12-08_17-35-14.log
+│   │   │   ├── batch_312_2024-12-08_14-30-26.log
+│   │   │   ├── batch_312_2024-12-08_15-02-57.log
+│   │   │   ├── batch_312_2024-12-08_17-35-16.log
+│   │   │   ├── batch_313_2024-12-08_14-31-25.log
+│   │   │   ├── batch_313_2024-12-08_15-03-01.log
+│   │   │   ├── batch_313_2024-12-08_17-35-18.log
+│   │   │   ├── batch_314_2024-12-08_14-32-44.log
+│   │   │   ├── batch_314_2024-12-08_15-03-03.log
+│   │   │   ├── batch_314_2024-12-08_17-35-20.log
+│   │   │   ├── batch_315_2024-12-08_14-35-37.log
+│   │   │   ├── batch_315_2024-12-08_15-07-21.log
+│   │   │   ├── batch_316_2024-12-08_13-36-36.log
+│   │   │   ├── batch_316_2024-12-08_15-07-23.log
+│   │   │   ├── batch_317_2024-12-08_14-37-38.log
+│   │   │   ├── batch_317_2024-12-08_15-23-42.log
+│   │   │   ├── batch_318_2024-12-08_14-45-09.log
+│   │   │   ├── batch_318_2024-12-08_17-35-04.log
+│   │   │   ├── batch_319_2024-12-08_14-45-59.log
+│   │   │   ├── batch_319_2024-12-08_17-35-06.log
+│   │   │   ├── batch_320_2024-12-08_14-51-26.log
+│   │   │   ├── batch_320_2024-12-08_17-35-08.log
+│   │   │   ├── batch_321_2024-12-08_14-52-25.log
+│   │   │   ├── batch_321_2024-12-08_17-35-10.log
+│   │   │   ├── batch_322_2024-12-08_14-54-25.log
+│   │   │   ├── batch_322_2024-12-08_17-35-22.log
+│   │   │   ├── batch_323_2024-12-08_14-54-47.log
+│   │   │   ├── batch_324_2024-12-08_14-56-04.log
+│   │   │   ├── batch_324_2024-12-08_17-35-24.log
+│   │   │   ├── batch_325_2024-12-08_14-57-33.log
+│   │   │   ├── batch_325_2024-12-08_17-35-27.log
+│   │   │   ├── batch_326_2024-12-08_14-58-40.log
+│   │   │   ├── batch_326_2024-12-08_17-35-29.log
+│   │   │   ├── batch_327_2024-12-08_15-00-44.log
+│   │   │   ├── batch_328_2024-12-08_15-02-59.log
+│   │   │   ├── batch_328_2024-12-08_17-35-31.log
+│   │   │   ├── batch_329_2024-12-08_15-03-44.log
+│   │   │   ├── batch_329_2024-12-08_17-35-33.log
+│   │   │   ├── batch_330_2024-12-08_15-04-17.log
+│   │   │   ├── batch_331_2024-12-08_15-04-56.log
+│   │   │   ├── batch_331_2024-12-08_17-35-35.log
+│   │   │   ├── batch_332_2024-12-08_15-07-17.log
+│   │   │   ├── batch_333_2024-12-08_15-07-19.log
+│   │   │   ├── batch_334_2024-12-08_15-08-49.log
+│   │   │   ├── batch_335_2024-12-08_15-23-44.log
+│   │   │   ├── batch_336_2024-12-08_17-35-12.log
+│   │   │   ├── batch_340_2024-12-08_17-36-29.log
+│   │   │   ├── batch_342_2024-12-08_17-51-56.log
+│   │   │   ├── batch_344_2024-12-08_17-55-13.log
+│   │   │   ├── batch_345_2024-12-09_09-18-10.log
+│   │   │   ├── batch_346_2024-12-09_02-12-32.log
+│   │   │   ├── batch_347_2024-12-09_09-24-45.log
+│   │   │   ├── batch_358_2024-12-09_10-36-59.log
+│   │   │   ├── batch_360_2024-12-09_14-58-03.log
+│   │   │   ├── batch_362_2024-12-09_15-01-41.log
+│   │   │   ├── batch_364_2024-12-09_16-11-41.log
+│   │   │   ├── batch_80_2024-12-09_22-41-28.log
+│   │   │   ├── batch_81_2024-12-09_22-41-30.log
+│   │   │   ├── batch_82_2024-12-10_07-34-01.log
+│   │   │   ├── batch_83_2024-12-10_07-34-03.log
+│   │   │   ├── batch_84_2024-12-10_07-34-05.log
+│   │   │   ├── batch_85_2024-12-10_07-34-07.log
+│   │   │   ├── batch_88_2024-12-10_07-40-29.log
+│   │   │   ├── batch_89_2024-12-10_07-57-10.log
+│   │   │   ├── batch_90_2024-12-10_07-57-12.log
+│   │   │   ├── batch_92_2024-12-10_09-03-29.log
+│   │   │   ├── batch_94_2024-12-10_09-05-41.log
+│   │   │   ├── batch_error.log
+│   │   │   ├── batch_manager.log
+│   │   │   ├── cron.log
+│   │   │   ├── cron_controller.log
+│   │   │   ├── cron_error.log
+│   │   │   └── test_mail.log
+│   │   ├── n_config copy.php
+│   │   ├── n_config.php
+│   │   ├── pages
+│   │   │   ├── create_newsletter.php
+│   │   │   ├── form_delete.php
+│   │   │   ├── form_edit.php
+│   │   │   ├── home.php
+│   │   │   ├── import_recipients.php
+│   │   │   ├── list_blacklist.php
+│   │   │   ├── list_groups.php
+│   │   │   ├── list_logs.php
+│   │   │   ├── list_newsletters.php
+│   │   │   ├── list_packages.php
+│   │   │   ├── list_recipients.php
+│   │   │   ├── list_senders.php
+│   │   │   ├── list_templates.php
+│   │   │   ├── preview_newsletter.php
+│   │   │   └── setting.php
+│   │   ├── service
+│   │   ├── test
+│   │   │   ├── INFO.txt
+│   │   │   ├── index.php
+│   │   │   ├── save_email_data.php
+│   │   │   ├── send_emails.php
+│   │   │   ├── send_emails_background.php
+│   │   │   └── webhook.php
+│   │   ├── test.php
+│   │   ├── tmp
+│   │   ├── tree_newsletter.txt
+│   │   ├── unsubscribe.php
+│   │   ├── version.php
+│   │   └── webhooks
+│   │       ├── logs
+│   │       ├── mailjet.php
+│   │       └── webhooks
+│   ├── service
+│   │   ├── Change_log.txt
+│   │   ├── ajax
+│   │   │   └── mysql_save.php
+│   │   ├── exec
+│   │   │   └── hack_cleaner.php
+│   │   ├── inc
+│   │   │   ├── apache_count_clients.php
+│   │   │   ├── change_user_id.php
+│   │   │   ├── function_fix_utf8.php
+│   │   │   ├── rm_eval.php
+│   │   │   ├── rm_index_hack.php
+│   │   │   └── rm_x_hack.php
+│   │   ├── index.php
+│   │   ├── js
+│   │   │   └── main.js
+│   │   ├── manuel
+│   │   │   ├── oegt_new_nr2021.php
+│   │   │   ├── transfer_site_option_old2smart_options.php
+│   │   │   ├── transfer_smart_domain2company_domain.php
+│   │   │   └── transfer_smart_user2company_user.php
+│   │   ├── pages
+│   │   │   ├── apache.php
+│   │   │   ├── dns.php
+│   │   │   ├── hacker.php
+│   │   │   └── home.php
+│   │   ├── terminal.php
+│   │   └── was ist zu tun
+│   ├── trader
+│   │   ├── ajax
+│   │   │   ├── content_chart_data.php
+│   │   │   ├── form_edit2.php
+│   │   │   └── post.php
+│   │   ├── change_log.txt
+│   │   ├── exec
+│   │   │   ├── fetch_dax.php
+│   │   │   ├── fetch_orders.php
+│   │   │   ├── fetch_stock.php
+│   │   │   ├── generate_startey_fetch_to_orders.php
+│   │   │   ├── generate_token.php
+│   │   │   ├── orders.txt
+│   │   │   └── session_data.txt
+│   │   ├── form
+│   │   │   ├── f_account.php
+│   │   │   ├── f_broker.php
+│   │   │   ├── f_client.php
+│   │   │   ├── f_investment.php
+│   │   │   ├── f_orders.php
+│   │   │   ├── f_server.php
+│   │   │   └── f_strategy.php
+│   │   ├── functions.inc.php
+│   │   ├── inc
+│   │   │   ├── ema_form.php
+│   │   │   ├── getOpenPosition.php
+│   │   │   └── getServerInfo.php
+│   │   ├── index.php
+│   │   ├── js
+│   │   │   ├── form_after.js
+│   │   │   ├── form_broker.js
+│   │   │   ├── form_develop.js
+│   │   │   ├── form_home.js
+│   │   │   ├── form_server.js
+│   │   │   ├── form_setting.js
+│   │   │   ├── form_strategy.js
+│   │   │   ├── function_home.js
+│   │   │   └── main.js
+│   │   ├── list
+│   │   │   ├── broker.php
+│   │   │   ├── clients.php
+│   │   │   ├── investments.php
+│   │   │   ├── orderdetail.php
+│   │   │   ├── orders.php
+│   │   │   ├── servers.php
+│   │   │   └── strategy.php
+│   │   ├── pages
+│   │   │   ├── broker.php
+│   │   │   ├── chart.php
+│   │   │   ├── client.php
+│   │   │   ├── content_account.php
+│   │   │   ├── content_develop.php
+│   │   │   ├── content_home2.php
+│   │   │   ├── content_import.php
+│   │   │   ├── content_import2.php
+│   │   │   ├── content_profit.php
+│   │   │   ├── content_setting.php
+│   │   │   ├── form_delete.php
+│   │   │   ├── form_edit.php
+│   │   │   ├── form_send_strategy2server.php
+│   │   │   ├── home.php
+│   │   │   ├── investments.php
+│   │   │   ├── orders.php
+│   │   │   ├── server.php
+│   │   │   ├── strategy.php
+│   │   │   └── version.php
+│   │   └── t_config.php
+│   ├── trader2
+│   │   ├── ajax
+│   │   ├── functions.inc.php
+│   │   ├── index.php
+│   │   ├── js
+│   │   ├── lists
+│   │   │   └── trades.php
+│   │   ├── pages
+│   │   │   ├── home.php
+│   │   │   └── list_trades.php
+│   │   └── t_config.php
+│   ├── trader_client
+│   │   ├── check_permission.php
+│   │   ├── config.php
+│   │   ├── db.txt
+│   │   ├── functions.php
+│   │   ├── index.php
+│   │   ├── js
+│   │   │   └── form_setting.js
+│   │   ├── list
+│   │   │   ├── home_array.php
+│   │   │   ├── investment_array.php
+│   │   │   └── trades_array.php
+│   │   ├── listrs
+│   │   │   └── trades2.php
+│   │   ├── login.php
+│   │   ├── login2.php
+│   │   ├── logout.php
+│   │   ├── pages
+│   │   │   ├── chart_data.php
+│   │   │   ├── charts.php
+│   │   │   ├── home.php
+│   │   │   ├── settings.php
+│   │   │   ├── settings_save_data.php
+│   │   │   ├── trades.php
+│   │   │   └── trades2.php
+│   │   └── user_impersonation.php
+│   ├── tree.txt
+│   └── users
+│       ├── ajax
+│       │   ├── delete_user.php
+│       │   ├── save_modules.php
+│       │   ├── save_permissions.php
+│       │   ├── save_user.php
+│       │   └── toggle_status.php
+│       ├── form
+│       │   ├── f_module.php
+│       │   ├── f_password.php
+│       │   ├── f_permission.php
+│       │   └── f_user.php
+│       ├── index.php
+│       ├── js
+│       │   ├── modules.js
+│       │   ├── permissions.js
+│       │   └── users.js
+│       ├── lists
+│       │   ├── modules.php
+│       │   ├── permissions.php
+│       │   └── users.php
+│       ├── pages
+│       │   ├── home.php
+│       │   ├── list_modules.php
+│       │   ├── list_permissions.php
+│       │   └── list_users.php
+│       └── users_config.php
+├── php_functions
+│   ├── fpdf
+│   │   ├── FAQ.htm
+│   │   ├── changelog.htm
+│   │   ├── class.fpdf_table.php
+│   │   ├── class.multicelltag.php
+│   │   ├── class.string_tags.php
+│   │   ├── doc
+│   │   │   ├── __construct.htm
+│   │   │   ├── acceptpagebreak.htm
+│   │   │   ├── addfont.htm
+│   │   │   ├── addlink.htm
+│   │   │   ├── addpage.htm
+│   │   │   ├── aliasnbpages.htm
+│   │   │   ├── cell.htm
+│   │   │   ├── close.htm
+│   │   │   ├── error.htm
+│   │   │   ├── footer.htm
+│   │   │   ├── getpageheight.htm
+│   │   │   ├── getpagewidth.htm
+│   │   │   ├── getstringwidth.htm
+│   │   │   ├── getx.htm
+│   │   │   ├── gety.htm
+│   │   │   ├── header.htm
+│   │   │   ├── image.htm
+│   │   │   ├── index.htm
+│   │   │   ├── line.htm
+│   │   │   ├── link.htm
+│   │   │   ├── ln.htm
+│   │   │   ├── multicell.htm
+│   │   │   ├── output.htm
+│   │   │   ├── pageno.htm
+│   │   │   ├── rect.htm
+│   │   │   ├── setauthor.htm
+│   │   │   ├── setautopagebreak.htm
+│   │   │   ├── setcompression.htm
+│   │   │   ├── setcreator.htm
+│   │   │   ├── setdisplaymode.htm
+│   │   │   ├── setdrawcolor.htm
+│   │   │   ├── setfillcolor.htm
+│   │   │   ├── setfont.htm
+│   │   │   ├── setfontsize.htm
+│   │   │   ├── setkeywords.htm
+│   │   │   ├── setleftmargin.htm
+│   │   │   ├── setlinewidth.htm
+│   │   │   ├── setlink.htm
+│   │   │   ├── setmargins.htm
+│   │   │   ├── setrightmargin.htm
+│   │   │   ├── setsubject.htm
+│   │   │   ├── settextcolor.htm
+│   │   │   ├── settitle.htm
+│   │   │   ├── settopmargin.htm
+│   │   │   ├── setx.htm
+│   │   │   ├── setxy.htm
+│   │   │   ├── sety.htm
+│   │   │   ├── text.htm
+│   │   │   └── write.htm
+│   │   ├── easyTable.php
+│   │   ├── ex.php
+│   │   ├── example4.php
+│   │   ├── exfpdf.php
+│   │   ├── font
+│   │   │   ├── courier.php
+│   │   │   ├── courierb.php
+│   │   │   ├── courierbi.php
+│   │   │   ├── courieri.php
+│   │   │   ├── desktop.ini
+│   │   │   ├── helvetica.php
+│   │   │   ├── helveticab.php
+│   │   │   ├── helveticabi.php
+│   │   │   ├── helveticai.php
+│   │   │   ├── makefont
+│   │   │   │   ├── cp1250.map
+│   │   │   │   ├── cp1251.map
+│   │   │   │   ├── cp1252.map
+│   │   │   │   ├── cp1253.map
+│   │   │   │   ├── cp1254.map
+│   │   │   │   ├── cp1255.map
+│   │   │   │   ├── cp1257.map
+│   │   │   │   ├── cp1258.map
+│   │   │   │   ├── cp874.map
+│   │   │   │   ├── iso-8859-1.map
+│   │   │   │   ├── iso-8859-11.map
+│   │   │   │   ├── iso-8859-15.map
+│   │   │   │   ├── iso-8859-16.map
+│   │   │   │   ├── iso-8859-2.map
+│   │   │   │   ├── iso-8859-4.map
+│   │   │   │   ├── iso-8859-5.map
+│   │   │   │   ├── iso-8859-7.map
+│   │   │   │   ├── iso-8859-9.map
+│   │   │   │   ├── koi8-r.map
+│   │   │   │   ├── koi8-u.map
+│   │   │   │   └── makefont.php
+│   │   │   ├── symbol.php
+│   │   │   ├── times.php
+│   │   │   ├── timesb.php
+│   │   │   ├── timesbi.php
+│   │   │   ├── timesi.php
+│   │   │   └── zapfdingbats.php
+│   │   ├── formatedstring.php
+│   │   ├── fpdf.css
+│   │   ├── fpdf.php
+│   │   ├── fpdf_alpha.php
+│   │   ├── histo.htm
+│   │   ├── info.htm
+│   │   ├── install.txt
+│   │   ├── license.txt
 │   │   ├── makefont
 │   │   │   ├── cp1250.map
 │   │   │   ├── cp1251.map
@@ -485,1906 +653,2074 @@ php_functions
 │   │   │   ├── iso-8859-9.map
 │   │   │   ├── koi8-r.map
 │   │   │   ├── koi8-u.map
-│   │   │   └── makefont.php
-│   │   ├── symbol.php
-│   │   ├── times.php
-│   │   ├── timesb.php
-│   │   ├── timesbi.php
-│   │   ├── timesi.php
-│   │   └── zapfdingbats.php
-│   ├── formatedstring.php
-│   ├── fpdf.css
-│   ├── fpdf.php
-│   ├── fpdf_alpha.php
-│   ├── histo.htm
-│   ├── info.htm
-│   ├── install.txt
-│   ├── license.txt
-│   ├── makefont
-│   │   ├── cp1250.map
-│   │   ├── cp1251.map
-│   │   ├── cp1252.map
-│   │   ├── cp1253.map
-│   │   ├── cp1254.map
-│   │   ├── cp1255.map
-│   │   ├── cp1257.map
-│   │   ├── cp1258.map
-│   │   ├── cp874.map
-│   │   ├── iso-8859-1.map
-│   │   ├── iso-8859-11.map
-│   │   ├── iso-8859-15.map
-│   │   ├── iso-8859-16.map
-│   │   ├── iso-8859-2.map
-│   │   ├── iso-8859-4.map
-│   │   ├── iso-8859-5.map
-│   │   ├── iso-8859-7.map
-│   │   ├── iso-8859-9.map
-│   │   ├── koi8-r.map
-│   │   ├── koi8-u.map
-│   │   ├── makefont.php
-│   │   └── ttfparser.php
-│   ├── table_def.inc
-│   └── tutorial
-│       ├── 20k_c1.txt
-│       ├── 20k_c2.txt
-│       ├── calligra.php
-│       ├── calligra.ttf
-│       ├── calligra.z
-│       ├── countries.txt
-│       ├── index.htm
-│       ├── logo.png
-│       ├── makefont.php
-│       ├── tuto1.htm
-│       ├── tuto1.php
-│       ├── tuto2.htm
-│       ├── tuto2.php
-│       ├── tuto3.htm
-│       ├── tuto3.php
-│       ├── tuto4.htm
-│       ├── tuto4.php
-│       ├── tuto5.htm
-│       ├── tuto5.php
-│       ├── tuto6.htm
-│       ├── tuto6.php
-│       ├── tuto7.htm
-│       └── tuto7.php
-├── function_sendmail.php
-├── functions.php
-├── mailjet_api.php
-├── minify
-│   ├── HISTORY.txt
-│   ├── LICENSE.txt
-│   ├── README.txt
-│   ├── UPGRADING.txt
-│   ├── min
+│   │   │   ├── makefont.php
+│   │   │   └── ttfparser.php
+│   │   ├── table_def.inc
+│   │   └── tutorial
+│   │       ├── 20k_c1.txt
+│   │       ├── 20k_c2.txt
+│   │       ├── calligra.php
+│   │       ├── calligra.ttf
+│   │       ├── calligra.z
+│   │       ├── countries.txt
+│   │       ├── index.htm
+│   │       ├── logo.png
+│   │       ├── makefont.php
+│   │       ├── tuto1.htm
+│   │       ├── tuto1.php
+│   │       ├── tuto2.htm
+│   │       ├── tuto2.php
+│   │       ├── tuto3.htm
+│   │       ├── tuto3.php
+│   │       ├── tuto4.htm
+│   │       ├── tuto4.php
+│   │       ├── tuto5.htm
+│   │       ├── tuto5.php
+│   │       ├── tuto6.htm
+│   │       ├── tuto6.php
+│   │       ├── tuto7.htm
+│   │       └── tuto7.php
+│   ├── function_sendmail.php
+│   ├── functions.php
+│   ├── mailjet_api.php
+│   ├── minify
+│   │   ├── HISTORY.txt
+│   │   ├── LICENSE.txt
 │   │   ├── README.txt
-│   │   ├── builder
-│   │   │   ├── _index.js
-│   │   │   ├── bm.js
-│   │   │   ├── bm2.js
+│   │   ├── UPGRADING.txt
+│   │   ├── min
+│   │   │   ├── README.txt
+│   │   │   ├── builder
+│   │   │   │   ├── _index.js
+│   │   │   │   ├── bm.js
+│   │   │   │   ├── bm2.js
+│   │   │   │   ├── index.php
+│   │   │   │   ├── ocCheck.php
+│   │   │   │   ├── rewriteTest.js
+│   │   │   │   └── test.php
+│   │   │   ├── config.php
+│   │   │   ├── groupsConfig.php
 │   │   │   ├── index.php
-│   │   │   ├── ocCheck.php
-│   │   │   ├── rewriteTest.js
-│   │   │   └── test.php
-│   │   ├── config.php
-│   │   ├── groupsConfig.php
-│   │   ├── index.php
-│   │   ├── lib
-│   │   │   ├── FirePHP.php
-│   │   │   ├── HTTP
-│   │   │   │   ├── ConditionalGet.php
-│   │   │   │   └── Encoder.php
-│   │   │   ├── JSMin.php
-│   │   │   ├── JSMinPlus.php
-│   │   │   ├── Minify
-│   │   │   │   ├── Build.php
-│   │   │   │   ├── CSS
-│   │   │   │   │   ├── Compressor.php
-│   │   │   │   │   └── UriRewriter.php
-│   │   │   │   ├── CSS.php
-│   │   │   │   ├── Cache
-│   │   │   │   │   ├── APC.php
-│   │   │   │   │   ├── File.php
-│   │   │   │   │   └── Memcache.php
-│   │   │   │   ├── CommentPreserver.php
-│   │   │   │   ├── Controller
-│   │   │   │   │   ├── Base.php
-│   │   │   │   │   ├── Files.php
-│   │   │   │   │   ├── Groups.php
-│   │   │   │   │   ├── MinApp.php
-│   │   │   │   │   ├── Page.php
-│   │   │   │   │   └── Version1.php
-│   │   │   │   ├── HTML
-│   │   │   │   │   └── Helper.php
-│   │   │   │   ├── HTML.php
-│   │   │   │   ├── ImportProcessor.php
-│   │   │   │   ├── Lines.php
-│   │   │   │   ├── Logger.php
-│   │   │   │   ├── Packer.php
-│   │   │   │   ├── Source.php
-│   │   │   │   └── YUICompressor.php
-│   │   │   ├── Minify.php
-│   │   │   └── Solar
-│   │   │       └── Dir.php
-│   │   └── utils.php
-│   └── min_unit_tests
-│       ├── HTTP_ConditionalGet
-│       │   ├── 2.php
-│       │   ├── 3.php
-│       │   ├── 4.php
-│       │   ├── 5.php
-│       │   ├── _include.php
-│       │   └── index.php
-│       ├── HTTP_Encoder
-│       │   ├── green.png
-│       │   └── index.php
-│       ├── _inc.php
-│       ├── _test_files
-│       │   ├── css
-│       │   │   ├── comments.css
-│       │   │   ├── comments.min.css
-│       │   │   ├── hacks.css
-│       │   │   ├── hacks.min.css
-│       │   │   ├── issue62.css
-│       │   │   ├── issue62.min.css
-│       │   │   ├── paths_prepend.css
-│       │   │   ├── paths_prepend.min.css
-│       │   │   ├── paths_rewrite.css
-│       │   │   ├── paths_rewrite.min.css
-│       │   │   ├── readme.txt
-│       │   │   ├── selectors.css
-│       │   │   ├── selectors.min.css
-│       │   │   ├── styles.css
-│       │   │   ├── styles.min.css
-│       │   │   ├── subsilver.css
-│       │   │   ├── subsilver.min.css
-│       │   │   ├── unusual_strings.css
-│       │   │   ├── unusual_strings.min.css
-│       │   │   ├── vladmirated.css
-│       │   │   └── vladmirated.min.css
-│       │   ├── css_uriRewriter
-│       │   │   ├── exp.css
-│       │   │   └── in.css
-│       │   ├── html
-│       │   │   ├── before.html
-│       │   │   ├── before.min.html
-│       │   │   ├── before2.html
-│       │   │   └── before2.min.html
-│       │   ├── htmlHelper_groupsConfig.php
-│       │   ├── importProcessor
-│       │   │   ├── 1
-│       │   │   │   ├── adjacent.css
-│       │   │   │   └── tv.css
-│       │   │   ├── adjacent.css
-│       │   │   ├── input.css
-│       │   │   └── output.css
-│       │   ├── js
-│       │   │   ├── before.js
-│       │   │   ├── before.min.js
-│       │   │   ├── before.min_plus.js
-│       │   │   ├── condcomm.js
-│       │   │   ├── condcomm.min_plus.js
-│       │   │   ├── issue132.js
-│       │   │   ├── issue132.min.js
-│       │   │   ├── issue141.min.js
-│       │   │   ├── issue144.js
-│       │   │   ├── issue144.min.js
-│       │   │   ├── issue74.js
-│       │   │   ├── issue74.min.js
-│       │   │   ├── issue74.min_plus.js
-│       │   │   └── jquery-1.2.3.js
-│       │   └── minify
-│       │       ├── QueryString.js
-│       │       ├── email.js
-│       │       ├── issue143.js
-│       │       ├── issue73_1.js
-│       │       ├── issue73_2.js
-│       │       ├── issue89_1.css
-│       │       ├── issue89_2.css
-│       │       ├── issue89_out.min.css
-│       │       ├── lines_bugs.js
-│       │       ├── lines_output.js
-│       │       ├── minified.css
-│       │       └── minified.js
-│       ├── test_HTTP_ConditionalGet.php
-│       ├── test_HTTP_Encoder.php
-│       ├── test_JSMin.php
-│       ├── test_JSMinPlus.php
-│       ├── test_Minify.php
-│       ├── test_Minify_Build.php
-│       ├── test_Minify_CSS.php
-│       ├── test_Minify_CSS_UriRewriter.php
-│       ├── test_Minify_Cache_APC.php
-│       ├── test_Minify_Cache_File.php
-│       ├── test_Minify_Cache_Memcache.php
-│       ├── test_Minify_CommentPreserver.php
-│       ├── test_Minify_HTML.php
-│       ├── test_Minify_HTML_Helper.php
-│       ├── test_Minify_ImportProcessor.php
-│       ├── test_Minify_Lines.php
-│       ├── test_all.php
-│       ├── test_environment.php
-│       └── test_js_in_browser.html
-├── phpmailer
-│   ├── Exception.php
-│   ├── OAuth.php
-│   ├── PHPMailer.php
-│   ├── PHPMailerAutoload.php
-│   ├── POP3.php
-│   ├── SMTP.php
-│   ├── changelog.md
-│   ├── class.phpmailer.php
-│   ├── class.phpmaileroauth.php
-│   ├── class.pop3.php
-│   ├── class.smtp.php
-│   └── get_oauth_token.php
-├── phpmailer2
-│   ├── COMMITMENT
-│   ├── LICENSE
-│   ├── README.md
-│   ├── SECURITY.md
-│   ├── VERSION
-│   ├── composer.json
-│   ├── get_oauth_token.php
-│   ├── language
-│   │   ├── phpmailer.lang-af.php
-│   │   ├── phpmailer.lang-ar.php
-│   │   ├── phpmailer.lang-az.php
-│   │   ├── phpmailer.lang-ba.php
-│   │   ├── phpmailer.lang-be.php
-│   │   ├── phpmailer.lang-bg.php
-│   │   ├── phpmailer.lang-ca.php
-│   │   ├── phpmailer.lang-ch.php
-│   │   ├── phpmailer.lang-cs.php
-│   │   ├── phpmailer.lang-da.php
-│   │   ├── phpmailer.lang-de.php
-│   │   ├── phpmailer.lang-el.php
-│   │   ├── phpmailer.lang-eo.php
-│   │   ├── phpmailer.lang-es.php
-│   │   ├── phpmailer.lang-et.php
-│   │   ├── phpmailer.lang-fa.php
-│   │   ├── phpmailer.lang-fi.php
-│   │   ├── phpmailer.lang-fo.php
-│   │   ├── phpmailer.lang-fr.php
-│   │   ├── phpmailer.lang-gl.php
-│   │   ├── phpmailer.lang-he.php
-│   │   ├── phpmailer.lang-hi.php
-│   │   ├── phpmailer.lang-hr.php
-│   │   ├── phpmailer.lang-hu.php
-│   │   ├── phpmailer.lang-hy.php
-│   │   ├── phpmailer.lang-id.php
-│   │   ├── phpmailer.lang-it.php
-│   │   ├── phpmailer.lang-ja.php
-│   │   ├── phpmailer.lang-ka.php
-│   │   ├── phpmailer.lang-ko.php
-│   │   ├── phpmailer.lang-lt.php
-│   │   ├── phpmailer.lang-lv.php
-│   │   ├── phpmailer.lang-mg.php
-│   │   ├── phpmailer.lang-ms.php
-│   │   ├── phpmailer.lang-nb.php
-│   │   ├── phpmailer.lang-nl.php
-│   │   ├── phpmailer.lang-pl.php
-│   │   ├── phpmailer.lang-pt.php
-│   │   ├── phpmailer.lang-pt_br.php
-│   │   ├── phpmailer.lang-ro.php
-│   │   ├── phpmailer.lang-ru.php
-│   │   ├── phpmailer.lang-sk.php
-│   │   ├── phpmailer.lang-sl.php
-│   │   ├── phpmailer.lang-sr.php
-│   │   ├── phpmailer.lang-sr_latn.php
-│   │   ├── phpmailer.lang-sv.php
-│   │   ├── phpmailer.lang-tl.php
-│   │   ├── phpmailer.lang-tr.php
-│   │   ├── phpmailer.lang-uk.php
-│   │   ├── phpmailer.lang-vi.php
-│   │   ├── phpmailer.lang-zh.php
-│   │   └── phpmailer.lang-zh_cn.php
-│   ├── phpunit.xml.dist
-│   └── src
-│       ├── Exception.php
-│       ├── OAuth.php
-│       ├── PHPMailer.php
-│       ├── POP3.php
-│       └── SMTP.php
-└── phpmailer3
-    ├── COMMITMENT
-    ├── LICENSE
-    ├── README.md
-    ├── SECURITY.md
-    ├── VERSION
-    ├── composer.json
-    ├── get_oauth_token.php
-    ├── language
-    │   ├── phpmailer.lang-af.php
-    │   ├── phpmailer.lang-ar.php
-    │   ├── phpmailer.lang-az.php
-    │   ├── phpmailer.lang-ba.php
-    │   ├── phpmailer.lang-be.php
-    │   ├── phpmailer.lang-bg.php
-    │   ├── phpmailer.lang-ca.php
-    │   ├── phpmailer.lang-ch.php
-    │   ├── phpmailer.lang-cs.php
-    │   ├── phpmailer.lang-da.php
-    │   ├── phpmailer.lang-de.php
-    │   ├── phpmailer.lang-el.php
-    │   ├── phpmailer.lang-eo.php
-    │   ├── phpmailer.lang-es.php
-    │   ├── phpmailer.lang-et.php
-    │   ├── phpmailer.lang-fa.php
-    │   ├── phpmailer.lang-fi.php
-    │   ├── phpmailer.lang-fo.php
-    │   ├── phpmailer.lang-fr.php
-    │   ├── phpmailer.lang-gl.php
-    │   ├── phpmailer.lang-he.php
-    │   ├── phpmailer.lang-hi.php
-    │   ├── phpmailer.lang-hr.php
-    │   ├── phpmailer.lang-hu.php
-    │   ├── phpmailer.lang-hy.php
-    │   ├── phpmailer.lang-id.php
-    │   ├── phpmailer.lang-it.php
-    │   ├── phpmailer.lang-ja.php
-    │   ├── phpmailer.lang-ka.php
-    │   ├── phpmailer.lang-ko.php
-    │   ├── phpmailer.lang-lt.php
-    │   ├── phpmailer.lang-lv.php
-    │   ├── phpmailer.lang-mg.php
-    │   ├── phpmailer.lang-ms.php
-    │   ├── phpmailer.lang-nb.php
-    │   ├── phpmailer.lang-nl.php
-    │   ├── phpmailer.lang-pl.php
-    │   ├── phpmailer.lang-pt.php
-    │   ├── phpmailer.lang-pt_br.php
-    │   ├── phpmailer.lang-ro.php
-    │   ├── phpmailer.lang-ru.php
-    │   ├── phpmailer.lang-sk.php
-    │   ├── phpmailer.lang-sl.php
-    │   ├── phpmailer.lang-sr.php
-    │   ├── phpmailer.lang-sr_latn.php
-    │   ├── phpmailer.lang-sv.php
-    │   ├── phpmailer.lang-tl.php
-    │   ├── phpmailer.lang-tr.php
-    │   ├── phpmailer.lang-uk.php
-    │   ├── phpmailer.lang-vi.php
-    │   ├── phpmailer.lang-zh.php
-    │   └── phpmailer.lang-zh_cn.php
-    └── src
-        ├── Exception.php
-        ├── OAuth.php
-        ├── OAuthTokenProvider.php
-        ├── PHPMailer.php
-        ├── POP3.php
-        └── SMTP.php
-services
-├── MailService.php
-└── usage_example.php
-smartform2
-├── DataExporter.php
-├── FormGenerator.php
-├── ListExportHandler.php
-├── ListGenerator.php
-├── archiv
+│   │   │   ├── lib
+│   │   │   │   ├── FirePHP.php
+│   │   │   │   ├── HTTP
+│   │   │   │   │   ├── ConditionalGet.php
+│   │   │   │   │   └── Encoder.php
+│   │   │   │   ├── JSMin.php
+│   │   │   │   ├── JSMinPlus.php
+│   │   │   │   ├── Minify
+│   │   │   │   │   ├── Build.php
+│   │   │   │   │   ├── CSS
+│   │   │   │   │   │   ├── Compressor.php
+│   │   │   │   │   │   └── UriRewriter.php
+│   │   │   │   │   ├── CSS.php
+│   │   │   │   │   ├── Cache
+│   │   │   │   │   │   ├── APC.php
+│   │   │   │   │   │   ├── File.php
+│   │   │   │   │   │   └── Memcache.php
+│   │   │   │   │   ├── CommentPreserver.php
+│   │   │   │   │   ├── Controller
+│   │   │   │   │   │   ├── Base.php
+│   │   │   │   │   │   ├── Files.php
+│   │   │   │   │   │   ├── Groups.php
+│   │   │   │   │   │   ├── MinApp.php
+│   │   │   │   │   │   ├── Page.php
+│   │   │   │   │   │   └── Version1.php
+│   │   │   │   │   ├── HTML
+│   │   │   │   │   │   └── Helper.php
+│   │   │   │   │   ├── HTML.php
+│   │   │   │   │   ├── ImportProcessor.php
+│   │   │   │   │   ├── Lines.php
+│   │   │   │   │   ├── Logger.php
+│   │   │   │   │   ├── Packer.php
+│   │   │   │   │   ├── Source.php
+│   │   │   │   │   └── YUICompressor.php
+│   │   │   │   ├── Minify.php
+│   │   │   │   └── Solar
+│   │   │   │       └── Dir.php
+│   │   │   └── utils.php
+│   │   └── min_unit_tests
+│   │       ├── HTTP_ConditionalGet
+│   │       │   ├── 2.php
+│   │       │   ├── 3.php
+│   │       │   ├── 4.php
+│   │       │   ├── 5.php
+│   │       │   ├── _include.php
+│   │       │   └── index.php
+│   │       ├── HTTP_Encoder
+│   │       │   ├── green.png
+│   │       │   └── index.php
+│   │       ├── _inc.php
+│   │       ├── _test_files
+│   │       │   ├── css
+│   │       │   │   ├── comments.css
+│   │       │   │   ├── comments.min.css
+│   │       │   │   ├── hacks.css
+│   │       │   │   ├── hacks.min.css
+│   │       │   │   ├── issue62.css
+│   │       │   │   ├── issue62.min.css
+│   │       │   │   ├── paths_prepend.css
+│   │       │   │   ├── paths_prepend.min.css
+│   │       │   │   ├── paths_rewrite.css
+│   │       │   │   ├── paths_rewrite.min.css
+│   │       │   │   ├── readme.txt
+│   │       │   │   ├── selectors.css
+│   │       │   │   ├── selectors.min.css
+│   │       │   │   ├── styles.css
+│   │       │   │   ├── styles.min.css
+│   │       │   │   ├── subsilver.css
+│   │       │   │   ├── subsilver.min.css
+│   │       │   │   ├── unusual_strings.css
+│   │       │   │   ├── unusual_strings.min.css
+│   │       │   │   ├── vladmirated.css
+│   │       │   │   └── vladmirated.min.css
+│   │       │   ├── css_uriRewriter
+│   │       │   │   ├── exp.css
+│   │       │   │   └── in.css
+│   │       │   ├── html
+│   │       │   │   ├── before.html
+│   │       │   │   ├── before.min.html
+│   │       │   │   ├── before2.html
+│   │       │   │   └── before2.min.html
+│   │       │   ├── htmlHelper_groupsConfig.php
+│   │       │   ├── importProcessor
+│   │       │   │   ├── 1
+│   │       │   │   │   ├── adjacent.css
+│   │       │   │   │   └── tv.css
+│   │       │   │   ├── adjacent.css
+│   │       │   │   ├── input.css
+│   │       │   │   └── output.css
+│   │       │   ├── js
+│   │       │   │   ├── before.js
+│   │       │   │   ├── before.min.js
+│   │       │   │   ├── before.min_plus.js
+│   │       │   │   ├── condcomm.js
+│   │       │   │   ├── condcomm.min_plus.js
+│   │       │   │   ├── issue132.js
+│   │       │   │   ├── issue132.min.js
+│   │       │   │   ├── issue141.min.js
+│   │       │   │   ├── issue144.js
+│   │       │   │   ├── issue144.min.js
+│   │       │   │   ├── issue74.js
+│   │       │   │   ├── issue74.min.js
+│   │       │   │   ├── issue74.min_plus.js
+│   │       │   │   └── jquery-1.2.3.js
+│   │       │   └── minify
+│   │       │       ├── QueryString.js
+│   │       │       ├── email.js
+│   │       │       ├── issue143.js
+│   │       │       ├── issue73_1.js
+│   │       │       ├── issue73_2.js
+│   │       │       ├── issue89_1.css
+│   │       │       ├── issue89_2.css
+│   │       │       ├── issue89_out.min.css
+│   │       │       ├── lines_bugs.js
+│   │       │       ├── lines_output.js
+│   │       │       ├── minified.css
+│   │       │       └── minified.js
+│   │       ├── test_HTTP_ConditionalGet.php
+│   │       ├── test_HTTP_Encoder.php
+│   │       ├── test_JSMin.php
+│   │       ├── test_JSMinPlus.php
+│   │       ├── test_Minify.php
+│   │       ├── test_Minify_Build.php
+│   │       ├── test_Minify_CSS.php
+│   │       ├── test_Minify_CSS_UriRewriter.php
+│   │       ├── test_Minify_Cache_APC.php
+│   │       ├── test_Minify_Cache_File.php
+│   │       ├── test_Minify_Cache_Memcache.php
+│   │       ├── test_Minify_CommentPreserver.php
+│   │       ├── test_Minify_HTML.php
+│   │       ├── test_Minify_HTML_Helper.php
+│   │       ├── test_Minify_ImportProcessor.php
+│   │       ├── test_Minify_Lines.php
+│   │       ├── test_all.php
+│   │       ├── test_environment.php
+│   │       └── test_js_in_browser.html
+│   ├── phpmailer
+│   │   ├── Exception.php
+│   │   ├── OAuth.php
+│   │   ├── PHPMailer.php
+│   │   ├── PHPMailerAutoload.php
+│   │   ├── POP3.php
+│   │   ├── SMTP.php
+│   │   ├── changelog.md
+│   │   ├── class.phpmailer.php
+│   │   ├── class.phpmaileroauth.php
+│   │   ├── class.pop3.php
+│   │   ├── class.smtp.php
+│   │   └── get_oauth_token.php
+│   ├── phpmailer2
+│   │   ├── COMMITMENT
+│   │   ├── LICENSE
+│   │   ├── README.md
+│   │   ├── SECURITY.md
+│   │   ├── VERSION
+│   │   ├── composer.json
+│   │   ├── get_oauth_token.php
+│   │   ├── language
+│   │   │   ├── phpmailer.lang-af.php
+│   │   │   ├── phpmailer.lang-ar.php
+│   │   │   ├── phpmailer.lang-az.php
+│   │   │   ├── phpmailer.lang-ba.php
+│   │   │   ├── phpmailer.lang-be.php
+│   │   │   ├── phpmailer.lang-bg.php
+│   │   │   ├── phpmailer.lang-ca.php
+│   │   │   ├── phpmailer.lang-ch.php
+│   │   │   ├── phpmailer.lang-cs.php
+│   │   │   ├── phpmailer.lang-da.php
+│   │   │   ├── phpmailer.lang-de.php
+│   │   │   ├── phpmailer.lang-el.php
+│   │   │   ├── phpmailer.lang-eo.php
+│   │   │   ├── phpmailer.lang-es.php
+│   │   │   ├── phpmailer.lang-et.php
+│   │   │   ├── phpmailer.lang-fa.php
+│   │   │   ├── phpmailer.lang-fi.php
+│   │   │   ├── phpmailer.lang-fo.php
+│   │   │   ├── phpmailer.lang-fr.php
+│   │   │   ├── phpmailer.lang-gl.php
+│   │   │   ├── phpmailer.lang-he.php
+│   │   │   ├── phpmailer.lang-hi.php
+│   │   │   ├── phpmailer.lang-hr.php
+│   │   │   ├── phpmailer.lang-hu.php
+│   │   │   ├── phpmailer.lang-hy.php
+│   │   │   ├── phpmailer.lang-id.php
+│   │   │   ├── phpmailer.lang-it.php
+│   │   │   ├── phpmailer.lang-ja.php
+│   │   │   ├── phpmailer.lang-ka.php
+│   │   │   ├── phpmailer.lang-ko.php
+│   │   │   ├── phpmailer.lang-lt.php
+│   │   │   ├── phpmailer.lang-lv.php
+│   │   │   ├── phpmailer.lang-mg.php
+│   │   │   ├── phpmailer.lang-ms.php
+│   │   │   ├── phpmailer.lang-nb.php
+│   │   │   ├── phpmailer.lang-nl.php
+│   │   │   ├── phpmailer.lang-pl.php
+│   │   │   ├── phpmailer.lang-pt.php
+│   │   │   ├── phpmailer.lang-pt_br.php
+│   │   │   ├── phpmailer.lang-ro.php
+│   │   │   ├── phpmailer.lang-ru.php
+│   │   │   ├── phpmailer.lang-sk.php
+│   │   │   ├── phpmailer.lang-sl.php
+│   │   │   ├── phpmailer.lang-sr.php
+│   │   │   ├── phpmailer.lang-sr_latn.php
+│   │   │   ├── phpmailer.lang-sv.php
+│   │   │   ├── phpmailer.lang-tl.php
+│   │   │   ├── phpmailer.lang-tr.php
+│   │   │   ├── phpmailer.lang-uk.php
+│   │   │   ├── phpmailer.lang-vi.php
+│   │   │   ├── phpmailer.lang-zh.php
+│   │   │   └── phpmailer.lang-zh_cn.php
+│   │   ├── phpunit.xml.dist
+│   │   └── src
+│   │       ├── Exception.php
+│   │       ├── OAuth.php
+│   │       ├── PHPMailer.php
+│   │       ├── POP3.php
+│   │       └── SMTP.php
+│   └── phpmailer3
+│       ├── COMMITMENT
+│       ├── LICENSE
+│       ├── README.md
+│       ├── SECURITY.md
+│       ├── VERSION
+│       ├── composer.json
+│       ├── get_oauth_token.php
+│       ├── language
+│       │   ├── phpmailer.lang-af.php
+│       │   ├── phpmailer.lang-ar.php
+│       │   ├── phpmailer.lang-az.php
+│       │   ├── phpmailer.lang-ba.php
+│       │   ├── phpmailer.lang-be.php
+│       │   ├── phpmailer.lang-bg.php
+│       │   ├── phpmailer.lang-ca.php
+│       │   ├── phpmailer.lang-ch.php
+│       │   ├── phpmailer.lang-cs.php
+│       │   ├── phpmailer.lang-da.php
+│       │   ├── phpmailer.lang-de.php
+│       │   ├── phpmailer.lang-el.php
+│       │   ├── phpmailer.lang-eo.php
+│       │   ├── phpmailer.lang-es.php
+│       │   ├── phpmailer.lang-et.php
+│       │   ├── phpmailer.lang-fa.php
+│       │   ├── phpmailer.lang-fi.php
+│       │   ├── phpmailer.lang-fo.php
+│       │   ├── phpmailer.lang-fr.php
+│       │   ├── phpmailer.lang-gl.php
+│       │   ├── phpmailer.lang-he.php
+│       │   ├── phpmailer.lang-hi.php
+│       │   ├── phpmailer.lang-hr.php
+│       │   ├── phpmailer.lang-hu.php
+│       │   ├── phpmailer.lang-hy.php
+│       │   ├── phpmailer.lang-id.php
+│       │   ├── phpmailer.lang-it.php
+│       │   ├── phpmailer.lang-ja.php
+│       │   ├── phpmailer.lang-ka.php
+│       │   ├── phpmailer.lang-ko.php
+│       │   ├── phpmailer.lang-lt.php
+│       │   ├── phpmailer.lang-lv.php
+│       │   ├── phpmailer.lang-mg.php
+│       │   ├── phpmailer.lang-ms.php
+│       │   ├── phpmailer.lang-nb.php
+│       │   ├── phpmailer.lang-nl.php
+│       │   ├── phpmailer.lang-pl.php
+│       │   ├── phpmailer.lang-pt.php
+│       │   ├── phpmailer.lang-pt_br.php
+│       │   ├── phpmailer.lang-ro.php
+│       │   ├── phpmailer.lang-ru.php
+│       │   ├── phpmailer.lang-sk.php
+│       │   ├── phpmailer.lang-sl.php
+│       │   ├── phpmailer.lang-sr.php
+│       │   ├── phpmailer.lang-sr_latn.php
+│       │   ├── phpmailer.lang-sv.php
+│       │   ├── phpmailer.lang-tl.php
+│       │   ├── phpmailer.lang-tr.php
+│       │   ├── phpmailer.lang-uk.php
+│       │   ├── phpmailer.lang-vi.php
+│       │   ├── phpmailer.lang-zh.php
+│       │   └── phpmailer.lang-zh_cn.php
+│       └── src
+│           ├── Exception.php
+│           ├── OAuth.php
+│           ├── OAuthTokenProvider.php
+│           ├── PHPMailer.php
+│           ├── POP3.php
+│           └── SMTP.php
+├── services
+│   ├── MailService.php
+│   └── usage_example.php
+├── smartform2
+│   ├── 1
+│   ├── DataExporter.php
+│   ├── FormGenerator.php
+│   ├── ListExportHandler.php
 │   ├── ListGenerator.php
+│   ├── ckeditor5
+│   │   ├── README.md
+│   │   ├── ckeditor
+│   │   │   ├── LICENSE-ckeditor5.md
+│   │   │   ├── ckeditor5-content.css
+│   │   │   ├── ckeditor5-editor.css
+│   │   │   ├── ckeditor5.css
+│   │   │   ├── ckeditor5.css.map
+│   │   │   ├── ckeditor5.js
+│   │   │   ├── ckeditor5.js.map
+│   │   │   ├── ckeditor5.umd.js
+│   │   │   ├── ckeditor5.umd.js.map
+│   │   │   └── translations
+│   │   │       ├── af.d.ts
+│   │   │       ├── af.js
+│   │   │       ├── af.umd.js
+│   │   │       ├── ar.d.ts
+│   │   │       ├── ar.js
+│   │   │       ├── ar.umd.js
+│   │   │       ├── ast.d.ts
+│   │   │       ├── ast.js
+│   │   │       ├── ast.umd.js
+│   │   │       ├── az.d.ts
+│   │   │       ├── az.js
+│   │   │       ├── az.umd.js
+│   │   │       ├── bg.d.ts
+│   │   │       ├── bg.js
+│   │   │       ├── bg.umd.js
+│   │   │       ├── bn.d.ts
+│   │   │       ├── bn.js
+│   │   │       ├── bn.umd.js
+│   │   │       ├── bs.d.ts
+│   │   │       ├── bs.js
+│   │   │       ├── bs.umd.js
+│   │   │       ├── ca.d.ts
+│   │   │       ├── ca.js
+│   │   │       ├── ca.umd.js
+│   │   │       ├── cs.d.ts
+│   │   │       ├── cs.js
+│   │   │       ├── cs.umd.js
+│   │   │       ├── da.d.ts
+│   │   │       ├── da.js
+│   │   │       ├── da.umd.js
+│   │   │       ├── de-ch.d.ts
+│   │   │       ├── de-ch.js
+│   │   │       ├── de-ch.umd.js
+│   │   │       ├── de.d.ts
+│   │   │       ├── de.js
+│   │   │       ├── de.umd.js
+│   │   │       ├── el.d.ts
+│   │   │       ├── el.js
+│   │   │       ├── el.umd.js
+│   │   │       ├── en-au.d.ts
+│   │   │       ├── en-au.js
+│   │   │       ├── en-au.umd.js
+│   │   │       ├── en-gb.d.ts
+│   │   │       ├── en-gb.js
+│   │   │       ├── en-gb.umd.js
+│   │   │       ├── en.d.ts
+│   │   │       ├── en.js
+│   │   │       ├── en.umd.js
+│   │   │       ├── eo.d.ts
+│   │   │       ├── eo.js
+│   │   │       ├── eo.umd.js
+│   │   │       ├── es-co.d.ts
+│   │   │       ├── es-co.js
+│   │   │       ├── es-co.umd.js
+│   │   │       ├── es.d.ts
+│   │   │       ├── es.js
+│   │   │       ├── es.umd.js
+│   │   │       ├── et.d.ts
+│   │   │       ├── et.js
+│   │   │       ├── et.umd.js
+│   │   │       ├── eu.d.ts
+│   │   │       ├── eu.js
+│   │   │       ├── eu.umd.js
+│   │   │       ├── fa.d.ts
+│   │   │       ├── fa.js
+│   │   │       ├── fa.umd.js
+│   │   │       ├── fi.d.ts
+│   │   │       ├── fi.js
+│   │   │       ├── fi.umd.js
+│   │   │       ├── fr.d.ts
+│   │   │       ├── fr.js
+│   │   │       ├── fr.umd.js
+│   │   │       ├── gl.d.ts
+│   │   │       ├── gl.js
+│   │   │       ├── gl.umd.js
+│   │   │       ├── gu.d.ts
+│   │   │       ├── gu.js
+│   │   │       ├── gu.umd.js
+│   │   │       ├── he.d.ts
+│   │   │       ├── he.js
+│   │   │       ├── he.umd.js
+│   │   │       ├── hi.d.ts
+│   │   │       ├── hi.js
+│   │   │       ├── hi.umd.js
+│   │   │       ├── hr.d.ts
+│   │   │       ├── hr.js
+│   │   │       ├── hr.umd.js
+│   │   │       ├── hu.d.ts
+│   │   │       ├── hu.js
+│   │   │       ├── hu.umd.js
+│   │   │       ├── hy.d.ts
+│   │   │       ├── hy.js
+│   │   │       ├── hy.umd.js
+│   │   │       ├── id.d.ts
+│   │   │       ├── id.js
+│   │   │       ├── id.umd.js
+│   │   │       ├── it.d.ts
+│   │   │       ├── it.js
+│   │   │       ├── it.umd.js
+│   │   │       ├── ja.d.ts
+│   │   │       ├── ja.js
+│   │   │       ├── ja.umd.js
+│   │   │       ├── jv.d.ts
+│   │   │       ├── jv.js
+│   │   │       ├── jv.umd.js
+│   │   │       ├── kk.d.ts
+│   │   │       ├── kk.js
+│   │   │       ├── kk.umd.js
+│   │   │       ├── km.d.ts
+│   │   │       ├── km.js
+│   │   │       ├── km.umd.js
+│   │   │       ├── kn.d.ts
+│   │   │       ├── kn.js
+│   │   │       ├── kn.umd.js
+│   │   │       ├── ko.d.ts
+│   │   │       ├── ko.js
+│   │   │       ├── ko.umd.js
+│   │   │       ├── ku.d.ts
+│   │   │       ├── ku.js
+│   │   │       ├── ku.umd.js
+│   │   │       ├── lt.d.ts
+│   │   │       ├── lt.js
+│   │   │       ├── lt.umd.js
+│   │   │       ├── lv.d.ts
+│   │   │       ├── lv.js
+│   │   │       ├── lv.umd.js
+│   │   │       ├── ms.d.ts
+│   │   │       ├── ms.js
+│   │   │       ├── ms.umd.js
+│   │   │       ├── nb.d.ts
+│   │   │       ├── nb.js
+│   │   │       ├── nb.umd.js
+│   │   │       ├── ne.d.ts
+│   │   │       ├── ne.js
+│   │   │       ├── ne.umd.js
+│   │   │       ├── nl.d.ts
+│   │   │       ├── nl.js
+│   │   │       ├── nl.umd.js
+│   │   │       ├── no.d.ts
+│   │   │       ├── no.js
+│   │   │       ├── no.umd.js
+│   │   │       ├── oc.d.ts
+│   │   │       ├── oc.js
+│   │   │       ├── oc.umd.js
+│   │   │       ├── pl.d.ts
+│   │   │       ├── pl.js
+│   │   │       ├── pl.umd.js
+│   │   │       ├── pt-br.d.ts
+│   │   │       ├── pt-br.js
+│   │   │       ├── pt-br.umd.js
+│   │   │       ├── pt.d.ts
+│   │   │       ├── pt.js
+│   │   │       ├── pt.umd.js
+│   │   │       ├── ro.d.ts
+│   │   │       ├── ro.js
+│   │   │       ├── ro.umd.js
+│   │   │       ├── ru.d.ts
+│   │   │       ├── ru.js
+│   │   │       ├── ru.umd.js
+│   │   │       ├── si.d.ts
+│   │   │       ├── si.js
+│   │   │       ├── si.umd.js
+│   │   │       ├── sk.d.ts
+│   │   │       ├── sk.js
+│   │   │       ├── sk.umd.js
+│   │   │       ├── sl.d.ts
+│   │   │       ├── sl.js
+│   │   │       ├── sl.umd.js
+│   │   │       ├── sq.d.ts
+│   │   │       ├── sq.js
+│   │   │       ├── sq.umd.js
+│   │   │       ├── sr-latn.d.ts
+│   │   │       ├── sr-latn.js
+│   │   │       ├── sr-latn.umd.js
+│   │   │       ├── sr.d.ts
+│   │   │       ├── sr.js
+│   │   │       ├── sr.umd.js
+│   │   │       ├── sv.d.ts
+│   │   │       ├── sv.js
+│   │   │       ├── sv.umd.js
+│   │   │       ├── th.d.ts
+│   │   │       ├── th.js
+│   │   │       ├── th.umd.js
+│   │   │       ├── ti.d.ts
+│   │   │       ├── ti.js
+│   │   │       ├── ti.umd.js
+│   │   │       ├── tk.d.ts
+│   │   │       ├── tk.js
+│   │   │       ├── tk.umd.js
+│   │   │       ├── tr.d.ts
+│   │   │       ├── tr.js
+│   │   │       ├── tr.umd.js
+│   │   │       ├── tt.d.ts
+│   │   │       ├── tt.js
+│   │   │       ├── tt.umd.js
+│   │   │       ├── ug.d.ts
+│   │   │       ├── ug.js
+│   │   │       ├── ug.umd.js
+│   │   │       ├── uk.d.ts
+│   │   │       ├── uk.js
+│   │   │       ├── uk.umd.js
+│   │   │       ├── ur.d.ts
+│   │   │       ├── ur.js
+│   │   │       ├── ur.umd.js
+│   │   │       ├── uz.d.ts
+│   │   │       ├── uz.js
+│   │   │       ├── uz.umd.js
+│   │   │       ├── vi.d.ts
+│   │   │       ├── vi.js
+│   │   │       ├── vi.umd.js
+│   │   │       ├── zh-cn.d.ts
+│   │   │       ├── zh-cn.js
+│   │   │       ├── zh-cn.umd.js
+│   │   │       ├── zh.d.ts
+│   │   │       ├── zh.js
+│   │   │       └── zh.umd.js
+│   │   ├── index.html
+│   │   ├── main.js
+│   │   └── style.css
 │   ├── examples
+│   │   ├── cache
+│   │   │   ├── 187009c841439aa86564819ec501efe1.cache
+│   │   │   ├── 1bcf54de4058686cf0de04ff38495c95.cache
+│   │   │   ├── 23fd0d7092fe482d95c66328cb89309f.cache
+│   │   │   ├── 48d112aed5f9a047dbbe23131dc9f2a3.cache
+│   │   │   ├── 63a0fae1ee4e75c695c029f25dddf007.cache
+│   │   │   ├── 7626c63cb8875d1e71ecef7aa601d558.cache
+│   │   │   ├── 83378f7f68bb013f09b0b99197198441.cache
+│   │   │   ├── 834d9953cc93dd753fc148e025fa4106.cache
+│   │   │   ├── 975feb2c3e54e704ec4b418606aecf7d.cache
+│   │   │   ├── b1e50ba04756b1ba80b3d08d25e1f43b.cache
+│   │   │   ├── b45692f8c69e5e9ee3f25c9429c5c8f1.cache
+│   │   │   ├── bb33d00afc23e5dfae5730abeae364d4.cache
+│   │   │   ├── cc9b8fffd149e803d8c4d2c9121a2f36.cache
+│   │   │   └── ccc3845d33f1a98f65d786fdc4b1efd0.cache
 │   │   ├── ckeditor.php
+│   │   ├── config.php
 │   │   ├── edit_user.php
+│   │   ├── export.php
+│   │   ├── form_delete.php
 │   │   ├── formular.php
 │   │   ├── formular_modal.php
 │   │   ├── formular_simple.php
 │   │   ├── formular_two.php
-│   │   ├── get_list_data
-│   │   ├── get_list_data.php
 │   │   ├── index.php
-│   │   ├── list_ajax.php
-│   │   ├── list_komplex.php
-│   │   ├── list_minimal.php
+│   │   ├── index_simple.php
+│   │   ├── list_array.php
+│   │   ├── list_direct.php
+│   │   ├── list_mysql copy.php
+│   │   ├── list_mysql.php
+│   │   ├── list_simple.php
 │   │   ├── mysql.php
 │   │   ├── process_form.php
 │   │   ├── save_user.php
-│   │   ├── test.php
-│   │   └── uploader.php
-│   ├── listGenerator.js
-│   └── listLoader.js
-├── examples
-│   ├── cache
-│   │   ├── 187009c841439aa86564819ec501efe1.cache
-│   │   ├── 1bcf54de4058686cf0de04ff38495c95.cache
-│   │   ├── 23fd0d7092fe482d95c66328cb89309f.cache
-│   │   ├── 48d112aed5f9a047dbbe23131dc9f2a3.cache
-│   │   ├── 63a0fae1ee4e75c695c029f25dddf007.cache
-│   │   ├── 7626c63cb8875d1e71ecef7aa601d558.cache
-│   │   ├── 83378f7f68bb013f09b0b99197198441.cache
-│   │   ├── 834d9953cc93dd753fc148e025fa4106.cache
-│   │   ├── 975feb2c3e54e704ec4b418606aecf7d.cache
-│   │   ├── b1e50ba04756b1ba80b3d08d25e1f43b.cache
-│   │   ├── b45692f8c69e5e9ee3f25c9429c5c8f1.cache
-│   │   ├── bb33d00afc23e5dfae5730abeae364d4.cache
-│   │   ├── cc9b8fffd149e803d8c4d2c9121a2f36.cache
-│   │   └── ccc3845d33f1a98f65d786fdc4b1efd0.cache
-│   ├── ckeditor.php
-│   ├── config.php
-│   ├── edit_user.php
+│   │   ├── uploader.php
+│   │   └── uploads
 │   ├── export.php
-│   ├── formular.php
-│   ├── formular_modal.php
-│   ├── formular_simple.php
-│   ├── formular_two.php
 │   ├── index.php
-│   ├── list_array.php
-│   ├── list_direct.php
-│   ├── list_mysql copy.php
-│   ├── list_mysql.php
-│   ├── mysql.php
-│   ├── process_form.php
-│   ├── save_user.php
-│   ├── uploader.php
+│   ├── index_ckeditor.html
+│   ├── js
+│   │   ├── ckeditor-init.js
+│   │   ├── fileUploader.js
+│   │   ├── formGenerator.js
+│   │   ├── formGenerator_oldversion.js
+│   │   ├── listGenerator copy.js
+│   │   ├── listGenerator.js
+│   │   └── setupListGenerator.js
+│   ├── listgenerator_debug.log
+│   ├── tree_smartform2.txt
+│   ├── upload_image.php
+│   ├── upload_log.txt
+│   ├── uploader
+│   │   ├── config.php
+│   │   ├── delete_all_files.php
+│   │   ├── delete_file.php
+│   │   ├── get_file_size.php
+│   │   ├── load_files.php
+│   │   ├── save_files.php
+│   │   ├── translations.php
+│   │   ├── upload.php
+│   │   └── uploader-template.php
 │   └── uploads
-├── export.php
-├── index.php
-├── js
-│   ├── ckeditor-init.js
-│   ├── fileUploader.js
-│   ├── formGenerator.js
-│   ├── formGenerator_oldversion.js
-│   ├── listGenerator.js
-│   └── setupListGenerator.js
-├── listgenerator_debug.log
-├── logs
-│   └── upload_log.txt
+│       └── 1317
+│           └── newsletter
+├── src
+│   ├── Core
+│   │   ├── Database.php
+│   │   └── Session.php
+│   ├── Helpers
+│   │   └── functions.php
+│   ├── Services
+│   │   ├── AuthService.php
+│   │   └── GoogleAuthService.php
+│   └── bootstrap.php
 ├── test.php
-├── upload_image.php
-├── upload_log.txt
-├── uploader
-│   ├── config.php
-│   ├── delete_all_files.php
-│   ├── delete_file.php
-│   ├── get_file_size.php
-│   ├── load_files.php
-│   ├── save_files.php
-│   ├── translations.php
-│   ├── upload.php
-│   └── uploader-template.php
-└── uploads
-    ├── 37096b1acb22fcf04ffe5e9183686f3d.jpeg
-    ├── 59b689b8dc2437154add509d3b38a45d.png
-    ├── 6f1d1e4e9485365b944d36f29580d7e0.png
-    └── 791ed39a3df4cac8dc41f68a80f04495.png
-src
-├── Core
-│   ├── Database.php
-│   └── Session.php
-├── Helpers
-│   └── functions.php
-├── Services
-│   ├── AuthService.php
-│   └── GoogleAuthService.php
-└── bootstrap.php
-test.php  [error opening dir]
-tree_modules.txt  [error opening dir]
-uploads
-└── users
-    ├── 188
-    │   └── Bildschirmfoto 2024-11-14 um 18.54.28.png
-    ├── 189
-    │   └── Bildschirmfoto 2024-11-14 um 18.54.28.png
-    ├── 190
-    │   └── Bildschirmfoto 2024-11-14 um 18.54.28.png
-    └── 192
-        └── Bildschirmfoto 2024-11-14 um 18.54.28.png
-user_impersonation.php  [error opening dir]
-vendor
-├── autoload.php
-├── composer
-│   ├── ClassLoader.php
-│   ├── InstalledVersions.php
-│   ├── LICENSE
-│   ├── autoload_classmap.php
-│   ├── autoload_files.php
-│   ├── autoload_namespaces.php
-│   ├── autoload_psr4.php
-│   ├── autoload_real.php
-│   ├── autoload_static.php
-│   ├── installed.json
-│   ├── installed.php
-│   └── platform_check.php
-├── graham-campbell
-│   └── result-type
-│       ├── LICENSE
-│       ├── composer.json
-│       └── src
-│           ├── Error.php
-│           ├── Result.php
-│           └── Success.php
-├── guzzlehttp
-│   ├── guzzle
-│   │   ├── CHANGELOG.md
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── UPGRADING.md
-│   │   ├── composer.json
-│   │   └── src
-│   │       ├── BodySummarizer.php
-│   │       ├── BodySummarizerInterface.php
-│   │       ├── Client.php
-│   │       ├── ClientInterface.php
-│   │       ├── ClientTrait.php
-│   │       ├── Cookie
-│   │       │   ├── CookieJar.php
-│   │       │   ├── CookieJarInterface.php
-│   │       │   ├── FileCookieJar.php
-│   │       │   ├── SessionCookieJar.php
-│   │       │   └── SetCookie.php
-│   │       ├── Exception
-│   │       │   ├── BadResponseException.php
-│   │       │   ├── ClientException.php
-│   │       │   ├── ConnectException.php
-│   │       │   ├── GuzzleException.php
-│   │       │   ├── InvalidArgumentException.php
-│   │       │   ├── RequestException.php
-│   │       │   ├── ServerException.php
-│   │       │   ├── TooManyRedirectsException.php
-│   │       │   └── TransferException.php
-│   │       ├── Handler
-│   │       │   ├── CurlFactory.php
-│   │       │   ├── CurlFactoryInterface.php
-│   │       │   ├── CurlHandler.php
-│   │       │   ├── CurlMultiHandler.php
-│   │       │   ├── EasyHandle.php
-│   │       │   ├── HeaderProcessor.php
-│   │       │   ├── MockHandler.php
-│   │       │   ├── Proxy.php
-│   │       │   └── StreamHandler.php
-│   │       ├── HandlerStack.php
-│   │       ├── MessageFormatter.php
-│   │       ├── MessageFormatterInterface.php
-│   │       ├── Middleware.php
-│   │       ├── Pool.php
-│   │       ├── PrepareBodyMiddleware.php
-│   │       ├── RedirectMiddleware.php
-│   │       ├── RequestOptions.php
-│   │       ├── RetryMiddleware.php
-│   │       ├── TransferStats.php
-│   │       ├── Utils.php
-│   │       ├── functions.php
-│   │       └── functions_include.php
-│   ├── promises
-│   │   ├── CHANGELOG.md
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── composer.json
-│   │   └── src
-│   │       ├── AggregateException.php
-│   │       ├── CancellationException.php
-│   │       ├── Coroutine.php
-│   │       ├── Create.php
-│   │       ├── Each.php
-│   │       ├── EachPromise.php
-│   │       ├── FulfilledPromise.php
-│   │       ├── Is.php
-│   │       ├── Promise.php
-│   │       ├── PromiseInterface.php
-│   │       ├── PromisorInterface.php
-│   │       ├── RejectedPromise.php
-│   │       ├── RejectionException.php
-│   │       ├── TaskQueue.php
-│   │       ├── TaskQueueInterface.php
-│   │       └── Utils.php
-│   └── psr7
-│       ├── CHANGELOG.md
-│       ├── LICENSE
-│       ├── README.md
-│       ├── composer.json
-│       └── src
-│           ├── AppendStream.php
-│           ├── BufferStream.php
-│           ├── CachingStream.php
-│           ├── DroppingStream.php
-│           ├── Exception
-│           │   └── MalformedUriException.php
-│           ├── FnStream.php
-│           ├── Header.php
-│           ├── HttpFactory.php
-│           ├── InflateStream.php
-│           ├── LazyOpenStream.php
-│           ├── LimitStream.php
-│           ├── Message.php
-│           ├── MessageTrait.php
-│           ├── MimeType.php
-│           ├── MultipartStream.php
-│           ├── NoSeekStream.php
-│           ├── PumpStream.php
-│           ├── Query.php
-│           ├── Request.php
-│           ├── Response.php
-│           ├── Rfc7230.php
-│           ├── ServerRequest.php
-│           ├── Stream.php
-│           ├── StreamDecoratorTrait.php
-│           ├── StreamWrapper.php
-│           ├── UploadedFile.php
-│           ├── Uri.php
-│           ├── UriComparator.php
-│           ├── UriNormalizer.php
-│           ├── UriResolver.php
-│           └── Utils.php
-├── maennchen
-│   └── zipstream-php
-│       ├── LICENSE
-│       ├── README.md
-│       ├── composer.json
-│       ├── guides
-│       │   ├── ContentLength.rst
-│       │   ├── FlySystem.rst
-│       │   ├── Nginx.rst
-│       │   ├── Options.rst
-│       │   ├── PSR7Streams.rst
-│       │   ├── StreamOutput.rst
-│       │   ├── Symfony.rst
-│       │   ├── Varnish.rst
-│       │   └── index.rst
-│       ├── phpdoc.dist.xml
-│       ├── phpunit.xml.dist
-│       ├── psalm.xml
-│       ├── results.sarif
-│       ├── src
-│       │   ├── CentralDirectoryFileHeader.php
-│       │   ├── CompressionMethod.php
-│       │   ├── DataDescriptor.php
-│       │   ├── EndOfCentralDirectory.php
-│       │   ├── Exception
-│       │   │   ├── DosTimeOverflowException.php
-│       │   │   ├── FileNotFoundException.php
-│       │   │   ├── FileNotReadableException.php
-│       │   │   ├── FileSizeIncorrectException.php
-│       │   │   ├── OverflowException.php
-│       │   │   ├── ResourceActionException.php
-│       │   │   ├── SimulationFileUnknownException.php
-│       │   │   ├── StreamNotReadableException.php
-│       │   │   └── StreamNotSeekableException.php
-│       │   ├── Exception.php
-│       │   ├── File.php
-│       │   ├── GeneralPurposeBitFlag.php
-│       │   ├── LocalFileHeader.php
-│       │   ├── OperationMode.php
-│       │   ├── PackField.php
-│       │   ├── Time.php
-│       │   ├── Version.php
-│       │   ├── Zip64
-│       │   │   ├── DataDescriptor.php
-│       │   │   ├── EndOfCentralDirectory.php
-│       │   │   ├── EndOfCentralDirectoryLocator.php
-│       │   │   └── ExtendedInformationExtraField.php
-│       │   ├── ZipStream.php
-│       │   └── Zs
-│       │       └── ExtendedInformationExtraField.php
-│       └── test
-│           ├── Assertions.php
-│           ├── CentralDirectoryFileHeaderTest.php
-│           ├── DataDescriptorTest.php
-│           ├── EndOfCentralDirectoryTest.php
-│           ├── EndlessCycleStream.php
-│           ├── FaultInjectionResource.php
-│           ├── LocalFileHeaderTest.php
-│           ├── PackFieldTest.php
-│           ├── ResourceStream.php
-│           ├── Tempfile.php
-│           ├── TimeTest.php
-│           ├── Util.php
-│           ├── Zip64
-│           │   ├── DataDescriptorTest.php
-│           │   ├── EndOfCentralDirectoryLocatorTest.php
-│           │   ├── EndOfCentralDirectoryTest.php
-│           │   └── ExtendedInformationExtraFieldTest.php
-│           ├── ZipStreamTest.php
-│           ├── Zs
-│           │   └── ExtendedInformationExtraFieldTest.php
-│           └── bootstrap.php
-├── mailjet
-│   └── mailjet-apiv3-php
-│       ├── LICENSE
-│       ├── README.md
-│       ├── composer.json
-│       ├── phpunit.xml.dist
-│       ├── src
-│       │   └── Mailjet
-│       │       ├── Client.php
-│       │       ├── Config.php
-│       │       ├── Normalizer
-│       │       │   ├── ContactNormalizer.php
-│       │       │   └── NormalizerInterface.php
-│       │       ├── Request.php
-│       │       ├── Resources.php
-│       │       └── Response.php
-│       └── test
-│           └── Mailjet
-│               ├── ClientTest.php
-│               ├── MailjetApiv3Test.php
-│               ├── RequestTest.php
-│               ├── ResponseTest.php
-│               └── test.php
-├── markbaker
-│   ├── complex
-│   │   ├── README.md
-│   │   ├── classes
-│   │   │   └── src
-│   │   │       ├── Complex.php
-│   │   │       ├── Exception.php
-│   │   │       ├── Functions.php
-│   │   │       └── Operations.php
-│   │   ├── composer.json
-│   │   ├── examples
-│   │   │   ├── complexTest.php
-│   │   │   ├── testFunctions.php
-│   │   │   └── testOperations.php
-│   │   └── license.md
-│   └── matrix
-│       ├── README.md
-│       ├── buildPhar.php
-│       ├── classes
-│       │   └── src
-│       │       ├── Builder.php
-│       │       ├── Decomposition
-│       │       │   ├── Decomposition.php
-│       │       │   ├── LU.php
-│       │       │   └── QR.php
-│       │       ├── Div0Exception.php
-│       │       ├── Exception.php
-│       │       ├── Functions.php
-│       │       ├── Matrix.php
-│       │       ├── Operations.php
-│       │       └── Operators
-│       │           ├── Addition.php
-│       │           ├── DirectSum.php
-│       │           ├── Division.php
-│       │           ├── Multiplication.php
-│       │           ├── Operator.php
-│       │           └── Subtraction.php
-│       ├── composer.json
-│       ├── examples
-│       │   └── test.php
-│       ├── infection.json.dist
-│       ├── license.md
-│       └── phpstan.neon
-├── phpoffice
-│   └── phpspreadsheet
-│       ├── CHANGELOG.md
-│       ├── CONTRIBUTING.md
-│       ├── LICENSE
-│       ├── README.md
-│       ├── composer.json
-│       ├── phpstan-baseline.neon
-│       ├── phpstan.neon.dist
-│       ├── phpunit9.xml.dist
-│       └── src
-│           └── PhpSpreadsheet
-│               ├── Calculation
-│               │   ├── ArrayEnabled.php
-│               │   ├── BinaryComparison.php
-│               │   ├── Calculation.php
-│               │   ├── Category.php
-│               │   ├── Database
-│               │   │   ├── DAverage.php
-│               │   │   ├── DCount.php
-│               │   │   ├── DCountA.php
-│               │   │   ├── DGet.php
-│               │   │   ├── DMax.php
-│               │   │   ├── DMin.php
-│               │   │   ├── DProduct.php
-│               │   │   ├── DStDev.php
-│               │   │   ├── DStDevP.php
-│               │   │   ├── DSum.php
-│               │   │   ├── DVar.php
-│               │   │   ├── DVarP.php
-│               │   │   └── DatabaseAbstract.php
-│               │   ├── DateTimeExcel
-│               │   │   ├── Constants.php
-│               │   │   ├── Current.php
-│               │   │   ├── Date.php
-│               │   │   ├── DateParts.php
-│               │   │   ├── DateValue.php
-│               │   │   ├── Days.php
-│               │   │   ├── Days360.php
-│               │   │   ├── Difference.php
-│               │   │   ├── Helpers.php
-│               │   │   ├── Month.php
-│               │   │   ├── NetworkDays.php
-│               │   │   ├── Time.php
-│               │   │   ├── TimeParts.php
-│               │   │   ├── TimeValue.php
-│               │   │   ├── Week.php
-│               │   │   ├── WorkDay.php
-│               │   │   └── YearFrac.php
-│               │   ├── Engine
-│               │   │   ├── ArrayArgumentHelper.php
-│               │   │   ├── ArrayArgumentProcessor.php
-│               │   │   ├── BranchPruner.php
-│               │   │   ├── CyclicReferenceStack.php
-│               │   │   ├── FormattedNumber.php
-│               │   │   ├── Logger.php
-│               │   │   └── Operands
-│               │   │       ├── Operand.php
-│               │   │       └── StructuredReference.php
-│               │   ├── Engineering
-│               │   │   ├── BesselI.php
-│               │   │   ├── BesselJ.php
-│               │   │   ├── BesselK.php
-│               │   │   ├── BesselY.php
-│               │   │   ├── BitWise.php
-│               │   │   ├── Compare.php
-│               │   │   ├── Complex.php
-│               │   │   ├── ComplexFunctions.php
-│               │   │   ├── ComplexOperations.php
-│               │   │   ├── Constants.php
-│               │   │   ├── ConvertBase.php
-│               │   │   ├── ConvertBinary.php
-│               │   │   ├── ConvertDecimal.php
-│               │   │   ├── ConvertHex.php
-│               │   │   ├── ConvertOctal.php
-│               │   │   ├── ConvertUOM.php
-│               │   │   ├── EngineeringValidations.php
-│               │   │   ├── Erf.php
-│               │   │   └── ErfC.php
-│               │   ├── Exception.php
-│               │   ├── ExceptionHandler.php
-│               │   ├── Financial
-│               │   │   ├── Amortization.php
-│               │   │   ├── CashFlow
-│               │   │   │   ├── CashFlowValidations.php
-│               │   │   │   ├── Constant
-│               │   │   │   │   ├── Periodic
-│               │   │   │   │   │   ├── Cumulative.php
-│               │   │   │   │   │   ├── Interest.php
-│               │   │   │   │   │   ├── InterestAndPrincipal.php
-│               │   │   │   │   │   └── Payments.php
-│               │   │   │   │   └── Periodic.php
-│               │   │   │   ├── Single.php
-│               │   │   │   └── Variable
-│               │   │   │       ├── NonPeriodic.php
-│               │   │   │       └── Periodic.php
-│               │   │   ├── Constants.php
-│               │   │   ├── Coupons.php
-│               │   │   ├── Depreciation.php
-│               │   │   ├── Dollar.php
-│               │   │   ├── FinancialValidations.php
-│               │   │   ├── Helpers.php
-│               │   │   ├── InterestRate.php
-│               │   │   ├── Securities
-│               │   │   │   ├── AccruedInterest.php
-│               │   │   │   ├── Price.php
-│               │   │   │   ├── Rates.php
-│               │   │   │   ├── SecurityValidations.php
-│               │   │   │   └── Yields.php
-│               │   │   └── TreasuryBill.php
-│               │   ├── FormulaParser.php
-│               │   ├── FormulaToken.php
-│               │   ├── Functions.php
-│               │   ├── Information
-│               │   │   ├── ErrorValue.php
-│               │   │   ├── ExcelError.php
-│               │   │   └── Value.php
-│               │   ├── Internal
-│               │   │   ├── ExcelArrayPseudoFunctions.php
-│               │   │   ├── MakeMatrix.php
-│               │   │   └── WildcardMatch.php
-│               │   ├── Logical
-│               │   │   ├── Boolean.php
-│               │   │   ├── Conditional.php
-│               │   │   └── Operations.php
-│               │   ├── LookupRef
-│               │   │   ├── Address.php
-│               │   │   ├── ExcelMatch.php
-│               │   │   ├── Filter.php
-│               │   │   ├── Formula.php
-│               │   │   ├── HLookup.php
-│               │   │   ├── Helpers.php
-│               │   │   ├── Hyperlink.php
-│               │   │   ├── Indirect.php
-│               │   │   ├── Lookup.php
-│               │   │   ├── LookupBase.php
-│               │   │   ├── LookupRefValidations.php
-│               │   │   ├── Matrix.php
-│               │   │   ├── Offset.php
-│               │   │   ├── RowColumnInformation.php
-│               │   │   ├── Selection.php
-│               │   │   ├── Sort.php
-│               │   │   ├── Unique.php
-│               │   │   └── VLookup.php
-│               │   ├── MathTrig
-│               │   │   ├── Absolute.php
-│               │   │   ├── Angle.php
-│               │   │   ├── Arabic.php
-│               │   │   ├── Base.php
-│               │   │   ├── Ceiling.php
-│               │   │   ├── Combinations.php
-│               │   │   ├── Exp.php
-│               │   │   ├── Factorial.php
-│               │   │   ├── Floor.php
-│               │   │   ├── Gcd.php
-│               │   │   ├── Helpers.php
-│               │   │   ├── IntClass.php
-│               │   │   ├── Lcm.php
-│               │   │   ├── Logarithms.php
-│               │   │   ├── MatrixFunctions.php
-│               │   │   ├── Operations.php
-│               │   │   ├── Random.php
-│               │   │   ├── Roman.php
-│               │   │   ├── Round.php
-│               │   │   ├── SeriesSum.php
-│               │   │   ├── Sign.php
-│               │   │   ├── Sqrt.php
-│               │   │   ├── Subtotal.php
-│               │   │   ├── Sum.php
-│               │   │   ├── SumSquares.php
-│               │   │   ├── Trig
-│               │   │   │   ├── Cosecant.php
-│               │   │   │   ├── Cosine.php
-│               │   │   │   ├── Cotangent.php
-│               │   │   │   ├── Secant.php
-│               │   │   │   ├── Sine.php
-│               │   │   │   └── Tangent.php
-│               │   │   └── Trunc.php
-│               │   ├── Statistical
-│               │   │   ├── AggregateBase.php
-│               │   │   ├── Averages
-│               │   │   │   └── Mean.php
-│               │   │   ├── Averages.php
-│               │   │   ├── Conditional.php
-│               │   │   ├── Confidence.php
-│               │   │   ├── Counts.php
-│               │   │   ├── Deviations.php
-│               │   │   ├── Distributions
-│               │   │   │   ├── Beta.php
-│               │   │   │   ├── Binomial.php
-│               │   │   │   ├── ChiSquared.php
-│               │   │   │   ├── DistributionValidations.php
-│               │   │   │   ├── Exponential.php
-│               │   │   │   ├── F.php
-│               │   │   │   ├── Fisher.php
-│               │   │   │   ├── Gamma.php
-│               │   │   │   ├── GammaBase.php
-│               │   │   │   ├── HyperGeometric.php
-│               │   │   │   ├── LogNormal.php
-│               │   │   │   ├── NewtonRaphson.php
-│               │   │   │   ├── Normal.php
-│               │   │   │   ├── Poisson.php
-│               │   │   │   ├── StandardNormal.php
-│               │   │   │   ├── StudentT.php
-│               │   │   │   └── Weibull.php
-│               │   │   ├── MaxMinBase.php
-│               │   │   ├── Maximum.php
-│               │   │   ├── Minimum.php
-│               │   │   ├── Percentiles.php
-│               │   │   ├── Permutations.php
-│               │   │   ├── Size.php
-│               │   │   ├── StandardDeviations.php
-│               │   │   ├── Standardize.php
-│               │   │   ├── StatisticalValidations.php
-│               │   │   ├── Trends.php
-│               │   │   ├── VarianceBase.php
-│               │   │   └── Variances.php
-│               │   ├── TextData
-│               │   │   ├── CaseConvert.php
-│               │   │   ├── CharacterConvert.php
-│               │   │   ├── Concatenate.php
-│               │   │   ├── Extract.php
-│               │   │   ├── Format.php
-│               │   │   ├── Helpers.php
-│               │   │   ├── Replace.php
-│               │   │   ├── Search.php
-│               │   │   ├── Text.php
-│               │   │   └── Trim.php
-│               │   ├── Token
-│               │   │   └── Stack.php
-│               │   ├── Web
-│               │   │   └── Service.php
-│               │   └── locale
-│               │       ├── Translations.xlsx
-│               │       ├── bg
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── cs
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── da
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── de
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── en
-│               │       │   └── uk
-│               │       │       └── config
-│               │       ├── es
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── fi
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── fr
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── hu
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── it
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── nb
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── nl
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── pl
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── pt
-│               │       │   ├── br
-│               │       │   │   ├── config
-│               │       │   │   └── functions
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── ru
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       ├── sv
-│               │       │   ├── config
-│               │       │   └── functions
-│               │       └── tr
-│               │           ├── config
-│               │           └── functions
-│               ├── Cell
-│               │   ├── AddressHelper.php
-│               │   ├── AddressRange.php
-│               │   ├── AdvancedValueBinder.php
-│               │   ├── Cell.php
-│               │   ├── CellAddress.php
-│               │   ├── CellRange.php
-│               │   ├── ColumnRange.php
-│               │   ├── Coordinate.php
-│               │   ├── DataType.php
-│               │   ├── DataValidation.php
-│               │   ├── DataValidator.php
-│               │   ├── DefaultValueBinder.php
-│               │   ├── Hyperlink.php
-│               │   ├── IValueBinder.php
-│               │   ├── IgnoredErrors.php
-│               │   ├── RowRange.php
-│               │   └── StringValueBinder.php
-│               ├── CellReferenceHelper.php
-│               ├── Chart
-│               │   ├── Axis.php
-│               │   ├── AxisText.php
-│               │   ├── Chart.php
-│               │   ├── ChartColor.php
-│               │   ├── DataSeries.php
-│               │   ├── DataSeriesValues.php
-│               │   ├── Exception.php
-│               │   ├── GridLines.php
-│               │   ├── Layout.php
-│               │   ├── Legend.php
-│               │   ├── PlotArea.php
-│               │   ├── Properties.php
-│               │   ├── Renderer
-│               │   │   ├── IRenderer.php
-│               │   │   ├── JpGraph.php
-│               │   │   ├── JpGraphRendererBase.php
-│               │   │   ├── MtJpGraphRenderer.php
-│               │   │   └── PHP Charting Libraries.txt
-│               │   ├── Title.php
-│               │   └── TrendLine.php
-│               ├── Collection
-│               │   ├── Cells.php
-│               │   ├── CellsFactory.php
-│               │   └── Memory
-│               │       ├── SimpleCache1.php
-│               │       └── SimpleCache3.php
-│               ├── Comment.php
-│               ├── DefinedName.php
-│               ├── Document
-│               │   ├── Properties.php
-│               │   └── Security.php
-│               ├── Exception.php
-│               ├── HashTable.php
-│               ├── Helper
-│               │   ├── Dimension.php
-│               │   ├── Downloader.php
-│               │   ├── Handler.php
-│               │   ├── Html.php
-│               │   ├── Sample.php
-│               │   ├── Size.php
-│               │   └── TextGrid.php
-│               ├── IComparable.php
-│               ├── IOFactory.php
-│               ├── NamedFormula.php
-│               ├── NamedRange.php
-│               ├── Reader
-│               │   ├── BaseReader.php
-│               │   ├── Csv
-│               │   │   └── Delimiter.php
-│               │   ├── Csv.php
-│               │   ├── DefaultReadFilter.php
-│               │   ├── Exception.php
-│               │   ├── Gnumeric
-│               │   │   ├── PageSetup.php
-│               │   │   ├── Properties.php
-│               │   │   └── Styles.php
-│               │   ├── Gnumeric.php
-│               │   ├── Html.php
-│               │   ├── IReadFilter.php
-│               │   ├── IReader.php
-│               │   ├── Ods
-│               │   │   ├── AutoFilter.php
-│               │   │   ├── BaseLoader.php
-│               │   │   ├── DefinedNames.php
-│               │   │   ├── FormulaTranslator.php
-│               │   │   ├── PageSettings.php
-│               │   │   └── Properties.php
-│               │   ├── Ods.php
-│               │   ├── Security
-│               │   │   └── XmlScanner.php
-│               │   ├── Slk.php
-│               │   ├── Xls
-│               │   │   ├── Biff5.php
-│               │   │   ├── Biff8.php
-│               │   │   ├── Color
-│               │   │   │   ├── BIFF5.php
-│               │   │   │   ├── BIFF8.php
-│               │   │   │   └── BuiltIn.php
-│               │   │   ├── Color.php
-│               │   │   ├── ConditionalFormatting.php
-│               │   │   ├── DataValidationHelper.php
-│               │   │   ├── ErrorCode.php
-│               │   │   ├── Escher.php
-│               │   │   ├── ListFunctions.php
-│               │   │   ├── LoadSpreadsheet.php
-│               │   │   ├── MD5.php
-│               │   │   ├── Mappings.php
-│               │   │   ├── RC4.php
-│               │   │   └── Style
-│               │   │       ├── Border.php
-│               │   │       ├── CellAlignment.php
-│               │   │       ├── CellFont.php
-│               │   │       └── FillPattern.php
-│               │   ├── Xls.php
-│               │   ├── XlsBase.php
-│               │   ├── Xlsx
-│               │   │   ├── AutoFilter.php
-│               │   │   ├── BaseParserClass.php
-│               │   │   ├── Chart.php
-│               │   │   ├── ColumnAndRowAttributes.php
-│               │   │   ├── ConditionalStyles.php
-│               │   │   ├── DataValidations.php
-│               │   │   ├── Hyperlinks.php
-│               │   │   ├── Namespaces.php
-│               │   │   ├── PageSetup.php
-│               │   │   ├── Properties.php
-│               │   │   ├── SharedFormula.php
-│               │   │   ├── SheetViewOptions.php
-│               │   │   ├── SheetViews.php
-│               │   │   ├── Styles.php
-│               │   │   ├── TableReader.php
-│               │   │   ├── Theme.php
-│               │   │   └── WorkbookView.php
-│               │   ├── Xlsx.php
-│               │   ├── Xml
-│               │   │   ├── DataValidations.php
-│               │   │   ├── PageSettings.php
-│               │   │   ├── Properties.php
-│               │   │   ├── Style
-│               │   │   │   ├── Alignment.php
-│               │   │   │   ├── Border.php
-│               │   │   │   ├── Fill.php
-│               │   │   │   ├── Font.php
-│               │   │   │   ├── NumberFormat.php
-│               │   │   │   └── StyleBase.php
-│               │   │   └── Style.php
-│               │   └── Xml.php
-│               ├── ReferenceHelper.php
-│               ├── RichText
-│               │   ├── ITextElement.php
-│               │   ├── RichText.php
-│               │   ├── Run.php
-│               │   └── TextElement.php
-│               ├── Settings.php
-│               ├── Shared
-│               │   ├── CodePage.php
-│               │   ├── Date.php
-│               │   ├── Drawing.php
-│               │   ├── Escher
-│               │   │   ├── DgContainer
-│               │   │   │   ├── SpgrContainer
-│               │   │   │   │   └── SpContainer.php
-│               │   │   │   └── SpgrContainer.php
-│               │   │   ├── DgContainer.php
-│               │   │   ├── DggContainer
-│               │   │   │   ├── BstoreContainer
-│               │   │   │   │   ├── BSE
-│               │   │   │   │   │   └── Blip.php
-│               │   │   │   │   └── BSE.php
-│               │   │   │   └── BstoreContainer.php
-│               │   │   └── DggContainer.php
-│               │   ├── Escher.php
-│               │   ├── File.php
-│               │   ├── Font.php
-│               │   ├── IntOrFloat.php
-│               │   ├── OLE
-│               │   │   ├── ChainedBlockStream.php
-│               │   │   ├── PPS
-│               │   │   │   ├── File.php
-│               │   │   │   └── Root.php
-│               │   │   └── PPS.php
-│               │   ├── OLE.php
-│               │   ├── OLERead.php
-│               │   ├── PasswordHasher.php
-│               │   ├── StringHelper.php
-│               │   ├── TimeZone.php
-│               │   ├── Trend
-│               │   │   ├── BestFit.php
-│               │   │   ├── ExponentialBestFit.php
-│               │   │   ├── LinearBestFit.php
-│               │   │   ├── LogarithmicBestFit.php
-│               │   │   ├── PolynomialBestFit.php
-│               │   │   ├── PowerBestFit.php
-│               │   │   └── Trend.php
-│               │   ├── XMLWriter.php
-│               │   └── Xls.php
-│               ├── Spreadsheet.php
-│               ├── Style
-│               │   ├── Alignment.php
-│               │   ├── Border.php
-│               │   ├── Borders.php
-│               │   ├── Color.php
-│               │   ├── Conditional.php
-│               │   ├── ConditionalFormatting
-│               │   │   ├── CellMatcher.php
-│               │   │   ├── CellStyleAssessor.php
-│               │   │   ├── ConditionalColorScale.php
-│               │   │   ├── ConditionalDataBar.php
-│               │   │   ├── ConditionalDataBarExtension.php
-│               │   │   ├── ConditionalFormatValueObject.php
-│               │   │   ├── ConditionalFormattingRuleExtension.php
-│               │   │   ├── StyleMerger.php
-│               │   │   ├── Wizard
-│               │   │   │   ├── Blanks.php
-│               │   │   │   ├── CellValue.php
-│               │   │   │   ├── DateValue.php
-│               │   │   │   ├── Duplicates.php
-│               │   │   │   ├── Errors.php
-│               │   │   │   ├── Expression.php
-│               │   │   │   ├── TextValue.php
-│               │   │   │   ├── WizardAbstract.php
-│               │   │   │   └── WizardInterface.php
-│               │   │   └── Wizard.php
-│               │   ├── Fill.php
-│               │   ├── Font.php
-│               │   ├── NumberFormat
-│               │   │   ├── BaseFormatter.php
-│               │   │   ├── DateFormatter.php
-│               │   │   ├── Formatter.php
-│               │   │   ├── FractionFormatter.php
-│               │   │   ├── NumberFormatter.php
-│               │   │   ├── PercentageFormatter.php
-│               │   │   └── Wizard
-│               │   │       ├── Accounting.php
-│               │   │       ├── Currency.php
-│               │   │       ├── CurrencyBase.php
-│               │   │       ├── CurrencyNegative.php
-│               │   │       ├── Date.php
-│               │   │       ├── DateTime.php
-│               │   │       ├── DateTimeWizard.php
-│               │   │       ├── Duration.php
-│               │   │       ├── Locale.php
-│               │   │       ├── Number.php
-│               │   │       ├── NumberBase.php
-│               │   │       ├── Percentage.php
-│               │   │       ├── Scientific.php
-│               │   │       ├── Time.php
-│               │   │       └── Wizard.php
-│               │   ├── NumberFormat.php
-│               │   ├── Protection.php
-│               │   ├── RgbTint.php
-│               │   ├── Style.php
-│               │   └── Supervisor.php
-│               ├── Theme.php
-│               ├── Worksheet
-│               │   ├── AutoFilter
-│               │   │   ├── Column
-│               │   │   │   └── Rule.php
-│               │   │   └── Column.php
-│               │   ├── AutoFilter.php
-│               │   ├── AutoFit.php
-│               │   ├── BaseDrawing.php
-│               │   ├── CellIterator.php
-│               │   ├── Column.php
-│               │   ├── ColumnCellIterator.php
-│               │   ├── ColumnDimension.php
-│               │   ├── ColumnIterator.php
-│               │   ├── Dimension.php
-│               │   ├── Drawing
-│               │   │   └── Shadow.php
-│               │   ├── Drawing.php
-│               │   ├── HeaderFooter.php
-│               │   ├── HeaderFooterDrawing.php
-│               │   ├── Iterator.php
-│               │   ├── MemoryDrawing.php
-│               │   ├── PageBreak.php
-│               │   ├── PageMargins.php
-│               │   ├── PageSetup.php
-│               │   ├── Pane.php
-│               │   ├── ProtectedRange.php
-│               │   ├── Protection.php
-│               │   ├── Row.php
-│               │   ├── RowCellIterator.php
-│               │   ├── RowDimension.php
-│               │   ├── RowIterator.php
-│               │   ├── SheetView.php
-│               │   ├── Table
-│               │   │   ├── Column.php
-│               │   │   └── TableStyle.php
-│               │   ├── Table.php
-│               │   ├── Validations.php
-│               │   └── Worksheet.php
-│               └── Writer
-│                   ├── BaseWriter.php
-│                   ├── Csv.php
-│                   ├── Exception.php
-│                   ├── Html.php
-│                   ├── IWriter.php
-│                   ├── Ods
-│                   │   ├── AutoFilters.php
-│                   │   ├── Cell
-│                   │   │   ├── Comment.php
-│                   │   │   └── Style.php
-│                   │   ├── Content.php
-│                   │   ├── Formula.php
-│                   │   ├── Meta.php
-│                   │   ├── MetaInf.php
-│                   │   ├── Mimetype.php
-│                   │   ├── NamedExpressions.php
-│                   │   ├── Settings.php
-│                   │   ├── Styles.php
-│                   │   ├── Thumbnails.php
-│                   │   └── WriterPart.php
-│                   ├── Ods.php
-│                   ├── Pdf
-│                   │   ├── Dompdf.php
-│                   │   ├── Mpdf.php
-│                   │   └── Tcpdf.php
-│                   ├── Pdf.php
-│                   ├── Xls
-│                   │   ├── BIFFwriter.php
-│                   │   ├── CellDataValidation.php
-│                   │   ├── ConditionalHelper.php
-│                   │   ├── ErrorCode.php
-│                   │   ├── Escher.php
-│                   │   ├── Font.php
-│                   │   ├── Parser.php
-│                   │   ├── Style
-│                   │   │   ├── CellAlignment.php
-│                   │   │   ├── CellBorder.php
-│                   │   │   └── CellFill.php
-│                   │   ├── Workbook.php
-│                   │   ├── Worksheet.php
-│                   │   └── Xf.php
-│                   ├── Xls.php
-│                   ├── Xlsx
-│                   │   ├── AutoFilter.php
-│                   │   ├── Chart.php
-│                   │   ├── Comments.php
-│                   │   ├── ContentTypes.php
-│                   │   ├── DefinedNames.php
-│                   │   ├── DocProps.php
-│                   │   ├── Drawing.php
-│                   │   ├── FunctionPrefix.php
-│                   │   ├── Metadata.php
-│                   │   ├── Rels.php
-│                   │   ├── RelsRibbon.php
-│                   │   ├── RelsVBA.php
-│                   │   ├── StringTable.php
-│                   │   ├── Style.php
-│                   │   ├── Table.php
-│                   │   ├── Theme.php
-│                   │   ├── Workbook.php
-│                   │   ├── Worksheet.php
-│                   │   └── WriterPart.php
-│                   ├── Xlsx.php
-│                   ├── ZipStream0.php
-│                   ├── ZipStream2.php
-│                   └── ZipStream3.php
-├── phpoption
-│   └── phpoption
-│       ├── LICENSE
-│       ├── composer.json
-│       └── src
-│           └── PhpOption
-│               ├── LazyOption.php
-│               ├── None.php
-│               ├── Option.php
-│               └── Some.php
-├── psr
-│   ├── http-client
-│   │   ├── CHANGELOG.md
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── composer.json
-│   │   └── src
-│   │       ├── ClientExceptionInterface.php
-│   │       ├── ClientInterface.php
-│   │       ├── NetworkExceptionInterface.php
-│   │       └── RequestExceptionInterface.php
-│   ├── http-factory
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── composer.json
-│   │   └── src
-│   │       ├── RequestFactoryInterface.php
-│   │       ├── ResponseFactoryInterface.php
-│   │       ├── ServerRequestFactoryInterface.php
-│   │       ├── StreamFactoryInterface.php
-│   │       ├── UploadedFileFactoryInterface.php
-│   │       └── UriFactoryInterface.php
-│   ├── http-message
-│   │   ├── CHANGELOG.md
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── composer.json
-│   │   ├── docs
-│   │   │   ├── PSR7-Interfaces.md
-│   │   │   └── PSR7-Usage.md
-│   │   └── src
-│   │       ├── MessageInterface.php
-│   │       ├── RequestInterface.php
-│   │       ├── ResponseInterface.php
-│   │       ├── ServerRequestInterface.php
-│   │       ├── StreamInterface.php
-│   │       ├── UploadedFileInterface.php
-│   │       └── UriInterface.php
-│   └── simple-cache
-│       ├── LICENSE.md
-│       ├── README.md
-│       ├── composer.json
-│       └── src
-│           ├── CacheException.php
-│           ├── CacheInterface.php
-│           └── InvalidArgumentException.php
-├── ralouphie
-│   └── getallheaders
-│       ├── LICENSE
-│       ├── README.md
-│       ├── composer.json
-│       └── src
-│           └── getallheaders.php
-├── symfony
-│   ├── deprecation-contracts
-│   │   ├── CHANGELOG.md
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── composer.json
-│   │   └── function.php
-│   ├── polyfill-ctype
-│   │   ├── Ctype.php
-│   │   ├── LICENSE
-│   │   ├── README.md
-│   │   ├── bootstrap.php
-│   │   ├── bootstrap80.php
-│   │   └── composer.json
-│   ├── polyfill-mbstring
-│   │   ├── LICENSE
-│   │   ├── Mbstring.php
-│   │   ├── README.md
-│   │   ├── Resources
-│   │   │   └── unidata
-│   │   │       ├── caseFolding.php
-│   │   │       ├── lowerCase.php
-│   │   │       ├── titleCaseRegexp.php
-│   │   │       └── upperCase.php
-│   │   ├── bootstrap.php
-│   │   ├── bootstrap80.php
-│   │   └── composer.json
-│   ├── polyfill-php80
-│   │   ├── LICENSE
-│   │   ├── Php80.php
-│   │   ├── PhpToken.php
-│   │   ├── README.md
-│   │   ├── Resources
-│   │   │   └── stubs
-│   │   │       ├── Attribute.php
-│   │   │       ├── PhpToken.php
-│   │   │       ├── Stringable.php
-│   │   │       ├── UnhandledMatchError.php
-│   │   │       └── ValueError.php
-│   │   ├── bootstrap.php
-│   │   └── composer.json
-│   ├── polyfill-php83
-│   │   ├── LICENSE
-│   │   ├── Php83.php
-│   │   ├── README.md
-│   │   ├── Resources
-│   │   │   └── stubs
-│   │   │       ├── DateError.php
-│   │   │       ├── DateException.php
-│   │   │       ├── DateInvalidOperationException.php
-│   │   │       ├── DateInvalidTimeZoneException.php
-│   │   │       ├── DateMalformedIntervalStringException.php
-│   │   │       ├── DateMalformedPeriodStringException.php
-│   │   │       ├── DateMalformedStringException.php
-│   │   │       ├── DateObjectError.php
-│   │   │       ├── DateRangeError.php
-│   │   │       ├── Override.php
-│   │   │       └── SQLite3Exception.php
-│   │   ├── bootstrap.php
-│   │   ├── bootstrap81.php
-│   │   └── composer.json
-│   ├── translation-contracts
-│   │   ├── CHANGELOG.md
-│   │   ├── LICENSE
-│   │   ├── LocaleAwareInterface.php
-│   │   ├── README.md
-│   │   ├── Test
-│   │   │   └── TranslatorTest.php
-│   │   ├── TranslatableInterface.php
-│   │   ├── TranslatorInterface.php
-│   │   ├── TranslatorTrait.php
-│   │   └── composer.json
-│   └── validator
-│       ├── Attribute
-│       │   └── HasNamedArguments.php
-│       ├── CHANGELOG.md
-│       ├── Command
-│       │   └── DebugCommand.php
-│       ├── Constraint.php
-│       ├── ConstraintValidator.php
-│       ├── ConstraintValidatorFactory.php
-│       ├── ConstraintValidatorFactoryInterface.php
-│       ├── ConstraintValidatorInterface.php
-│       ├── ConstraintViolation.php
-│       ├── ConstraintViolationInterface.php
-│       ├── ConstraintViolationList.php
-│       ├── ConstraintViolationListInterface.php
-│       ├── Constraints
-│       │   ├── AbstractComparison.php
-│       │   ├── AbstractComparisonValidator.php
-│       │   ├── All.php
-│       │   ├── AllValidator.php
-│       │   ├── AtLeastOneOf.php
-│       │   ├── AtLeastOneOfValidator.php
-│       │   ├── Bic.php
-│       │   ├── BicValidator.php
-│       │   ├── Blank.php
-│       │   ├── BlankValidator.php
-│       │   ├── Callback.php
-│       │   ├── CallbackValidator.php
-│       │   ├── CardScheme.php
-│       │   ├── CardSchemeValidator.php
-│       │   ├── Cascade.php
-│       │   ├── Charset.php
-│       │   ├── CharsetValidator.php
-│       │   ├── Choice.php
-│       │   ├── ChoiceValidator.php
-│       │   ├── Cidr.php
-│       │   ├── CidrValidator.php
-│       │   ├── Collection.php
-│       │   ├── CollectionValidator.php
-│       │   ├── Composite.php
-│       │   ├── Compound.php
-│       │   ├── CompoundValidator.php
-│       │   ├── Count.php
-│       │   ├── CountValidator.php
-│       │   ├── Country.php
-│       │   ├── CountryValidator.php
-│       │   ├── CssColor.php
-│       │   ├── CssColorValidator.php
-│       │   ├── Currency.php
-│       │   ├── CurrencyValidator.php
-│       │   ├── Date.php
-│       │   ├── DateTime.php
-│       │   ├── DateTimeValidator.php
-│       │   ├── DateValidator.php
-│       │   ├── DisableAutoMapping.php
-│       │   ├── DivisibleBy.php
-│       │   ├── DivisibleByValidator.php
-│       │   ├── Email.php
-│       │   ├── EmailValidator.php
-│       │   ├── EnableAutoMapping.php
-│       │   ├── EqualTo.php
-│       │   ├── EqualToValidator.php
-│       │   ├── Existence.php
-│       │   ├── Expression.php
-│       │   ├── ExpressionLanguageProvider.php
-│       │   ├── ExpressionSyntax.php
-│       │   ├── ExpressionSyntaxValidator.php
-│       │   ├── ExpressionValidator.php
-│       │   ├── File.php
-│       │   ├── FileValidator.php
-│       │   ├── GreaterThan.php
-│       │   ├── GreaterThanOrEqual.php
-│       │   ├── GreaterThanOrEqualValidator.php
-│       │   ├── GreaterThanValidator.php
-│       │   ├── GroupSequence.php
-│       │   ├── GroupSequenceProvider.php
-│       │   ├── Hostname.php
-│       │   ├── HostnameValidator.php
-│       │   ├── Iban.php
-│       │   ├── IbanValidator.php
-│       │   ├── IdenticalTo.php
-│       │   ├── IdenticalToValidator.php
-│       │   ├── Image.php
-│       │   ├── ImageValidator.php
-│       │   ├── Ip.php
-│       │   ├── IpValidator.php
-│       │   ├── IsFalse.php
-│       │   ├── IsFalseValidator.php
-│       │   ├── IsNull.php
-│       │   ├── IsNullValidator.php
-│       │   ├── IsTrue.php
-│       │   ├── IsTrueValidator.php
-│       │   ├── Isbn.php
-│       │   ├── IsbnValidator.php
-│       │   ├── Isin.php
-│       │   ├── IsinValidator.php
-│       │   ├── Issn.php
-│       │   ├── IssnValidator.php
-│       │   ├── Json.php
-│       │   ├── JsonValidator.php
-│       │   ├── Language.php
-│       │   ├── LanguageValidator.php
-│       │   ├── Length.php
-│       │   ├── LengthValidator.php
-│       │   ├── LessThan.php
-│       │   ├── LessThanOrEqual.php
-│       │   ├── LessThanOrEqualValidator.php
-│       │   ├── LessThanValidator.php
-│       │   ├── Locale.php
-│       │   ├── LocaleValidator.php
-│       │   ├── Luhn.php
-│       │   ├── LuhnValidator.php
-│       │   ├── MacAddress.php
-│       │   ├── MacAddressValidator.php
-│       │   ├── Negative.php
-│       │   ├── NegativeOrZero.php
-│       │   ├── NoSuspiciousCharacters.php
-│       │   ├── NoSuspiciousCharactersValidator.php
-│       │   ├── NotBlank.php
-│       │   ├── NotBlankValidator.php
-│       │   ├── NotCompromisedPassword.php
-│       │   ├── NotCompromisedPasswordValidator.php
-│       │   ├── NotEqualTo.php
-│       │   ├── NotEqualToValidator.php
-│       │   ├── NotIdenticalTo.php
-│       │   ├── NotIdenticalToValidator.php
-│       │   ├── NotNull.php
-│       │   ├── NotNullValidator.php
-│       │   ├── Optional.php
-│       │   ├── PasswordStrength.php
-│       │   ├── PasswordStrengthValidator.php
-│       │   ├── Positive.php
-│       │   ├── PositiveOrZero.php
-│       │   ├── Range.php
-│       │   ├── RangeValidator.php
-│       │   ├── Regex.php
-│       │   ├── RegexValidator.php
-│       │   ├── Required.php
-│       │   ├── Sequentially.php
-│       │   ├── SequentiallyValidator.php
-│       │   ├── Time.php
-│       │   ├── TimeValidator.php
-│       │   ├── Timezone.php
-│       │   ├── TimezoneValidator.php
-│       │   ├── Traverse.php
-│       │   ├── Type.php
-│       │   ├── TypeValidator.php
-│       │   ├── Ulid.php
-│       │   ├── UlidValidator.php
-│       │   ├── Unique.php
-│       │   ├── UniqueValidator.php
-│       │   ├── Url.php
-│       │   ├── UrlValidator.php
-│       │   ├── Uuid.php
-│       │   ├── UuidValidator.php
-│       │   ├── Valid.php
-│       │   ├── ValidValidator.php
-│       │   ├── When.php
-│       │   ├── WhenValidator.php
-│       │   └── ZeroComparisonConstraintTrait.php
-│       ├── ContainerConstraintValidatorFactory.php
-│       ├── Context
-│       │   ├── ExecutionContext.php
-│       │   ├── ExecutionContextFactory.php
-│       │   ├── ExecutionContextFactoryInterface.php
-│       │   └── ExecutionContextInterface.php
-│       ├── DataCollector
-│       │   └── ValidatorDataCollector.php
-│       ├── DependencyInjection
-│       │   ├── AddAutoMappingConfigurationPass.php
-│       │   ├── AddConstraintValidatorsPass.php
-│       │   └── AddValidatorInitializersPass.php
-│       ├── Exception
-│       │   ├── BadMethodCallException.php
-│       │   ├── ConstraintDefinitionException.php
-│       │   ├── ExceptionInterface.php
-│       │   ├── GroupDefinitionException.php
-│       │   ├── InvalidArgumentException.php
-│       │   ├── InvalidOptionsException.php
-│       │   ├── LogicException.php
-│       │   ├── MappingException.php
-│       │   ├── MissingOptionsException.php
-│       │   ├── NoSuchMetadataException.php
-│       │   ├── OutOfBoundsException.php
-│       │   ├── RuntimeException.php
-│       │   ├── UnexpectedTypeException.php
-│       │   ├── UnexpectedValueException.php
-│       │   ├── UnsupportedMetadataException.php
-│       │   ├── ValidationFailedException.php
-│       │   └── ValidatorException.php
-│       ├── GroupProviderInterface.php
-│       ├── GroupSequenceProviderInterface.php
-│       ├── LICENSE
-│       ├── Mapping
-│       │   ├── AutoMappingStrategy.php
-│       │   ├── CascadingStrategy.php
-│       │   ├── ClassMetadata.php
-│       │   ├── ClassMetadataInterface.php
-│       │   ├── Factory
-│       │   │   ├── BlackHoleMetadataFactory.php
-│       │   │   ├── LazyLoadingMetadataFactory.php
-│       │   │   └── MetadataFactoryInterface.php
-│       │   ├── GenericMetadata.php
-│       │   ├── GetterMetadata.php
-│       │   ├── Loader
-│       │   │   ├── AbstractLoader.php
-│       │   │   ├── AttributeLoader.php
-│       │   │   ├── AutoMappingTrait.php
-│       │   │   ├── FileLoader.php
-│       │   │   ├── FilesLoader.php
-│       │   │   ├── LoaderChain.php
-│       │   │   ├── LoaderInterface.php
-│       │   │   ├── PropertyInfoLoader.php
-│       │   │   ├── StaticMethodLoader.php
-│       │   │   ├── XmlFileLoader.php
-│       │   │   ├── XmlFilesLoader.php
-│       │   │   ├── YamlFileLoader.php
-│       │   │   ├── YamlFilesLoader.php
-│       │   │   └── schema
-│       │   │       └── dic
-│       │   │           └── constraint-mapping
-│       │   │               └── constraint-mapping-1.0.xsd
-│       │   ├── MemberMetadata.php
-│       │   ├── MetadataInterface.php
-│       │   ├── PropertyMetadata.php
-│       │   ├── PropertyMetadataInterface.php
-│       │   └── TraversalStrategy.php
-│       ├── ObjectInitializerInterface.php
-│       ├── README.md
-│       ├── Resources
-│       │   ├── bin
-│       │   └── translations
-│       │       ├── validators.af.xlf
-│       │       ├── validators.ar.xlf
-│       │       ├── validators.az.xlf
-│       │       ├── validators.be.xlf
-│       │       ├── validators.bg.xlf
-│       │       ├── validators.bs.xlf
-│       │       ├── validators.ca.xlf
-│       │       ├── validators.cs.xlf
-│       │       ├── validators.cy.xlf
-│       │       ├── validators.da.xlf
-│       │       ├── validators.de.xlf
-│       │       ├── validators.el.xlf
-│       │       ├── validators.en.xlf
-│       │       ├── validators.es.xlf
-│       │       ├── validators.et.xlf
-│       │       ├── validators.eu.xlf
-│       │       ├── validators.fa.xlf
-│       │       ├── validators.fi.xlf
-│       │       ├── validators.fr.xlf
-│       │       ├── validators.gl.xlf
-│       │       ├── validators.he.xlf
-│       │       ├── validators.hr.xlf
-│       │       ├── validators.hu.xlf
-│       │       ├── validators.hy.xlf
-│       │       ├── validators.id.xlf
-│       │       ├── validators.it.xlf
-│       │       ├── validators.ja.xlf
-│       │       ├── validators.lb.xlf
-│       │       ├── validators.lt.xlf
-│       │       ├── validators.lv.xlf
-│       │       ├── validators.mk.xlf
-│       │       ├── validators.mn.xlf
-│       │       ├── validators.my.xlf
-│       │       ├── validators.nb.xlf
-│       │       ├── validators.nl.xlf
-│       │       ├── validators.nn.xlf
-│       │       ├── validators.no.xlf
-│       │       ├── validators.pl.xlf
-│       │       ├── validators.pt.xlf
-│       │       ├── validators.pt_BR.xlf
-│       │       ├── validators.ro.xlf
-│       │       ├── validators.ru.xlf
-│       │       ├── validators.sk.xlf
-│       │       ├── validators.sl.xlf
-│       │       ├── validators.sq.xlf
-│       │       ├── validators.sr_Cyrl.xlf
-│       │       ├── validators.sr_Latn.xlf
-│       │       ├── validators.sv.xlf
-│       │       ├── validators.th.xlf
-│       │       ├── validators.tl.xlf
-│       │       ├── validators.tr.xlf
-│       │       ├── validators.uk.xlf
-│       │       ├── validators.ur.xlf
-│       │       ├── validators.uz.xlf
-│       │       ├── validators.vi.xlf
-│       │       ├── validators.zh_CN.xlf
-│       │       └── validators.zh_TW.xlf
-│       ├── Test
-│       │   └── ConstraintValidatorTestCase.php
-│       ├── Util
-│       │   └── PropertyPath.php
-│       ├── Validation.php
-│       ├── Validator
-│       │   ├── ContextualValidatorInterface.php
-│       │   ├── LazyProperty.php
-│       │   ├── RecursiveContextualValidator.php
-│       │   ├── RecursiveValidator.php
-│       │   ├── TraceableValidator.php
-│       │   └── ValidatorInterface.php
-│       ├── ValidatorBuilder.php
-│       ├── Violation
-│       │   ├── ConstraintViolationBuilder.php
-│       │   └── ConstraintViolationBuilderInterface.php
-│       └── composer.json
-└── vlucas
-    └── phpdotenv
-        ├── LICENSE
-        ├── composer.json
-        └── src
-            ├── Dotenv.php
-            ├── Exception
-            │   ├── ExceptionInterface.php
-            │   ├── InvalidEncodingException.php
-            │   ├── InvalidFileException.php
-            │   ├── InvalidPathException.php
-            │   └── ValidationException.php
-            ├── Loader
-            │   ├── Loader.php
-            │   ├── LoaderInterface.php
-            │   └── Resolver.php
-            ├── Parser
-            │   ├── Entry.php
-            │   ├── EntryParser.php
-            │   ├── Lexer.php
-            │   ├── Lines.php
-            │   ├── Parser.php
-            │   ├── ParserInterface.php
-            │   └── Value.php
-            ├── Repository
-            │   ├── Adapter
-            │   │   ├── AdapterInterface.php
-            │   │   ├── ApacheAdapter.php
-            │   │   ├── ArrayAdapter.php
-            │   │   ├── EnvConstAdapter.php
-            │   │   ├── GuardedWriter.php
-            │   │   ├── ImmutableWriter.php
-            │   │   ├── MultiReader.php
-            │   │   ├── MultiWriter.php
-            │   │   ├── PutenvAdapter.php
-            │   │   ├── ReaderInterface.php
-            │   │   ├── ReplacingWriter.php
-            │   │   ├── ServerConstAdapter.php
-            │   │   └── WriterInterface.php
-            │   ├── AdapterRepository.php
-            │   ├── RepositoryBuilder.php
-            │   └── RepositoryInterface.php
-            ├── Store
-            │   ├── File
-            │   │   ├── Paths.php
-            │   │   └── Reader.php
-            │   ├── FileStore.php
-            │   ├── StoreBuilder.php
-            │   ├── StoreInterface.php
-            │   └── StringStore.php
-            ├── Util
-            │   ├── Regex.php
-            │   └── Str.php
-            └── Validator.php
+├── test.txt
+├── tree.txt
+├── tree_modules.txt
+├── user_impersonation.php
+└── vendor
+    ├── autoload.php
+    ├── composer
+    │   ├── ClassLoader.php
+    │   ├── InstalledVersions.php
+    │   ├── LICENSE
+    │   ├── autoload_classmap.php
+    │   ├── autoload_files.php
+    │   ├── autoload_namespaces.php
+    │   ├── autoload_psr4.php
+    │   ├── autoload_real.php
+    │   ├── autoload_static.php
+    │   ├── installed.json
+    │   ├── installed.php
+    │   └── platform_check.php
+    ├── graham-campbell
+    │   └── result-type
+    │       ├── LICENSE
+    │       ├── composer.json
+    │       └── src
+    │           ├── Error.php
+    │           ├── Result.php
+    │           └── Success.php
+    ├── guzzlehttp
+    │   ├── guzzle
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── UPGRADING.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── BodySummarizer.php
+    │   │       ├── BodySummarizerInterface.php
+    │   │       ├── Client.php
+    │   │       ├── ClientInterface.php
+    │   │       ├── ClientTrait.php
+    │   │       ├── Cookie
+    │   │       │   ├── CookieJar.php
+    │   │       │   ├── CookieJarInterface.php
+    │   │       │   ├── FileCookieJar.php
+    │   │       │   ├── SessionCookieJar.php
+    │   │       │   └── SetCookie.php
+    │   │       ├── Exception
+    │   │       │   ├── BadResponseException.php
+    │   │       │   ├── ClientException.php
+    │   │       │   ├── ConnectException.php
+    │   │       │   ├── GuzzleException.php
+    │   │       │   ├── InvalidArgumentException.php
+    │   │       │   ├── RequestException.php
+    │   │       │   ├── ServerException.php
+    │   │       │   ├── TooManyRedirectsException.php
+    │   │       │   └── TransferException.php
+    │   │       ├── Handler
+    │   │       │   ├── CurlFactory.php
+    │   │       │   ├── CurlFactoryInterface.php
+    │   │       │   ├── CurlHandler.php
+    │   │       │   ├── CurlMultiHandler.php
+    │   │       │   ├── EasyHandle.php
+    │   │       │   ├── HeaderProcessor.php
+    │   │       │   ├── MockHandler.php
+    │   │       │   ├── Proxy.php
+    │   │       │   └── StreamHandler.php
+    │   │       ├── HandlerStack.php
+    │   │       ├── MessageFormatter.php
+    │   │       ├── MessageFormatterInterface.php
+    │   │       ├── Middleware.php
+    │   │       ├── Pool.php
+    │   │       ├── PrepareBodyMiddleware.php
+    │   │       ├── RedirectMiddleware.php
+    │   │       ├── RequestOptions.php
+    │   │       ├── RetryMiddleware.php
+    │   │       ├── TransferStats.php
+    │   │       ├── Utils.php
+    │   │       ├── functions.php
+    │   │       └── functions_include.php
+    │   ├── promises
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── AggregateException.php
+    │   │       ├── CancellationException.php
+    │   │       ├── Coroutine.php
+    │   │       ├── Create.php
+    │   │       ├── Each.php
+    │   │       ├── EachPromise.php
+    │   │       ├── FulfilledPromise.php
+    │   │       ├── Is.php
+    │   │       ├── Promise.php
+    │   │       ├── PromiseInterface.php
+    │   │       ├── PromisorInterface.php
+    │   │       ├── RejectedPromise.php
+    │   │       ├── RejectionException.php
+    │   │       ├── TaskQueue.php
+    │   │       ├── TaskQueueInterface.php
+    │   │       └── Utils.php
+    │   └── psr7
+    │       ├── CHANGELOG.md
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── AppendStream.php
+    │           ├── BufferStream.php
+    │           ├── CachingStream.php
+    │           ├── DroppingStream.php
+    │           ├── Exception
+    │           │   └── MalformedUriException.php
+    │           ├── FnStream.php
+    │           ├── Header.php
+    │           ├── HttpFactory.php
+    │           ├── InflateStream.php
+    │           ├── LazyOpenStream.php
+    │           ├── LimitStream.php
+    │           ├── Message.php
+    │           ├── MessageTrait.php
+    │           ├── MimeType.php
+    │           ├── MultipartStream.php
+    │           ├── NoSeekStream.php
+    │           ├── PumpStream.php
+    │           ├── Query.php
+    │           ├── Request.php
+    │           ├── Response.php
+    │           ├── Rfc7230.php
+    │           ├── ServerRequest.php
+    │           ├── Stream.php
+    │           ├── StreamDecoratorTrait.php
+    │           ├── StreamWrapper.php
+    │           ├── UploadedFile.php
+    │           ├── Uri.php
+    │           ├── UriComparator.php
+    │           ├── UriNormalizer.php
+    │           ├── UriResolver.php
+    │           └── Utils.php
+    ├── maennchen
+    │   └── zipstream-php
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       ├── guides
+    │       │   ├── ContentLength.rst
+    │       │   ├── FlySystem.rst
+    │       │   ├── Nginx.rst
+    │       │   ├── Options.rst
+    │       │   ├── PSR7Streams.rst
+    │       │   ├── StreamOutput.rst
+    │       │   ├── Symfony.rst
+    │       │   ├── Varnish.rst
+    │       │   └── index.rst
+    │       ├── phpdoc.dist.xml
+    │       ├── phpunit.xml.dist
+    │       ├── psalm.xml
+    │       ├── results.sarif
+    │       ├── src
+    │       │   ├── CentralDirectoryFileHeader.php
+    │       │   ├── CompressionMethod.php
+    │       │   ├── DataDescriptor.php
+    │       │   ├── EndOfCentralDirectory.php
+    │       │   ├── Exception
+    │       │   │   ├── DosTimeOverflowException.php
+    │       │   │   ├── FileNotFoundException.php
+    │       │   │   ├── FileNotReadableException.php
+    │       │   │   ├── FileSizeIncorrectException.php
+    │       │   │   ├── OverflowException.php
+    │       │   │   ├── ResourceActionException.php
+    │       │   │   ├── SimulationFileUnknownException.php
+    │       │   │   ├── StreamNotReadableException.php
+    │       │   │   └── StreamNotSeekableException.php
+    │       │   ├── Exception.php
+    │       │   ├── File.php
+    │       │   ├── GeneralPurposeBitFlag.php
+    │       │   ├── LocalFileHeader.php
+    │       │   ├── OperationMode.php
+    │       │   ├── PackField.php
+    │       │   ├── Time.php
+    │       │   ├── Version.php
+    │       │   ├── Zip64
+    │       │   │   ├── DataDescriptor.php
+    │       │   │   ├── EndOfCentralDirectory.php
+    │       │   │   ├── EndOfCentralDirectoryLocator.php
+    │       │   │   └── ExtendedInformationExtraField.php
+    │       │   ├── ZipStream.php
+    │       │   └── Zs
+    │       │       └── ExtendedInformationExtraField.php
+    │       └── test
+    │           ├── Assertions.php
+    │           ├── CentralDirectoryFileHeaderTest.php
+    │           ├── DataDescriptorTest.php
+    │           ├── EndOfCentralDirectoryTest.php
+    │           ├── EndlessCycleStream.php
+    │           ├── FaultInjectionResource.php
+    │           ├── LocalFileHeaderTest.php
+    │           ├── PackFieldTest.php
+    │           ├── ResourceStream.php
+    │           ├── Tempfile.php
+    │           ├── TimeTest.php
+    │           ├── Util.php
+    │           ├── Zip64
+    │           │   ├── DataDescriptorTest.php
+    │           │   ├── EndOfCentralDirectoryLocatorTest.php
+    │           │   ├── EndOfCentralDirectoryTest.php
+    │           │   └── ExtendedInformationExtraFieldTest.php
+    │           ├── ZipStreamTest.php
+    │           ├── Zs
+    │           │   └── ExtendedInformationExtraFieldTest.php
+    │           └── bootstrap.php
+    ├── mailjet
+    │   └── mailjet-apiv3-php
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       ├── phpunit.xml.dist
+    │       ├── src
+    │       │   └── Mailjet
+    │       │       ├── Client.php
+    │       │       ├── Config.php
+    │       │       ├── Normalizer
+    │       │       │   ├── ContactNormalizer.php
+    │       │       │   └── NormalizerInterface.php
+    │       │       ├── Request.php
+    │       │       ├── Resources.php
+    │       │       └── Response.php
+    │       └── test
+    │           └── Mailjet
+    │               ├── ClientTest.php
+    │               ├── MailjetApiv3Test.php
+    │               ├── RequestTest.php
+    │               ├── ResponseTest.php
+    │               └── test.php
+    ├── markbaker
+    │   ├── complex
+    │   │   ├── README.md
+    │   │   ├── classes
+    │   │   │   └── src
+    │   │   │       ├── Complex.php
+    │   │   │       ├── Exception.php
+    │   │   │       ├── Functions.php
+    │   │   │       └── Operations.php
+    │   │   ├── composer.json
+    │   │   ├── examples
+    │   │   │   ├── complexTest.php
+    │   │   │   ├── testFunctions.php
+    │   │   │   └── testOperations.php
+    │   │   └── license.md
+    │   └── matrix
+    │       ├── README.md
+    │       ├── buildPhar.php
+    │       ├── classes
+    │       │   └── src
+    │       │       ├── Builder.php
+    │       │       ├── Decomposition
+    │       │       │   ├── Decomposition.php
+    │       │       │   ├── LU.php
+    │       │       │   └── QR.php
+    │       │       ├── Div0Exception.php
+    │       │       ├── Exception.php
+    │       │       ├── Functions.php
+    │       │       ├── Matrix.php
+    │       │       ├── Operations.php
+    │       │       └── Operators
+    │       │           ├── Addition.php
+    │       │           ├── DirectSum.php
+    │       │           ├── Division.php
+    │       │           ├── Multiplication.php
+    │       │           ├── Operator.php
+    │       │           └── Subtraction.php
+    │       ├── composer.json
+    │       ├── examples
+    │       │   └── test.php
+    │       ├── infection.json.dist
+    │       ├── license.md
+    │       └── phpstan.neon
+    ├── phpoffice
+    │   └── phpspreadsheet
+    │       ├── CHANGELOG.md
+    │       ├── CONTRIBUTING.md
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       ├── phpstan-baseline.neon
+    │       ├── phpstan.neon.dist
+    │       ├── phpunit9.xml.dist
+    │       └── src
+    │           └── PhpSpreadsheet
+    │               ├── Calculation
+    │               │   ├── ArrayEnabled.php
+    │               │   ├── BinaryComparison.php
+    │               │   ├── Calculation.php
+    │               │   ├── Category.php
+    │               │   ├── Database
+    │               │   │   ├── DAverage.php
+    │               │   │   ├── DCount.php
+    │               │   │   ├── DCountA.php
+    │               │   │   ├── DGet.php
+    │               │   │   ├── DMax.php
+    │               │   │   ├── DMin.php
+    │               │   │   ├── DProduct.php
+    │               │   │   ├── DStDev.php
+    │               │   │   ├── DStDevP.php
+    │               │   │   ├── DSum.php
+    │               │   │   ├── DVar.php
+    │               │   │   ├── DVarP.php
+    │               │   │   └── DatabaseAbstract.php
+    │               │   ├── DateTimeExcel
+    │               │   │   ├── Constants.php
+    │               │   │   ├── Current.php
+    │               │   │   ├── Date.php
+    │               │   │   ├── DateParts.php
+    │               │   │   ├── DateValue.php
+    │               │   │   ├── Days.php
+    │               │   │   ├── Days360.php
+    │               │   │   ├── Difference.php
+    │               │   │   ├── Helpers.php
+    │               │   │   ├── Month.php
+    │               │   │   ├── NetworkDays.php
+    │               │   │   ├── Time.php
+    │               │   │   ├── TimeParts.php
+    │               │   │   ├── TimeValue.php
+    │               │   │   ├── Week.php
+    │               │   │   ├── WorkDay.php
+    │               │   │   └── YearFrac.php
+    │               │   ├── Engine
+    │               │   │   ├── ArrayArgumentHelper.php
+    │               │   │   ├── ArrayArgumentProcessor.php
+    │               │   │   ├── BranchPruner.php
+    │               │   │   ├── CyclicReferenceStack.php
+    │               │   │   ├── FormattedNumber.php
+    │               │   │   ├── Logger.php
+    │               │   │   └── Operands
+    │               │   │       ├── Operand.php
+    │               │   │       └── StructuredReference.php
+    │               │   ├── Engineering
+    │               │   │   ├── BesselI.php
+    │               │   │   ├── BesselJ.php
+    │               │   │   ├── BesselK.php
+    │               │   │   ├── BesselY.php
+    │               │   │   ├── BitWise.php
+    │               │   │   ├── Compare.php
+    │               │   │   ├── Complex.php
+    │               │   │   ├── ComplexFunctions.php
+    │               │   │   ├── ComplexOperations.php
+    │               │   │   ├── Constants.php
+    │               │   │   ├── ConvertBase.php
+    │               │   │   ├── ConvertBinary.php
+    │               │   │   ├── ConvertDecimal.php
+    │               │   │   ├── ConvertHex.php
+    │               │   │   ├── ConvertOctal.php
+    │               │   │   ├── ConvertUOM.php
+    │               │   │   ├── EngineeringValidations.php
+    │               │   │   ├── Erf.php
+    │               │   │   └── ErfC.php
+    │               │   ├── Exception.php
+    │               │   ├── ExceptionHandler.php
+    │               │   ├── Financial
+    │               │   │   ├── Amortization.php
+    │               │   │   ├── CashFlow
+    │               │   │   │   ├── CashFlowValidations.php
+    │               │   │   │   ├── Constant
+    │               │   │   │   │   ├── Periodic
+    │               │   │   │   │   │   ├── Cumulative.php
+    │               │   │   │   │   │   ├── Interest.php
+    │               │   │   │   │   │   ├── InterestAndPrincipal.php
+    │               │   │   │   │   │   └── Payments.php
+    │               │   │   │   │   └── Periodic.php
+    │               │   │   │   ├── Single.php
+    │               │   │   │   └── Variable
+    │               │   │   │       ├── NonPeriodic.php
+    │               │   │   │       └── Periodic.php
+    │               │   │   ├── Constants.php
+    │               │   │   ├── Coupons.php
+    │               │   │   ├── Depreciation.php
+    │               │   │   ├── Dollar.php
+    │               │   │   ├── FinancialValidations.php
+    │               │   │   ├── Helpers.php
+    │               │   │   ├── InterestRate.php
+    │               │   │   ├── Securities
+    │               │   │   │   ├── AccruedInterest.php
+    │               │   │   │   ├── Price.php
+    │               │   │   │   ├── Rates.php
+    │               │   │   │   ├── SecurityValidations.php
+    │               │   │   │   └── Yields.php
+    │               │   │   └── TreasuryBill.php
+    │               │   ├── FormulaParser.php
+    │               │   ├── FormulaToken.php
+    │               │   ├── Functions.php
+    │               │   ├── Information
+    │               │   │   ├── ErrorValue.php
+    │               │   │   ├── ExcelError.php
+    │               │   │   └── Value.php
+    │               │   ├── Internal
+    │               │   │   ├── ExcelArrayPseudoFunctions.php
+    │               │   │   ├── MakeMatrix.php
+    │               │   │   └── WildcardMatch.php
+    │               │   ├── Logical
+    │               │   │   ├── Boolean.php
+    │               │   │   ├── Conditional.php
+    │               │   │   └── Operations.php
+    │               │   ├── LookupRef
+    │               │   │   ├── Address.php
+    │               │   │   ├── ExcelMatch.php
+    │               │   │   ├── Filter.php
+    │               │   │   ├── Formula.php
+    │               │   │   ├── HLookup.php
+    │               │   │   ├── Helpers.php
+    │               │   │   ├── Hyperlink.php
+    │               │   │   ├── Indirect.php
+    │               │   │   ├── Lookup.php
+    │               │   │   ├── LookupBase.php
+    │               │   │   ├── LookupRefValidations.php
+    │               │   │   ├── Matrix.php
+    │               │   │   ├── Offset.php
+    │               │   │   ├── RowColumnInformation.php
+    │               │   │   ├── Selection.php
+    │               │   │   ├── Sort.php
+    │               │   │   ├── Unique.php
+    │               │   │   └── VLookup.php
+    │               │   ├── MathTrig
+    │               │   │   ├── Absolute.php
+    │               │   │   ├── Angle.php
+    │               │   │   ├── Arabic.php
+    │               │   │   ├── Base.php
+    │               │   │   ├── Ceiling.php
+    │               │   │   ├── Combinations.php
+    │               │   │   ├── Exp.php
+    │               │   │   ├── Factorial.php
+    │               │   │   ├── Floor.php
+    │               │   │   ├── Gcd.php
+    │               │   │   ├── Helpers.php
+    │               │   │   ├── IntClass.php
+    │               │   │   ├── Lcm.php
+    │               │   │   ├── Logarithms.php
+    │               │   │   ├── MatrixFunctions.php
+    │               │   │   ├── Operations.php
+    │               │   │   ├── Random.php
+    │               │   │   ├── Roman.php
+    │               │   │   ├── Round.php
+    │               │   │   ├── SeriesSum.php
+    │               │   │   ├── Sign.php
+    │               │   │   ├── Sqrt.php
+    │               │   │   ├── Subtotal.php
+    │               │   │   ├── Sum.php
+    │               │   │   ├── SumSquares.php
+    │               │   │   ├── Trig
+    │               │   │   │   ├── Cosecant.php
+    │               │   │   │   ├── Cosine.php
+    │               │   │   │   ├── Cotangent.php
+    │               │   │   │   ├── Secant.php
+    │               │   │   │   ├── Sine.php
+    │               │   │   │   └── Tangent.php
+    │               │   │   └── Trunc.php
+    │               │   ├── Statistical
+    │               │   │   ├── AggregateBase.php
+    │               │   │   ├── Averages
+    │               │   │   │   └── Mean.php
+    │               │   │   ├── Averages.php
+    │               │   │   ├── Conditional.php
+    │               │   │   ├── Confidence.php
+    │               │   │   ├── Counts.php
+    │               │   │   ├── Deviations.php
+    │               │   │   ├── Distributions
+    │               │   │   │   ├── Beta.php
+    │               │   │   │   ├── Binomial.php
+    │               │   │   │   ├── ChiSquared.php
+    │               │   │   │   ├── DistributionValidations.php
+    │               │   │   │   ├── Exponential.php
+    │               │   │   │   ├── F.php
+    │               │   │   │   ├── Fisher.php
+    │               │   │   │   ├── Gamma.php
+    │               │   │   │   ├── GammaBase.php
+    │               │   │   │   ├── HyperGeometric.php
+    │               │   │   │   ├── LogNormal.php
+    │               │   │   │   ├── NewtonRaphson.php
+    │               │   │   │   ├── Normal.php
+    │               │   │   │   ├── Poisson.php
+    │               │   │   │   ├── StandardNormal.php
+    │               │   │   │   ├── StudentT.php
+    │               │   │   │   └── Weibull.php
+    │               │   │   ├── MaxMinBase.php
+    │               │   │   ├── Maximum.php
+    │               │   │   ├── Minimum.php
+    │               │   │   ├── Percentiles.php
+    │               │   │   ├── Permutations.php
+    │               │   │   ├── Size.php
+    │               │   │   ├── StandardDeviations.php
+    │               │   │   ├── Standardize.php
+    │               │   │   ├── StatisticalValidations.php
+    │               │   │   ├── Trends.php
+    │               │   │   ├── VarianceBase.php
+    │               │   │   └── Variances.php
+    │               │   ├── TextData
+    │               │   │   ├── CaseConvert.php
+    │               │   │   ├── CharacterConvert.php
+    │               │   │   ├── Concatenate.php
+    │               │   │   ├── Extract.php
+    │               │   │   ├── Format.php
+    │               │   │   ├── Helpers.php
+    │               │   │   ├── Replace.php
+    │               │   │   ├── Search.php
+    │               │   │   ├── Text.php
+    │               │   │   └── Trim.php
+    │               │   ├── Token
+    │               │   │   └── Stack.php
+    │               │   ├── Web
+    │               │   │   └── Service.php
+    │               │   └── locale
+    │               │       ├── Translations.xlsx
+    │               │       ├── bg
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── cs
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── da
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── de
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── en
+    │               │       │   └── uk
+    │               │       │       └── config
+    │               │       ├── es
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── fi
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── fr
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── hu
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── it
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── nb
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── nl
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── pl
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── pt
+    │               │       │   ├── br
+    │               │       │   │   ├── config
+    │               │       │   │   └── functions
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── ru
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       ├── sv
+    │               │       │   ├── config
+    │               │       │   └── functions
+    │               │       └── tr
+    │               │           ├── config
+    │               │           └── functions
+    │               ├── Cell
+    │               │   ├── AddressHelper.php
+    │               │   ├── AddressRange.php
+    │               │   ├── AdvancedValueBinder.php
+    │               │   ├── Cell.php
+    │               │   ├── CellAddress.php
+    │               │   ├── CellRange.php
+    │               │   ├── ColumnRange.php
+    │               │   ├── Coordinate.php
+    │               │   ├── DataType.php
+    │               │   ├── DataValidation.php
+    │               │   ├── DataValidator.php
+    │               │   ├── DefaultValueBinder.php
+    │               │   ├── Hyperlink.php
+    │               │   ├── IValueBinder.php
+    │               │   ├── IgnoredErrors.php
+    │               │   ├── RowRange.php
+    │               │   └── StringValueBinder.php
+    │               ├── CellReferenceHelper.php
+    │               ├── Chart
+    │               │   ├── Axis.php
+    │               │   ├── AxisText.php
+    │               │   ├── Chart.php
+    │               │   ├── ChartColor.php
+    │               │   ├── DataSeries.php
+    │               │   ├── DataSeriesValues.php
+    │               │   ├── Exception.php
+    │               │   ├── GridLines.php
+    │               │   ├── Layout.php
+    │               │   ├── Legend.php
+    │               │   ├── PlotArea.php
+    │               │   ├── Properties.php
+    │               │   ├── Renderer
+    │               │   │   ├── IRenderer.php
+    │               │   │   ├── JpGraph.php
+    │               │   │   ├── JpGraphRendererBase.php
+    │               │   │   ├── MtJpGraphRenderer.php
+    │               │   │   └── PHP Charting Libraries.txt
+    │               │   ├── Title.php
+    │               │   └── TrendLine.php
+    │               ├── Collection
+    │               │   ├── Cells.php
+    │               │   ├── CellsFactory.php
+    │               │   └── Memory
+    │               │       ├── SimpleCache1.php
+    │               │       └── SimpleCache3.php
+    │               ├── Comment.php
+    │               ├── DefinedName.php
+    │               ├── Document
+    │               │   ├── Properties.php
+    │               │   └── Security.php
+    │               ├── Exception.php
+    │               ├── HashTable.php
+    │               ├── Helper
+    │               │   ├── Dimension.php
+    │               │   ├── Downloader.php
+    │               │   ├── Handler.php
+    │               │   ├── Html.php
+    │               │   ├── Sample.php
+    │               │   ├── Size.php
+    │               │   └── TextGrid.php
+    │               ├── IComparable.php
+    │               ├── IOFactory.php
+    │               ├── NamedFormula.php
+    │               ├── NamedRange.php
+    │               ├── Reader
+    │               │   ├── BaseReader.php
+    │               │   ├── Csv
+    │               │   │   └── Delimiter.php
+    │               │   ├── Csv.php
+    │               │   ├── DefaultReadFilter.php
+    │               │   ├── Exception.php
+    │               │   ├── Gnumeric
+    │               │   │   ├── PageSetup.php
+    │               │   │   ├── Properties.php
+    │               │   │   └── Styles.php
+    │               │   ├── Gnumeric.php
+    │               │   ├── Html.php
+    │               │   ├── IReadFilter.php
+    │               │   ├── IReader.php
+    │               │   ├── Ods
+    │               │   │   ├── AutoFilter.php
+    │               │   │   ├── BaseLoader.php
+    │               │   │   ├── DefinedNames.php
+    │               │   │   ├── FormulaTranslator.php
+    │               │   │   ├── PageSettings.php
+    │               │   │   └── Properties.php
+    │               │   ├── Ods.php
+    │               │   ├── Security
+    │               │   │   └── XmlScanner.php
+    │               │   ├── Slk.php
+    │               │   ├── Xls
+    │               │   │   ├── Biff5.php
+    │               │   │   ├── Biff8.php
+    │               │   │   ├── Color
+    │               │   │   │   ├── BIFF5.php
+    │               │   │   │   ├── BIFF8.php
+    │               │   │   │   └── BuiltIn.php
+    │               │   │   ├── Color.php
+    │               │   │   ├── ConditionalFormatting.php
+    │               │   │   ├── DataValidationHelper.php
+    │               │   │   ├── ErrorCode.php
+    │               │   │   ├── Escher.php
+    │               │   │   ├── ListFunctions.php
+    │               │   │   ├── LoadSpreadsheet.php
+    │               │   │   ├── MD5.php
+    │               │   │   ├── Mappings.php
+    │               │   │   ├── RC4.php
+    │               │   │   └── Style
+    │               │   │       ├── Border.php
+    │               │   │       ├── CellAlignment.php
+    │               │   │       ├── CellFont.php
+    │               │   │       └── FillPattern.php
+    │               │   ├── Xls.php
+    │               │   ├── XlsBase.php
+    │               │   ├── Xlsx
+    │               │   │   ├── AutoFilter.php
+    │               │   │   ├── BaseParserClass.php
+    │               │   │   ├── Chart.php
+    │               │   │   ├── ColumnAndRowAttributes.php
+    │               │   │   ├── ConditionalStyles.php
+    │               │   │   ├── DataValidations.php
+    │               │   │   ├── Hyperlinks.php
+    │               │   │   ├── Namespaces.php
+    │               │   │   ├── PageSetup.php
+    │               │   │   ├── Properties.php
+    │               │   │   ├── SharedFormula.php
+    │               │   │   ├── SheetViewOptions.php
+    │               │   │   ├── SheetViews.php
+    │               │   │   ├── Styles.php
+    │               │   │   ├── TableReader.php
+    │               │   │   ├── Theme.php
+    │               │   │   └── WorkbookView.php
+    │               │   ├── Xlsx.php
+    │               │   ├── Xml
+    │               │   │   ├── DataValidations.php
+    │               │   │   ├── PageSettings.php
+    │               │   │   ├── Properties.php
+    │               │   │   ├── Style
+    │               │   │   │   ├── Alignment.php
+    │               │   │   │   ├── Border.php
+    │               │   │   │   ├── Fill.php
+    │               │   │   │   ├── Font.php
+    │               │   │   │   ├── NumberFormat.php
+    │               │   │   │   └── StyleBase.php
+    │               │   │   └── Style.php
+    │               │   └── Xml.php
+    │               ├── ReferenceHelper.php
+    │               ├── RichText
+    │               │   ├── ITextElement.php
+    │               │   ├── RichText.php
+    │               │   ├── Run.php
+    │               │   └── TextElement.php
+    │               ├── Settings.php
+    │               ├── Shared
+    │               │   ├── CodePage.php
+    │               │   ├── Date.php
+    │               │   ├── Drawing.php
+    │               │   ├── Escher
+    │               │   │   ├── DgContainer
+    │               │   │   │   ├── SpgrContainer
+    │               │   │   │   │   └── SpContainer.php
+    │               │   │   │   └── SpgrContainer.php
+    │               │   │   ├── DgContainer.php
+    │               │   │   ├── DggContainer
+    │               │   │   │   ├── BstoreContainer
+    │               │   │   │   │   ├── BSE
+    │               │   │   │   │   │   └── Blip.php
+    │               │   │   │   │   └── BSE.php
+    │               │   │   │   └── BstoreContainer.php
+    │               │   │   └── DggContainer.php
+    │               │   ├── Escher.php
+    │               │   ├── File.php
+    │               │   ├── Font.php
+    │               │   ├── IntOrFloat.php
+    │               │   ├── OLE
+    │               │   │   ├── ChainedBlockStream.php
+    │               │   │   ├── PPS
+    │               │   │   │   ├── File.php
+    │               │   │   │   └── Root.php
+    │               │   │   └── PPS.php
+    │               │   ├── OLE.php
+    │               │   ├── OLERead.php
+    │               │   ├── PasswordHasher.php
+    │               │   ├── StringHelper.php
+    │               │   ├── TimeZone.php
+    │               │   ├── Trend
+    │               │   │   ├── BestFit.php
+    │               │   │   ├── ExponentialBestFit.php
+    │               │   │   ├── LinearBestFit.php
+    │               │   │   ├── LogarithmicBestFit.php
+    │               │   │   ├── PolynomialBestFit.php
+    │               │   │   ├── PowerBestFit.php
+    │               │   │   └── Trend.php
+    │               │   ├── XMLWriter.php
+    │               │   └── Xls.php
+    │               ├── Spreadsheet.php
+    │               ├── Style
+    │               │   ├── Alignment.php
+    │               │   ├── Border.php
+    │               │   ├── Borders.php
+    │               │   ├── Color.php
+    │               │   ├── Conditional.php
+    │               │   ├── ConditionalFormatting
+    │               │   │   ├── CellMatcher.php
+    │               │   │   ├── CellStyleAssessor.php
+    │               │   │   ├── ConditionalColorScale.php
+    │               │   │   ├── ConditionalDataBar.php
+    │               │   │   ├── ConditionalDataBarExtension.php
+    │               │   │   ├── ConditionalFormatValueObject.php
+    │               │   │   ├── ConditionalFormattingRuleExtension.php
+    │               │   │   ├── StyleMerger.php
+    │               │   │   ├── Wizard
+    │               │   │   │   ├── Blanks.php
+    │               │   │   │   ├── CellValue.php
+    │               │   │   │   ├── DateValue.php
+    │               │   │   │   ├── Duplicates.php
+    │               │   │   │   ├── Errors.php
+    │               │   │   │   ├── Expression.php
+    │               │   │   │   ├── TextValue.php
+    │               │   │   │   ├── WizardAbstract.php
+    │               │   │   │   └── WizardInterface.php
+    │               │   │   └── Wizard.php
+    │               │   ├── Fill.php
+    │               │   ├── Font.php
+    │               │   ├── NumberFormat
+    │               │   │   ├── BaseFormatter.php
+    │               │   │   ├── DateFormatter.php
+    │               │   │   ├── Formatter.php
+    │               │   │   ├── FractionFormatter.php
+    │               │   │   ├── NumberFormatter.php
+    │               │   │   ├── PercentageFormatter.php
+    │               │   │   └── Wizard
+    │               │   │       ├── Accounting.php
+    │               │   │       ├── Currency.php
+    │               │   │       ├── CurrencyBase.php
+    │               │   │       ├── CurrencyNegative.php
+    │               │   │       ├── Date.php
+    │               │   │       ├── DateTime.php
+    │               │   │       ├── DateTimeWizard.php
+    │               │   │       ├── Duration.php
+    │               │   │       ├── Locale.php
+    │               │   │       ├── Number.php
+    │               │   │       ├── NumberBase.php
+    │               │   │       ├── Percentage.php
+    │               │   │       ├── Scientific.php
+    │               │   │       ├── Time.php
+    │               │   │       └── Wizard.php
+    │               │   ├── NumberFormat.php
+    │               │   ├── Protection.php
+    │               │   ├── RgbTint.php
+    │               │   ├── Style.php
+    │               │   └── Supervisor.php
+    │               ├── Theme.php
+    │               ├── Worksheet
+    │               │   ├── AutoFilter
+    │               │   │   ├── Column
+    │               │   │   │   └── Rule.php
+    │               │   │   └── Column.php
+    │               │   ├── AutoFilter.php
+    │               │   ├── AutoFit.php
+    │               │   ├── BaseDrawing.php
+    │               │   ├── CellIterator.php
+    │               │   ├── Column.php
+    │               │   ├── ColumnCellIterator.php
+    │               │   ├── ColumnDimension.php
+    │               │   ├── ColumnIterator.php
+    │               │   ├── Dimension.php
+    │               │   ├── Drawing
+    │               │   │   └── Shadow.php
+    │               │   ├── Drawing.php
+    │               │   ├── HeaderFooter.php
+    │               │   ├── HeaderFooterDrawing.php
+    │               │   ├── Iterator.php
+    │               │   ├── MemoryDrawing.php
+    │               │   ├── PageBreak.php
+    │               │   ├── PageMargins.php
+    │               │   ├── PageSetup.php
+    │               │   ├── Pane.php
+    │               │   ├── ProtectedRange.php
+    │               │   ├── Protection.php
+    │               │   ├── Row.php
+    │               │   ├── RowCellIterator.php
+    │               │   ├── RowDimension.php
+    │               │   ├── RowIterator.php
+    │               │   ├── SheetView.php
+    │               │   ├── Table
+    │               │   │   ├── Column.php
+    │               │   │   └── TableStyle.php
+    │               │   ├── Table.php
+    │               │   ├── Validations.php
+    │               │   └── Worksheet.php
+    │               └── Writer
+    │                   ├── BaseWriter.php
+    │                   ├── Csv.php
+    │                   ├── Exception.php
+    │                   ├── Html.php
+    │                   ├── IWriter.php
+    │                   ├── Ods
+    │                   │   ├── AutoFilters.php
+    │                   │   ├── Cell
+    │                   │   │   ├── Comment.php
+    │                   │   │   └── Style.php
+    │                   │   ├── Content.php
+    │                   │   ├── Formula.php
+    │                   │   ├── Meta.php
+    │                   │   ├── MetaInf.php
+    │                   │   ├── Mimetype.php
+    │                   │   ├── NamedExpressions.php
+    │                   │   ├── Settings.php
+    │                   │   ├── Styles.php
+    │                   │   ├── Thumbnails.php
+    │                   │   └── WriterPart.php
+    │                   ├── Ods.php
+    │                   ├── Pdf
+    │                   │   ├── Dompdf.php
+    │                   │   ├── Mpdf.php
+    │                   │   └── Tcpdf.php
+    │                   ├── Pdf.php
+    │                   ├── Xls
+    │                   │   ├── BIFFwriter.php
+    │                   │   ├── CellDataValidation.php
+    │                   │   ├── ConditionalHelper.php
+    │                   │   ├── ErrorCode.php
+    │                   │   ├── Escher.php
+    │                   │   ├── Font.php
+    │                   │   ├── Parser.php
+    │                   │   ├── Style
+    │                   │   │   ├── CellAlignment.php
+    │                   │   │   ├── CellBorder.php
+    │                   │   │   └── CellFill.php
+    │                   │   ├── Workbook.php
+    │                   │   ├── Worksheet.php
+    │                   │   └── Xf.php
+    │                   ├── Xls.php
+    │                   ├── Xlsx
+    │                   │   ├── AutoFilter.php
+    │                   │   ├── Chart.php
+    │                   │   ├── Comments.php
+    │                   │   ├── ContentTypes.php
+    │                   │   ├── DefinedNames.php
+    │                   │   ├── DocProps.php
+    │                   │   ├── Drawing.php
+    │                   │   ├── FunctionPrefix.php
+    │                   │   ├── Metadata.php
+    │                   │   ├── Rels.php
+    │                   │   ├── RelsRibbon.php
+    │                   │   ├── RelsVBA.php
+    │                   │   ├── StringTable.php
+    │                   │   ├── Style.php
+    │                   │   ├── Table.php
+    │                   │   ├── Theme.php
+    │                   │   ├── Workbook.php
+    │                   │   ├── Worksheet.php
+    │                   │   └── WriterPart.php
+    │                   ├── Xlsx.php
+    │                   ├── ZipStream0.php
+    │                   ├── ZipStream2.php
+    │                   └── ZipStream3.php
+    ├── phpoption
+    │   └── phpoption
+    │       ├── LICENSE
+    │       ├── composer.json
+    │       └── src
+    │           └── PhpOption
+    │               ├── LazyOption.php
+    │               ├── None.php
+    │               ├── Option.php
+    │               └── Some.php
+    ├── psr
+    │   ├── http-client
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── ClientExceptionInterface.php
+    │   │       ├── ClientInterface.php
+    │   │       ├── NetworkExceptionInterface.php
+    │   │       └── RequestExceptionInterface.php
+    │   ├── http-factory
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── src
+    │   │       ├── RequestFactoryInterface.php
+    │   │       ├── ResponseFactoryInterface.php
+    │   │       ├── ServerRequestFactoryInterface.php
+    │   │       ├── StreamFactoryInterface.php
+    │   │       ├── UploadedFileFactoryInterface.php
+    │   │       └── UriFactoryInterface.php
+    │   ├── http-message
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   ├── docs
+    │   │   │   ├── PSR7-Interfaces.md
+    │   │   │   └── PSR7-Usage.md
+    │   │   └── src
+    │   │       ├── MessageInterface.php
+    │   │       ├── RequestInterface.php
+    │   │       ├── ResponseInterface.php
+    │   │       ├── ServerRequestInterface.php
+    │   │       ├── StreamInterface.php
+    │   │       ├── UploadedFileInterface.php
+    │   │       └── UriInterface.php
+    │   └── simple-cache
+    │       ├── LICENSE.md
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           ├── CacheException.php
+    │           ├── CacheInterface.php
+    │           └── InvalidArgumentException.php
+    ├── ralouphie
+    │   └── getallheaders
+    │       ├── LICENSE
+    │       ├── README.md
+    │       ├── composer.json
+    │       └── src
+    │           └── getallheaders.php
+    ├── symfony
+    │   ├── deprecation-contracts
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── composer.json
+    │   │   └── function.php
+    │   ├── polyfill-ctype
+    │   │   ├── Ctype.php
+    │   │   ├── LICENSE
+    │   │   ├── README.md
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap80.php
+    │   │   └── composer.json
+    │   ├── polyfill-mbstring
+    │   │   ├── LICENSE
+    │   │   ├── Mbstring.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   └── unidata
+    │   │   │       ├── caseFolding.php
+    │   │   │       ├── lowerCase.php
+    │   │   │       ├── titleCaseRegexp.php
+    │   │   │       └── upperCase.php
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap80.php
+    │   │   └── composer.json
+    │   ├── polyfill-php80
+    │   │   ├── LICENSE
+    │   │   ├── Php80.php
+    │   │   ├── PhpToken.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   └── stubs
+    │   │   │       ├── Attribute.php
+    │   │   │       ├── PhpToken.php
+    │   │   │       ├── Stringable.php
+    │   │   │       ├── UnhandledMatchError.php
+    │   │   │       └── ValueError.php
+    │   │   ├── bootstrap.php
+    │   │   └── composer.json
+    │   ├── polyfill-php83
+    │   │   ├── LICENSE
+    │   │   ├── Php83.php
+    │   │   ├── README.md
+    │   │   ├── Resources
+    │   │   │   └── stubs
+    │   │   │       ├── DateError.php
+    │   │   │       ├── DateException.php
+    │   │   │       ├── DateInvalidOperationException.php
+    │   │   │       ├── DateInvalidTimeZoneException.php
+    │   │   │       ├── DateMalformedIntervalStringException.php
+    │   │   │       ├── DateMalformedPeriodStringException.php
+    │   │   │       ├── DateMalformedStringException.php
+    │   │   │       ├── DateObjectError.php
+    │   │   │       ├── DateRangeError.php
+    │   │   │       ├── Override.php
+    │   │   │       └── SQLite3Exception.php
+    │   │   ├── bootstrap.php
+    │   │   ├── bootstrap81.php
+    │   │   └── composer.json
+    │   ├── translation-contracts
+    │   │   ├── CHANGELOG.md
+    │   │   ├── LICENSE
+    │   │   ├── LocaleAwareInterface.php
+    │   │   ├── README.md
+    │   │   ├── Test
+    │   │   │   └── TranslatorTest.php
+    │   │   ├── TranslatableInterface.php
+    │   │   ├── TranslatorInterface.php
+    │   │   ├── TranslatorTrait.php
+    │   │   └── composer.json
+    │   └── validator
+    │       ├── Attribute
+    │       │   └── HasNamedArguments.php
+    │       ├── CHANGELOG.md
+    │       ├── Command
+    │       │   └── DebugCommand.php
+    │       ├── Constraint.php
+    │       ├── ConstraintValidator.php
+    │       ├── ConstraintValidatorFactory.php
+    │       ├── ConstraintValidatorFactoryInterface.php
+    │       ├── ConstraintValidatorInterface.php
+    │       ├── ConstraintViolation.php
+    │       ├── ConstraintViolationInterface.php
+    │       ├── ConstraintViolationList.php
+    │       ├── ConstraintViolationListInterface.php
+    │       ├── Constraints
+    │       │   ├── AbstractComparison.php
+    │       │   ├── AbstractComparisonValidator.php
+    │       │   ├── All.php
+    │       │   ├── AllValidator.php
+    │       │   ├── AtLeastOneOf.php
+    │       │   ├── AtLeastOneOfValidator.php
+    │       │   ├── Bic.php
+    │       │   ├── BicValidator.php
+    │       │   ├── Blank.php
+    │       │   ├── BlankValidator.php
+    │       │   ├── Callback.php
+    │       │   ├── CallbackValidator.php
+    │       │   ├── CardScheme.php
+    │       │   ├── CardSchemeValidator.php
+    │       │   ├── Cascade.php
+    │       │   ├── Charset.php
+    │       │   ├── CharsetValidator.php
+    │       │   ├── Choice.php
+    │       │   ├── ChoiceValidator.php
+    │       │   ├── Cidr.php
+    │       │   ├── CidrValidator.php
+    │       │   ├── Collection.php
+    │       │   ├── CollectionValidator.php
+    │       │   ├── Composite.php
+    │       │   ├── Compound.php
+    │       │   ├── CompoundValidator.php
+    │       │   ├── Count.php
+    │       │   ├── CountValidator.php
+    │       │   ├── Country.php
+    │       │   ├── CountryValidator.php
+    │       │   ├── CssColor.php
+    │       │   ├── CssColorValidator.php
+    │       │   ├── Currency.php
+    │       │   ├── CurrencyValidator.php
+    │       │   ├── Date.php
+    │       │   ├── DateTime.php
+    │       │   ├── DateTimeValidator.php
+    │       │   ├── DateValidator.php
+    │       │   ├── DisableAutoMapping.php
+    │       │   ├── DivisibleBy.php
+    │       │   ├── DivisibleByValidator.php
+    │       │   ├── Email.php
+    │       │   ├── EmailValidator.php
+    │       │   ├── EnableAutoMapping.php
+    │       │   ├── EqualTo.php
+    │       │   ├── EqualToValidator.php
+    │       │   ├── Existence.php
+    │       │   ├── Expression.php
+    │       │   ├── ExpressionLanguageProvider.php
+    │       │   ├── ExpressionSyntax.php
+    │       │   ├── ExpressionSyntaxValidator.php
+    │       │   ├── ExpressionValidator.php
+    │       │   ├── File.php
+    │       │   ├── FileValidator.php
+    │       │   ├── GreaterThan.php
+    │       │   ├── GreaterThanOrEqual.php
+    │       │   ├── GreaterThanOrEqualValidator.php
+    │       │   ├── GreaterThanValidator.php
+    │       │   ├── GroupSequence.php
+    │       │   ├── GroupSequenceProvider.php
+    │       │   ├── Hostname.php
+    │       │   ├── HostnameValidator.php
+    │       │   ├── Iban.php
+    │       │   ├── IbanValidator.php
+    │       │   ├── IdenticalTo.php
+    │       │   ├── IdenticalToValidator.php
+    │       │   ├── Image.php
+    │       │   ├── ImageValidator.php
+    │       │   ├── Ip.php
+    │       │   ├── IpValidator.php
+    │       │   ├── IsFalse.php
+    │       │   ├── IsFalseValidator.php
+    │       │   ├── IsNull.php
+    │       │   ├── IsNullValidator.php
+    │       │   ├── IsTrue.php
+    │       │   ├── IsTrueValidator.php
+    │       │   ├── Isbn.php
+    │       │   ├── IsbnValidator.php
+    │       │   ├── Isin.php
+    │       │   ├── IsinValidator.php
+    │       │   ├── Issn.php
+    │       │   ├── IssnValidator.php
+    │       │   ├── Json.php
+    │       │   ├── JsonValidator.php
+    │       │   ├── Language.php
+    │       │   ├── LanguageValidator.php
+    │       │   ├── Length.php
+    │       │   ├── LengthValidator.php
+    │       │   ├── LessThan.php
+    │       │   ├── LessThanOrEqual.php
+    │       │   ├── LessThanOrEqualValidator.php
+    │       │   ├── LessThanValidator.php
+    │       │   ├── Locale.php
+    │       │   ├── LocaleValidator.php
+    │       │   ├── Luhn.php
+    │       │   ├── LuhnValidator.php
+    │       │   ├── MacAddress.php
+    │       │   ├── MacAddressValidator.php
+    │       │   ├── Negative.php
+    │       │   ├── NegativeOrZero.php
+    │       │   ├── NoSuspiciousCharacters.php
+    │       │   ├── NoSuspiciousCharactersValidator.php
+    │       │   ├── NotBlank.php
+    │       │   ├── NotBlankValidator.php
+    │       │   ├── NotCompromisedPassword.php
+    │       │   ├── NotCompromisedPasswordValidator.php
+    │       │   ├── NotEqualTo.php
+    │       │   ├── NotEqualToValidator.php
+    │       │   ├── NotIdenticalTo.php
+    │       │   ├── NotIdenticalToValidator.php
+    │       │   ├── NotNull.php
+    │       │   ├── NotNullValidator.php
+    │       │   ├── Optional.php
+    │       │   ├── PasswordStrength.php
+    │       │   ├── PasswordStrengthValidator.php
+    │       │   ├── Positive.php
+    │       │   ├── PositiveOrZero.php
+    │       │   ├── Range.php
+    │       │   ├── RangeValidator.php
+    │       │   ├── Regex.php
+    │       │   ├── RegexValidator.php
+    │       │   ├── Required.php
+    │       │   ├── Sequentially.php
+    │       │   ├── SequentiallyValidator.php
+    │       │   ├── Time.php
+    │       │   ├── TimeValidator.php
+    │       │   ├── Timezone.php
+    │       │   ├── TimezoneValidator.php
+    │       │   ├── Traverse.php
+    │       │   ├── Type.php
+    │       │   ├── TypeValidator.php
+    │       │   ├── Ulid.php
+    │       │   ├── UlidValidator.php
+    │       │   ├── Unique.php
+    │       │   ├── UniqueValidator.php
+    │       │   ├── Url.php
+    │       │   ├── UrlValidator.php
+    │       │   ├── Uuid.php
+    │       │   ├── UuidValidator.php
+    │       │   ├── Valid.php
+    │       │   ├── ValidValidator.php
+    │       │   ├── When.php
+    │       │   ├── WhenValidator.php
+    │       │   └── ZeroComparisonConstraintTrait.php
+    │       ├── ContainerConstraintValidatorFactory.php
+    │       ├── Context
+    │       │   ├── ExecutionContext.php
+    │       │   ├── ExecutionContextFactory.php
+    │       │   ├── ExecutionContextFactoryInterface.php
+    │       │   └── ExecutionContextInterface.php
+    │       ├── DataCollector
+    │       │   └── ValidatorDataCollector.php
+    │       ├── DependencyInjection
+    │       │   ├── AddAutoMappingConfigurationPass.php
+    │       │   ├── AddConstraintValidatorsPass.php
+    │       │   └── AddValidatorInitializersPass.php
+    │       ├── Exception
+    │       │   ├── BadMethodCallException.php
+    │       │   ├── ConstraintDefinitionException.php
+    │       │   ├── ExceptionInterface.php
+    │       │   ├── GroupDefinitionException.php
+    │       │   ├── InvalidArgumentException.php
+    │       │   ├── InvalidOptionsException.php
+    │       │   ├── LogicException.php
+    │       │   ├── MappingException.php
+    │       │   ├── MissingOptionsException.php
+    │       │   ├── NoSuchMetadataException.php
+    │       │   ├── OutOfBoundsException.php
+    │       │   ├── RuntimeException.php
+    │       │   ├── UnexpectedTypeException.php
+    │       │   ├── UnexpectedValueException.php
+    │       │   ├── UnsupportedMetadataException.php
+    │       │   ├── ValidationFailedException.php
+    │       │   └── ValidatorException.php
+    │       ├── GroupProviderInterface.php
+    │       ├── GroupSequenceProviderInterface.php
+    │       ├── LICENSE
+    │       ├── Mapping
+    │       │   ├── AutoMappingStrategy.php
+    │       │   ├── CascadingStrategy.php
+    │       │   ├── ClassMetadata.php
+    │       │   ├── ClassMetadataInterface.php
+    │       │   ├── Factory
+    │       │   │   ├── BlackHoleMetadataFactory.php
+    │       │   │   ├── LazyLoadingMetadataFactory.php
+    │       │   │   └── MetadataFactoryInterface.php
+    │       │   ├── GenericMetadata.php
+    │       │   ├── GetterMetadata.php
+    │       │   ├── Loader
+    │       │   │   ├── AbstractLoader.php
+    │       │   │   ├── AttributeLoader.php
+    │       │   │   ├── AutoMappingTrait.php
+    │       │   │   ├── FileLoader.php
+    │       │   │   ├── FilesLoader.php
+    │       │   │   ├── LoaderChain.php
+    │       │   │   ├── LoaderInterface.php
+    │       │   │   ├── PropertyInfoLoader.php
+    │       │   │   ├── StaticMethodLoader.php
+    │       │   │   ├── XmlFileLoader.php
+    │       │   │   ├── XmlFilesLoader.php
+    │       │   │   ├── YamlFileLoader.php
+    │       │   │   ├── YamlFilesLoader.php
+    │       │   │   └── schema
+    │       │   │       └── dic
+    │       │   │           └── constraint-mapping
+    │       │   │               └── constraint-mapping-1.0.xsd
+    │       │   ├── MemberMetadata.php
+    │       │   ├── MetadataInterface.php
+    │       │   ├── PropertyMetadata.php
+    │       │   ├── PropertyMetadataInterface.php
+    │       │   └── TraversalStrategy.php
+    │       ├── ObjectInitializerInterface.php
+    │       ├── README.md
+    │       ├── Resources
+    │       │   ├── bin
+    │       │   └── translations
+    │       │       ├── validators.af.xlf
+    │       │       ├── validators.ar.xlf
+    │       │       ├── validators.az.xlf
+    │       │       ├── validators.be.xlf
+    │       │       ├── validators.bg.xlf
+    │       │       ├── validators.bs.xlf
+    │       │       ├── validators.ca.xlf
+    │       │       ├── validators.cs.xlf
+    │       │       ├── validators.cy.xlf
+    │       │       ├── validators.da.xlf
+    │       │       ├── validators.de.xlf
+    │       │       ├── validators.el.xlf
+    │       │       ├── validators.en.xlf
+    │       │       ├── validators.es.xlf
+    │       │       ├── validators.et.xlf
+    │       │       ├── validators.eu.xlf
+    │       │       ├── validators.fa.xlf
+    │       │       ├── validators.fi.xlf
+    │       │       ├── validators.fr.xlf
+    │       │       ├── validators.gl.xlf
+    │       │       ├── validators.he.xlf
+    │       │       ├── validators.hr.xlf
+    │       │       ├── validators.hu.xlf
+    │       │       ├── validators.hy.xlf
+    │       │       ├── validators.id.xlf
+    │       │       ├── validators.it.xlf
+    │       │       ├── validators.ja.xlf
+    │       │       ├── validators.lb.xlf
+    │       │       ├── validators.lt.xlf
+    │       │       ├── validators.lv.xlf
+    │       │       ├── validators.mk.xlf
+    │       │       ├── validators.mn.xlf
+    │       │       ├── validators.my.xlf
+    │       │       ├── validators.nb.xlf
+    │       │       ├── validators.nl.xlf
+    │       │       ├── validators.nn.xlf
+    │       │       ├── validators.no.xlf
+    │       │       ├── validators.pl.xlf
+    │       │       ├── validators.pt.xlf
+    │       │       ├── validators.pt_BR.xlf
+    │       │       ├── validators.ro.xlf
+    │       │       ├── validators.ru.xlf
+    │       │       ├── validators.sk.xlf
+    │       │       ├── validators.sl.xlf
+    │       │       ├── validators.sq.xlf
+    │       │       ├── validators.sr_Cyrl.xlf
+    │       │       ├── validators.sr_Latn.xlf
+    │       │       ├── validators.sv.xlf
+    │       │       ├── validators.th.xlf
+    │       │       ├── validators.tl.xlf
+    │       │       ├── validators.tr.xlf
+    │       │       ├── validators.uk.xlf
+    │       │       ├── validators.ur.xlf
+    │       │       ├── validators.uz.xlf
+    │       │       ├── validators.vi.xlf
+    │       │       ├── validators.zh_CN.xlf
+    │       │       └── validators.zh_TW.xlf
+    │       ├── Test
+    │       │   └── ConstraintValidatorTestCase.php
+    │       ├── Util
+    │       │   └── PropertyPath.php
+    │       ├── Validation.php
+    │       ├── Validator
+    │       │   ├── ContextualValidatorInterface.php
+    │       │   ├── LazyProperty.php
+    │       │   ├── RecursiveContextualValidator.php
+    │       │   ├── RecursiveValidator.php
+    │       │   ├── TraceableValidator.php
+    │       │   └── ValidatorInterface.php
+    │       ├── ValidatorBuilder.php
+    │       ├── Violation
+    │       │   ├── ConstraintViolationBuilder.php
+    │       │   └── ConstraintViolationBuilderInterface.php
+    │       └── composer.json
+    └── vlucas
+        └── phpdotenv
+            ├── LICENSE
+            ├── composer.json
+            └── src
+                ├── Dotenv.php
+                ├── Exception
+                │   ├── ExceptionInterface.php
+                │   ├── InvalidEncodingException.php
+                │   ├── InvalidFileException.php
+                │   ├── InvalidPathException.php
+                │   └── ValidationException.php
+                ├── Loader
+                │   ├── Loader.php
+                │   ├── LoaderInterface.php
+                │   └── Resolver.php
+                ├── Parser
+                │   ├── Entry.php
+                │   ├── EntryParser.php
+                │   ├── Lexer.php
+                │   ├── Lines.php
+                │   ├── Parser.php
+                │   ├── ParserInterface.php
+                │   └── Value.php
+                ├── Repository
+                │   ├── Adapter
+                │   │   ├── AdapterInterface.php
+                │   │   ├── ApacheAdapter.php
+                │   │   ├── ArrayAdapter.php
+                │   │   ├── EnvConstAdapter.php
+                │   │   ├── GuardedWriter.php
+                │   │   ├── ImmutableWriter.php
+                │   │   ├── MultiReader.php
+                │   │   ├── MultiWriter.php
+                │   │   ├── PutenvAdapter.php
+                │   │   ├── ReaderInterface.php
+                │   │   ├── ReplacingWriter.php
+                │   │   ├── ServerConstAdapter.php
+                │   │   └── WriterInterface.php
+                │   ├── AdapterRepository.php
+                │   ├── RepositoryBuilder.php
+                │   └── RepositoryInterface.php
+                ├── Store
+                │   ├── File
+                │   │   ├── Paths.php
+                │   │   └── Reader.php
+                │   ├── FileStore.php
+                │   ├── StoreBuilder.php
+                │   ├── StoreInterface.php
+                │   └── StringStore.php
+                ├── Util
+                │   ├── Regex.php
+                │   └── Str.php
+                └── Validator.php
 
-335 directories, 2053 files
+336 directories, 2388 files
