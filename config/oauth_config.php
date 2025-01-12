@@ -1,4 +1,4 @@
-<?
+<?php
 return [
     'google' => [
         'client_id' => $_ENV['GOOGLE_CLIENT_ID'] ?? '',
