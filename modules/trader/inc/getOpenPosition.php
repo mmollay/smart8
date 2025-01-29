@@ -1,6 +1,6 @@
-<?
-include (__DIR__ . "/../t_config.php");
-include (__DIR__ . '/../../../../smartform/include_form.php');
+<?php
+include(__DIR__ . "/../t_config.php");
+include(__DIR__ . '/../../../../smartform/include_form.php');
 
 $servers = getAllServerIps($mysqli);
 foreach ($servers as $serverInfo) {

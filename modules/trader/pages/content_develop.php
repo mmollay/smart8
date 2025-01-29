@@ -1,4 +1,4 @@
-<?
+<?php
 include (__DIR__ . "/../t_config.php");
 include ('../../ssi_smart/smart_form/include_form.php');
 

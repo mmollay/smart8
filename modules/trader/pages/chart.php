@@ -49,10 +49,16 @@ $accountColors = [
 
 <canvas id="chartCanvas"></canvas>
 
+
+
 <script>
+
     $(document).ready(function () {
         const accountColors = <?php echo json_encode($accountColors); ?>;
-        var currentChart;
+
+        let isUpdating = false;  // Flag für laufende Updates
+        let currentChart = null; // Chart Referenz
+
 
         // Lese Werte aus dem Local Storage oder setze Standardwerte
         var timeFrame = localStorage.getItem('timeFrame') || 'days';
@@ -84,6 +90,12 @@ $accountColors = [
 
         // Funktion zum Aktualisieren und Zeichnen des Diagramms
         function updateChartData(tf, ct, at, pf) {
+            // Wenn bereits ein Update läuft, abbrechen
+            if (isUpdating) {
+                return;
+            }
+
+            isUpdating = true;  // Sperre setzen
             timeFrame = tf;
             chartType = ct;
             accountType = at;
@@ -99,8 +111,11 @@ $accountColors = [
                 },
                 success: function (data) {
                     const responseData = JSON.parse(data);
-
                     drawChart(responseData);
+                },
+                complete: function () {
+                    // Sperre wieder aufheben, egal ob Erfolg oder Fehler
+                    isUpdating = false;
                 }
             });
         }
@@ -108,9 +123,12 @@ $accountColors = [
         // Funktion zum Zeichnen des Diagramms
         function drawChart(accountsData) {
             const ctx = $('#chartCanvas')[0].getContext('2d');
+
             if (currentChart) {
-                currentChart.destroy(); // Zerstöre das vorherige Diagramm, falls vorhanden
+                currentChart.destroy();
+                currentChart = null;
             }
+
 
             const datasets = accountsData.map((account, index) => ({
                 label: account.title,

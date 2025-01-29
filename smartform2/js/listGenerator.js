@@ -1,6 +1,7 @@
 // Globale Variablen
 let listInstances = {};
 let autoReloadTimers = {};
+let currentContentId = null;
 
 function loadListGenerator(url, customState = {}) {
 
@@ -36,7 +37,9 @@ function loadListGenerator(url, customState = {}) {
         ...customState
     };
 
-    console.log(`Sende AJAX-Anfrage für ${contentId} mit Zustand:`, instance.state);
+    //    console.log(`Sende AJAX-Anfrage für ${contentId} mit Zustand:`, instance.state);
+
+    $(`#${contentId}`).html('<div class="ui active text loader">Wird geladen...</div>');
 
     $.ajax({
         url: url,
@@ -45,7 +48,9 @@ function loadListGenerator(url, customState = {}) {
             ...instance.state,
             filters: instance.state.filters
         },
+
         success: function (response) {
+
             $(`#${contentId}`).html(response);
             setupEventHandlers(contentId);
             console.log(`AJAX-Anfrage erfolgreich für ${contentId}`);
@@ -230,11 +235,11 @@ function setupEventHandlers(contentId) {
         // Lade den Inhalt dynamisch
         const contentUrl = $modal.data('content-url');
         const method = $modal.data('method') || 'POST'; // Standard ist POST, falls nicht anders angegeben
-
         $.ajax({
             url: contentUrl,
             method: method,
             data: data,
+
             success: function (response) {
                 $modal.find('.content').html(response);
 
@@ -366,6 +371,7 @@ function showToast(message, type) {
     });
 }
 
+
 // Modifizierte setupAutoReload Funktion
 function setupAutoReload(contentId) {
     const instance = listInstances[contentId];
@@ -411,6 +417,7 @@ function setupListGenerator(contentId) {
 
     // Funktion zum Neuladen der Tabelle
     function reloadTable() {
+
         $.ajax({
             url: window.location.href,
             method: 'GET',

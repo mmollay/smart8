@@ -109,7 +109,7 @@ try {
     }
 
     // Führe die Zugriffsprüfung automatisch durch
-    enforceModuleAccess();
+    // enforceModuleAccess();
 
     $GLOBALS['connection'] = $db;
 

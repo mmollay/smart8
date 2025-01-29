@@ -30,10 +30,19 @@ $dashboard->addMenuItem('mainMenu', "main", "../../auth/logout.php", "Abmelden",
 //$dashboard->addScript("../../../smartform/js/smart_list.js");
 //$dashboard->addScript("../../../smartform/js/smart_form.js");
 
+//echo "    <script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>\n";
+//echo "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js\"></script>\n";
+
+
+$dashboard->addScript(SMARTFORM_PATH . "/js/jquery.min.js");
+$dashboard->addScript(SMARTFORM_PATH . "/fomantic-ui/semantic.min.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/formGenerator.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/listGenerator.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/ckeditor-init.js");
 $dashboard->addScript(SMARTFORM_PATH . "/js/fileUploader.js");
+
+//style
+$dashboard->addStyle(SMARTFORM_PATH . "/fomantic-ui/semantic.min.css");
 
 
 //$dashboard->addScript("alert('test');", true);  //Inline-Script
@@ -245,6 +254,11 @@ class Dashboard
     }
 
 
+    public function addModule($modulePath)
+    {
+        $this->addScript($modulePath, false, 'module');
+    }
+
 
 
     public function addMenu($menuId, $menuClass = 'ui compact menu', $toggleButton = false)
@@ -409,12 +423,19 @@ class Dashboard
         $this->menuClass = $class;
     }
 
-    public function addScript($scriptPath, $isInline = false)
+    public function addScript($scriptPath, $isInline = false, $type = 'script')
     {
         if ($isInline) {
             $this->inlineScripts[] = $scriptPath;
         } else {
-            $this->scripts[] = $scriptPath;
+            if ($type === 'module') {
+                $this->scripts[] = [
+                    'path' => $scriptPath,
+                    'type' => 'module'
+                ];
+            } else {
+                $this->scripts[] = $scriptPath;
+            }
         }
     }
 
@@ -614,17 +635,18 @@ class Dashboard
         echo "    <meta charset=\"UTF-8\">\n";
         echo "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
         echo "    <title>" . htmlspecialchars($this->pageTitle) . "</title>\n";
-        echo "    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.css\">\n";
         foreach ($this->styles as $style) {
             echo "    <link rel=\"stylesheet\" href=\"" . htmlspecialchars($style) . "\">\n";
         }
         echo "    <link rel=\"stylesheet\" href=\"../../css/basis.css\">\n";
-        echo "    <script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>\n";
-        echo "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js\"></script>\n";
 
         $this->renderJSVars();
         foreach ($this->scripts as $script) {
-            echo "    <script src=\"" . htmlspecialchars($script) . "\"></script>\n";
+            if (isset($script['type']) && $script['type'] === 'module') {
+                echo "    <script type=\"module\" src=\"" . htmlspecialchars($script['path']) . "\"></script>\n";
+            } else {
+                echo "    <script src=\"" . htmlspecialchars($script) . "\"></script>\n";
+            }
         }
         foreach ($this->inlineScripts as $inlineScript) {
             echo "    <script>{$inlineScript}</script>\n";
@@ -694,9 +716,9 @@ class Dashboard
         // Footer
         echo "        <div class=\"ui container footer\" align=\"center\">\n";
         echo $this->footerContent;
-        if (!$this->footerContent) {
-            echo "           <div class='ui label'> Version " . htmlspecialchars($this->version) . "</div>\n";
-        }
+        // if (!$this->footerContent) {
+        //     echo "           <div class='ui label'> Version " . htmlspecialchars($this->version) . "</div>\n";
+        // }
         echo "        </div>\n";
         echo "    </div>\n";
         echo "</div>\n";

@@ -1,30 +1,37 @@
-<?
-include(__DIR__ . '/functions.inc.php');
+<?php
+include(__DIR__ . '/../../get_env.php');
+
+// Error Logging aktivieren
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/logs/error.log');
 
-$host = 'localhost';
-$username = 'smart';
-$password = 'Eiddswwenph21;';
-$dbname = 'ssi_trader';
-
-$GLOBALS['db'] = $db = $connection = $GLOBALS['mysqli'] = mysqli_connect($host, $username, $password, $dbname);
-
-//Select the database
-if (!mysqli_select_db($db, $dbname)) {
-    die('Datenbankauswahl fehlgeschlagen: ' . mysqli_error($db));
+// Log-Verzeichnis erstellen wenn es nicht existiert
+if (!file_exists(__DIR__ . '/logs')) {
+    mkdir(__DIR__ . '/logs', 0777, true);
 }
 
+$host = $_ENV['BINANCE_DB_HOST'];
+$username = $_ENV['BINANCE_DB_USERNAME'];
+$password = $_ENV['BINANCE_DB_PASSWORD'];
+$database = $_ENV['BINANCE_DB_NAME'];
 
-// Definieren Sie die Zeitfenster, die ausgeschlossen werden sollen
-$exclusionPeriods = [
-    ['start' => "2024-04-15", 'end' => "2024-04-19"],
-    // Fügen Sie weitere Zeitfenster nach Bedarf hinzu
-];
+// Create connection
+$db = new mysqli($host, $username, $password, $database);
 
-// Erstellen Sie eine Bedingung, die alle Zeitfenster ausschließt
-$exclusionConditions = array_map(function ($period) {
-    return '(o.time < UNIX_TIMESTAMP("' . $period['start'] . '") OR o.time > UNIX_TIMESTAMP("' . $period['end'] . '"))';
-}, $exclusionPeriods);
-$exclusionClause = implode(' AND ', $exclusionConditions);
+// Check connection
+if ($db->connect_error) {
+    die("Connection failed: " . $db->connect_error);
+}
+
+// Set charset to utf8
+$db->set_charset("utf8");
+
+// Debug-Funktion
+function debug_log($message)
+{
+    error_log(print_r($message, true));
+}
+
 

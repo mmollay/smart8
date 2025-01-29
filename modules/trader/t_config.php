@@ -1,6 +1,16 @@
 <?php
-include (__DIR__ . '/../../config.php');
-include (__DIR__ . '/functions.inc.php');
+//include(__DIR__ . '/../../config.php');
+include_once(__DIR__ . '/functions.inc.php');
+error_reporting(E_ALL);
+ini_set('', 1);
+
+$host = 'localhost';
+$username = 'smart';
+$password = 'Eiddswwenph21;';
+$dbname = 'ssi_trader';
+
+$GLOBALS['db'] = $db = $connection = $GLOBALS['mysqli'] = mysqli_connect($host, $username, $password, $dbname);
+
 
 $arrayContracts_save = array(
     "GER30" => "DAX 30",

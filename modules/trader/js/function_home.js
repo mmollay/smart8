@@ -168,6 +168,24 @@ function loadEmaForm() {
     });
 }
 
+function loadEmaFormOld() {
+    $('#formEmaContainer .dimmer').addClass('active');
+    $.ajax({
+        url: 'inc/ema_form_old.php',
+        type: 'GET',
+        success: (data) => {
+            $('#formEmaContainer .dimmer').removeClass('active');
+            $('#formEmaContainer').html(data);
+        },
+        error: (err) => {
+            $('#formEmaContainer .dimmer').removeClass('active');
+            console.error('Fehler beim Laden der Daten:', err);
+            $('#formEmaContainer').html('<div class="ui error message">Fehler beim Laden des Inhalts.</div>');
+        }
+    });
+}
+
+
 function after_post_ema(json) {
     console.log(json);
 
@@ -189,4 +207,38 @@ function after_post_ema(json) {
 function after_start_strategy(json) {
     after_post_ema(json);
     loadEmaForm();
+}
+
+function startStrategy(serverId) {
+    const form = $(`#form_start${serverId}`);
+    $.ajax({
+        url: 'ajax/post.php',
+        type: 'POST',
+        data: {
+            strategy_value: 'startStrategy',
+            server_id: serverId,
+            size: form.find('[name="size"]').val(),
+            strategy: form.find('[name="strategy"]').val(),
+            startAuto: form.find('[name="startAuto"]').val()
+        },
+        success: function (response) {
+            after_post_ema(response);
+            loadServerDetails({ server_id: serverId });
+        }
+    });
+}
+
+function killServer(serverId) {
+    $.ajax({
+        url: 'ajax/post.php',
+        type: 'POST',
+        data: {
+            kill_all: 1,
+            server_id: serverId
+        },
+        success: function (response) {
+            after_post_request(response);
+            loadEmaForm();
+        }
+    });
 }

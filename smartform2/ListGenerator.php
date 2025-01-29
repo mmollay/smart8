@@ -477,7 +477,7 @@ class ListGenerator
             'number' => function ($value) {
                 if ($value === null || $value === '')
                     return '';
-                $formatted = number_format((float) $value, 0, ',', '.');
+                $formatted = number_format((float) $value, 2, ',', '.');
                 return $value < 0 ? "<span style='color: red;'>{$formatted}</span>" : $formatted;
             },
             'number_color' => function ($value) {
@@ -507,6 +507,26 @@ class ListGenerator
             },
             'truncate' => function ($string, $length = 50, $append = "...") {
                 return (strlen($string) > $length) ? substr($string, 0, $length - strlen($append)) . $append : $string;
+            },
+            'percent_no_symbol' => function ($value) {
+                return number_format((float) $value, 2, ',', '.');
+            },
+
+            'decimal_3' => function ($value) {
+                return number_format((float) $value, 3, ',', '.');
+            },
+
+            'decimal_4' => function ($value) {
+                return number_format((float) $value, 4, ',', '.');
+            },
+
+            'currency_custom' => function ($value, $symbol = '€', $decimals = 2) {
+                return number_format((float) $value, $decimals, ',', '.') . ' ' . $symbol;
+            },
+
+            'indicator' => function ($value) {
+                $color = $value > 0 ? 'green' : ($value < 0 ? 'red' : 'grey');
+                return "<i class='circle icon {$color}'></i>";
             }
         ];
 

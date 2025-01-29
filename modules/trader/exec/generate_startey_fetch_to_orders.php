@@ -1,5 +1,5 @@
-<?
-require_once (__DIR__ . "/../t_config.php");
+<?php
+require_once(__DIR__ . "/../t_config.php");
 
 // Überprüfen, ob die Verbindung erfolgreich war
 if ($conn->connect_error) {

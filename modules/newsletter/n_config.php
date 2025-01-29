@@ -1,7 +1,4 @@
 <?php
-// Grundlegende Modul-Konfiguration
-error_reporting(E_ERROR | E_PARSE);
-ini_set('display_errors', 1);
 
 if (!$set_unsubscribed) {
     // Session Check
@@ -19,31 +16,7 @@ if (!$set_unsubscribed) {
     }
 }
 
-// Laden der .env Datei
-if (file_exists(__DIR__ . '/../../.env')) {
-    $envContent = file_get_contents(__DIR__ . '/../../.env');
-    $lines = explode("\n", $envContent);
-    foreach ($lines as $line) {
-        if (empty(trim($line)) || strpos(trim($line), '#') === 0) {
-            continue;
-        }
-        list($name, $value) = explode('=', $line, 2);
-        $_ENV[trim($name)] = trim($value);
-    }
-}
-
-// Laden der .env Datei
-// if (file_exists(__DIR__ . '/../../.env')) {
-//     $envContent = file_get_contents(__DIR__ . '/../../.env');
-//     $lines = explode("\n", $envContent);
-//     foreach ($lines as $line) {
-//         if (empty(trim($line)) || strpos(trim($line), '#') === 0) {
-//             continue;
-//         }
-//         list($name, $value) = explode('=', $line, 2);
-//         $_ENV[trim($name)] = trim($value);
-//     }
-// }
+include(__DIR__ . "/../../get_env.php");
 
 // APP_ROOT definieren
 if (!defined('APP_ROOT')) {

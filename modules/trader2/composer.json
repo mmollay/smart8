@@ -1,0 +1,15 @@
+{
+    "name": "smart8/trader2",
+    "description": "Trader Module for Smart8",
+    "type": "project",
+    "require": {
+        "cboden/ratchet": "^0.4.4",
+        "php": ">=7.4",
+        "textalk/websocket": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Smart8\\Trader2\\": "src/"
+        }
+    }
+}

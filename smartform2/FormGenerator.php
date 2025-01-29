@@ -167,12 +167,12 @@ class FormGenerator
 
         if (!empty($button['popup'])) {
             if (is_array($button['popup'])) {
-                $attributes .= " data-tooltip='" . htmlspecialchars($button['popup']['content'] ?? '', ENT_QUOTES, 'UTF-8') . "'";
+                $attributes .= " data-position='top left' data-tooltip='" . htmlspecialchars($button['popup']['content'] ?? '', ENT_QUOTES, 'UTF-8') . "'";
                 $attributes .= " data-position='" . htmlspecialchars($button['popup']['position'] ?? 'top center', ENT_QUOTES, 'UTF-8') . "'";
                 $attributes .= " data-variation='" . htmlspecialchars($button['popup']['variation'] ?? '', ENT_QUOTES, 'UTF-8') . "'";
                 $attributes .= " data-inverted='" . ($button['popup']['inverted'] ?? false) . "'";
             } else {
-                $attributes .= " data-tooltip=\"" . htmlspecialchars($button['popup'], ENT_QUOTES, 'UTF-8') . "\"";
+                $attributes .= " data-position='top left' data-tooltip=\"" . htmlspecialchars($button['popup'], ENT_QUOTES, 'UTF-8') . "\"";
             }
         }
 
@@ -665,7 +665,7 @@ class FormGenerator
         // Label mit Info-Icon wenn description vorhanden
         $labelHtml = $label;
         if ($description) {
-            $labelHtml .= ' <span data-tooltip="' . htmlspecialchars($description) . '"><i class="question circle icon"></i></span>';
+            $labelHtml .= '<span data-position="top left" html-tooltip="' . htmlspecialchars($description) . '"> <i class="question circle outline icon"></i></span>';
         }
 
         return "
@@ -764,14 +764,13 @@ class FormGenerator
         $label = $field['label'] ?? '';
         $placeholder = $field['placeholder'] ?? '';
         $value = $field['value'] ?? '';
+        $description = $field['description'] ?? '';
 
         $fieldClass = $field['class'] ?? '';
         $width = !empty($field['width']) ? "wide {$field['width']}" : '';
         $required = !empty($field['required']) ? 'required' : '';
 
         $tabAttribute = isset($field['tab']) ? "data-tab='{$field['tab']}'" : '';
-        $fieldHtml = $inSplitGroup ? "<div class='$width field {$required}' {$tabAttribute}>" : "<div class='field {$required}' {$tabAttribute}>";
-
 
         if ($fieldType === 'button') {
             $name = $field['name'] ?? 'button_' . uniqid();  // Generiere einen eindeutigen Namen, falls keiner angegeben ist
@@ -803,33 +802,45 @@ class FormGenerator
                 $rightLabelClass = $field['rightLabelClass'] ?? 'ui basic label';
                 $iconLeft = $field['iconLeft'] ?? null;
                 $iconRight = $field['iconRight'] ?? null;
+                $addon = $field['addon'] ?? null;
+
+                // Add label if it exists
+                if ($label) {
+                    $fieldHtml .= "<label>{$label}";
+                    if (!empty($description)) {
+                        $fieldHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                    }
+                    $fieldHtml .= "</label>";
+                }
 
                 // Different HTML structures based on configuration
-                if ($labelPosition === 'above' && !$leftLabel && !$rightLabel) {
+                if ($labelPosition === 'above' && !$leftLabel && !$rightLabel && !$addon) {
                     // Traditional top label
-                    $fieldHtml .= "<label>{$label}</label>
-                                      <input type='text' 
-                                        id='$id' 
-                                        name='{$field['name']}' 
-                                        placeholder='{$placeholder}' 
-                                        value='{$value}' 
-                                        class='{$fieldClass}'>";
+                    $fieldHtml .= "<input type='text' 
+                                    id='$id' 
+                                    name='{$field['name']}' 
+                                    placeholder='{$placeholder}' 
+                                    value='{$value}' 
+                                    class='{$fieldClass}'>";
                 } else {
                     // Start building labeled input
                     $inputClasses = ['ui'];
                     $hasLeftContent = ($leftLabel || $iconLeft);
-                    $hasRightContent = ($rightLabel || $iconRight);
+                    $hasRightContent = ($rightLabel || $iconRight || $addon);
 
-                    if ($hasLeftContent)
+                    if ($hasLeftContent || $hasRightContent)
                         $inputClasses[] = 'labeled';
-                    if ($hasRightContent)
-                        $inputClasses[] = 'right labeled';
                     if ($iconLeft)
                         $inputClasses[] = 'left icon';
-                    if ($iconRight)
-                        $inputClasses[] = 'right icon';
+                    if ($iconRight || $addon)
+                        $inputClasses[] = 'icon';
 
                     $inputClasses[] = 'input';
+
+                    // Add fluid class to ensure proper width
+                    if (!in_array('fluid', $inputClasses)) {
+                        $inputClasses[] = 'fluid';
+                    }
 
                     $fieldHtml .= "<div class='" . implode(' ', $inputClasses) . "'>";
 
@@ -861,6 +872,10 @@ class FormGenerator
                         $fieldHtml .= $rightLabel . "</div>";
                     } elseif ($iconRight) {
                         $fieldHtml .= "<i class='{$iconRight} icon'></i>";
+                    } elseif ($addon) {
+                        if ($addon === '%') {
+                            $fieldHtml .= "<i class='percent icon'></i>";
+                        }
                     }
 
                     $fieldHtml .= "</div>";
@@ -874,7 +889,11 @@ class FormGenerator
                 $resize = $field['resize'] ?? 'both';
                 $style = "resize: {$resize};";
 
-                $fieldHtml .= "<label>{$label}</label><textarea name='{$field['name']}' placeholder='{$placeholder}' rows='{$rows}' cols='{$cols}' {$minlength} {$maxlength} class='{$fieldClass}' style='{$style}'>{$value}</textarea>";
+                $fieldHtml .= "<label>{$label}";
+                if (!empty($description)) {
+                    $fieldHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                }
+                $fieldHtml .= "</label><textarea name='{$field['name']}' placeholder='{$placeholder}' rows='{$rows}' cols='{$cols}' {$minlength} {$maxlength} class='{$fieldClass}' style='{$style}'>{$value}</textarea>";
                 break;
             case 'calendar':
                 $calendarType = $field['calendarType'] ?? 'date';
@@ -937,7 +956,12 @@ class FormGenerator
                 if ($hasLeftLabel || $hasRightLabel) {
                     $fieldHtml .= "<div class='field'>";
                     if (isset($field['label'])) {
-                        $fieldHtml .= "<label>{$field['label']}</label>";
+                        $labelHtml = "<label>{$field['label']}";
+                        if (!empty($description)) {
+                            $labelHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                        }
+                        $labelHtml .= "</label>";
+                        $fieldHtml .= $labelHtml;
                     }
                     $fieldHtml .= "<div class='ui " . ($hasLeftLabel ? 'labeled' : '') . " " . ($hasRightLabel ? 'right labeled' : '') . " input'>";
 
@@ -947,7 +971,12 @@ class FormGenerator
                         $fieldHtml .= "<div class='{$leftLabelClass}'>{$field['leftLabel']}</div>";
                     }
                 } else {
-                    $fieldHtml .= "<label>{$field['label']}</label>";
+                    $labelHtml = "<label>{$label}";
+                    if (!empty($description)) {
+                        $labelHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                    }
+                    $labelHtml .= "</label>";
+                    $fieldHtml .= $labelHtml;
                 }
 
                 // Main dropdown
@@ -985,10 +1014,18 @@ class FormGenerator
             case 'slider':
                 $max = $field['max'] ?? 100;
                 $step = $field['step'] ?? 1;
-                $fieldHtml .= "<label>{$label}</label><input type='range' name='{$field['name']}' min='0' max='{$max}' step='{$step}' value='{$value}' class='{$fieldClass}'>";
+                $fieldHtml .= "<label>{$label}";
+                if (!empty($description)) {
+                    $fieldHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                }
+                $fieldHtml .= "</label><input type='range' name='{$field['name']}' min='0' max='{$max}' step='{$step}' value='{$value}' class='{$fieldClass}'>";
                 break;
             case 'color':
-                $fieldHtml .= "<label>{$label}</label><input type='color' name='{$field['name']}' value='{$value}' class='{$fieldClass}'>";
+                $fieldHtml .= "<label>{$label}";
+                if (!empty($description)) {
+                    $fieldHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                }
+                $fieldHtml .= "</label><input type='color' name='{$field['name']}' value='{$value}' class='{$fieldClass}'>";
                 break;
             case 'button':
                 $buttonHtml = $this->generateButton($field);
@@ -1008,7 +1045,12 @@ class FormGenerator
             case 'custom':
                 $fieldHtml = '';
                 if (!empty($field['label'])) {
-                    $fieldHtml .= "<label>{$field['label']}</label>";
+                    $labelHtml = "<label>{$field['label']}";
+                    if (!empty($description)) {
+                        $labelHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                    }
+                    $labelHtml .= "</label>";
+                    $fieldHtml .= $labelHtml;
                 }
                 if (!empty($field['html'])) {
                     $fieldHtml .= $field['html'];
@@ -1052,7 +1094,11 @@ class FormGenerator
                 return $fieldHtml;
             case 'ckeditor5':
                 $fieldId = $field['id'] ?? $field['name'];
-                $fieldHtml .= "<label>{$label}</label>
+                $fieldHtml .= "<label>{$label}";
+                if (!empty($description)) {
+                    $fieldHtml .= " <span data-position='top left' data-tooltip='" . htmlspecialchars($description) . "' data-position='top center'><i class='question circle outline icon'></i></span>";
+                }
+                $fieldHtml .= "</label>
                         <div id='{$fieldId}-toolbar'></div>
                         <div id='{$fieldId}-container' style='border:solid #e5e5e5; border-width:0 1px 1px 1px; border-radius:0 0 3px 3px; overflow-y: auto;'>
                             <div id='{$fieldId}' class='ckeditor-content' data-name='{$field['name']}'>
@@ -1085,6 +1131,8 @@ class FormGenerator
                 $fieldHtml .= $this->generateTableField($field);
                 break;
             case 'segment':
+                $field['class'] = isset($field['class']) ? $field['class'] : '';
+
                 $html = "<div class='{$field['class']}'>";
                 if (isset($field['fields']) && is_array($field['fields'])) {
                     foreach ($field['fields'] as $subField) {
@@ -1384,7 +1432,6 @@ class FormGenerator
             .ui.form .field.required label:after { content: ' *'; color: red; }
             .editor-container { border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
             .editor-toolbar { background-color: #f7f7f7; border-bottom: 1px solid #ddd; padding: 5px; }
-            .editor-toolbar .ck-toolbar { border: none !important; background: transparent !important; }
             .editor-content { padding: 10px; min-height: 200px; background-color: #fff; }
             .editor-content .ck-editor__editable { border: none !important; box-shadow: none !important; min-height: 200px; }
             .editor-content .ck-editor__editable:focus { outline: none !important; }
@@ -1534,6 +1581,15 @@ class FormGenerator
         }
         </script>
         ";
+
+        $js .= "
+        <script>
+            $(document).ready(function() {
+                $('.question.circle.outline.icon').popup({
+                    hoverable: true
+                });
+            });
+        </script>";
 
         return $js;
     }

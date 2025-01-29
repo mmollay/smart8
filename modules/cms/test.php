@@ -11,8 +11,7 @@
 </head>
 <body>
     <div class="ui container" style="padding-top: 20px;">
-        <h2 class="ui header">Drag & Drop System</h2>
-        
+        <h2 class="ui header">Drag & Drop System</h2>  
         <div class="ui grid">
             <div class="eight wide column">
                 <div class="ui segment source-container">

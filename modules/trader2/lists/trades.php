@@ -3,154 +3,190 @@ include __DIR__ . '/../../../smartform2/ListGenerator.php';
 include __DIR__ . '/../t_config.php';
 
 $listGenerator = new ListGenerator([
-    'listId' => 'orders',
-    'contentId' => 'content_orders',
+    'listId' => 'trades',
+    'contentId' => 'content_trades',
     'itemsPerPage' => 25,
-    'sortColumn' => $_GET['sort'] ?? 'invoice_number',
+    'sortColumn' => $_GET['sort'] ?? 'bitget_timestamp',
     'sortDirection' => strtoupper($_GET['sortDir'] ?? 'DESC'),
     'page' => intval($_GET['page'] ?? 1),
     'search' => $_GET['search'] ?? '',
     'showNoDataMessage' => true,
-    'noDataMessage' => "Keine Daten gefunden.",
+    'noDataMessage' => "Keine Trades gefunden.",
     'striped' => true,
     'selectable' => true,
     'celled' => true,
     'width' => '100%',
-    'tableClasses' => 'ui celled striped  small compact very selectable table',
+    'tableClasses' => 'ui celled striped small compact very selectable table',
     'debug' => true,
     'allowHtml' => true,
 ]);
 
-// Datenbank-Verbindung (angenommen, dass $connection bereits existiert)
-$db = $connection;
-
-// SQL-Abfrage
+// Basis Query für Trades und PnL
 $query = "
-    SELECT
-        o.ticket, o.order_id, o.time, o.time_msc, o.type, o.magic, o.position_id, o.reason, lotgroup_id, o.server_id, o.account, b.title AS broker_name,
-        CONCAT(c.first_name, ' ', c.last_name) AS client_name,
+    SELECT 
+        t.*,
+        u.username as user_name,
+        FROM_UNIXTIME(t.bitget_timestamp/1000) as trade_time,
+        t.size * t.price as volume,
+        p.profit as profit,
         CASE 
-            WHEN COUNT(*) = 1 THEN ROUND(o.volume, 2)
-            WHEN COUNT(*) = 2 THEN ROUND(o.volume, 2)
-            ELSE ROUND(SUM(o.volume) / 2, 2)
-        END AS volume,
-        MAX(o.entry) entry,
-        CEIL(COUNT(*) / 2) AS level,
-        MIN(o.price) AS min_price, 
-        MAX(o.price) AS max_price, 
-        o.commission, o.swap, SUM(o.profit) profit, o.fee, o.symbol_id, 
-        MIN(FROM_UNIXTIME(o.time)) AS entry_time, 
-        MAX(FROM_UNIXTIME(o.time)) AS exit_time, 
-        FROM_UNIXTIME(o.time) AS readable_time, 
-        s.symbol, trash, o.strategy
-    FROM
-        ssi_trader.orders AS o 
-        LEFT JOIN ssi_trader.symbols AS s ON o.symbol_id = s.symbol_id
-        LEFT JOIN ssi_trader.broker AS b ON o.account = b.user
-        LEFT JOIN ssi_trader.clients AS c ON o.account = c.account
-    WHERE
-        trash = '' AND $exclusionClause
-    GROUP BY
-        o.lotgroup_id
+            WHEN t.side = 'open_short' THEN 'Open Short'
+            WHEN t.side = 'open_long' THEN 'Open Long'
+            WHEN t.side = 'close_long' THEN 'Close Long'
+            WHEN t.side = 'close_short' THEN 'Close Short'
+            ELSE 'Unknown'
+        END as trade_side
+    FROM trades t
+    LEFT JOIN users u ON t.user_id = u.id
+    LEFT JOIN pnl_history p ON 
+        p.user_id = t.user_id AND 
+        p.symbol = t.symbol AND 
+        p.bitget_timestamp = t.bitget_timestamp
+    GROUP BY t.id
 ";
 
-$listGenerator->setSearchableColumns(['lotgroup_id', 'position_id', 'o.account']);
+// User-Filter hinzufügen
+$userQuery = "SELECT id, username as name FROM users ORDER BY username";
+$userResult = $db->query($userQuery);
+$userOptions = [];
+while ($row = $userResult->fetch_assoc()) {
+    $userOptions[$row['id']] = $row['name'];
+}
+
+// Symbol-Filter
+$symbolQuery = "SELECT DISTINCT symbol FROM trades ORDER BY symbol";
+$symbolResult = $db->query($symbolQuery);
+$symbolOptions = [];
+while ($row = $symbolResult->fetch_assoc()) {
+    $symbolOptions[$row['symbol']] = $row['symbol'];
+}
+
+// Suchbare Spalten
+$listGenerator->setSearchableColumns([
+    'symbol',
+    'order_id',
+    'user_name',
+    'trade_time'
+]);
+
 $listGenerator->setDatabase($db, $query, true);
 
 // Zeitraum-Filter
 $array_filter_time_periods = [
-    'YEAR(FROM_UNIXTIME(time)) = ' . date('Y') => 'Aktuelles Jahr',
-    'DATE(FROM_UNIXTIME(time)) = CURDATE()' => 'Heute',
-    'DATE(FROM_UNIXTIME(time)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)' => 'Gestern',
-    'DATE(FROM_UNIXTIME(time)) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)' => 'Vorgestern',
-    'YEARWEEK(FROM_UNIXTIME(time), 1) = YEARWEEK(CURDATE(), 1) - 1' => 'Letzte Woche',
-    'MONTH(FROM_UNIXTIME(time)) = MONTH(CURDATE()) - 1 AND YEAR(FROM_UNIXTIME(time)) = YEAR(CURDATE())' => 'Letzter Monat',
+    'DATE(FROM_UNIXTIME(t.bitget_timestamp/1000)) = CURDATE()' => 'Heute',
+    'DATE(FROM_UNIXTIME(t.bitget_timestamp/1000)) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)' => 'Gestern',
+    'YEARWEEK(FROM_UNIXTIME(t.bitget_timestamp/1000), 1) = YEARWEEK(CURDATE(), 1)' => 'Diese Woche',
+    'YEARWEEK(FROM_UNIXTIME(t.bitget_timestamp/1000), 1) = YEARWEEK(CURDATE(), 1) - 1' => 'Letzte Woche',
+    'MONTH(FROM_UNIXTIME(t.bitget_timestamp/1000)) = MONTH(CURDATE())' => 'Dieser Monat',
+    'MONTH(FROM_UNIXTIME(t.bitget_timestamp/1000)) = MONTH(CURDATE()) - 1' => 'Letzter Monat',
 ];
 
-// Hinzufügen der letzten sechs Monate
-for ($i = 1; $i <= 6; $i++) {
-    $monthYear = date('F Y', strtotime("-$i month"));
-    $month = date('m', strtotime("-$i month"));
-    $year = date('Y', strtotime("-$i month"));
-    $condition = "MONTH(FROM_UNIXTIME(time)) = $month AND YEAR(FROM_UNIXTIME(time)) = $year";
-    $array_filter_time_periods[$condition] = $monthYear;
-}
+// Filter hinzufügen
+$listGenerator->addFilter('t.user_id', 'Benutzer', $userOptions, [
+    'type' => 'dropdown',
+    'placeholder' => 'Alle Benutzer',
+    'searchable' => true
+]);
 
-$listGenerator->addFilter('select_day', 'Zeitraum', $array_filter_time_periods, [
+$listGenerator->addFilter('t.symbol', 'Symbol', $symbolOptions, [
+    'type' => 'dropdown',
+    'placeholder' => 'Alle Symbole'
+]);
+
+$listGenerator->addFilter('time_period', 'Zeitraum', $array_filter_time_periods, [
     'type' => 'dropdown',
     'placeholder' => '--Zeitraum auswählen--',
-    'default_value' => 'YEAR(FROM_UNIXTIME(time)) = ' . date('Y'),
     'filterType' => 'complex'
 ]);
 
-// Broker/Client Filter
-$array_filter_broker = getBrokerClientList($connection);
-$listGenerator->addFilter('o.account', 'Clients/Brokers', $array_filter_broker, [
-    'type' => 'dropdown',
-    'placeholder' => 'Alle Clients/Brokers',
-]);
-
 // Spalten definieren
-$listGenerator->addColumn('order_id', 'Order ID');
-$listGenerator->addColumn('min_price', 'Min Preis', ['formatter' => 'number']);
-$listGenerator->addColumn('max_price', 'Max Preis', ['formatter' => 'number']);
-$listGenerator->addColumn('type', 'Typ', [
-    'replace' => [
-        'default' => '',
-        '1' => "<span class='ui blue text'>Buy</span>",
-        '0' => "<span class='ui red text'>Sell</span>"
-    ],
+$listGenerator->addColumn('trade_time', 'Zeit', [
+    'formatter' => 'datetime',
+    'width' => '150px'
+]);
+
+$listGenerator->addColumn('user_name', 'Benutzer', [
+    'width' => '120px',
+    'nowrap' => true
+]);
+
+$listGenerator->addColumn('symbol', 'Symbol', [
+    'width' => '100px'
+]);
+
+$listGenerator->addColumn('trade_side', 'Seite', [
+    'formatter' => function ($value) {
+        $sideMap = [
+            'Open Long' => ['color' => 'green', 'icon' => 'arrow alternate circle up', 'text' => 'LONG'],
+            'Open Short' => ['color' => 'red', 'icon' => 'arrow alternate circle down', 'text' => 'SHORT'],
+            'Close Long' => ['color' => 'red', 'icon' => 'arrow alternate circle down', 'text' => 'LONG'],
+            'Close Short' => ['color' => 'green', 'icon' => 'arrow alternate circle up', 'text' => 'SHORT'],
+            'Unknown' => ['color' => 'grey', 'icon' => 'question circle', 'text' => 'UNKNOWN']
+        ];
+
+        $sideInfo = $sideMap[$value] ?? $sideMap['Unknown'];
+        return sprintf(
+            '<span class="ui %s text"><i class="icon %s"></i> %s</span>',
+            $sideInfo['color'],
+            $sideInfo['icon'],
+            $sideInfo['text']
+        );
+    },
     'align' => 'center',
-    'width' => '70px',
-    'allowHtml' => true  // Wichtig, um HTML in der Ersetzung zu erlauben
+    'width' => '120px',
+    'allowHtml' => true
 ]);
 
-$listGenerator->addColumn('entry', 'Einstieg', ['formatter' => 'number', 'align' => 'right', 'width' => '50px']);
-$listGenerator->addColumn('volume', 'Volumen');
-$listGenerator->addColumn('account', 'Konto');
-$listGenerator->addColumn('broker_name', 'Broker', ['nowrap' => true]);
-$listGenerator->addColumn('strategy', 'Strategie');
-$listGenerator->addColumn('level', 'Hedge Anzahl');
-$listGenerator->addColumn('time', 'Lesbare Zeit');
-$listGenerator->addColumn('exit_time', 'Ausstiegszeit', ['width' => '100px', 'nowrap' => true]);
-$listGenerator->addColumn('profit', 'Gewinn', [
-    'formatter' => 'euro',
+$listGenerator->addColumn('size', 'Menge', [
+    'formatter' => 'number',
     'align' => 'right',
+    'width' => '100px'
+]);
+
+$listGenerator->addColumn('price', 'Preis', [
+    'formatter' => 'number',
+    'align' => 'right',
+    'width' => '100px'
+]);
+
+$listGenerator->addColumn('volume', 'Volumen USDT', [
+    'formatter' => 'number',
+    'align' => 'right',
+    'width' => '120px',
     'showTotal' => true,
-    'totalType' => 'sum',
-    'totalLabel' => '',
 ]);
 
-// Buttons definieren
-// $listGenerator->addButton('details', [
-//     'icon' => 'list',
-//     'class' => 'blue tiny',
-//     'position' => 'left',
-//     'popup' => 'Details',
-//     'modalId' => 'modal_form'
-// ]);
-
-$listGenerator->addButton('delete', [
-    'icon' => 'trash',
-    'class' => 'tiny',
-    'position' => 'right',
-    'popup' => 'Löschen',
-    'modalId' => 'modal_form_delete'
+$listGenerator->addColumn('profit', 'Real. PnL', [
+    'formatter' => 'number_color',
+    'align' => 'right',
+    'width' => '100px',
+    'showTotal' => true,
 ]);
 
-// Modals definieren
-$listGenerator->addModal('modal_form', [
-    'title' => 'Bearbeiten',
-    'url' => 'form_edit.php'
+$listGenerator->addColumn('fee', 'Gebühr', [
+    'formatter' => 'number',
+    'align' => 'right',
+    'width' => '100px',
+    'showTotal' => true,
 ]);
 
-$listGenerator->addModal('modal_form_delete', [
-    'title' => 'Entfernen',
-    'class' => 'small',
-    'url' => 'form_delete.php'
+$listGenerator->addColumn('fee_coin', 'Fee Coin', [
+    'width' => '80px',
+    'align' => 'center'
 ]);
 
+$listGenerator->addColumn('order_id', 'Order ID', [
+    'width' => '200px',
+    'nowrap' => true
+]);
+
+// Export-Konfiguration
+$listGenerator->addExport([
+    'format' => 'csv',
+    'title' => 'Export',
+    'popup' => ['content' => 'Als CSV exportieren']
+]);
+
+// Liste generieren
 echo $listGenerator->generateList();
-
-// Hilfsfunktionen (getBrokerClientList, etc.) hier einfügen...
 ?>

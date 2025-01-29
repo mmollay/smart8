@@ -1,5 +1,5 @@
-<?
-include (__DIR__ . "/../t_config.php");
+<?php
+include(__DIR__ . "/../t_config.php");
 
 // Verbindungsparameter
 $host = 'localhost';
