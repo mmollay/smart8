@@ -1,0 +1,341 @@
+/* Grundlegendes Layout */
+body {
+    font-size: .875rem;
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+    padding: .5rem 1rem;
+    margin-bottom: .2rem;
+}
+
+.sidebar .nav-link.active {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+.sidebar .nav-link:hover {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.sidebar .nav-link i {
+    margin-right: 0.5rem;
+}
+
+/* Hauptbereich */
+main {
+    padding-top: 1.5rem;
+}
+
+/* Karten */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Übersichts-Karten */
+#overview-cards .card {
+    transition: transform 0.2s;
+}
+
+#overview-cards .card:hover {
+    transform: translateY(-2px);
+}
+
+#overview-cards .card-subtitle {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#overview-cards .card-title {
+    margin: 0.5rem 0;
+    font-weight: 600;
+}
+
+/* Technische Indikatoren */
+.indicator-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.indicator-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.indicator-value {
+    font-weight: 600;
+}
+
+/* Indikator-Styles */
+.indicator-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.indicator-box h6 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.indicator-box .value {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.signal-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.signal-badge.buy {
+    background: #d4edda;
+    color: #155724;
+}
+
+.signal-badge.sell {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.signal-badge.neutral {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.progress {
+    height: 6px;
+    margin-top: 8px;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+#rsi-progress {
+    background: linear-gradient(to right, #dc3545 0%, #ffc107 30%, #28a745 70%, #dc3545 100%);
+}
+
+.signal-summary {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.signal-strength {
+    margin-top: 10px;
+}
+
+.signal-strength .progress {
+    height: 8px;
+}
+
+.signal-strength .progress-bar {
+    border-radius: 4px;
+}
+
+/* Tooltip für Indikatoren */
+.indicator-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.indicator-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.indicator-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Trading Signale */
+#trading-signals {
+    margin-top: 1rem;
+}
+
+.signal-item {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.signal-buy {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.signal-sell {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+/* Tabellen */
+.table {
+    font-size: 0.9rem;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #666;
+    border-top: none;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Buttons und Formulare */
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.btn-group .btn.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Chart-Bereich */
+#market-chart {
+    width: 100%;
+    background-color: white;
+    border-radius: 0.25rem;
+}
+
+/* Modal */
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.modal-header {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #eee;
+    padding: 1rem 1.5rem;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        padding-top: 0;
+    }
+    
+    main {
+        padding-top: 1rem;
+    }
+    
+    #overview-cards .card {
+        margin-bottom: 1rem;
+    }
+    
+    .indicator-box {
+        margin-bottom: 15px;
+    }
+    
+    .col-md-6 {
+        padding: 0 5px;
+    }
+}
+
+/* Status-Farben */
+.status-open {
+    color: #007bff;
+}
+
+.status-filled {
+    color: #28a745;
+}
+
+.status-cancelled {
+    color: #6c757d;
+}
+
+.status-rejected {
+    color: #dc3545;
+}
+
+/* P/L Farben */
+.pnl-positive {
+    color: #28a745;
+}
+
+.pnl-negative {
+    color: #dc3545;
+}
+
+/* Loading-Zustände */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: "";
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner 0.75s linear infinite;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}

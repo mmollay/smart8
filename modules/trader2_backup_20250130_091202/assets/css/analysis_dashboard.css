@@ -1,0 +1,44 @@
+.ui.container {
+    padding-top: 2em;
+}
+
+.ui.horizontal.label {
+    margin-bottom: 1em;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+}
+
+.chart-container.small {
+    height: 300px;
+}
+
+.ui.statistics {
+    margin-bottom: 2em;
+}
+
+.ui.statistic .value {
+    font-size: 2em !important;
+}
+
+.ui.statistic .label {
+    font-size: 0.9em !important;
+}
+
+.ui.segment {
+    margin-bottom: 1em;
+}
+
+.ui.table {
+    margin-top: 1em;
+}
+
+.ui.label {
+    margin: 0.2em;
+}
+
+.ui.error.message {
+    margin-bottom: 2em;
+}

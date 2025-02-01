@@ -1,0 +1,62 @@
+/* Container Spacing */
+.ui.container {
+    padding-top: 2em;
+}
+
+/* Statistics Styling */
+.ui.statistics {
+    margin: 0;
+}
+
+.ui.statistics .statistic {
+    margin: 0 1em 0 0;
+}
+
+.ui.statistics .statistic > .value {
+    font-size: 1.2em !important;
+}
+
+.ui.statistics .statistic > .label {
+    font-size: 0.8em;
+}
+
+/* Price Animation */
+.price-value {
+    transition: color 0.3s;
+}
+
+.price-value.green {
+    color: #21ba45 !important;
+}
+
+.price-value.red {
+    color: #db2828 !important;
+}
+
+/* Message Box */
+#resultMessage {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    z-index: 1000;
+    margin: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media only screen and (max-width: 768px) {
+    #resultMessage {
+        width: 90%;
+        bottom: 10px;
+        right: 5%;
+    }
+    
+    .ui.statistics .statistic {
+        margin: 0.5em;
+    }
+    
+    .ui.form .fields {
+        margin-bottom: 1em;
+    }
+}

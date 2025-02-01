@@ -1,0 +1,263 @@
+Änderungsprotokoll - Trader2 System
+
+[2025-01-31]
+- Fehlerbehebung in der ADX-Berechnung:
+  * Korrektur der +DI und -DI Berechnung
+  * Verbesserung der DX und ADX Formel
+  * Hinzufügung von Null-Prüfungen zur Vermeidung von Division durch Null
+  * Optimierung der EMA-Berechnung für ADX
+
+[2025-01-31]
+- Implementierung einer neuen Trading-Strategie:
+  * ADX (Average Directional Index) für Trendstärke
+  * Keltner Channels für Volatilitätsanalyse
+  * ROC (Rate of Change) für Momentum
+  * Volumenprofil für Handelsvolumenanalyse
+- Optimierung der Trading-Bedingungen:
+  * ADX-Schwellenwert von 25 auf 20 reduziert
+  * Keltner Channel Toleranz auf 1% angepasst
+  * Volumenprofil-Schwelle von 1.2 auf 1.1 gesenkt
+  * ROC-Bedingungen gelockert für leicht negative Werte
+- Fehlerbehebungen:
+  * createBacktestRun() Methode wiederhergestellt
+  * calculateEMA() Methode hinzugefügt
+  * Profit/Loss-Berechnung korrigiert
+- Codeorganisation:
+  * Alte Strategie in backup/ Ordner verschoben
+  * Debug-Ausgaben für bessere Nachvollziehbarkeit hinzugefügt
+
+[2025-01-30]
+- Dokumentierte Verbesserungen an der exitPosition-Methode:
+  * Verbesserte Fehlerbehandlung in exitPosition-Methode
+  * Robustere Verarbeitung von Candle-Daten beim Schließen von Positionen
+  * Optimierte Berechnung des maximalen Drawdowns
+  * Korrektur der Timestamp-Verarbeitung für die Equity-Historie
+- Komplette Restrukturierung des Projekts
+- Neue Verzeichnisstruktur implementiert
+- Optimierte Klassen erstellt:
+  * BitgetTrading: Verbesserte API-Integration
+  * MarketAnalysis: Technische Indikatoren (RSI, SMA) und Trendanalyse
+  * TradingParameters: Verwaltung von Benutzer- und Modellparametern
+
+- Neue Features:
+  * Automatische Handelssignalgenerierung basierend auf technischer Analyse
+  * Verbesserte Fehlerbehandlung und Logging
+  * Integration von Take-Profit und Stop-Loss in BitGet-Orders
+  * Flexible Parametersteuerung für verschiedene Trading-Strategien
+
+- Entfernte redundante Dateien:
+  * Alte Test-APIs
+  * Doppelte Parameter-Abfragen
+  * Veraltete Debug-Dateien
+
+- Sicherheitsverbesserungen:
+  * Zentrale Konfigurationsdatei
+  * Sichere API-Schlüssel-Verwaltung
+  * Verbesserte Fehlerprotokollierung
+
+[2025-01-30]
+- Implementierung verbesserter Handelsstrategien:
+  * Optimierte ADX-Signalgenerierung mit präziseren Schwellenwerten
+  * Integration von ATR für dynamisches Risikomanagement
+  * Verfeinertes Position Sizing basierend auf Volatilität
+  * Verbesserte Stop-Loss und Take-Profit Berechnung
+  * Implementierung von Volumenfiltern für Handelssignale
+
+[2025-01-30] - Implementierung des Backtesting-Systems
+
+- Neue Funktionen:
+  * Erstellung der Datenbanktabellen für Backtest-Runs, Trades und Equity-Verlauf
+  * Implementierung der TechnicalIndicators-Klasse mit RSI, MACD und Bollinger Bands
+  * Verbesserung der MarketData-Klasse für effiziente Datenabrufung von BitGet
+  * Entwicklung der Backtesting-Klasse mit vollständiger Handelssimulation
+
+- Technische Details:
+  * Speicherung aller Trades und Performance-Metriken in der Datenbank
+  * Berechnung von wichtigen Kennzahlen wie Profit-Faktor und maximalem Drawdown
+  * Berücksichtigung von Handelsgebühren in der P&L-Berechnung
+  * Implementierung von Position Sizing (95% des verfügbaren Kapitals)
+
+- Nächste Schritte:
+  * Implementierung zusätzlicher technischer Indikatoren
+  * Optimierung der Handelsstrategie basierend auf Backtesting-Ergebnissen
+  * Entwicklung einer Benutzeroberfläche für die Visualisierung der Ergebnisse
+  * Integration von Risk Management Funktionen
+
+[2025-01-31]
+- Backtesting-System überarbeitet und verbessert
+- MarketData-Klasse für effiziente Datenabfrage von BitGet implementiert
+- TechnicalIndicators-Klasse mit RSI, MACD und Bollinger Bands aktualisiert
+- Datenbankanbindung für Backtesting-Ergebnisse implementiert
+- Fehlerbehandlung und Logging verbessert
+
+Nächste Schritte:
+1. Weitere Tests des Backtesting-Systems durchführen
+2. Performance-Metriken validieren
+3. Strategie-Parameter optimieren
+4. Benutzeroberfläche für Backtest-Ergebnisse erstellen
+
+Bekannte Probleme:
+- Keine
+
+[2025-01-30]
+- Verbesserte Profit/Loss Berechnung für Long und Short Positionen
+- Korrigierte Float zu Int Konvertierung bei Timestamps
+- Optimierte Position Sizing auf 10% der Balance pro Trade
+- Implementierte 2:1 Risk/Reward Verhältnis für Take-Profit und Stop-Loss
+- Verbesserte Fehlerbehandlung und Logging
+
+[2025-01-30] - Trading-Logik Verbesserungen
+- Dynamischere Einstiegssignale mit RSI und MACD Kreuzungen
+- Verbessertes Risikomanagement (2% Risiko pro Trade)
+- Position Sizing basierend auf Stop-Loss Abstand
+- Trailing Stop-Loss implementiert (2% unter aktuellem Preis)
+- Risk/Reward Verhältnis von 1:2 eingeführt
+
+[2024-01-09] Verbesserung der Trading-Logik
+- Entry-Signale verfeinert:
+  * RSI unter 40 (überverkauft)
+  * MACD Histogram positiv oder MACD kreuzt Signal-Linie nach oben
+  * Zusätzliche Trendbestätigung durch 20-Perioden-EMA
+- Verbessertes Risikomanagement:
+  * Adaptives Positionsgrößen-Management basierend auf Volatilität
+  * Dynamischer Stop-Loss zwischen 1.5% und 3%
+  * Risk/Reward-Verhältnis auf 2.5:1 erhöht
+- Exit-Strategie optimiert:
+  * Dynamischer Trailing Stop basierend auf Gewinnzone (1.5% - 3%)
+  * Zusätzlicher Exit bei starkem Preisrückgang (5%)
+  * Verbesserte Dokumentation der Exit-Gründe
+- Debugging verbessert:
+  * Detailliertere Logging-Ausgaben mit Zeitstempeln
+  * Bessere Nachvollziehbarkeit von Trading-Entscheidungen
+
+[2024-01-09]
+- Trading-Logik angepasst für mehr Handelssignale:
+  * RSI-Schwelle auf 50 erhöht (vorher 45)
+  * MACD-Bedingungen gelockert (Crossover oder positiver Histogram)
+  * Verbesserte Debug-Ausgaben für bessere Nachvollziehbarkeit
+  * Ziel: Mehr Handelsmöglichkeiten bei gleichzeitigem Risikomanagement
+
+[2024-01-09]
+- Trading-Logik weiter optimiert:
+  * RSI-Schwelle auf 45 gesenkt (vorher 50)
+  * MACD-Bedingungen erweitert:
+    - MACD kreuzt Signal-Linie nach oben ODER
+    - MACD-Histogram positiv ODER
+    - MACD-Linie steigt an
+  * Exit-Signale angepasst:
+    - RSI über 70 oder unter 30
+    - MACD-Crossover nach unten
+    - Negativer MACD-Histogram
+  * Verbesserte Debug-Ausgaben
+
+[2024-01-09] - Verbesserung der Trading-Strategie
+- Implementierung dynamischer RSI-Schwellen basierend auf Marktvolatilität
+- Verbesserte MACD-Signale mit zusätzlicher Trendbestätigung
+- Optimierte Bollinger Bands Bedingungen mit adaptiver Bandbreite
+- Einführung eines "2 von 3" Bedingungssystems für Entry-Signale
+- Verfeinerte Exit-Strategien mit kombinierten Indikatoren
+
+[2024-01-09] - Optimierung der Trading-Strategie
+- Lockerung der Entry-Bedingungen: Nur eine Bedingung muss erfüllt sein statt zwei
+- Anpassung der RSI-Schwellen:
+  * Long Entry: 35-50 (dynamisch basierend auf Volatilität)
+  * Short Entry: 55-70 (dynamisch basierend auf Volatilität)
+- Optimierung der MACD-Bedingungen:
+  * Weniger strenge Histogram-Schwellen (-0.5/0.5)
+  * Entfernung der MACD/Signal-Kreuzung als Bedingung
+- Erweiterung der Bollinger Bands Toleranz auf 5% (vorher 3%)
+- Feinabstimmung der Exit-Signale für besseres Risikomanagement
+
+[2024-01-09] Optimierung der Trading-Strategie für ETHUSDT
+- Einführung dynamischer RSI-Schwellen basierend auf Volatilität und Trendstärke
+- Verbesserung der MACD-Bedingungen mit Berücksichtigung des Verhältnisses zwischen MACD und Signal
+- Implementierung einer dynamischen Bollinger-Bands-Bandbreite für flexiblere Ein- und Ausstiege
+- Einführung einer "2 von 3"-Bedingung für Trade-Signale zur Erhöhung der Signalqualität
+
+[2024-01-09] Weitere Optimierung der Trading-Strategie für ETHUSDT
+- Erweiterung der RSI-Schwellenwerte (Long: 30-60, Short: 45-75)
+- Erhöhung der Volatilitäts- und Trendstärke-Faktoren für dynamischere Anpassung
+- Lockerung der MACD-Bedingungen (Histogram-Schwellen auf ±0.5)
+- Erweiterung der Bollinger-Bands-Toleranz auf bis zu 10%
+- Umstellung auf "ODER"-Verknüpfung der Signale für häufigere Trade-Generierung
+
+[2024-01-09] Weitere Optimierung der Trading-Strategie für ETHUSDT
+- Extremere Lockerung der RSI-Schwellenwerte (Long: 25-65, Short: 40-80)
+- Anpassung der MACD-Bedingungen (Histogram-Schwellen auf ±1.0)
+- Erweiterung der Bollinger-Bands-Toleranz auf bis zu 15%
+- Vereinfachung der Signalberechnung für bessere Performance
+
+[2024-01-09] Grundlegende Überarbeitung der Trading-Strategie für ETHUSDT
+- Einführung fester RSI-Schwellenwerte (30/70) für klarere Signale
+- Striktere MACD-Bedingungen für Trendwenden
+- Exakte Bollinger-Band-Durchbrüche statt Toleranzbereiche
+- Mindestens 2 von 3 Bedingungen müssen für ein Signal erfüllt sein
+
+[2024-01-09] Weitere Lockerung der Trading-Strategie für ETHUSDT
+- RSI-Schwellenwerte auf 35/65 gelockert (statt 30/70)
+- MACD-Bedingungen auf -1.0/1.0 gelockert (statt -0.5/0.5)
+- Bollinger Band-Bedingungen mit 5% Toleranz
+- Nur eine Bedingung muss für ein Signal erfüllt sein
+
+[2024-01-09] Maximale Lockerung der Trading-Strategie für ETHUSDT
+- RSI-Schwellenwerte auf 40/60 gelockert (statt 35/65)
+- MACD-Bedingung vereinfacht - nur noch Kreuzung erforderlich
+- Bollinger Band-Toleranz auf 10% erhöht
+
+[2025-01-30]
+- Erweiterung der Trading-Strategie:
+  * Implementierung von Bollinger Bands für verbesserte Volatilitätsanalyse
+  * Einführung von Short-Trading mit entsprechenden Ein- und Ausstiegssignalen
+  * Anpassung der RSI- und MACD-Bedingungen für flexiblere Handelssignale
+  * Erweiterung des Backtest-Zeitraums von 30 auf 90 Tage
+  * Implementierung von adaptivem Risikomanagement basierend auf Volatilität
+
+[2024-01-09] Breakout-Strategie weiter optimiert
+- Konsolidierungsbedingung als strikte Anforderung entfernt
+- ATR-Multiplikator auf 1.5 erhöht für mehr Flexibilität
+- Volumenfilter auf 110% des Durchschnittsvolumens reduziert
+- RSI-Bedingungen für Long (>30) und Short (<70) angepasst
+- Trendfilter weiter gelockert für mehr Handelsmöglichkeiten
+
+[2025-01-30] Weitere Optimierung der Trading-Strategie
+- Deutliche Lockerung der Handelsbedingungen:
+  * RSI-Grenzen auf 45/55 gesetzt (vorher 40/60)
+  * MACD Histogram-Grenzen auf ±1.0 erweitert
+  * Bollinger Band Squeeze auf 8% erhöht
+  * Mittelbandtoleranz auf 2% erhöht
+  * Volumenanforderung auf 5% reduziert
+  * SMA20-Trendfilter mit 0.5% Toleranz
+  * Nur noch 1 von 3 Hauptbedingungen erforderlich
+- Verbesserte Debug-Ausgaben:
+  * Zeitstempel für jede Kerze
+  * Detaillierte Anzeige der Preise
+  * Klarere Darstellung der Entscheidungsfindung
+
+[2025-01-30]
+- Implementierung der saveEquity Methode für genaues Equity-Tracking
+- Verbesserte Fehlerbehandlung in updateEquity und saveEquity
+- Optimierte Berechnung des maximalen Drawdowns
+- Neue Datenbanktabelle backtest_equity für detaillierte Performance-Analyse
+
+[2024-01-30]
+- Verbesserte Metriken im Backtesting hinzugefügt:
+  * Tracking von Gewinn- und Verlusttrades
+  * Berechnung des Profit Faktors
+  * Berechnung des Netto-Gewinns
+  * Verbessertes Position-Exit-System mit genauer Gewinn/Verlust-Berechnung
+- Optimierte Handelsregeln in windsurfrules.txt dokumentiert:
+  * Präzise Ein- und Ausstiegskriterien basierend auf ADX und DI
+  * Dynamische Position Sizing basierend auf Volatilität
+  * Angepasste Stop-Loss und Take-Profit Berechnung
+
+[2025-01-30 13:15] - Datenbank-Update
+- Neue Tabellen für technische Analyse hinzugefügt:
+  * technical_analysis: Speichert ADX, DI, ATR und ROC Werte
+  * keltner_channels: Speichert Keltner Channel Bänder
+  * live_trades: Dokumentiert Live-Trades mit allen relevanten Metriken
+  * daily_performance: Trackt tägliche Trading-Performance
+  * api_config: Zentrale Verwaltung von API-Zugangsdaten
+  * trading_symbols: Verwaltung handelbarer Symbole
+- Standard API-Konfiguration für BitGet hinzugefügt
+- Standard Trading-Symbol ETHUSDT_UMCBL konfiguriert
+- Datenbankdokumentation in db.txt aktualisiert

@@ -1,0 +1,109 @@
+# Handelsregeln für die Trading-Strategie
+Stand: 30.01.2025
+
+## 0. KI-Verhaltensvorgaben
+- Kommunikation ausschließlich auf Deutsch in der Du-Form
+- Regelmäßige Überprüfung und Aktualisierung dieser Datei
+- Dokumentation aller Änderungen in change_log.txt
+- Aktualisierung der tree.txt bei Datei- oder Ordneränderungen
+- Erstellung/Aktualisierung der db.txt bei Datenbankänderungen
+- Pflege der beschreibung.txt für Projektübersicht
+- /Applications/XAMPP/xamppfiles/bin/mysql -u verwenden bei MySQL-Verbindungen
+
+
+## 1. Signalgenerierung
+
+### Long-Positionen
+- ADX muss zwischen 25 und 50 liegen (starker Trend, aber nicht überkauft)
+- +DI muss mindestens 5 Punkte über -DI liegen
+- ATR sollte unter 2% des aktuellen Preises liegen (moderate Volatilität)
+- ROC (Rate of Change) zwischen 0.5% und 10% (positiver Momentum)
+- Mindestvolumen von 0.3 (ausreichende Liquidität)
+- Preis muss über dem Keltner Channel Mittelband liegen
+
+### Short-Positionen
+- ADX muss zwischen 25 und 50 liegen
+- -DI muss mindestens 5 Punkte über +DI liegen
+- ATR sollte unter 2% des aktuellen Preises liegen
+- ROC zwischen -10% und -0.5% (negativer Momentum)
+- Mindestvolumen von 0.3
+- Preis muss unter dem Keltner Channel Mittelband liegen
+
+## 2. Risikomanagement
+
+### Position Sizing
+- Basisgröße: 10% des verfügbaren Kapitals
+- Reduzierung um 30% bei erhöhter Volatilität (ATR > 2%)
+- Erhöhung um 20% bei optimalem Trend (ADX zwischen 30-45)
+- Maximale Position: 15% des Gesamtkapitals
+
+### Stop-Loss
+- Dynamische Berechnung basierend auf ATR
+- Standardmultiplikator: 1.5x ATR
+- Bei erhöhter Volatilität: 2.0x ATR
+- Mindestabstand: 1% vom Eintrittspreis
+
+### Take-Profit
+- Mindest-Risiko-Reward-Verhältnis: 1:2
+- Bei starkem Trend (ADX > 35): 1:2.5
+- Dynamische Anpassung basierend auf Marktbedingungen
+- Maximaler Take-Profit: 5% vom Eintrittspreis
+
+## 3. Ausstiegskriterien
+- Stop-Loss oder Take-Profit erreicht
+- Trendumkehr (DI-Kreuzung)
+- Signifikante Volumenabnahme
+- ADX fällt unter 20
+- Keltner Channel Durchbruch in Gegenrichtung
+
+## 4. Risikobegrenzung
+- Maximaler Drawdown: 5%
+- Maximaler Verlust pro Trade: 2%
+- Mindestabstand zwischen Trades: 1 Stunde
+- Maximale Anzahl offener Positionen: 1
+- Tägliches Verlustlimit: 3%
+
+## 5. Marktbedingungen
+- Handel nur bei ausreichender Liquidität
+- Vermeidung von Handel während wichtiger News
+- Berücksichtigung der Volatilität für Positionsgrößen
+- Kein Handel in den ersten/letzten 5 Minuten einer Kerze
+- Beachtung des Gesamtmarkttrends
+
+## 6. Dokumentation
+- Logging aller Trades mit Begründung
+- Tägliche Performance-Auswertung
+- Wöchentliche Strategie-Überprüfung
+- Speicherung aller relevanten Metriken in der Datenbank
+- Regelmäßige Backtesting-Durchführung
+
+## 7. Technische Implementierung
+- Verwendung der BitGet API für Orders
+- WebSocket für Echtzeitdaten
+- Implementierung in Backtesting.php
+- Datenbankname: ssi_trader2
+- Standard-Symbol: ETHUSDT_UMCBL
+
+## 8. Backtesting-Parameter
+- Mindestens 6 Monate historische Daten
+- Berücksichtigung von Handelsgebühren (0.06%)
+- Realistische Slippage-Simulation
+- Verschiedene Marktphasen testen
+- Mindestens 100 Trades für aussagekräftige Ergebnisse
+
+## 9. Performance-Metriken
+- Profit Faktor > 1.5
+- Gewinnrate > 55%
+- Maximaler Drawdown < 15%
+- Sharpe Ratio > 1.2
+- Durchschnittlicher Gewinn > Durchschnittlicher Verlust
+
+## 10. System-Wartung
+- Tägliche Überprüfung der API-Verbindung
+- Wöchentliche Datenbankoptimierung
+- Monatliche Strategie-Überprüfung
+- Regelmäßige Code-Updates
+- Backup der Konfiguration
+
+WICHTIG: Diese Regeln müssen regelmäßig überprüft und angepasst werden.
+Alle Änderungen müssen in change_log.txt dokumentiert werden.

@@ -1,0 +1,19 @@
+USE ssi_trader2;
+
+DROP TABLE IF EXISTS market_data;
+
+CREATE TABLE IF NOT EXISTS market_data (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    symbol VARCHAR(20) NOT NULL,
+    interval_type VARCHAR(10) NOT NULL,
+    timestamp BIGINT NOT NULL,
+    open DECIMAL(20,8) NOT NULL,
+    high DECIMAL(20,8) NOT NULL,
+    low DECIMAL(20,8) NOT NULL,
+    close DECIMAL(20,8) NOT NULL,
+    volume DECIMAL(30,8) NOT NULL,
+    turnover DECIMAL(30,8) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_candle (symbol, interval_type, timestamp)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

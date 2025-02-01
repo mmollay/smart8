@@ -1,0 +1,688 @@
+.
+├── ajax
+│   ├── delete_api_key.php
+│   ├── delete_bank_account.php
+│   ├── form_delete2.php
+│   ├── form_save.php
+│   ├── get_bank_accounts.php
+│   ├── save_bank_account.php
+│   ├── set_primary_account.php
+│   └── toggle_api_status.php
+├── api
+│   ├── get_analysis.php
+│   ├── get_analysis_data.php
+│   ├── get_ws_config.php
+│   ├── place_future_trade.php
+│   ├── stream_balance.php
+│   └── test_api.php
+├── classes
+│   ├── BitgetTrading.php
+│   └── MarketAnalysis.php
+├── composer.json
+├── composer.lock
+├── exec
+│   ├── collect_market_data.php
+│   ├── fetch_trades.php
+│   ├── token.log
+│   ├── update_token.php
+│   └── websocket_server.php
+├── form
+│   ├── f_servers.php
+│   └── f_users.php
+├── index.php
+├── index_save.php
+├── js
+│   ├── analysis-dashboard.js
+│   ├── sync-functions.js
+│   └── websocket-handler.js
+├── lists
+│   ├── servers.php
+│   ├── trades.php
+│   └── users.php
+├── pages
+│   ├── analysis_dashboard.php
+│   ├── form_delete.php
+│   ├── home.php
+│   ├── list_servers.php
+│   ├── list_trades.php
+│   ├── list_users.php
+│   ├── trade_stream_test.php
+│   └── trading.php
+├── t_config.php
+├── tree.txt
+├── vendor
+│   ├── autoload.php
+│   ├── cboden
+│   │   └── ratchet
+│   │       ├── CHANGELOG.md
+│   │       ├── LICENSE
+│   │       ├── Makefile
+│   │       ├── README.md
+│   │       ├── SECURITY.md
+│   │       ├── composer.json
+│   │       ├── phpunit.xml.dist
+│   │       ├── src
+│   │       │   └── Ratchet
+│   │       │       ├── AbstractConnectionDecorator.php
+│   │       │       ├── App.php
+│   │       │       ├── ComponentInterface.php
+│   │       │       ├── ConnectionInterface.php
+│   │       │       ├── Http
+│   │       │       │   ├── CloseResponseTrait.php
+│   │       │       │   ├── HttpRequestParser.php
+│   │       │       │   ├── HttpServer.php
+│   │       │       │   ├── HttpServerInterface.php
+│   │       │       │   ├── NoOpHttpServerController.php
+│   │       │       │   ├── OriginCheck.php
+│   │       │       │   └── Router.php
+│   │       │       ├── MessageComponentInterface.php
+│   │       │       ├── MessageInterface.php
+│   │       │       ├── Server
+│   │       │       │   ├── EchoServer.php
+│   │       │       │   ├── FlashPolicy.php
+│   │       │       │   ├── IoConnection.php
+│   │       │       │   ├── IoServer.php
+│   │       │       │   └── IpBlackList.php
+│   │       │       ├── Session
+│   │       │       │   ├── Serialize
+│   │       │       │   │   ├── HandlerInterface.php
+│   │       │       │   │   ├── PhpBinaryHandler.php
+│   │       │       │   │   └── PhpHandler.php
+│   │       │       │   ├── SessionProvider.php
+│   │       │       │   └── Storage
+│   │       │       │       ├── Proxy
+│   │       │       │       │   └── VirtualProxy.php
+│   │       │       │       └── VirtualSessionStorage.php
+│   │       │       ├── Wamp
+│   │       │       │   ├── Exception.php
+│   │       │       │   ├── JsonException.php
+│   │       │       │   ├── ServerProtocol.php
+│   │       │       │   ├── Topic.php
+│   │       │       │   ├── TopicManager.php
+│   │       │       │   ├── WampConnection.php
+│   │       │       │   ├── WampServer.php
+│   │       │       │   └── WampServerInterface.php
+│   │       │       └── WebSocket
+│   │       │           ├── ConnContext.php
+│   │       │           ├── MessageCallableInterface.php
+│   │       │           ├── MessageComponentInterface.php
+│   │       │           ├── WsConnection.php
+│   │       │           ├── WsServer.php
+│   │       │           └── WsServerInterface.php
+│   │       └── tests
+│   │           ├── autobahn
+│   │           │   ├── bin
+│   │           │   │   └── fuzzingserver.php
+│   │           │   ├── fuzzingclient-all.json
+│   │           │   ├── fuzzingclient-profile.json
+│   │           │   └── fuzzingclient-quick.json
+│   │           ├── bootstrap.php
+│   │           ├── helpers
+│   │           │   └── Ratchet
+│   │           │       ├── AbstractMessageComponentTestCase.php
+│   │           │       ├── Mock
+│   │           │       │   ├── Component.php
+│   │           │       │   ├── Connection.php
+│   │           │       │   ├── ConnectionDecorator.php
+│   │           │       │   └── WampComponent.php
+│   │           │       ├── NullComponent.php
+│   │           │       ├── Wamp
+│   │           │       │   └── Stub
+│   │           │       │       └── WsWampServerInterface.php
+│   │           │       └── WebSocket
+│   │           │           └── Stub
+│   │           │               └── WsMessageComponentInterface.php
+│   │           └── unit
+│   │               ├── AbstractConnectionDecoratorTest.php
+│   │               ├── Http
+│   │               │   ├── HttpRequestParserTest.php
+│   │               │   ├── HttpServerTest.php
+│   │               │   ├── OriginCheckTest.php
+│   │               │   └── RouterTest.php
+│   │               ├── Server
+│   │               │   ├── EchoServerTest.php
+│   │               │   ├── FlashPolicyComponentTest.php
+│   │               │   ├── IoConnectionTest.php
+│   │               │   ├── IoServerTest.php
+│   │               │   └── IpBlackListComponentTest.php
+│   │               ├── Session
+│   │               │   ├── Serialize
+│   │               │   │   └── PhpHandlerTest.php
+│   │               │   ├── SessionComponentTest.php
+│   │               │   └── Storage
+│   │               │       └── VirtualSessionStoragePDOTest.php
+│   │               └── Wamp
+│   │                   ├── ServerProtocolTest.php
+│   │                   ├── TopicManagerTest.php
+│   │                   ├── TopicTest.php
+│   │                   ├── WampConnectionTest.php
+│   │                   └── WampServerTest.php
+│   ├── composer
+│   │   ├── ClassLoader.php
+│   │   ├── InstalledVersions.php
+│   │   ├── LICENSE
+│   │   ├── autoload_classmap.php
+│   │   ├── autoload_files.php
+│   │   ├── autoload_namespaces.php
+│   │   ├── autoload_psr4.php
+│   │   ├── autoload_real.php
+│   │   ├── autoload_static.php
+│   │   ├── installed.json
+│   │   ├── installed.php
+│   │   └── platform_check.php
+│   ├── evenement
+│   │   └── evenement
+│   │       ├── LICENSE
+│   │       ├── README.md
+│   │       ├── composer.json
+│   │       └── src
+│   │           ├── EventEmitter.php
+│   │           ├── EventEmitterInterface.php
+│   │           └── EventEmitterTrait.php
+│   ├── guzzlehttp
+│   │   └── psr7
+│   │       ├── CHANGELOG.md
+│   │       ├── LICENSE
+│   │       ├── README.md
+│   │       ├── composer.json
+│   │       └── src
+│   │           ├── AppendStream.php
+│   │           ├── BufferStream.php
+│   │           ├── CachingStream.php
+│   │           ├── DroppingStream.php
+│   │           ├── Exception
+│   │           │   └── MalformedUriException.php
+│   │           ├── FnStream.php
+│   │           ├── Header.php
+│   │           ├── HttpFactory.php
+│   │           ├── InflateStream.php
+│   │           ├── LazyOpenStream.php
+│   │           ├── LimitStream.php
+│   │           ├── Message.php
+│   │           ├── MessageTrait.php
+│   │           ├── MimeType.php
+│   │           ├── MultipartStream.php
+│   │           ├── NoSeekStream.php
+│   │           ├── PumpStream.php
+│   │           ├── Query.php
+│   │           ├── Request.php
+│   │           ├── Response.php
+│   │           ├── Rfc7230.php
+│   │           ├── ServerRequest.php
+│   │           ├── Stream.php
+│   │           ├── StreamDecoratorTrait.php
+│   │           ├── StreamWrapper.php
+│   │           ├── UploadedFile.php
+│   │           ├── Uri.php
+│   │           ├── UriComparator.php
+│   │           ├── UriNormalizer.php
+│   │           ├── UriResolver.php
+│   │           └── Utils.php
+│   ├── psr
+│   │   ├── http-factory
+│   │   │   ├── LICENSE
+│   │   │   ├── README.md
+│   │   │   ├── composer.json
+│   │   │   └── src
+│   │   │       ├── RequestFactoryInterface.php
+│   │   │       ├── ResponseFactoryInterface.php
+│   │   │       ├── ServerRequestFactoryInterface.php
+│   │   │       ├── StreamFactoryInterface.php
+│   │   │       ├── UploadedFileFactoryInterface.php
+│   │   │       └── UriFactoryInterface.php
+│   │   └── http-message
+│   │       ├── CHANGELOG.md
+│   │       ├── LICENSE
+│   │       ├── README.md
+│   │       ├── composer.json
+│   │       ├── docs
+│   │       │   ├── PSR7-Interfaces.md
+│   │       │   └── PSR7-Usage.md
+│   │       └── src
+│   │           ├── MessageInterface.php
+│   │           ├── RequestInterface.php
+│   │           ├── ResponseInterface.php
+│   │           ├── ServerRequestInterface.php
+│   │           ├── StreamInterface.php
+│   │           ├── UploadedFileInterface.php
+│   │           └── UriInterface.php
+│   ├── ralouphie
+│   │   └── getallheaders
+│   │       ├── LICENSE
+│   │       ├── README.md
+│   │       ├── composer.json
+│   │       └── src
+│   │           └── getallheaders.php
+│   ├── ratchet
+│   │   └── rfc6455
+│   │       ├── LICENSE
+│   │       ├── README.md
+│   │       ├── composer.json
+│   │       ├── phpunit.xml.dist
+│   │       ├── src
+│   │       │   ├── Handshake
+│   │       │   │   ├── ClientNegotiator.php
+│   │       │   │   ├── InvalidPermessageDeflateOptionsException.php
+│   │       │   │   ├── NegotiatorInterface.php
+│   │       │   │   ├── PermessageDeflateOptions.php
+│   │       │   │   ├── RequestVerifier.php
+│   │       │   │   ├── ResponseVerifier.php
+│   │       │   │   └── ServerNegotiator.php
+│   │       │   └── Messaging
+│   │       │       ├── CloseFrameChecker.php
+│   │       │       ├── DataInterface.php
+│   │       │       ├── Frame.php
+│   │       │       ├── FrameInterface.php
+│   │       │       ├── Message.php
+│   │       │       ├── MessageBuffer.php
+│   │       │       └── MessageInterface.php
+│   │       └── tests
+│   │           ├── AbResultsTest.php
+│   │           ├── ab
+│   │           │   ├── clientRunner.php
+│   │           │   ├── docker_bootstrap.sh
+│   │           │   ├── fuzzingclient.json
+│   │           │   ├── fuzzingclient_skip_deflate.json
+│   │           │   ├── fuzzingserver.json
+│   │           │   ├── fuzzingserver_skip_deflate.json
+│   │           │   ├── run_ab_tests.sh
+│   │           │   └── startServer.php
+│   │           ├── bootstrap.php
+│   │           └── unit
+│   │               ├── Handshake
+│   │               │   ├── PermessageDeflateOptionsTest.php
+│   │               │   ├── RequestVerifierTest.php
+│   │               │   ├── ResponseVerifierTest.php
+│   │               │   └── ServerNegotiatorTest.php
+│   │               └── Messaging
+│   │                   ├── FrameTest.php
+│   │                   ├── MessageBufferTest.php
+│   │                   └── MessageTest.php
+│   ├── react
+│   │   ├── cache
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── LICENSE
+│   │   │   ├── README.md
+│   │   │   ├── composer.json
+│   │   │   └── src
+│   │   │       ├── ArrayCache.php
+│   │   │       └── CacheInterface.php
+│   │   ├── dns
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── LICENSE
+│   │   │   ├── README.md
+│   │   │   ├── composer.json
+│   │   │   └── src
+│   │   │       ├── BadServerException.php
+│   │   │       ├── Config
+│   │   │       │   ├── Config.php
+│   │   │       │   └── HostsFile.php
+│   │   │       ├── Model
+│   │   │       │   ├── Message.php
+│   │   │       │   └── Record.php
+│   │   │       ├── Protocol
+│   │   │       │   ├── BinaryDumper.php
+│   │   │       │   └── Parser.php
+│   │   │       ├── Query
+│   │   │       │   ├── CachingExecutor.php
+│   │   │       │   ├── CancellationException.php
+│   │   │       │   ├── CoopExecutor.php
+│   │   │       │   ├── ExecutorInterface.php
+│   │   │       │   ├── FallbackExecutor.php
+│   │   │       │   ├── HostsFileExecutor.php
+│   │   │       │   ├── Query.php
+│   │   │       │   ├── RetryExecutor.php
+│   │   │       │   ├── SelectiveTransportExecutor.php
+│   │   │       │   ├── TcpTransportExecutor.php
+│   │   │       │   ├── TimeoutException.php
+│   │   │       │   ├── TimeoutExecutor.php
+│   │   │       │   └── UdpTransportExecutor.php
+│   │   │       ├── RecordNotFoundException.php
+│   │   │       └── Resolver
+│   │   │           ├── Factory.php
+│   │   │           ├── Resolver.php
+│   │   │           └── ResolverInterface.php
+│   │   ├── event-loop
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── LICENSE
+│   │   │   ├── README.md
+│   │   │   ├── composer.json
+│   │   │   └── src
+│   │   │       ├── ExtEvLoop.php
+│   │   │       ├── ExtEventLoop.php
+│   │   │       ├── ExtLibevLoop.php
+│   │   │       ├── ExtLibeventLoop.php
+│   │   │       ├── ExtUvLoop.php
+│   │   │       ├── Factory.php
+│   │   │       ├── Loop.php
+│   │   │       ├── LoopInterface.php
+│   │   │       ├── SignalsHandler.php
+│   │   │       ├── StreamSelectLoop.php
+│   │   │       ├── Tick
+│   │   │       │   └── FutureTickQueue.php
+│   │   │       ├── Timer
+│   │   │       │   ├── Timer.php
+│   │   │       │   └── Timers.php
+│   │   │       └── TimerInterface.php
+│   │   ├── promise
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── LICENSE
+│   │   │   ├── README.md
+│   │   │   ├── composer.json
+│   │   │   └── src
+│   │   │       ├── Deferred.php
+│   │   │       ├── Exception
+│   │   │       │   ├── CompositeException.php
+│   │   │       │   └── LengthException.php
+│   │   │       ├── Internal
+│   │   │       │   ├── CancellationQueue.php
+│   │   │       │   ├── FulfilledPromise.php
+│   │   │       │   └── RejectedPromise.php
+│   │   │       ├── Promise.php
+│   │   │       ├── PromiseInterface.php
+│   │   │       ├── functions.php
+│   │   │       └── functions_include.php
+│   │   ├── socket
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── LICENSE
+│   │   │   ├── README.md
+│   │   │   ├── composer.json
+│   │   │   └── src
+│   │   │       ├── Connection.php
+│   │   │       ├── ConnectionInterface.php
+│   │   │       ├── Connector.php
+│   │   │       ├── ConnectorInterface.php
+│   │   │       ├── DnsConnector.php
+│   │   │       ├── FdServer.php
+│   │   │       ├── FixedUriConnector.php
+│   │   │       ├── HappyEyeBallsConnectionBuilder.php
+│   │   │       ├── HappyEyeBallsConnector.php
+│   │   │       ├── LimitingServer.php
+│   │   │       ├── SecureConnector.php
+│   │   │       ├── SecureServer.php
+│   │   │       ├── Server.php
+│   │   │       ├── ServerInterface.php
+│   │   │       ├── SocketServer.php
+│   │   │       ├── StreamEncryption.php
+│   │   │       ├── TcpConnector.php
+│   │   │       ├── TcpServer.php
+│   │   │       ├── TimeoutConnector.php
+│   │   │       ├── UnixConnector.php
+│   │   │       └── UnixServer.php
+│   │   └── stream
+│   │       ├── CHANGELOG.md
+│   │       ├── LICENSE
+│   │       ├── README.md
+│   │       ├── composer.json
+│   │       └── src
+│   │           ├── CompositeStream.php
+│   │           ├── DuplexResourceStream.php
+│   │           ├── DuplexStreamInterface.php
+│   │           ├── ReadableResourceStream.php
+│   │           ├── ReadableStreamInterface.php
+│   │           ├── ThroughStream.php
+│   │           ├── Util.php
+│   │           ├── WritableResourceStream.php
+│   │           └── WritableStreamInterface.php
+│   └── symfony
+│       ├── deprecation-contracts
+│       │   ├── CHANGELOG.md
+│       │   ├── LICENSE
+│       │   ├── README.md
+│       │   ├── composer.json
+│       │   └── function.php
+│       ├── http-foundation
+│       │   ├── AcceptHeader.php
+│       │   ├── AcceptHeaderItem.php
+│       │   ├── BinaryFileResponse.php
+│       │   ├── CHANGELOG.md
+│       │   ├── ChainRequestMatcher.php
+│       │   ├── Cookie.php
+│       │   ├── Exception
+│       │   │   ├── BadRequestException.php
+│       │   │   ├── ConflictingHeadersException.php
+│       │   │   ├── JsonException.php
+│       │   │   ├── RequestExceptionInterface.php
+│       │   │   ├── SessionNotFoundException.php
+│       │   │   ├── SuspiciousOperationException.php
+│       │   │   └── UnexpectedValueException.php
+│       │   ├── ExpressionRequestMatcher.php
+│       │   ├── File
+│       │   │   ├── Exception
+│       │   │   │   ├── AccessDeniedException.php
+│       │   │   │   ├── CannotWriteFileException.php
+│       │   │   │   ├── ExtensionFileException.php
+│       │   │   │   ├── FileException.php
+│       │   │   │   ├── FileNotFoundException.php
+│       │   │   │   ├── FormSizeFileException.php
+│       │   │   │   ├── IniSizeFileException.php
+│       │   │   │   ├── NoFileException.php
+│       │   │   │   ├── NoTmpDirFileException.php
+│       │   │   │   ├── PartialFileException.php
+│       │   │   │   ├── UnexpectedTypeException.php
+│       │   │   │   └── UploadException.php
+│       │   │   ├── File.php
+│       │   │   ├── Stream.php
+│       │   │   └── UploadedFile.php
+│       │   ├── FileBag.php
+│       │   ├── HeaderBag.php
+│       │   ├── HeaderUtils.php
+│       │   ├── InputBag.php
+│       │   ├── IpUtils.php
+│       │   ├── JsonResponse.php
+│       │   ├── LICENSE
+│       │   ├── ParameterBag.php
+│       │   ├── README.md
+│       │   ├── RateLimiter
+│       │   │   ├── AbstractRequestRateLimiter.php
+│       │   │   ├── PeekableRequestRateLimiterInterface.php
+│       │   │   └── RequestRateLimiterInterface.php
+│       │   ├── RedirectResponse.php
+│       │   ├── Request.php
+│       │   ├── RequestMatcher
+│       │   │   ├── AttributesRequestMatcher.php
+│       │   │   ├── ExpressionRequestMatcher.php
+│       │   │   ├── HostRequestMatcher.php
+│       │   │   ├── IpsRequestMatcher.php
+│       │   │   ├── IsJsonRequestMatcher.php
+│       │   │   ├── MethodRequestMatcher.php
+│       │   │   ├── PathRequestMatcher.php
+│       │   │   ├── PortRequestMatcher.php
+│       │   │   └── SchemeRequestMatcher.php
+│       │   ├── RequestMatcher.php
+│       │   ├── RequestMatcherInterface.php
+│       │   ├── RequestStack.php
+│       │   ├── Response.php
+│       │   ├── ResponseHeaderBag.php
+│       │   ├── ServerBag.php
+│       │   ├── Session
+│       │   │   ├── Attribute
+│       │   │   │   ├── AttributeBag.php
+│       │   │   │   └── AttributeBagInterface.php
+│       │   │   ├── Flash
+│       │   │   │   ├── AutoExpireFlashBag.php
+│       │   │   │   ├── FlashBag.php
+│       │   │   │   └── FlashBagInterface.php
+│       │   │   ├── FlashBagAwareSessionInterface.php
+│       │   │   ├── Session.php
+│       │   │   ├── SessionBagInterface.php
+│       │   │   ├── SessionBagProxy.php
+│       │   │   ├── SessionFactory.php
+│       │   │   ├── SessionFactoryInterface.php
+│       │   │   ├── SessionInterface.php
+│       │   │   ├── SessionUtils.php
+│       │   │   └── Storage
+│       │   │       ├── Handler
+│       │   │       │   ├── AbstractSessionHandler.php
+│       │   │       │   ├── IdentityMarshaller.php
+│       │   │       │   ├── MarshallingSessionHandler.php
+│       │   │       │   ├── MemcachedSessionHandler.php
+│       │   │       │   ├── MigratingSessionHandler.php
+│       │   │       │   ├── MongoDbSessionHandler.php
+│       │   │       │   ├── NativeFileSessionHandler.php
+│       │   │       │   ├── NullSessionHandler.php
+│       │   │       │   ├── PdoSessionHandler.php
+│       │   │       │   ├── RedisSessionHandler.php
+│       │   │       │   ├── SessionHandlerFactory.php
+│       │   │       │   └── StrictSessionHandler.php
+│       │   │       ├── MetadataBag.php
+│       │   │       ├── MockArraySessionStorage.php
+│       │   │       ├── MockFileSessionStorage.php
+│       │   │       ├── MockFileSessionStorageFactory.php
+│       │   │       ├── NativeSessionStorage.php
+│       │   │       ├── NativeSessionStorageFactory.php
+│       │   │       ├── PhpBridgeSessionStorage.php
+│       │   │       ├── PhpBridgeSessionStorageFactory.php
+│       │   │       ├── Proxy
+│       │   │       │   ├── AbstractProxy.php
+│       │   │       │   └── SessionHandlerProxy.php
+│       │   │       ├── SessionStorageFactoryInterface.php
+│       │   │       └── SessionStorageInterface.php
+│       │   ├── StreamedJsonResponse.php
+│       │   ├── StreamedResponse.php
+│       │   ├── Test
+│       │   │   └── Constraint
+│       │   │       ├── RequestAttributeValueSame.php
+│       │   │       ├── ResponseCookieValueSame.php
+│       │   │       ├── ResponseFormatSame.php
+│       │   │       ├── ResponseHasCookie.php
+│       │   │       ├── ResponseHasHeader.php
+│       │   │       ├── ResponseHeaderLocationSame.php
+│       │   │       ├── ResponseHeaderSame.php
+│       │   │       ├── ResponseIsRedirected.php
+│       │   │       ├── ResponseIsSuccessful.php
+│       │   │       ├── ResponseIsUnprocessable.php
+│       │   │       └── ResponseStatusCodeSame.php
+│       │   ├── UriSigner.php
+│       │   ├── UrlHelper.php
+│       │   └── composer.json
+│       ├── polyfill-mbstring
+│       │   ├── LICENSE
+│       │   ├── Mbstring.php
+│       │   ├── README.md
+│       │   ├── Resources
+│       │   │   └── unidata
+│       │   │       ├── caseFolding.php
+│       │   │       ├── lowerCase.php
+│       │   │       ├── titleCaseRegexp.php
+│       │   │       └── upperCase.php
+│       │   ├── bootstrap.php
+│       │   ├── bootstrap80.php
+│       │   └── composer.json
+│       ├── polyfill-php83
+│       │   ├── LICENSE
+│       │   ├── Php83.php
+│       │   ├── README.md
+│       │   ├── Resources
+│       │   │   └── stubs
+│       │   │       ├── DateError.php
+│       │   │       ├── DateException.php
+│       │   │       ├── DateInvalidOperationException.php
+│       │   │       ├── DateInvalidTimeZoneException.php
+│       │   │       ├── DateMalformedIntervalStringException.php
+│       │   │       ├── DateMalformedPeriodStringException.php
+│       │   │       ├── DateMalformedStringException.php
+│       │   │       ├── DateObjectError.php
+│       │   │       ├── DateRangeError.php
+│       │   │       ├── Override.php
+│       │   │       └── SQLite3Exception.php
+│       │   ├── bootstrap.php
+│       │   ├── bootstrap81.php
+│       │   └── composer.json
+│       └── routing
+│           ├── Alias.php
+│           ├── Annotation
+│           │   └── Route.php
+│           ├── Attribute
+│           │   └── Route.php
+│           ├── CHANGELOG.md
+│           ├── CompiledRoute.php
+│           ├── DependencyInjection
+│           │   ├── AddExpressionLanguageProvidersPass.php
+│           │   └── RoutingResolverPass.php
+│           ├── Exception
+│           │   ├── ExceptionInterface.php
+│           │   ├── InvalidArgumentException.php
+│           │   ├── InvalidParameterException.php
+│           │   ├── MethodNotAllowedException.php
+│           │   ├── MissingMandatoryParametersException.php
+│           │   ├── NoConfigurationException.php
+│           │   ├── ResourceNotFoundException.php
+│           │   ├── RouteCircularReferenceException.php
+│           │   ├── RouteNotFoundException.php
+│           │   └── RuntimeException.php
+│           ├── Generator
+│           │   ├── CompiledUrlGenerator.php
+│           │   ├── ConfigurableRequirementsInterface.php
+│           │   ├── Dumper
+│           │   │   ├── CompiledUrlGeneratorDumper.php
+│           │   │   ├── GeneratorDumper.php
+│           │   │   └── GeneratorDumperInterface.php
+│           │   ├── UrlGenerator.php
+│           │   └── UrlGeneratorInterface.php
+│           ├── LICENSE
+│           ├── Loader
+│           │   ├── AnnotationClassLoader.php
+│           │   ├── AnnotationDirectoryLoader.php
+│           │   ├── AnnotationFileLoader.php
+│           │   ├── AttributeClassLoader.php
+│           │   ├── AttributeDirectoryLoader.php
+│           │   ├── AttributeFileLoader.php
+│           │   ├── ClosureLoader.php
+│           │   ├── Configurator
+│           │   │   ├── AliasConfigurator.php
+│           │   │   ├── CollectionConfigurator.php
+│           │   │   ├── ImportConfigurator.php
+│           │   │   ├── RouteConfigurator.php
+│           │   │   ├── RoutingConfigurator.php
+│           │   │   └── Traits
+│           │   │       ├── AddTrait.php
+│           │   │       ├── HostTrait.php
+│           │   │       ├── LocalizedRouteTrait.php
+│           │   │       ├── PrefixTrait.php
+│           │   │       └── RouteTrait.php
+│           │   ├── ContainerLoader.php
+│           │   ├── DirectoryLoader.php
+│           │   ├── GlobFileLoader.php
+│           │   ├── ObjectLoader.php
+│           │   ├── PhpFileLoader.php
+│           │   ├── Psr4DirectoryLoader.php
+│           │   ├── XmlFileLoader.php
+│           │   ├── YamlFileLoader.php
+│           │   └── schema
+│           │       └── routing
+│           │           └── routing-1.0.xsd
+│           ├── Matcher
+│           │   ├── CompiledUrlMatcher.php
+│           │   ├── Dumper
+│           │   │   ├── CompiledUrlMatcherDumper.php
+│           │   │   ├── CompiledUrlMatcherTrait.php
+│           │   │   ├── MatcherDumper.php
+│           │   │   ├── MatcherDumperInterface.php
+│           │   │   └── StaticPrefixCollection.php
+│           │   ├── ExpressionLanguageProvider.php
+│           │   ├── RedirectableUrlMatcher.php
+│           │   ├── RedirectableUrlMatcherInterface.php
+│           │   ├── RequestMatcherInterface.php
+│           │   ├── TraceableUrlMatcher.php
+│           │   ├── UrlMatcher.php
+│           │   └── UrlMatcherInterface.php
+│           ├── README.md
+│           ├── RequestContext.php
+│           ├── RequestContextAwareInterface.php
+│           ├── Requirement
+│           │   ├── EnumRequirement.php
+│           │   └── Requirement.php
+│           ├── Route.php
+│           ├── RouteCollection.php
+│           ├── RouteCompiler.php
+│           ├── RouteCompilerInterface.php
+│           ├── Router.php
+│           ├── RouterInterface.php
+│           └── composer.json
+├── websocket
+│   ├── BitgetWebsocket.php
+│   └── websocket-client.js
+└── websocket_server.php
+
+126 directories, 560 files

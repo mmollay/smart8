@@ -1,0 +1,410 @@
+-- MariaDB dump 10.19  Distrib 10.4.28-MariaDB, for osx10.10 (x86_64)
+--
+-- Host: 127.0.0.1    Database: ssi_trader2
+-- ------------------------------------------------------
+-- Server version	10.4.28-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `account_transactions`
+--
+
+DROP TABLE IF EXISTS `account_transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `account_transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `type` enum('deposit','withdrawal') NOT NULL,
+  `amount` decimal(20,8) NOT NULL,
+  `currency` varchar(10) NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `bitget_timestamp` bigint(20) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `account_transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `analysis_signals`
+--
+
+DROP TABLE IF EXISTS `analysis_signals`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `analysis_signals` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(20) NOT NULL,
+  `timestamp` bigint(20) NOT NULL,
+  `action` enum('buy','sell','hold') NOT NULL,
+  `confidence` decimal(5,2) NOT NULL,
+  `entry_price` decimal(20,8) NOT NULL,
+  `tp_price` decimal(20,8) NOT NULL,
+  `sl_price` decimal(20,8) NOT NULL,
+  `reasoning` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`reasoning`)),
+  `result` decimal(10,2) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_symbol_timestamp` (`symbol`,`timestamp`)
+) ENGINE=InnoDB AUTO_INCREMENT=232 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `api_credentials`
+--
+
+DROP TABLE IF EXISTS `api_credentials`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `api_credentials` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `platform` varchar(50) NOT NULL,
+  `api_key` varchar(255) NOT NULL,
+  `api_secret` varchar(255) NOT NULL,
+  `api_passphrase` varchar(40) NOT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`permissions`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_used` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_platform` (`user_id`,`platform`,`api_key`),
+  KEY `idx_api_credentials_user` (`user_id`),
+  CONSTRAINT `api_credentials_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `backtest_equity`
+--
+
+DROP TABLE IF EXISTS `backtest_equity`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `backtest_equity` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `run_id` bigint(20) unsigned NOT NULL,
+  `timestamp` bigint(20) NOT NULL,
+  `equity` decimal(20,8) NOT NULL,
+  `drawdown` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `run_id` (`run_id`),
+  CONSTRAINT `backtest_equity_ibfk_1` FOREIGN KEY (`run_id`) REFERENCES `backtest_runs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=981 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `backtest_runs`
+--
+
+DROP TABLE IF EXISTS `backtest_runs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `backtest_runs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(20) NOT NULL,
+  `interval_type` varchar(10) NOT NULL,
+  `period` int(11) NOT NULL,
+  `initial_balance` decimal(20,8) NOT NULL,
+  `fee_rate` decimal(10,8) NOT NULL,
+  `start_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `end_time` timestamp NULL DEFAULT NULL,
+  `total_trades` int(11) NOT NULL DEFAULT 0,
+  `winning_trades` int(11) NOT NULL DEFAULT 0,
+  `losing_trades` int(11) NOT NULL DEFAULT 0,
+  `profit_factor` decimal(10,4) DEFAULT NULL,
+  `net_profit` decimal(20,8) DEFAULT NULL,
+  `max_drawdown` decimal(10,4) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `backtest_trades`
+--
+
+DROP TABLE IF EXISTS `backtest_trades`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `backtest_trades` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `run_id` bigint(20) unsigned NOT NULL,
+  `entry_time` bigint(20) NOT NULL,
+  `exit_time` bigint(20) DEFAULT NULL,
+  `type` enum('long','short') NOT NULL,
+  `entry_price` decimal(20,8) NOT NULL,
+  `exit_price` decimal(20,8) DEFAULT NULL,
+  `position_size` decimal(20,8) NOT NULL,
+  `stop_loss` decimal(20,8) NOT NULL,
+  `take_profit` decimal(20,8) NOT NULL,
+  `profit_loss` decimal(20,8) DEFAULT NULL,
+  `exit_reason` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `run_id` (`run_id`),
+  CONSTRAINT `backtest_trades_ibfk_1` FOREIGN KEY (`run_id`) REFERENCES `backtest_runs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=267 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `bank_accounts`
+--
+
+DROP TABLE IF EXISTS `bank_accounts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bank_accounts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `bank_name` varchar(100) NOT NULL,
+  `iban` varchar(34) NOT NULL,
+  `bic` varchar(11) DEFAULT NULL,
+  `account_holder` varchar(100) NOT NULL,
+  `is_primary` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_bank_accounts_user` (`user_id`),
+  CONSTRAINT `bank_accounts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `market_data`
+--
+
+DROP TABLE IF EXISTS `market_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `market_data` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(20) NOT NULL,
+  `interval_type` varchar(10) NOT NULL,
+  `timestamp` bigint(20) NOT NULL,
+  `open` decimal(20,8) NOT NULL,
+  `high` decimal(20,8) NOT NULL,
+  `low` decimal(20,8) NOT NULL,
+  `close` decimal(20,8) NOT NULL,
+  `volume` decimal(30,8) NOT NULL,
+  `turnover` decimal(30,8) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_candle` (`symbol`,`interval_type`,`timestamp`)
+) ENGINE=InnoDB AUTO_INCREMENT=1721 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `parameter_model_id` int(11) NOT NULL,
+  `symbol` varchar(20) NOT NULL,
+  `side` enum('buy','sell') NOT NULL,
+  `position_size` decimal(10,4) NOT NULL,
+  `entry_price` decimal(10,2) NOT NULL,
+  `take_profit` decimal(10,2) DEFAULT NULL,
+  `stop_loss` decimal(10,2) DEFAULT NULL,
+  `leverage` int(11) NOT NULL,
+  `bitget_order_id` varchar(50) DEFAULT NULL,
+  `status` enum('pending','placed','filled','cancelled','rejected') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `closed_at` datetime DEFAULT NULL,
+  `closing_price` decimal(10,2) DEFAULT NULL,
+  `pnl` decimal(10,2) DEFAULT NULL,
+  `tp_order_id` varchar(50) DEFAULT NULL,
+  `sl_order_id` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_parameter_model_id` (`parameter_model_id`),
+  KEY `idx_symbol` (`symbol`),
+  KEY `idx_bitget_order_id` (`bitget_order_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pnl_history`
+--
+
+DROP TABLE IF EXISTS `pnl_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pnl_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `symbol` varchar(20) NOT NULL,
+  `side` varchar(10) NOT NULL,
+  `size` decimal(20,8) NOT NULL,
+  `entry_price` decimal(20,8) NOT NULL,
+  `exit_price` decimal(20,8) NOT NULL,
+  `profit` decimal(20,8) NOT NULL,
+  `net_profit` decimal(20,8) DEFAULT 0.00000000,
+  `leverage` int(11) NOT NULL,
+  `bitget_timestamp` bigint(20) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `pnl_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5511 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `trades`
+--
+
+DROP TABLE IF EXISTS `trades`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trades` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `symbol` varchar(20) NOT NULL,
+  `side` varchar(10) NOT NULL,
+  `size` decimal(20,8) NOT NULL,
+  `price` decimal(20,8) NOT NULL,
+  `fee` decimal(20,8) NOT NULL,
+  `profit` decimal(20,8) DEFAULT NULL,
+  `fee_coin` varchar(10) NOT NULL,
+  `trade_id` varchar(50) NOT NULL,
+  `order_id` varchar(50) NOT NULL,
+  `bitget_timestamp` bigint(20) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_trade` (`trade_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `trades_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12583 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `trading_parameter_model_values`
+--
+
+DROP TABLE IF EXISTS `trading_parameter_model_values`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trading_parameter_model_values` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `model_id` int(11) NOT NULL,
+  `parameter_name` varchar(50) NOT NULL,
+  `parameter_value` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `model_id` (`model_id`),
+  CONSTRAINT `trading_parameter_model_values_ibfk_1` FOREIGN KEY (`model_id`) REFERENCES `trading_parameter_models` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=332 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `trading_parameter_models`
+--
+
+DROP TABLE IF EXISTS `trading_parameter_models`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trading_parameter_models` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `trading_triggers`
+--
+
+DROP TABLE IF EXISTS `trading_triggers`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trading_triggers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `symbol` varchar(20) NOT NULL,
+  `trigger_type` varchar(50) NOT NULL,
+  `condition_type` varchar(20) NOT NULL,
+  `target_price` decimal(20,8) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `is_pending` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `trading_triggers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `company` varchar(200) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address_street` varchar(100) DEFAULT NULL,
+  `address_number` varchar(10) DEFAULT NULL,
+  `address_zip` varchar(10) DEFAULT NULL,
+  `address_city` varchar(50) DEFAULT NULL,
+  `address_country` varchar(50) DEFAULT NULL,
+  `tax_id` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `active` tinyint(1) DEFAULT 1,
+  `default_parameter_model_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_users_email` (`email`),
+  KEY `fk_default_parameter_model` (`default_parameter_model_id`),
+  CONSTRAINT `fk_default_parameter_model` FOREIGN KEY (`default_parameter_model_id`) REFERENCES `trading_parameter_models` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-01-30 12:56:47
