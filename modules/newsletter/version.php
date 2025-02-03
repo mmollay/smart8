@@ -1,7 +1,18 @@
 <?php
 return [
-    'version' => '1.2.5',
+    
+    'version' => '1.2.6',
     'changelog' => [
+        '1.2.6' => [
+            'date' => '2025-02-03',
+            'changes' => [
+                'Neu' => [
+                    'Handelsregeln für Trading-Strategie aktualisiert',
+                    'Risikomanagement-Parameter optimiert',
+                    'Performance-Metriken angepasst'
+                ]
+            ]
+        ],
         '1.2.5' => [
             'date' => '2025-12-13',
             'changes' => [
