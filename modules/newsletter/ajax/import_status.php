@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__ . '/../n_config.php');
 
-session_start();
+//session_start();
 $import_id = $_SESSION['current_import_id'] ?? null;
 
 if (!$import_id) {
