@@ -1,0 +1,78 @@
+SSI Smart Trader Modul
+===================
+
+Version: 1.0.0
+Datum: 30.01.2025
+Autor: System
+
+Beschreibung
+-----------
+Das SSI Smart Trader Modul ist ein automatisiertes Handelssystem für die BitGet-Börse.
+Es nutzt technische Analyse und fortschrittliche Handelsstrategien für den Krypto-Handel.
+
+Hauptfunktionen
+--------------
+1. Echtzeit-Marktanalyse
+   - ADX/DMI für Trendstärke
+   - ATR für Volatilität
+   - ROC für Momentum
+   - Keltner Channels für Preisbewegungen
+   - Volumenanalyse
+
+2. Risikomanagement
+   - Dynamisches Position Sizing
+   - ATR-basierte Stop-Loss
+   - Anpassbare Take-Profit Levels
+   - Drawdown-Kontrolle
+   - Tägliche Verlustlimits
+
+3. Performance-Tracking
+   - Gewinnrate und Profit-Faktor
+   - Drawdown-Überwachung
+   - Sharpe Ratio
+   - ROI-Berechnung
+   - Handelshistorie
+
+4. Technische Features
+   - WebSocket Integration
+   - Echtzeit-Datenverarbeitung
+   - Automatische Orderausführung
+   - Fehlerprotokollierung
+   - Performance-Optimierung
+
+Installation
+-----------
+1. Datenbank erstellen (ssi_smarttrader)
+2. BitGet API-Schlüssel konfigurieren
+3. Trading-Parameter anpassen
+4. Modul in Smart8 aktivieren
+
+Abhängigkeiten
+-------------
+- PHP 7.4+
+- MySQL 5.7+
+- BitGet API
+- WebSocket Support
+- PDO Extension
+
+Konfiguration
+------------
+Alle Einstellungen in src/config/config.php:
+- API-Zugangsdaten
+- Handelsparameter
+- Risikomanagement
+- Datenbankverbindung
+
+Wartung
+-------
+- Tägliche Überprüfung der API-Verbindung
+- Wöchentliche Datenbankoptimierung
+- Monatliche Strategie-Überprüfung
+- Regelmäßige Code-Updates
+
+Support
+-------
+Bei Fragen oder Problemen:
+- Dokumentation prüfen
+- Logs analysieren
+- System-Admin kontaktieren

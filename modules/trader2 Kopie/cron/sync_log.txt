@@ -1,2 +1,0 @@
-[2025-01-29 20:10:00] Sync-Job gestartet
-[2025-01-29 20:10:00] Kritischer Fehler: Unknown column 'c.active' in 'where clause'

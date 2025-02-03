@@ -22,6 +22,10 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         array (
             'ZipStream\\' => 10,
         ),
+        'W' => 
+        array (
+            'WebSocket\\' => 10,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php83\\' => 23,
@@ -48,6 +52,7 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'PhpOption\\' => 10,
@@ -82,6 +87,10 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         'ZipStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
+        'WebSocket\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/textalk/websocket/lib',
         ),
         'Symfony\\Polyfill\\Php83\\' => 
         array (
@@ -154,6 +163,10 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'Psr\\Http\\Message\\' => 
         array (

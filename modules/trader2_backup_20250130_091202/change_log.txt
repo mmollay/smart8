@@ -1,6 +1,0 @@
-Version 0.1.0 (28. Januar 2025)
-- Initial: Komplette Erstellung des Systems
-
-Version 0.1.1 (29. Januar 2025)
-Bugfixes:
-- Trading Parameter Formular: Leverage Dropdown zeigt jetzt korrekt den gespeicherten Wert an (Format 5.00)

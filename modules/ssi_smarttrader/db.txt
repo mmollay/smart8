@@ -1,0 +1,102 @@
+SSI Smart Trader - Datenbankstruktur
+================================
+
+Datenbank: ssi_smarttrader
+-------------------------
+
+1. trades
+---------
+- id (INT, PK, AUTO_INCREMENT)
+- symbol (VARCHAR(20))
+- position_type (ENUM('long', 'short'))
+- entry_price (DECIMAL(20,8))
+- position_size (DECIMAL(20,8))
+- leverage (INT)
+- take_profit (DECIMAL(20,8))
+- stop_loss (DECIMAL(20,8))
+- status (ENUM('open', 'closed', 'cancelled'))
+- exit_price (DECIMAL(20,8))
+- profit_loss (DECIMAL(20,8))
+- roi (DECIMAL(10,2))
+- entry_time (TIMESTAMP)
+- exit_time (TIMESTAMP)
+- close_reason (VARCHAR(50))
+- order_id (VARCHAR(50))
+
+Indizes:
+- idx_symbol (symbol)
+- idx_status (status)
+- idx_entry_time (entry_time)
+
+2. trade_signals
+---------------
+- id (INT, PK, AUTO_INCREMENT)
+- trade_id (INT, FK -> trades.id)
+- signal_type (VARCHAR(50))
+- signal_value (VARCHAR(255))
+- timestamp (TIMESTAMP)
+
+Indizes:
+- idx_trade_id (trade_id)
+
+3. technical_indicators
+----------------------
+- id (INT, PK, AUTO_INCREMENT)
+- symbol (VARCHAR(20))
+- timestamp (TIMESTAMP)
+- adx (DECIMAL(10,2))
+- plus_di (DECIMAL(10,2))
+- minus_di (DECIMAL(10,2))
+- atr (DECIMAL(20,8))
+- atr_percent (DECIMAL(10,2))
+- roc (DECIMAL(10,2))
+- volume (DECIMAL(20,8))
+- keltner_upper (DECIMAL(20,8))
+- keltner_middle (DECIMAL(20,8))
+- keltner_lower (DECIMAL(20,8))
+
+Indizes:
+- idx_symbol_time (symbol, timestamp)
+
+4. performance_metrics
+---------------------
+- id (INT, PK, AUTO_INCREMENT)
+- date (DATE)
+- symbol (VARCHAR(20))
+- total_trades (INT)
+- winning_trades (INT)
+- losing_trades (INT)
+- profit_factor (DECIMAL(10,2))
+- win_rate (DECIMAL(10,2))
+- avg_win (DECIMAL(20,8))
+- avg_loss (DECIMAL(20,8))
+- max_drawdown (DECIMAL(10,2))
+- sharpe_ratio (DECIMAL(10,2))
+- total_profit_loss (DECIMAL(20,8))
+
+Indizes:
+- idx_date_symbol (date, symbol) UNIQUE
+
+5. system_log
+------------
+- id (INT, PK, AUTO_INCREMENT)
+- timestamp (TIMESTAMP)
+- log_level (ENUM('info', 'warning', 'error', 'critical'))
+- component (VARCHAR(50))
+- message (TEXT)
+- details (JSON)
+
+Indizes:
+- idx_timestamp (timestamp)
+- idx_level (log_level)
+
+Beziehungen
+-----------
+1. trade_signals.trade_id -> trades.id (ON DELETE CASCADE)
+
+Wartung
+-------
+- Regelmäßige Indizes-Optimierung
+- Alte Logs bereinigen (> 30 Tage)
+- Performance-Metriken archivieren (> 1 Jahr)
+- Backup-Strategie implementieren

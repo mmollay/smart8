@@ -1,0 +1,38 @@
+ssi_smarttrader/
+├── beschreibung.txt
+├── change_log.txt
+├── db.txt
+├── tree.txt
+└── src/
+    ├── classes/
+    │   ├── BitgetAPI.php
+    │   ├── DatabaseManager.php
+    │   ├── MarketAnalyzer.php
+    │   ├── OrderManager.php
+    │   ├── PositionManager.php
+    │   ├── RiskManager.php
+    │   └── SystemLogger.php
+    ├── config/
+    │   ├── config.php
+    │   └── sql/
+    │       └── create_tables.sql
+    ├── public/
+    │   ├── css/
+    │   │   └── styles.css
+    │   ├── js/
+    │   │   ├── websocket.js
+    │   │   ├── chart.js
+    │   │   └── trading.js
+    │   └── img/
+    ├── views/
+    │   ├── dashboard.php
+    │   ├── trades.php
+    │   └── settings.php
+    ├── api/
+    │   ├── process_trade.php
+    │   ├── get_market_analysis.php
+    │   └── update_settings.php
+    └── tests/
+        ├── BitgetAPITest.php
+        ├── MarketAnalyzerTest.php
+        └── RiskManagerTest.php

@@ -1,6 +1,5 @@
 <?php
-
-if (!$set_unsubscribed) {
+if (!isset($set_unsubscribed)) {
     // Session Check
     if (!defined('ALLOW_WEBHOOK') && php_sapi_name() !== 'cli') {
         session_start();
