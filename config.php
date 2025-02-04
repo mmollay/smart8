@@ -8,6 +8,7 @@ include(__DIR__ . "/src/Helpers/functions.php");
 
 try {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+
     $dotenv->load();
 
     $dbConfig = require_once __DIR__ . '/config/database.php';
@@ -134,8 +135,9 @@ function isDebug(): bool
 
 /**
  * Sichere Datenbankabfrage
+ * @return mysqli_result|bool
  */
-function dbQuery($query, $params = []): mysqli_result|bool
+function dbQuery($query, $params = [])
 {
     global $db;
 

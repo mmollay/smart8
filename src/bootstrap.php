@@ -8,8 +8,8 @@ define('BASE_PATH', realpath(__DIR__ . '/..'));
 
 
 // .env Datei laden
-if (file_exists(BASE_PATH . '/.env')) {
-    $envFile = file_get_contents(BASE_PATH . '/.env');
+if (file_exists(BASE_PATH . '/../.env')) {
+    $envFile = file_get_contents(BASE_PATH . '/../.env');
     $lines = explode("\n", $envFile);
     foreach ($lines as $line) {
         $line = trim($line);

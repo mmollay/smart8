@@ -13,9 +13,10 @@ if (!isset($set_unsubscribed)) {
     if (php_sapi_name() !== 'cli' && !defined('ALLOW_WEBHOOK')) {
         require_once(__DIR__ . '/../../config.php');
     }
+
 }
 
-include(__DIR__ . "/../../get_env.php");
+//include(__DIR__ . "/../../get_env.php");
 
 // APP_ROOT definieren
 if (!defined('APP_ROOT')) {
