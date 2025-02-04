@@ -6,14 +6,18 @@ use Smart\Core\Database;
 
 class AuthService
 {
-    private Database $db;
-    private Session $session;
+    /** @var Database */
+    private $db;
+
+    /** @var Session */
+    private $session;
 
     public function __construct(Database $db)
     {
         $this->db = $db;
         $this->session = Session::getInstance($db);
     }
+
 
     public function login(string $username, string $password, bool $remember = false): array
     {
