@@ -18,7 +18,6 @@ class AuthService
         $this->session = Session::getInstance($db);
     }
 
-
     public function login(string $username, string $password, bool $remember = false): array
     {
         try {

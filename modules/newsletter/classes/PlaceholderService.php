@@ -1,11 +1,20 @@
 <?php
 class PlaceholderService
 {
-    private static ?PlaceholderService $instance = null;
-    private string $locale;
-    private string $timezone;
-    private array $monthNames;
-    private array $weekdayNames;
+    /** @var PlaceholderService|null */
+    private static $instance = null;
+
+    /** @var string */
+    private $locale;
+
+    /** @var string */
+    private $timezone;
+
+    /** @var array */
+    private $monthNames;
+
+    /** @var array */
+    private $weekdayNames;
 
     private function __construct(string $locale = 'de_DE.UTF-8', string $timezone = 'Europe/Berlin')
     {
