@@ -1,0 +1,13 @@
+.fblogin-button {
+	background: url(../img/facebook_signin.png) no-repeat 0 0;
+	width: 150px;
+	height: 22px;
+	display: inline-block;
+	text-indent: -1000px;
+}
+.fblogin-button:hover {
+	background: url(../img/facebook_signin.png) no-repeat 0 -24px;
+}
+.fblogin-button:active {
+	background: url(../img/facebook_signin.png) no-repeat 0 -48px;
+}

@@ -39,4 +39,5 @@ return array(
     'Evenement\\' => array($vendorDir . '/evenement/evenement/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
+    'Brevo\\Client\\' => array($vendorDir . '/getbrevo/brevo-php/lib'),
 );

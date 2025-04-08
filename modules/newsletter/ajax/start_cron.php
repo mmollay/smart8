@@ -1,17 +1,26 @@
 <?php
 require_once('../n_config.php');
+
+// Stelle sicher, dass wir die richtige Datenbank verwenden
+$db = $newsletterDb;
 header('Content-Type: application/json');
 
 if (!$isAdmin) {
     die(json_encode(['error' => 'Keine Berechtigung']));
 }
 
+// Verwende die bekannten Job-IDs für den Test
+$contentId = 112;
+$jobIds = "98498,98497";
+
+
+
 
 $command = '';
 if ($_SERVER['SERVER_NAME'] === 'localhost') {
-    $command = "export PATH=/Applications/XAMPP/xamppfiles/bin:/usr/local/bin:/usr/bin:/bin && cd " . __DIR__ . "/../exec && php cron_controller.php 2>&1";
+    $command = "export PATH=/Applications/XAMPP/xamppfiles/bin:/usr/local/bin:/usr/bin:/bin && cd " . __DIR__ . "/../exec && php process_batch.php --content-id=$contentId --job-ids=$jobIds 2>&1";
 } else {
-    $command = "cd " . __DIR__ . "/../exec && /usr/bin/php cron_controller.php 2>&1";
+    $command = "cd " . __DIR__ . "/../exec && /usr/bin/php process_batch.php --content-id=$contentId --job-ids=$jobIds 2>&1";
 }
 
 try {

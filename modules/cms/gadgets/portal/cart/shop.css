@@ -1,0 +1,42 @@
+@CHARSET "UTF-8";
+
+.product_left {
+	float: left;
+	line-height: 20px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.product_right {
+	float: right;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.product_between {
+	clear: both;
+	border-top: dashed 1px silver;
+	margin: 5px;
+}
+
+.cart {
+	border: 1px dashed silver;
+	background-color: #EFEFEF;
+	text-align: center;
+	padding-bottom: 6px;
+	font-size: 10px;
+}
+
+.cart_dialog {
+	text-align: center;
+	font-size: 10px;
+}
+
+.cart_line {
+	border-top: dashed 1px silver;
+}
+
+.h1_shop {
+	font-size: 14px;
+	border-bottom: 1px solid silver;
+}

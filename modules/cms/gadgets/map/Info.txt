@@ -1,0 +1,16 @@
+
+function(marker,event,context) {
+
+//ID aus marker lesen
+context.id
+
+//Position aus mark lesen
+marker.getPosition();
+
+//Icon setzen 
+marker.setIcon("http://www.obststadt.at/explorer/images/tree_klein2.png");
+
+marker.setValue(
+}
+
+

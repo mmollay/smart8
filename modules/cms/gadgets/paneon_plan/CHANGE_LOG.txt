@@ -1,0 +1,2 @@
+Version 0.2 (20.03.2022)
+-add: show and hide the race of the dog by choosing the cat/dog 

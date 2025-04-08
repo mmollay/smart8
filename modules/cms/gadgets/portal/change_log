@@ -1,0 +1,46 @@
+v2.4 27.11.2018
+mod: change mysqli 
+mod: remove old files
+
+v2.3
+add: Warenkorb
+add: jquery ui ausgehängt
+
+v2.0
+add: semantic for mobile-phone view 
+add: set-config, Button Reg and Cart
+
+v1.1 17.11.2012
+add: Email after Order from Pruducts
+
+v1.0.5 14.11.2012
+fix: wtm -> after login show "Add"-button for products
+
+v1.0.4 11.06.2012
+mod: Anmeldeprozess überarbeitet (Email-Bestätigung auf GMAIl umgestellt!)
+
+v1.0.3 05.03.2012
+add: Specialuser can  login for read all Articles
+mod: Bigger detail-Window
+mod: "...Seite wird geladen" Info during loading Progress
+fix: Check Status - is active or inactive
+
+v1.0.2 28.02.2012
+add: remember article before login
+add: new Group design
+
+v1.0.1 20.01.2012
+add: Show article before reg.
+add: Paypal-routine
+mod: Font-size smaller, more overview
+
+v0.9 14.01.2012
+
+- Group new as well Group-structor in context with Faktura
+- Portalusing as well for every User_id (company_id)
+
+v0.8 15.11.2011
+
+- Cart-Addone, Save as well temp_id(art_id)
+- Better Buttons 
+- Gallery inner Articels

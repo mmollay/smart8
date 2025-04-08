@@ -1,0 +1,45 @@
+
+
+input {
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;
+}
+
+.style_field1, .style_field2 {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	color: #333333;
+}
+
+#error_msg {
+	color: red;
+}
+
+.panal {
+	text-align: right;
+	background-color: #EEEEEE;
+	border: 1px solid #AAAAAA;
+	border-radius: 4px;
+	padding: 3px;
+}
+
+.content {
+	text-align: left;
+}
+
+#portal_window, #portal_content, #window_progress, .ui-dialog-title,
+	.ui-widget-content, input {
+	font-size: 12px;
+}
+
+.version_line {
+	font-size: 10px;
+	color: gray;
+	padding-top: 10px;
+	text-align: right;
+}
+
+.content_cart {
+	padding-top: 10px;
+	padding-left: 3px;
+}

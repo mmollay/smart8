@@ -1,0 +1,29 @@
+ALTER TABLE `21_groups` ADD `parent_id` INT(11) NOT NULL ; 
+
+v1.1
+- Icons verbessert (Größendarstellung)
+
+
+v1.0
+- Kommentare 
+- Splittung der beiden Listen (eigene und andere)
+
+
+v0.1 
+- Basisfunktionen 
+
+
+IDEEN FÜR CHANGE YOUR LIFE
+
+- 1 Ding loslassen
+- 1 Ding verschenken
+- Nicht naschen
+- Keine Bodylotion und der gleichen verwenden
+- Keinen Alkohol
+- 30 min Yoga 
+- 10 min Schlagsacktraining
+- Vagan ernähren
+- Keinen Kaffee trinken
+- 30 min Meditation
+- 21 Tage Schön reden
+- 21 Tage Urin trinken:)

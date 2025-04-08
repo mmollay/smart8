@@ -1,380 +1,265 @@
 <?php
-if (php_sapi_name() !== 'cli') {
-    die('Dieses Script kann nur über die Kommandozeile ausgeführt werden');
-}
+/**
+ * Verarbeitet E-Mail-Batches für den Newsletter-Versand
+ * 
+ * Dieses Skript verarbeitet E-Mail-Jobs für einen bestimmten Newsletter
+ * und sendet die E-Mails an die Empfänger.
+ * 
+ * Verwendung:
+ * php process_batch.php --content-id=123 --job-ids=1,2,3,4
+ */
 
-// Basis-Pfad definieren
-define('BASE_PATH', realpath(__DIR__ . '/..'));
-
-// Fehlerbehandlung
-error_reporting(E_ALL);
+// Fehlerberichterstattung aktivieren
 ini_set('display_errors', 1);
-ini_set('log_errors', 1);
-ini_set('error_log', BASE_PATH . '/logs/batch_error.log');
+error_reporting(E_ALL);
 
-// Zeit- und Speicherlimits
-set_time_limit(3600); // 1 Stunde 
-ini_set('memory_limit', '256M');
+// Zeitzone setzen
+date_default_timezone_set('Europe/Berlin');
 
-// Erforderliche Dateien einbinden
-require_once BASE_PATH . '/n_config.php';
-require_once BASE_PATH . '/classes/EmailService.php';
-require_once BASE_PATH . '/classes/PlaceholderService.php';
-require_once BASE_PATH . '/functions.php';
+// Einbinden der notwendigen Dateien
+require_once(__DIR__ . '/../n_config.php');
+require_once(__DIR__ . '/../classes/BrevoEmailService.php');
+require_once(__DIR__ . '/../classes/PlaceholderService.php');
 
-// Prüfe ob Klassen geladen wurden
-if (!class_exists('EmailService') || !class_exists('PlaceholderService')) {
-    die("Erforderliche Klassen nicht gefunden\n");
-}
-
-// Kommandozeilenargumente verarbeiten
+// Konsolen-Parameter auslesen
 $options = getopt('', ['content-id:', 'job-ids:']);
+
 if (!isset($options['content-id']) || !isset($options['job-ids'])) {
-    die("Erforderliche Parameter fehlen\n");
+    echo "Verwendung: php process_batch.php --content-id=123 --job-ids=1,2,3,4\n";
+    exit(1);
 }
 
-$contentId = (int) $options['content-id'];
-$jobIds = explode(',', $options['job-ids']);
-$processId = getmypid();
+$contentId = (int)$options['content-id'];
+$jobIds = array_map('intval', explode(',', $options['job-ids']));
 
-// Am Anfang der Datei nach den defines
-define('LOG_PATH', '/var/www/ssi/smart8/logs');
+// Log-Datei initialisieren
+$batchLogFile = __DIR__ . '/../logs/batch_' . date('Ymd_His') . '_' . $contentId . '.log';
 
-// Logging-Funktion anpassen
-function writeLog($message, $type = 'INFO', $includeMemory = false)
-{
-    static $startTime;
-    if (!isset($startTime)) {
-        $startTime = microtime(true);
-    }
+// Stelle sicher, dass das Verzeichnis existiert
+if (!is_dir(dirname($batchLogFile))) {
+    mkdir(dirname($batchLogFile), 0777, true);
+}
 
+// Hilfsfunktion für Logging
+function writeLog($message, $level = 'INFO', $echo = false) {
+    global $batchLogFile;
+    
     $timestamp = date('Y-m-d H:i:s');
-    $processId = getmypid();
-    $logMessage = "[$timestamp][$type][PID:$processId] $message";
-
-    if ($includeMemory) {
-        $memoryUsage = memory_get_usage(true);
-        $peakMemory = memory_get_peak_usage(true);
-        $runtime = round(microtime(true) - $startTime, 2);
-
-        $logMessage .= sprintf(
-            "\nMemory: %s MB | Peak: %s MB | Runtime: %s seconds",
-            round($memoryUsage / 1024 / 1024, 2),
-            round($peakMemory / 1024 / 1024, 2),
-            $runtime
-        );
-    }
-
-    $logMessage .= "\n";
-    $logFile = LOG_PATH . '/cron_controller.log';
-
-    // Erstelle Log-Verzeichnis falls es nicht existiert
-    if (!is_dir(LOG_PATH)) {
-        mkdir(LOG_PATH, 0755, true);
-    }
-
-    file_put_contents($logFile, $logMessage, FILE_APPEND);
-
-    if ($type === 'CRITICAL') {
-        error_log($message);
+    $logMessage = "[$timestamp] [$level] $message" . PHP_EOL;
+    
+    // In Log-Datei schreiben
+    file_put_contents($batchLogFile, $logMessage, FILE_APPEND);
+    
+    // Optional auch auf der Konsole ausgeben
+    if ($echo) {
+        echo $logMessage;
     }
 }
 
+// Beginn der Verarbeitung
+writeLog("Starte Batch-Verarbeitung mit Content ID $contentId und Jobs: " . implode(',', $jobIds), 'INFO', true);
 
-// user_id aus der Datenbank holen basierend auf content_id
-$stmt = $db->prepare("
-    SELECT user_id 
-    FROM email_contents 
-    WHERE id = ?
-");
-$stmt->bind_param("i", $contentId);
-$stmt->execute();
-$result = $stmt->get_result();
-$userData = $result->fetch_assoc();
-
-if (!$userData) {
-    writeLog("Keine user_id für content_id: $contentId gefunden", 'ERROR', true);
-    die("Fehler: Keine user_id gefunden\n");
+// Die Datenbankverbindung aus n_config.php verwenden
+$db = $newsletterDb; // Diese Variable wurde in n_config.php definiert
+if (!$db) {
+    writeLog("Keine Datenbankverbindung verfügbar", 'ERROR', true);
+    exit(1);
 }
+writeLog("Bestehende Datenbankverbindung verwendet", 'INFO');
 
-$userId = $userData['user_id'];
-$uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $userId . '/newsletters' . '/' . $contentId . "/attachements/";
+// Services initialisieren
+$emailService = new BrevoEmailService($db, $_ENV['BREVO_API_KEY'], $uploadBasePath);
+$placeholderService = PlaceholderService::getInstance();
 
-writeLog("Starte Batch-Verarbeitung für Content ID: $contentId mit Jobs: " . implode(',', $jobIds), 'INFO', $batchLogFile);
-writeLog("Upload Base Path: " . $uploadBasePath, 'INFO', true);
-writeLog("Base Path: " . BASE_PATH, 'INFO', true);
-
+// Newsletter-Informationen laden
 try {
-    // Services initialisieren
-    $emailService = new EmailService(
-        $db,
-        $mailjetConfig['api_key'],
-        $mailjetConfig['api_secret'],
-        $uploadBasePath
-    );
-
-    $placeholderService = PlaceholderService::getInstance();
-
-    $successCount = 0;
-    $errorCount = 0;
-    $skippedCount = 0;
-
-    // Verarbeite Jobs
-    foreach ($jobIds as $jobId) {
-        try {
-            // Prüfe den Job-Status und den Empfänger-Status
-            $checkStmt = $db->prepare("
-                SELECT r.unsubscribed, ej.status
-                FROM email_jobs ej
-                JOIN recipients r ON ej.recipient_id = r.id
-                WHERE ej.id = ?
-            ");
-            $checkStmt->bind_param("i", $jobId);
-            $checkStmt->execute();
-            $result = $checkStmt->get_result()->fetch_assoc();
-
-            if (!$result) {
-                writeLog("Job ID $jobId nicht gefunden", 'ERROR', $batchLogFile);
-                $errorCount++;
-                continue;
-            }
-
-            // Überspringe abgemeldete Empfänger
-            if ($result['unsubscribed']) {
-                writeLog("Job ID $jobId übersprungen - Empfänger abgemeldet", 'INFO', $batchLogFile);
-                markJobSkipped($db, $jobId, "Empfänger hat sich abgemeldet");
-                $skippedCount++;
-                continue;
-            }
-
-            // Überspringe Jobs die nicht mehr 'pending' oder 'processing' sind
-            if (!in_array($result['status'], ['pending', 'processing'])) {
-                writeLog("Job ID $jobId übersprungen - Status ist " . $result['status'], 'INFO', $batchLogFile);
-                $skippedCount++;
-                continue;
-            }
-
-            processJob($db, $emailService, $placeholderService, $contentId, $jobId, $batchLogFile);
-            $successCount++;
-            usleep(100000); // 100ms Pause zwischen E-Mails
-        } catch (Exception $e) {
-            writeLog("Fehler bei Job ID $jobId: " . $e->getMessage(), 'ERROR', $batchLogFile);
-            markJobFailed($db, $jobId, $e->getMessage());
-            $errorCount++;
-            continue;
-        }
+    $stmt = $db->prepare("
+        SELECT 
+            n.id, 
+            n.subject, 
+            n.html_content AS content, 
+            CONCAT(s.first_name, ' ', s.last_name) AS sender_name, 
+            s.email AS sender_email, 
+            s.email AS reply_to_email,
+            CONCAT(s.first_name, ' ', s.last_name) AS reply_to_name, 
+            1 AS html_format
+        FROM email_contents n
+        JOIN senders s ON n.sender_id = s.id
+        WHERE n.id = ?
+    ");
+    $stmt->bind_param('i', $contentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        writeLog("Newsletter mit ID $contentId nicht gefunden", 'ERROR', true);
+        exit(1);
     }
-
-    writeLog("Batch abgeschlossen. Erfolge: $successCount, Fehler: $errorCount, Übersprungen: $skippedCount", 'INFO', $batchLogFile);
-
+    
+    $newsletter = $result->fetch_assoc();
+    writeLog("Newsletter '{$newsletter['subject']}' geladen", 'INFO');
 } catch (Exception $e) {
-    writeLog("Kritischer Fehler: " . $e->getMessage(), 'CRITICAL', $batchLogFile);
-    die("Kritischer Fehler: " . $e->getMessage() . "\n");
+    writeLog("Fehler beim Laden des Newsletters: " . $e->getMessage(), 'ERROR', true);
+    exit(1);
 }
+
+// Jobs verarbeiten
+$totalJobs = count($jobIds);
+$successCount = 0;
+$errorCount = 0;
+
+writeLog("Beginne die Verarbeitung von $totalJobs Jobs", 'INFO', true);
+
+foreach ($jobIds as $jobId) {
+    writeLog("Verarbeite Job $jobId", 'INFO');
+    $result = processJob($db, $emailService, $placeholderService, $contentId, $jobId, $newsletter);
+    
+    if ($result['success']) {
+        $successCount++;
+        writeLog("Job $jobId erfolgreich verarbeitet: " . $result['message'], 'INFO');
+    } else {
+        $errorCount++;
+        writeLog("Fehler bei Job $jobId: " . $result['message'], 'ERROR');
+    }
+}
+
+// Zusammenfassung ausgeben
+writeLog("Batch-Verarbeitung abgeschlossen: $successCount erfolgreich, $errorCount fehlgeschlagen von $totalJobs gesamt", 'INFO', true);
 
 /**
- * Verarbeitet einen einzelnen Email-Job
+ * Verarbeitet einen einzelnen E-Mail-Job
+ * 
+ * @param mysqli $db Datenbankverbindung
+ * @param BrevoEmailService $emailService E-Mail-Service
+ * @param PlaceholderService $placeholderService Platzhalter-Service
+ * @param int $contentId ID des Newsletters
+ * @param int $jobId ID des Jobs
+ * @param array|null $newsletter Newsletter-Daten (optional)
+ * @return array Ergebnis mit success und message
  */
-function processJob($db, $emailService, $placeholderService, $contentId, $jobId, $batchLogFile)
-{
-    global $_ENV;
-
-    $jobId = (int) $jobId;
-    writeLog("Verarbeite Job $jobId", 'INFO', $batchLogFile);
-
-    // Job-Daten laden mit Transaktion
-    $db->begin_transaction();
-
+function processJob($db, $emailService, $placeholderService, $contentId, $jobId, $newsletter = null) {
     try {
+        // Job-Details laden
         $stmt = $db->prepare("
-            SELECT ej.*, 
-                   ec.subject, 
-                   ec.message,
-                   s.email as sender_email,
-                   s.first_name as sender_first_name,
-                   s.last_name as sender_last_name,
-                   r.email as recipient_email,
-                   r.first_name as recipient_first_name,
-                   r.last_name as recipient_last_name,
-                   r.gender as recipient_gender,
-                   r.title as recipient_title,
-                   r.company as recipient_company,
-                   r.unsubscribed
-            FROM email_jobs ej
-            JOIN email_contents ec ON ej.content_id = ec.id
-            JOIN senders s ON ej.sender_id = s.id
-            JOIN recipients r ON ej.recipient_id = r.id
-            WHERE ej.id = ? 
-            AND ej.content_id = ?
-            AND ej.status IN ('pending', 'processing')
-            FOR UPDATE
+            SELECT j.id, j.recipient_id, r.email, r.first_name, r.last_name, 
+                   r.title, r.gender, r.company
+            FROM email_jobs j 
+            JOIN recipients r ON j.recipient_id = r.id
+            WHERE j.id = ? AND j.content_id = ?
         ");
-
-        $stmt->bind_param("ii", $jobId, $contentId);
+        $stmt->bind_param('ii', $jobId, $contentId);
         $stmt->execute();
-        $job = $stmt->get_result()->fetch_assoc();
-
-        if (!$job) {
-            throw new Exception("Job $jobId nicht gefunden oder nicht mehr verfügbar");
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            throw new Exception("Job $jobId für Newsletter $contentId nicht gefunden");
         }
-
-        // Nochmalige Prüfung des Abmeldestatus
-        if ($job['unsubscribed']) {
-            $db->commit();
-            markJobSkipped($db, $jobId, "Empfänger hat sich abgemeldet");
-            return;
+        
+        $job = $result->fetch_assoc();
+        
+        // Newsletter-Details laden, falls nicht übergeben
+        if (!$newsletter) {
+            $stmt = $db->prepare("
+                SELECT 
+                    n.id, 
+                    n.subject, 
+                    n.html_content AS content, 
+                    CONCAT(s.first_name, ' ', s.last_name) AS sender_name, 
+                    s.email AS sender_email, 
+                    s.email AS reply_to_email,
+                    CONCAT(s.first_name, ' ', s.last_name) AS reply_to_name, 
+                    1 AS html_format
+                FROM email_contents n
+                JOIN senders s ON n.sender_id = s.id
+                WHERE n.id = ?
+            ");
+            $stmt->bind_param('i', $contentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows === 0) {
+                throw new Exception("Newsletter mit ID $contentId nicht gefunden");
+            }
+            
+            $newsletter = $result->fetch_assoc();
         }
-
-        writeLog("Verarbeite E-Mail für: " . $job['recipient_email'], 'INFO', $batchLogFile);
-
-        // Empfängerdaten für den PlaceholderService aufbereiten
-        $recipientData = [
-            'first_name' => $job['recipient_first_name'],
-            'last_name' => $job['recipient_last_name'],
-            'email' => $job['recipient_email'],
-            'company' => $job['recipient_company'],
-            'gender' => $job['recipient_gender'],
-            'title' => $job['recipient_title']
-        ];
-
-        // Platzhalter über den Service erstellen
-        $placeholders = $placeholderService->createPlaceholders($recipientData);
-
-        // Korrekte Basis-URL aus Konfiguration
-        $APP_URL = $_ENV['APP_URL'] ?? 'https://newsletter.ssi.at';
-
-        // Subject und Message mit Platzhaltern ersetzen
-        $subject = $placeholderService->replacePlaceholders($job['subject'], $placeholders);
-        $message = $placeholderService->replacePlaceholders($job['message'], $placeholders);
-        $message = prepareHtmlForEmail($message);
-        // URLs absolut machen
-        $message = makeUrlsAbsolute($message, $APP_URL);
-
-        writeLog("Platzhalter erfolgreich ersetzt und URLs angepasst", 'INFO', $batchLogFile);
-
-        // Abmelde-Link hinzufügen
-        $unsubscribeUrl = $APP_URL . "/modules/newsletter/unsubscribe.php?email=" .
-            urlencode($job['recipient_email']) . "&id=" . $job['id'];
-        $unsubscribeLink = "<br><br><hr><p style='font-size: 12px; color: #666;'>
-            Falls Sie keine weiteren E-Mails erhalten möchten, 
-            können Sie sich hier <a href='{$unsubscribeUrl}'>abmelden</a>.</p>";
-        $message .= $unsubscribeLink;
-
-        // Absender- und Empfängerdaten
-        $sender = [
-            'email' => $job['sender_email'],
-            'name' => trim($job['sender_first_name'] . ' ' . $job['sender_last_name'])
-        ];
-
+        
+        // Benutzerdefinierte Felder verarbeiten
+        $customFields = [];
+        // Keine benutzerdefinierten Felder vorhanden
+        $customFields = [];
+        
+        // Empfänger-Informationen vorbereiten
         $recipient = [
-            'email' => $job['recipient_email'],
-            'name' => trim($job['recipient_first_name'] . ' ' . $job['recipient_last_name'])
+            'email' => $job['email'],
+            'firstname' => $job['firstname'] ?? '',
+            'lastname' => $job['lastname'] ?? '',
+            'title' => $job['title'] ?? '',
+            'gender' => $job['gender'] ?? '',
+            'company' => $job['company'] ?? ''
         ];
-
-        // Email senden
-        $sendResult = $emailService->sendSingleEmail(
+        
+        // Platzhalter im Betreff und Inhalt ersetzen
+        // Sicherstellen, dass subject nicht null ist
+        $subject = $newsletter['subject'] ?? 'Keine Betreffzeile';
+        $subject = $placeholderService->replacePlaceholders($subject, $recipient, $customFields);
+        // Sicherstellen, dass content nicht null ist
+        $content = $newsletter['content'] ?? 'Keine Inhalte';
+        $content = $placeholderService->replacePlaceholders($content, $recipient, $customFields);
+        
+        // Sender-Informationen vorbereiten
+        $sender = [
+            'name' => $newsletter['sender_name'],
+            'email' => $newsletter['sender_email'],
+            'reply_name' => $newsletter['reply_to_name'] ?? $newsletter['sender_name'],
+            'reply_email' => $newsletter['reply_to_email'] ?? $newsletter['sender_email']
+        ];
+        
+        // E-Mail senden
+        $result = $emailService->sendSingleEmail(
             $contentId,
             $sender,
             $recipient,
             $subject,
-            $message,
-            $job['id']
+            $content,
+            $jobId,
+            false
         );
-
-        if ($sendResult['success']) {
-            // Update job status
-            $updateStmt = $db->prepare("
-                UPDATE email_jobs 
-                SET status = 'send',
-                    sent_at = NOW(),
-                    message_id = ?,
-                    updated_at = NOW()
-                WHERE id = ?
-            ");
-            $updateStmt->bind_param("si", $sendResult['message_id'], $job['id']);
-            $updateStmt->execute();
-
-            // Log success
-            $logStmt = $db->prepare("
-                INSERT INTO email_logs 
-                (job_id, status, response, created_at) 
-                VALUES (?, 'send', 'Email erfolgreich gesendet', NOW())
-            ");
-            $logStmt->bind_param("i", $job['id']);
-            $logStmt->execute();
-
-            $db->commit();
-            writeLog("E-Mail erfolgreich gesendet an: " . $job['recipient_email'], 'INFO', $batchLogFile);
-        } else {
-            throw new Exception($sendResult['error'] ?? 'Unbekannter Fehler');
-        }
-    } catch (Exception $e) {
-        $db->rollback();
-        throw $e;
-    }
-}
-
-/**
- * Markiert einen Job als übersprungen
- */
-function markJobSkipped($db, $jobId, $reason)
-{
-    $db->begin_transaction();
-    try {
+        
+        $success = $result['success'] ?? false;
+        $messageId = $result['message_id'] ?? '';
+        $resultMessage = $result['message'] ?? '';
+        
+        // Status des Jobs in der Datenbank aktualisieren
         $stmt = $db->prepare("
             UPDATE email_jobs 
-            SET status = 'skipped',
-                error_message = ?,
-                updated_at = NOW()
+            SET status = ?, message_id = ?, sent_at = NOW() 
             WHERE id = ?
         ");
-        $stmt->bind_param("si", $reason, $jobId);
+        $status = 'send';
+        $stmt->bind_param('ssi', $status, $messageId, $jobId);
         $stmt->execute();
-
-        $stmt = $db->prepare("
-            INSERT INTO email_logs 
-            (job_id, status, response, created_at)
-            VALUES (?, 'skipped', ?, NOW())
-        ");
-        $stmt->bind_param("is", $jobId, $reason);
-        $stmt->execute();
-
-        $db->commit();
+        
+        return [
+            'success' => true,
+            'message' => "E-Mail gesendet an {$recipient['email']} mit Message-ID: $messageId. $resultMessage"
+        ];
     } catch (Exception $e) {
-        $db->rollback();
-        writeLog("Fehler beim Markieren als übersprungen: " . $e->getMessage(), 'ERROR');
-    }
-}
-
-/**
- * Markiert einen Job als fehlgeschlagen
- */
-function markJobFailed($db, $jobId, $error)
-{
-    $db->begin_transaction();
-    try {
+        // Fehler protokollieren und Status in der Datenbank aktualisieren
+        $errorMessage = $resultMessage ?: $e->getMessage();
+        
         $stmt = $db->prepare("
             UPDATE email_jobs 
-            SET status = 'failed',
-                error_message = ?,
-                updated_at = NOW()
+            SET status = ?, error_message = ?, sent_at = NOW() 
             WHERE id = ?
         ");
-        $errorMessageDb = substr($error, 0, 255);
-        $stmt->bind_param("si", $errorMessageDb, $jobId);
+        $status = 'failed';
+        $stmt->bind_param('ssi', $status, $errorMessage, $jobId);
         $stmt->execute();
-
-        $stmt = $db->prepare("
-            INSERT INTO email_logs 
-            (job_id, status, response, created_at)
-            VALUES (?, 'failed', ?, NOW())
-        ");
-        $stmt->bind_param("is", $jobId, $error);
-        $stmt->execute();
-
-        $db->commit();
-    } catch (Exception $e) {
-        $db->rollback();
-        writeLog("Fehler beim Markieren als fehlgeschlagen: " . $e->getMessage(), 'ERROR');
+        
+        return [
+            'success' => false,
+            'message' => $errorMessage
+        ];
     }
 }

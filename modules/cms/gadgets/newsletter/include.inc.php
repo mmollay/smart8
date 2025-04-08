@@ -1,0 +1,3 @@
+<?php
+$output .= "<div id='newsletter_content$layer_id'><div class='ui message small'><br><br><br><div class='ui active inverted dimmer'><div class='ui text loader'>Newsletter wird geladen</div></div><br><br></div></div>";
+$add_js2 .= "$(document).ready(function() { $.ajax( { url : 'gadgets/newsletter/form.php', global :false, type :'POST', data: ({'layer_id':$layer_id}), dataType :'html', success: function(data) { $('#newsletter_content$layer_id').html(data); } }); });";

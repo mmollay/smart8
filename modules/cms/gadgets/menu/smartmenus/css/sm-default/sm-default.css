@@ -1,0 +1,245 @@
+.sm-default {
+  background: #fff;
+}
+
+.sm-default a, .sm-default a:hover, .sm-default a:focus, .sm-default a:active {
+  padding: 13px 20px;
+  /* make room for the toggle button (sub indicator) */
+  padding-right: 58px;
+  color: #555555;
+  font-family: "Lucida Sans Unicode", "Lucida Sans", "Lucida Grande", Arial, sans-serif;
+  font-weight: normal;
+  line-height: 17px;
+  text-decoration: none;
+}
+.sm-default a.current {
+  background: #555555;
+  color: #fff;
+}
+.sm-default a.disabled {
+  color: #cccccc;
+}
+.sm-default a .sub-arrow {
+  position: absolute;
+  top: 50%;
+  margin-top: -17px;
+  left: auto;
+  right: 4px;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  font: bold 14px/34px monospace !important;
+  text-align: center;
+  text-shadow: none;
+  background: rgba(0, 0, 0, 0.08);
+}
+.sm-default a .sub-arrow::before {
+  content: '+';
+}
+.sm-default a.highlighted .sub-arrow::before {
+  content: '-';
+}
+.sm-default li {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+.sm-default > li:first-child {
+  border-top: 0;
+}
+.sm-default ul {
+  background: rgba(179, 179, 179, 0.1);
+}
+.sm-default ul a, .sm-default ul a:hover, .sm-default ul a:focus, .sm-default ul a:active {
+  
+  border-left: 8px solid transparent;
+}
+.sm-default ul ul a,
+.sm-default ul ul a:hover,
+.sm-default ul ul a:focus,
+.sm-default ul ul a:active {
+  border-left: 16px solid transparent;
+}
+.sm-default ul ul ul a,
+.sm-default ul ul ul a:hover,
+.sm-default ul ul ul a:focus,
+.sm-default ul ul ul a:active {
+  border-left: 24px solid transparent;
+}
+.sm-default ul ul ul ul a,
+.sm-default ul ul ul ul a:hover,
+.sm-default ul ul ul ul a:focus,
+.sm-default ul ul ul ul a:active {
+  border-left: 32px solid transparent;
+}
+.sm-default ul ul ul ul ul a,
+.sm-default ul ul ul ul ul a:hover,
+.sm-default ul ul ul ul ul a:focus,
+.sm-default ul ul ul ul ul a:active {
+  border-left: 40px solid transparent;
+}
+
+@media (min-width: 768px) {
+  /* Switch to desktop layout
+  -----------------------------------------------
+     These transform the menu tree from
+     collapsible to desktop (navbar + dropdowns)
+  -----------------------------------------------*/
+  /* start... (it's not recommended editing these rules) */
+  .sm-default ul {
+    position: absolute;
+    width: 12em;
+  }
+
+  .sm-default li {
+    float: left;
+  }
+
+  .sm-default.sm-rtl li {
+    float: right;
+  }
+
+  .sm-default ul li, .sm-default.sm-rtl ul li, .sm-default.sm-vertical li {
+    float: none;
+  }
+
+  .sm-default a {
+    white-space: nowrap;
+  }
+
+  .sm-default ul a, .sm-default.sm-vertical a {
+    white-space: normal;
+  }
+
+  .sm-default .sm-nowrap > li > a, .sm-default .sm-nowrap > li > :not(ul) a {
+    white-space: nowrap;
+  }
+
+  /* ...end */
+  .sm-default {
+    background: #fff;
+  }
+  .sm-default a, .sm-default a:hover, .sm-default a:focus, .sm-default a:active, .sm-default a.highlighted {
+    padding: 11px 20px;
+    color: #555555;
+  }
+  .sm-default a:hover, .sm-default a:focus, .sm-default a:active, .sm-default a.highlighted {
+    /*background: #eeeeee;*/
+  }
+  .sm-default a.current {
+    background: #555555;
+    color: #fff;
+  }
+  .sm-default a.disabled {
+    background: #fff;
+    color: #cccccc;
+  }
+  .sm-default a.has-submenu {
+    padding-right: 32px;
+  }
+  .sm-default a .sub-arrow {
+    top: 50%;
+    margin-top: -8px;
+    right: 20px;
+    width: 8px;
+    height: 16px;
+    font: 14px/16px monospace !important;
+    background: transparent;
+  }
+  .sm-default a.highlighted .sub-arrow::before {
+    content: '+';
+  }
+  .sm-default > li {
+    border-top: 0;
+    border-left: 1px solid #eeeeee;
+  }
+  .sm-default > li:first-child {
+    border-left: 0;
+  }
+  .sm-default ul {
+    border: 1px solid #bbbbbb;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  }
+  .sm-default ul a {
+    border: 0 !important;
+  }
+  .sm-default ul a.has-submenu {
+    padding-right: 20px;
+  }
+  .sm-default ul a .sub-arrow {
+    left: 8px;
+    right: auto;
+  }
+  .sm-default ul > li {
+    border-left: 0;
+    border-top: 1px solid #eeeeee;
+  }
+  .sm-default ul > li:first-child {
+    border-top: 0;
+  }
+  .sm-default .scroll-up,
+  .sm-default .scroll-down {
+    position: absolute;
+    display: none;
+    visibility: hidden;
+    overflow: hidden;
+    background: #fff;
+    height: 20px;
+  }
+  .sm-default .scroll-up-arrow,
+  .sm-default .scroll-down-arrow {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    margin-left: -8px;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    border-width: 8px;
+    border-style: dashed dashed solid dashed;
+    border-color: transparent transparent #555555 transparent;
+  }
+  .sm-default .scroll-down-arrow {
+    top: 6px;
+    border-style: solid dashed dashed dashed;
+    border-color: #555555 transparent transparent transparent;
+  }
+  .sm-default.sm-rtl a.has-submenu {
+    padding-right: 20px;
+    padding-left: 32px;
+  }
+  .sm-default.sm-rtl a .sub-arrow {
+    left: 20px;
+    right: auto;
+  }
+  .sm-default.sm-rtl.sm-vertical a.has-submenu {
+    padding: 11px 20px;
+  }
+  .sm-default.sm-rtl.sm-vertical a .sub-arrow {
+    left: auto;
+    right: 8px;
+  }
+  .sm-default.sm-rtl > li:first-child {
+    border-left: 1px solid #eeeeee;
+  }
+  .sm-default.sm-rtl > li:last-child {
+    border-left: 0;
+  }
+  .sm-default.sm-rtl ul a.has-submenu {
+    padding: 11px 20px;
+  }
+  .sm-default.sm-rtl ul a .sub-arrow {
+    left: auto;
+    right: 8px;
+  }
+  .sm-default.sm-vertical a .sub-arrow {
+    left: 8px;
+    right: auto;
+  }
+  .sm-default.sm-vertical li {
+    border-left: 0;
+    border-top: 1px solid #eeeeee;
+  }
+  .sm-default.sm-vertical > li:first-child {
+    border-top: 0;
+  }
+}

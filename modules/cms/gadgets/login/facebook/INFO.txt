@@ -1,0 +1,17 @@
+#Wichtige INFO mm@ssi.at am 15.Oktober 2016
+
+# Fehleranalyse bei internal ERROR
+error_reporting(E_ALL);
+ini_set('error_log', 'path_to_log_file');
+ini_set('log_errors_max_len', 0);
+ini_set('log_errors', true);
+
+
+#Bei Debian  muss für PHP folgendes Paket installiert sein 
+apt-get install php5-curl
+
+#Make sure curl is enabled in the php.ini file. For me it's in /etc/php5/apache2/php.ini, if you can't find it, this line might be in /etc/php5/conf.d/curl.ini. Make sure the line :
+extension=curl.so
+
+#is not commented out then restart apache, so type this into putty:
+sudo /etc/init.d/apache2 restart

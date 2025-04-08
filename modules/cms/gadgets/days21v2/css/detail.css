@@ -1,0 +1,56 @@
+.textarea_comment {
+	width: 100%;
+	resize: none;
+	padding: 4px;
+	border-radius: 2px;
+}
+
+.user_name {
+	float: left;
+	width: 50px;
+	padding: 10px 4px;
+}
+
+
+.like_button_bar {
+}
+
+
+.tab_content {
+	line-height: 20px;
+	padding-top: 10px;
+}
+
+.comment_container {
+	border: 1px solid #D8D8D8;
+	padding: 5px;
+	background-color: #F5F5F5;
+	border-radius: 2px;
+	margin-top: 4px;
+	font-size:12px;
+	line-height:16px;
+}
+
+.detail_title {
+	font-size: 14px;
+}
+
+
+.comment_date {
+	color:gray;
+	font-size: 10px;
+	padding-left: 10px;
+}
+
+.button_detail{
+	padding-top:4px;
+	padding-bottom:8px;
+}
+
+.comment_edit_button {
+	float:right;
+}
+
+.container_comment_div {
+	padding-top:2px;
+}

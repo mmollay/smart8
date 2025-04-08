@@ -16,7 +16,15 @@ if (!isset($set_unsubscribed)) {
 
 }
 
-//include(__DIR__ . "/../../get_env.php");
+include(__DIR__ . "/../../get_env.php");
+
+
+$MailConfig['smtp_host'] = 'smtp-relay.brevo.com';
+$MailConfig['smtp_user'] = '85728a001@smtp-brevo.com';
+$MailConfig['smtp_password'] = 'EHX36xRwBKM0scNP';
+
+$_ENV['BREVO_API_KEY'] = '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';
+
 
 // APP_ROOT definieren
 if (!defined('APP_ROOT')) {
@@ -36,7 +44,12 @@ $eventTypes = $config['eventTypes'];
 $isCliMode = php_sapi_name() === 'cli';
 
 //upload path für Attachements der Emails 
-$uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $_SESSION['user_id'] . '/newsletters';
+// Im CLI-Modus verwenden wir einen Standard-Pfad
+if ($isCliMode) {
+    $uploadBasePath = $_ENV['UPLOAD_PATH'] . '/cli/newsletters';
+} else {
+    $uploadBasePath = $_ENV['UPLOAD_PATH'] . '/' . $_SESSION['user_id'] . '/newsletters';
+}
 
 try {
     // Initialisierung der Newsletter-Datenbankverbindung

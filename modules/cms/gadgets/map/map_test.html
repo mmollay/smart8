@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="../styles.css" rel="stylesheet">
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgoO9CQxiF6tddu1WIKqB5vrONEHsoLTM&region=AT"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gmap3/7.2.0/gmap3.min.js"></script>
+</head>
+<body>
+	<div class="map"></div>
+	<script>
+		$('.map')
+				.gmap3({
+					center : [ 48.8620722, 2.352047 ], zoom : 4
+				})
+				.marker(
+						[
+								{
+									position : [ 48.8620722, 2.352047 ]
+								},
+								{
+									address : "86000 Poitiers, France"
+								},
+								{
+									address : "66000 Perpignan, France",
+									icon : "http://maps.google.com/mapfiles/marker_grey.png"
+								} ])
+				.on(
+						'click',
+						function(marker) {
+							marker
+									.setIcon('http://maps.google.com/mapfiles/marker_green.png');
+						});
+	</script>
+
+</body>
+</html>

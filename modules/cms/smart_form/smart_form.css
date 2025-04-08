@@ -1,0 +1,32 @@
+#container-webcam video {
+  border-radius: 15px;
+  width: 100%;
+  padding: 0px 5px 0px 5px;
+}
+
+.dropdown.optgroup .divider {
+  border-top: none !important;
+}
+
+/*timedropper - !!*/
+.td-wrap {
+  z-index: 999999;
+}
+
+.colorpicker.is-opened {
+  z-index: 999999;
+}
+
+.large.text {
+  font-size: 2rem;
+}
+
+
+.easy-autocomplete {
+  width: 100% !important
+}
+
+.easy-autocomplete input {
+  width: 100%;
+  !important
+}

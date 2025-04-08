@@ -1,0 +1,27 @@
+//Statt hover
+
+$('#id').on({
+		mouseenter: function() { }, 
+		mouseleave: function() { }
+});
+
+$('.splitter_div').on({
+		mouseenter:function() { 
+			
+		}, 
+		mouseleave:function() {
+			
+		}
+});
+	
+
+
+//ODER
+$('#id').mouseover(function() { });
+
+
+//OLD 
+$.expr[ ":" ]
+
+//NEW
+$.expr.pseudos 

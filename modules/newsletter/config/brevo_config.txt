@@ -1,0 +1,6 @@
+// Brevo-Konfiguration für die config.php
+// Füge folgenden Eintrag in den 'mail' Bereich deiner config.php ein:
+
+'brevo' => [
+    'api_key' => $_ENV['BREVO_API_KEY'] ?? ''
+]

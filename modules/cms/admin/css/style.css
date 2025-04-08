@@ -1,0 +1,298 @@
+/* #container_body { */
+/* 	padding-top:13px; */
+/* } */
+
+/*Ausrichtung Element center middle*/
+.div_position_absolute_center {
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+	z-index: 2000;
+}
+
+.element_helper {
+	overflow: hidden;
+}
+
+.grid_field_hover {
+	min-height: 50px;
+	border: 1px dotted red;
+}
+
+.top_phone_menu {
+	padding-top: 0px:
+}
+
+.preview_phone_div {
+	background-repeat: no-repeat;
+	background-position: top center;
+	background-size: 800px;
+	width: 750px;
+	height: 1000px;
+	background-image: url("../images/iphone.png");
+}
+
+.preview_phone_frame {
+	width: 460px;
+	height: 800px;
+	padding-top: 100px;
+}
+
+/*https://coderwall.com/p/hkgamw/creating-full-width-100-container-inside-fixed-width-container*/
+.show_admin_line {
+	position: absolute;
+	border-top: 2px dotted red;
+	text-align: left;
+	width: 100vw;
+	height: 1px;
+	z-index: 19;
+	margin-left: -50vw;
+	left: 50%;
+	display: none;
+}
+
+.ui.popup {
+	z-index: 1000000;
+	!
+	important;
+}
+
+.ui.sidebar {
+	overflow: visible !important;
+}
+
+.ui.modal {
+	z-index: 10003;
+	!
+	important;
+}
+
+.sidebar-top {
+	position: absolute;
+}
+
+.button-designer-close, .button-element-close, .button-option-close,
+	.button-sitemap-close, .button-funnel-close, .button-option-open,
+	.button-popup-setting-close, .button-element-setting-close {
+	position: fixed;
+	padding: 14px;
+	background-color: white;
+	border-radius: 5px 0px 0px 5px;
+	border-width: 1px 0px 1px 1px;
+	border-color: #eee;
+	border-style: solid;
+	cursor: pointer;
+	z-index: 10001;
+	width: 56px;
+}
+
+.button-designer-open, .button-element-open {
+	right: 0px;
+}
+
+.button-designer-close {
+	border-left: 3px solid #21BA45;
+}
+
+.button-funnel-close {
+	right: 258px;
+	top: 374px;
+	border-left: 3px solid orange;
+}
+
+.button-sitemap-close {
+	right: 298px;
+	top: 330px;
+	border-left: 3px solid orange;
+}
+
+.button-element-close, .button-popup-setting-close {
+	border-left: 3px solid orange;
+}
+
+.button-element-setting-close, .button-popup-setting-close {
+	background-color: #d4fb78;
+	border-left: 3px solid red;
+}
+
+.move_div {
+	width: 100%;
+}
+
+.mColor {
+	z-index: 10000;
+}
+
+.gadget_box {
+	width: 600px;
+}
+
+.layer_button_textfield {
+	visibility: hidden;
+	right: 0px;
+	bottom: -29px;
+	z-index: 100;
+	position: absolute;
+}
+
+.layer_button_splitter {
+	visibility: hidden;
+	z-index: 19;
+	left: 0px;
+	top: 0px;
+	position: absolute;
+}
+
+.menu_edit_formular {
+	/* 	visibility: hidden; */
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0px;
+	top: -18px;
+	right: 0px;
+	padding-bottom: 80px;
+}
+
+iframe {
+	width: 100%;
+	height: 120vh;
+}
+
+#button_edit_head {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	z-index: 100;
+}
+
+.buttonset_tour {
+	position: absolute;
+	left: 10px;
+	top: 50px;
+}
+
+.portlet-placeholder {
+	border: 1px dotted black;
+	margin: 0 1em 1em 0;
+	height: 50px;
+}
+
+select {
+	border: 1px solid #DFDFDF;
+	border-radius: 4px;
+}
+
+/*Design for Dragg-Element for Modules*/
+.ui-draggable-helper {
+	border: 1px dotted #000;
+	background: #fff;
+	list-style-type: none;
+	with: 400px;
+	display: block;
+}
+
+.dialog {
+	position: fixed;
+}
+
+/*Darstellung der Modul-Elemente */
+.module_element_img {
+	float: left;
+	padding: 10px;
+}
+
+.module_element_title {
+	font-size: 12px;
+}
+
+.module_element_text {
+	color: gray;
+	font-size: 10px;
+}
+
+.a_module_element:hover {
+	background-color: #EEE;
+}
+
+/* Ist nur im internen Modus wichtig */
+.center_content {
+	padding-right: 42px;
+	padding-top: 28px;
+}
+
+
+.layer_button {
+	z-index: 999;
+	position: absolute;
+	right: 0px;
+	font-size: 12px;
+}
+
+.result_hover {
+	background-color: yellow;
+}
+
+/*Baumstruktur Menu hoeherer Index wegen Dialofenster*/
+.jstree-contextmenu, .jstree-icon, #jstree-marker {
+	z-index: 10000;
+}
+
+.header_hover {
+	box-shadow: inset 0px 0px 0px 1px orange;
+	-webkit-box-shadow: inset 0px 0px 0px 1px orange;
+	-moz-box-shadow: inset 0px 0px 0px 1px orange;
+	position: relative;
+}
+
+.hover_box_red {
+	box-shadow: inset 0px 0px 0px 1px red;
+	-webkit-box-shadow: inset 0px 0px 0px 1px red;
+	-moz-box-shadow: inset 0px 0px 0px 1px red;
+	position: relative;
+	z-index: 1;
+}
+
+.hover_box_blue {
+	box-shadow: inset 0px 0px 0px 1px blue;
+	-webkit-box-shadow: inset 0px 0px 0px 1px blue;
+	-moz-box-shadow: inset 0px 0px 0px 1px blue;
+	position: relative;
+	z-index: 10;
+}
+
+.hover_box_orange {
+	box-shadow: inset 0px 0px 0px 1px orange;
+	-webkit-box-shadow: inset 0px 0px 0px 1px organge;
+	-moz-box-shadow: inset 0px 0px 0px 1px orange;
+	position: relative;
+	/* 	background-color: rgba(0, 0, 0, 0.1); */
+	z-index: 1;
+}
+
+.hover_box_green {
+	box-shadow: inset 0px 0px 0px 1px green;
+	-webkit-box-shadow: inset 0px 0px 0px 1px green;
+	-moz-box-shadow: inset 0px 0px 0px 1px green;
+	position: relative;
+	z-index: 1;
+}
+
+.sortable_field {
+	/* 	box-shadow: inset 0px 0px 0px 1px blue; */
+	/* 	-webkit-box-shadow: inset 0px 0px 0px 1px blue; */
+	/* 	-moz-box-shadow: inset 0px 0px 0px 1px blue; */
+	padding-top: 20px;
+	padding-bottom: 20px;
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+}
+
+.set_container_basic.grid_field {
+	/*min-height: 120px;*/
+	
+}

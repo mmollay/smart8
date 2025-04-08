@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam-Aufnahme mit Vorschau</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.7/semantic.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        #webcam {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #startButton, #stopButton, #downloadButton {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webcam-Aufnahme mit Vorschau</h1>
+    
+    <video id="webcam" autoplay></video>
+    <div class="controls">
+        <button id="startButton" class="ui primary button">Start Aufnahme</button>
+        <button id="stopButton" class="ui red button" disabled>Stop Aufnahme</button>
+        <a id="downloadButton" class="ui secondary button" style="display: none;">Download</a>
+    </div>
+    <audio id="audio" controls style="display: none;"></audio>
+
+    <script>
+        // HTML-Elemente auswählen
+        const videoElement = document.getElementById('webcam');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const audioElement = document.getElementById('audio');
+
+        // Konfiguration für die Medien-Streams
+        const streamConstraints = { audio: true, video: true };
+
+        let mediaStream;
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        // Aufnahme starten
+        async function startRecording() {
+            mediaStream = await navigator.mediaDevices.getUserMedia(streamConstraints);
+            videoElement.srcObject = mediaStream;
+            mediaRecorder = new MediaRecorder(mediaStream);
+
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                downloadButton.href = url;
+                downloadButton.style.display = 'block';
+                downloadButton.download = 'webcam-recording.webm';
+                audioElement.src = url;
+                audioElement.style.display = 'block';
+            };
+
+            mediaRecorder.start();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        }
+
+        // Aufnahme stoppen
+        function stopRecording() {
+            mediaRecorder.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        // Event-Listener hinzufügen
+        startButton.addEventListener('click', startRecording);
+        stopButton.addEventListener('click', stopRecording);
+    </script>
+</body>
+</html>

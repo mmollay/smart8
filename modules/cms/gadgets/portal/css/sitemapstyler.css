@@ -1,0 +1,55 @@
+/*
+	Sitemap Styler 	 
+*/
+#sitemap, #sitemap ul, #sitemap li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#sitemap {
+	
+}
+
+#sitemap li {
+	line-height: 200%;
+	margin-top: 1px;
+	background: #eee;
+	position: relative;
+	width: 100%;
+}
+/* IE leaves a blank space where span is added so this is to avoid that */
+* html #sitemap li {
+	float: left;
+	display: inline;
+}
+
+#sitemap li a {
+	padding-left: 8px;
+}
+
+/* second level */
+#sitemap li li {
+	background: #fff;
+}
+
+#sitemap li li a {
+	padding-left: 16px;
+}
+
+#sitemap li li span {
+	left: 18px;
+}
+
+/* third level */
+#sitemap li li li a {
+	padding-left: 24px;
+}
+
+#sitemap li li li span {
+	left: 26px;
+}
+
+/* etc. */
+
+/*  */

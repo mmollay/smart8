@@ -1,0 +1,18 @@
+.container {
+	text-align: left;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+}
+
+.guestbook {
+	padding-bottom: 3;
+	padding-left: 3px;
+	padding-right: 3px;
+	background-color: #F5F5F5;
+	overflow: hidden;
+}
+
+.guestbook_top {
+	padding: 3px;
+}

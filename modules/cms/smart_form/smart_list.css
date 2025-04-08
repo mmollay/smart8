@@ -1,0 +1,20 @@
+@media only screen and (max-width: 600px) {
+	.smart_form_button_top {
+		display: none;
+	}
+}
+
+.scrolling.undetached.dimmable.dimmed > .dimmer {
+    overflow: scroll !important;
+}
+
+.scrolling.undetached.dimmable.dimmed{
+    overflow: hidden !important;
+}
+
+/*Bei Disabled-Button wird dennoch der Tooltip angezeigt*/
+.ui.disabled.red.button[data-tooltip] {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  background-color: #E79696;
+}

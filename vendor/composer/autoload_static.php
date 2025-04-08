@@ -81,6 +81,10 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         array (
             'Complex\\' => 8,
         ),
+        'B' => 
+        array (
+            'Brevo\\Client\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -216,6 +220,10 @@ class ComposerStaticInit8f8443657afa9e4122281017b10fc4c8
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
+        'Brevo\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/getbrevo/brevo-php/lib',
         ),
     );
 

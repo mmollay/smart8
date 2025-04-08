@@ -1,5 +1,9 @@
 <?php
 return [
+
+    'brevo' => [
+        'api_key' => $_ENV['BREVO_API_KEY'] ?? ''
+    ],
     'database' => [
         'host' => $_ENV['NEWSLETTER_DB_HOST'] ?? 'localhost',
         'port' => $_ENV['NEWSLETTER_DB_PORT'] ?? 3306,

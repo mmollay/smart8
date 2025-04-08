@@ -199,6 +199,39 @@ $columns = [
 
                 // WARTE AUF CRON
                 case 'pending':
+                    // Initialisiere die Datenbankverbindung
+                    global $newsletterDb;
+                    $db = $newsletterDb;
+                    
+                    if (!$db) {
+                        require_once __DIR__ . '/../n_config.php';
+                        $db = $newsletterDb;
+                    }
+                    
+                    // Überprüfe, ob E-Mails bereits gesendet wurden, obwohl der Status noch 'pending' ist
+                    $contentId = $row['content_id'];
+                    $stmt = $db->prepare("SELECT COUNT(*) as sent_count FROM email_jobs WHERE content_id = ? AND status = 'send'");
+                    $stmt->bind_param('i', $contentId);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $sentCount = $result->fetch_assoc()['sent_count'] ?? 0;
+                    
+                    if ($sentCount > 0) {
+                        $total = getJobStats($row['content_id'])['total'] ?? 0;
+                        $progress = $total > 0 ? round(($sentCount / $total) * 100) : 0;
+                        
+                        return sprintf(
+                            "<div class='ui small text'>
+                                <i class='check circle icon'></i> Gesendet<br>
+                                <small class='ui grey text'>%d von %d E-Mails erfolgreich zugestellt (%d%%)</small>
+                            </div>",
+                            $sentCount,
+                            $total,
+                            $progress
+                        );
+                    }
+                    
+                    // Falls keine E-Mails gesendet wurden, zeige 'Warte auf Verarbeitung...'
                     return sprintf(
                         "<div class='ui small text'>
                             <i class='clock outline icon'></i> Warte auf Verarbeitung...<br>
@@ -207,7 +240,6 @@ $columns = [
                         date('d.m.Y H:i', strtotime($row['created_at']))
                     );
 
-                // VERSAND LÄUFT
                 case 'running':
                     $jobStats = getJobStats($row['content_id']);
                     $total = $jobStats['total'] ?? 0;
@@ -231,6 +263,57 @@ $columns = [
                         $processed,
                         $total
                     );
+
+                // E-MAILS WURDEN GESENDET (ohne Cron-Status-Update)
+                case 'send':
+                    $jobStats = getJobStats($row['content_id']);
+                    $total = $jobStats['total'] ?? 0;
+                    $processed = $jobStats['processed'] ?? 0;
+                    $progress = $total > 0 ? round(($processed / $total) * 100) : 0;
+                    
+                    return sprintf(
+                        "<div class='ui small text'>
+                            <i class='check circle icon'></i> Gesendet<br>
+                            <small class='ui grey text'>%d von %d E-Mails erfolgreich zugestellt (%d%%)</small>
+                        </div>",
+                        $processed,
+                        $total,
+                        $progress
+                    );
+
+                // E-MAILS WURDEN GESENDET (ohne Cron-Status-Update)
+                case 'send':
+                    $jobStats = getJobStats($row['content_id']);
+                    $total = $jobStats['total'] ?? 0;
+                    $processed = $jobStats['processed'] ?? 0;
+                    $progress = $total > 0 ? round(($processed / $total) * 100) : 0;
+                    
+                    return sprintf(
+                        "<div class='ui small text'>
+                            <i class='check circle icon'></i> Gesendet<br>
+                            <small class='ui grey text'>%d von %d E-Mails erfolgreich zugestellt (%d%%)</small>
+                        </div>",
+                        $processed,
+                        $total,
+                        $progress
+                    );
+
+                // E-MAILS WURDEN GESENDET (ohne Cron-Status-Update)
+                case 'send':
+                    $jobStats = getJobStats($row['content_id']);
+                    $total = $jobStats['total'] ?? 0;
+                    $processed = $jobStats['processed'] ?? 0;
+                    $progress = $total > 0 ? round(($processed / $total) * 100) : 0;
+                    
+                    return sprintf(
+                        "<div class='ui small text'>\n                            <i class='check circle icon'></i> Gesendet<br>\n                            <small class='ui grey text'>%d von %d E-Mails erfolgreich zugestellt (%d%%)</small>\n                        </div>",
+                        $processed,
+                        $total,
+                        $progress
+                    );
+                
+                
+                
 
                 // VERSAND ABGESCHLOSSEN    
                 case 'completed':
@@ -474,6 +557,8 @@ function getJobStats($contentId)
     if ($row = $result->fetch_assoc()) {
         $stats = $row;
     }
+
+
 
     return $stats;
 }

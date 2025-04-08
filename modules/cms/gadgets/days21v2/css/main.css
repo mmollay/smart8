@@ -1,0 +1,194 @@
+.info_success_today {
+	color: #5BBD72;
+	font-weight: bold;
+}
+
+.label_user {
+	width: 80px;
+	overflow: hidden;
+}
+
+.empty_insert {
+	text-align: center;
+	padding: 10px;
+}
+
+/*NEWS DESIGN FOR LIST*/
+.challenge_list_content {
+	padding-right: 20px;
+}
+
+.title:hover {
+	background-color: #EEE;
+}
+
+.challenge_list_date {
+	color: gray;
+	font-size: 10px;
+	padding-left: 10px;
+}
+
+.corner_inactive {
+	background-color: red;
+	border: 1px solid red;
+}
+
+
+/*other things*/
+.comment_other_user {
+	border-radius: 1px;
+	padding: 4px;
+	width: 300px;
+}
+
+.progressbar, .progressbar_single {
+	height: 22px;
+	width: 105px;
+	background-color: #EEE;
+	border-radius: 2px;
+}
+
+.progressbar>div:first-child {
+	border-radius: 2px 0px 0px 2px;
+}
+
+.progressbar>div:last-child {
+	border-radius: 0px 2px 2px 0px;
+}
+
+.progressbar_fail_single, .progressbar_unknown_single,
+	.progressbar_success_single {
+	border-radius: 2px;
+}
+
+.progressbar_success, .progressbar_fail, .progressbar_unknown,
+	.progressbar_success_single, .progressbar_fail_single,
+	.progressbar_unknown_single {
+	float: left;
+	height: 100%;
+	width: 5px;
+	border: 0px;
+}
+
+.progressbar_success, .progressbar_success_single {
+	background-color: #66C17B;
+}
+
+.progressbar_fail, .progressbar_fail_single {
+	background-color: #DC6868;
+}
+
+.progressbar_unknown, .progressbar_unknown_single {
+	background-color: #F2C61F;
+}
+
+.progressbar_text {
+	text-align: right;
+	float: right;
+	display: none;
+}
+
+.success_text {
+	color: #5BBD72;
+	font-size: 14px;
+	position: relative;
+	top: 4px;
+	font-weight: bold;
+}
+
+.failed_text {
+	color: #D95C5C;
+	font-size: 14px;
+	position: relative;
+	top: 4px;
+}
+
+.default_text {
+	color: gray;
+	font-size: 14px;
+	position: relative;
+	top: 4px;
+}
+
+.filter_menu_right {
+	float: right;
+	border: 0px solid red;
+	padding: 7px;
+}
+
+.cursor {
+	cursor: pointer;
+}
+
+.list_challenge_name {
+	float: left;
+	cursor: pointer;
+	display: block;
+	border-radius: 5px;
+	border: 1px solid transparent;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.list_challenge_like {
+	padding: 10px 3px;
+	float: right;
+	
+}
+
+.list_challenge_name:hover {
+	border: 1px solid silver;
+	background-color: white;
+}
+
+.list_content_try {
+	color: gray;
+	font-size: 11px;
+	padding-left: 4px;
+}
+
+.dropdown_edit {
+	position: relative;
+	top: 2px;
+}
+
+.days21_counter_fail, .days21_counter_success, .days21_counter_running,
+	.days21_counter_new, .days21_counter_unconfirmed, .days21_counter_all {
+	color: white;
+	padding: 0px 4px;
+	border-radius: 3px;
+	margin-right: 10px;
+}
+
+.days21_counter_all {
+	background-color: #458AC6;
+}
+
+.days21_counter_unconfirmed {
+	background-color: gray;
+}
+
+.days21_counter_fail {
+	background-color: #DC6868;
+}
+
+.days21_counter_success {
+	background-color: #66C17B;
+}
+
+.days21_counter_running {
+	background-color: #E28560;
+}
+
+.days21_counter_new {
+	background-color: #F2C61F;
+}
+
+#day21_filter {
+	text-align: left;
+	padding-bottom: 5px;
+}
+
+.list_challenge_name {
+	line-height: 20px;
+}
